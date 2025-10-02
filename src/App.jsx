@@ -4,6 +4,7 @@ const initial = [
   { id: 1, name: "Apple",  price: 12 },
   { id: 2, name: "Banana", price: 8  },
   { id: 3, name: "Cherry", price: 15 },
+  { id: 4, name: "dates",  price: 5.5},
 ];
 
 export default function App() {
