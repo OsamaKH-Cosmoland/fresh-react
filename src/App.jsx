@@ -1,73 +1,141 @@
-import { useMemo, useState } from "react";
-
-const initial = [
-  { id: 1, name: "Apple",  price: 12 },
-  { id: 2, name: "Banana", price: 8  },
-  { id: 3, name: "Cherry", price: 15 },
-  { id: 4, name: "dates",  price: 5.5},
-];
+import { useEffect, useMemo, useState } from "react";
 
 export default function App() {
+  const [fruits, setFruits] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [minPrice, setMinPrice] = useState(0);
   const [query, setQuery] = useState("");
   const [sortBy, setSortBy] = useState("none"); // 'asc' | 'desc' | 'none'
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/fruits");
+        if (!res.ok) throw new Error("Failed to fetch fruits");
+        const data = await res.json();
+        setFruits(data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  async function addFruit() {
+    const n = Number(price);
+    const clean = name.trim();
+    if (!clean || Number.isNaN(n) || n < 0) return;
+
+    const res = await fetch("/api/fruits", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: clean, price: n }),
+    });
+
+    if (!res.ok) {
+      console.error("Failed to create fruit");
+      return;
+    }
+
+    const created = await res.json();
+    setFruits((prev) => [created, ...prev]);
+    setName("");
+    setPrice("");
+  }
+
+  async function deleteFruit(id) {
+    const res = await fetch(`/api/fruits?id=${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      console.error("Failed to delete fruit");
+      return;
+    }
+    setFruits((prev) => prev.filter((f) => f._id !== id));
+  }
 
   const filtered = useMemo(() => {
     const n = Number(minPrice || 0);
     const q = query.trim().toLowerCase();
-    return initial.filter(
+    return fruits.filter(
       (item) => item.price >= n && (q === "" || item.name.toLowerCase().includes(q))
     );
-  }, [minPrice, query]);
+  }, [fruits, minPrice, query]);
 
   const sorted = useMemo(() => {
-    if (sortBy === "asc")  return [...filtered].sort((a, b) => a.price - b.price);
+    if (sortBy === "asc") return [...filtered].sort((a, b) => a.price - b.price);
     if (sortBy === "desc") return [...filtered].sort((a, b) => b.price - a.price);
     return filtered;
   }, [filtered, sortBy]);
 
-  const total = useMemo(() => sorted.reduce((s, i) => s + i.price, 0), [sorted]);
+  const total = useMemo(() => sorted.reduce((sum, item) => sum + item.price, 0), [sorted]);
+
+  const canAdd = name.trim() && !Number.isNaN(Number(price)) && Number(price) >= 0;
 
   return (
     <main style={{ fontFamily: "system-ui", padding: 24, maxWidth: 640, margin: "0 auto" }}>
       <h1>Fruit Shop</h1>
 
+      <fieldset style={{ marginBottom: 16 }}>
+        <legend>Add Fruit</legend>
+        <input
+          placeholder="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          placeholder="price"
+          type="number"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
+        <button onClick={addFruit} disabled={!canAdd}>
+          Add
+        </button>
+      </fieldset>
+
       <div style={{ display: "grid", gap: 12, marginBottom: 16 }}>
         <label>
-          Min price:{" "}
+          Min Price:{" "}
           <input
             type="number"
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
-            placeholder="0"
           />
         </label>
 
         <label>
-          Search by name:{" "}
+          Search By Name:{" "}
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Apple, Banana…"
+            placeholder="Apple, Banana..."
           />
         </label>
 
         <div style={{ display: "flex", gap: 8 }}>
           <button onClick={() => setSortBy("asc")}>Price ↑</button>
           <button onClick={() => setSortBy("desc")}>Price ↓</button>
-          <button onClick={() => setSortBy("none")}>Clear sort</button>
+          <button onClick={() => setSortBy("none")}>Clear Sort</button>
         </div>
       </div>
 
-      <ul>
-        {sorted.map((item) => (
-          <li key={item.id}>
-            {item.name} — ${item.price}
-          </li>
-        ))}
-      </ul>
-
-      <p><b>Total:</b> ${total}</p>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <ul>
+            {sorted.map((item) => (
+              <li key={item._id}>
+                {item.name} — ${item.price}{" "}
+                <button onClick={() => deleteFruit(item._id)}>Delete</button>
+              </li>
+            ))}
+          </ul>
+          <p><b>Total:</b> ${total}</p>
+        </>
+      )}
     </main>
   );
 }

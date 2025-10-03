@@ -4,44 +4,57 @@ let cachedClient = null;
 let cachedDb = null;
 
 async function connectToDb() {
-    if (cachedClient && cachedDb) return { client: cachedClient, db: cachedDb};
+  if (cachedClient && cachedDb) return { client: cachedClient, db: cachedDb };
 
-    const uri = process.env.MONGODB_URI;
-    const dbname = process.env.MONGODB_DB;
-
-    const client =  new MongoClient(uri);
-    await client.connect();
-    const db = client.db(dbname);
-
-    cachedClient = client;
-    cachedDb = db;
-    return {client, db};
+  const uri = process.env.MONGODB_URI;
+  const dbName = process.env.MONGODB_DB;
+  if (!uri || !dbName) {
+    throw new Error("Missing MONGODB_URI or MONGODB_DB env vars");
   }
 
-export default async function handler(req, res) { 
-    try {
-        const { db } = await connectToDb();
-        const fruits = db.collection("fruits");
+  const client = new MongoClient(uri);
+  await client.connect();
+  const db = client.db(dbName);
 
-        if ( req.method === "GET") {
-            const docs = await fruits.find({}).toarray();
-            return res.status(200).json(docs);
-        }
+  cachedClient = client;
+  cachedDb = db;
+  return { client, db };
+}
 
-        if (req.method === "POST") {
-            const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-            const { name, price } = body;
-            if ( !name || price) {
-                return res.status(400).json({ error: "name and price are required"});
-            }
-            const result = await fruits.insertOne({ name, price: Number(price) });
-            return res.status(201).json({ _id: result.insertedId, name, price});
-        }
-        
-        res.setHeader("Allow", ["GET", "POST"]);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Database connection failed"});
+export default async function handler(req, res) {
+  try {
+    const { db } = await connectToDb();
+    const col = db.collection("fruits");
+
+    if (req.method === "GET") {
+      const docs = await col.find({}).sort({ _id: -1 }).toArray();
+      return res.status(200).json(docs);
     }
+
+    if (req.method === "POST") {
+      const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+      const name = String(body?.name || "").trim();
+      const price = Number(body?.price);
+
+      if (!name || Number.isNaN(price) || price < 0) {
+        return res.status(400).json({ error: "Invalid name or price" });
+      }
+
+      const result = await col.insertOne({ name, price });
+      return res.status(201).json({ _id: result.insertedId, name, price });
+    }
+
+    if (req.method === "DELETE") {
+      const id = req.query.id;
+      if (!id) return res.status(400).json({ error: "Missing id" });
+      await col.deleteOne({ _id: new ObjectId(id) });
+      return res.status(204).end();
+    }
+
+    res.setHeader("Allow", ["GET", "POST", "DELETE"]);
+    return res.status(405).end("Method Not Allowed");
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: "Server error" });
+  }
 }
