@@ -26,6 +26,20 @@ export default async function handler(req, res) {
     const { db } = await connectToDb();
     const col = db.collection("fruits");
 
+    // inside your default export handler, near the top after `const col = db.collection("fruits");`
+  if (req.query.diag === "1") {
+  const admin = db.admin();
+  const ping = await admin.ping().catch((e) => ({ ok: 0, error: e.message }));
+  return res.status(200).json({
+    ok: 1,
+    dbName: db.databaseName,
+    hasURI: !!process.env.MONGODB_URI,     // true/false only
+    hasDB: !!process.env.MONGODB_DB,       // true/false only
+    ping,
+  });
+}
+
+
     if (req.method === "GET") {
       const docs = await col.find({}).sort({ _id: -1 }).toArray();
       return res.status(200).json(docs);
