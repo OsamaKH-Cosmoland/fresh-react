@@ -1,5 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 
+const PRESET_FRUITS = [
+  { name: "Apple", price: 12 },
+  { name: "Banana", price: 8 },
+  { name: "Cherry", price: 15},
+  { name: "Grapes", price: 18},
+  { name: "Mango", price: 20},
+  { name: "Orange", price: 10},
+  { name: "Peach", price: 14},
+  { name: "Pear", price: 11},
+  { name: "Plum", price: 9},
+  { name: "Kiwi", price: 13},
+]
+
 export default function App() {
   const [fruits, setFruits] = useState([]);
   const [loading, setLoading] = useState(true);
