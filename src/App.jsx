@@ -68,6 +68,26 @@ export default function App() {
     setFruits((prev) => prev.filter((f) => f._id !== id));
   }
 
+  async function updateFruit(id, name, price) {
+    const newName = prompt("Enter New Name:", name);
+    const newPrice = prompt("Enter New Price:", price);
+    if (!newName || !newPrice) return;
+
+    const res = await fetch(`/api/fruits.js?id${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: newName, price: Number(newPrice)}),
+    });
+
+    if (!res.ok) {
+      alert("Failed to update fruit");
+      return;
+    }
+
+    const updated = await res.json();
+    setFruits((prev) => prev.map((f) => (f.id === id? updated : f)));
+  }
+
   const filtered = useMemo(() => {
     const n = Number(minPrice || 0);
     const q = query.trim().toLowerCase();
@@ -143,6 +163,7 @@ export default function App() {
               <li key={item._id}>
                 {item.name} — ${item.price}{" "}
                 <button onClick={() => deleteFruit(item._id)}>Delete</button>
+                <button onClick={() => updateFruit(item._id, item.name, item.price)}>Edit</button>
               </li>
             ))}
           </ul>

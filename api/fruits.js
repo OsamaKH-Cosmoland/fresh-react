@@ -1,4 +1,5 @@
-import { MongoClient, ObjectId } from "mongodb";
+import { method } from "lodash";
+import { MongoClient, ObjectId, ReturnDocument } from "mongodb";
 
 let cachedClient = null;
 let cachedDb = null;
@@ -47,7 +48,20 @@ export default async function handler(req, res) {
       return res.status(204).end();
     }
 
-    res.setHeader("Allow", ["GET", "POST", "DELETE"]);
+    else if (req.method === "PUT") {
+      const id = req.method.id;
+      const {name, price} = req.body;
+
+      const result = await collection.findOneAndUpdate(
+        { _id: new objectId(id) },
+        { $set: {name, price} },
+        { ReturnDocument: "after"}
+      );
+
+      res.status(200).json(result.value);
+    }
+
+    res.setHeader("Allow", ["GET", "POST", "DELETE", "PUT"]);
     return res.status(405).end("Method Not Allowed");
   } catch (err) {
     console.error("API /api/fruits error:", err);
