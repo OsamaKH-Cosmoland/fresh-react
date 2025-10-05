@@ -1,5 +1,4 @@
-import { method } from "lodash";
-import { MongoClient, ObjectId, ReturnDocument } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 
 let cachedClient = null;
 let cachedDb = null;
