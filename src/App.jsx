@@ -1,19 +1,22 @@
 import { useEffect, useMemo, useState } from "react";
+import LayoutLab from "./labs/LayoutLab.jsx"; // ✅ added
+
+const SHOW_LAB = true; // ✅ toggle between lab & fruit shop
 
 const PRESET_FRUITS = [
   { name: "Apple", price: 12 },
   { name: "Banana", price: 8 },
-  { name: "Cherry", price: 15},
-  { name: "Grapes", price: 18},
-  { name: "Mango", price: 20},
-  { name: "Orange", price: 10},
-  { name: "Peach", price: 14},
-  { name: "Pear", price: 11},
-  { name: "Plum", price: 9},
-  { name: "Kiwi", price: 13},
-]
+  { name: "Cherry", price: 15 },
+  { name: "Grapes", price: 18 },
+  { name: "Mango", price: 20 },
+  { name: "Orange", price: 10 },
+  { name: "Peach", price: 14 },
+  { name: "Pear", price: 11 },
+  { name: "Plum", price: 9 },
+  { name: "Kiwi", price: 13 },
+];
 
-export default function App() {
+function FruitShop() {
   const [fruits, setFruits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [minPrice, setMinPrice] = useState(0);
@@ -76,7 +79,7 @@ export default function App() {
     const res = await fetch(`/api/fruits.js?id${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newName, price: Number(newPrice)}),
+      body: JSON.stringify({ name: newName, price: Number(newPrice) }),
     });
 
     if (!res.ok) {
@@ -85,7 +88,7 @@ export default function App() {
     }
 
     const updated = await res.json();
-    setFruits((prev) => prev.map((f) => (f.id === id? updated : f)));
+    setFruits((prev) => prev.map((f) => (f.id === id ? updated : f)));
   }
 
   const filtered = useMemo(() => {
@@ -167,9 +170,16 @@ export default function App() {
               </li>
             ))}
           </ul>
-          <p><b>Total:</b> ${total}</p>
+          <p>
+            <b>Total:</b> ${total}
+          </p>
         </>
       )}
     </main>
   );
+}
+
+// ✅ Export logic — toggles between your two apps
+export default function App() {
+  return SHOW_LAB ? <LayoutLab /> : <FruitShop />;
 }
