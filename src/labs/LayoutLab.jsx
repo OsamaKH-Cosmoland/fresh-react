@@ -30,6 +30,13 @@ export default function LayoutLab() {
     }, 5000);
     return () => clearInterval(intervalId);
   }, []);
+  const showPrevAnnouncement = () => {
+    setActiveAnnouncement((prev) => (prev - 1 + ANNOUNCEMENTS.length) % ANNOUNCEMENTS.length);
+  };
+
+  const showNextAnnouncement = () => {
+    setActiveAnnouncement((prev) => (prev + 1) % ANNOUNCEMENTS.length);
+  };
 
   const handleAddToCart = (item) => {
     setCartItems((prev) => {
@@ -69,6 +76,14 @@ export default function LayoutLab() {
     <div>
       {/* Sticky variant demo */}
       <div className="announcement-bar" role="status" aria-live="polite">
+        <button
+          type="button"
+          className="announcement-nav announcement-nav--prev"
+          aria-label="Previous announcement"
+          onClick={showPrevAnnouncement}
+        >
+          <span aria-hidden="true">‹</span>
+        </button>
         {ANNOUNCEMENTS.map((announcement, index) => (
           <span
             key={announcement.id}
@@ -77,6 +92,14 @@ export default function LayoutLab() {
             {announcement.text}
           </span>
         ))}
+        <button
+          type="button"
+          className="announcement-nav announcement-nav--next"
+          aria-label="Next announcement"
+          onClick={showNextAnnouncement}
+        >
+          <span aria-hidden="true">›</span>
+        </button>
       </div>
       <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />

@@ -32,18 +32,20 @@ button:hover {
 .stack-lg > * + * { margin-top: 1rem; }
 .hero { padding: 2.5rem 0 1rem; }
 .announcement-bar {
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 80;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  padding: .55rem 1rem;
-  margin-bottom: 1rem;
-  border-radius: 999px;
+  padding: .35rem .85rem;
+  margin: 0 0 .75rem;
+  border-radius: 12px;
   background: linear-gradient(135deg, rgba(6, 30, 21, .92), rgba(10, 46, 32, .92));
   border: 1px solid rgba(244, 208, 135, .22);
-  box-shadow: 0 14px 32px rgba(4, 26, 18, .45);
+  box-shadow: 0 10px 26px rgba(4, 26, 18, .4);
   overflow: hidden;
-  min-height: 48px;
+  min-height: 36px;
 }
 .announcement-message {
   position: absolute;
@@ -65,6 +67,23 @@ button:hover {
   opacity: 1;
   transform: translateY(0);
 }
+.announcement-nav {
+  background: transparent;
+  border: none;
+  color: #f9e4a8;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .2rem .35rem;
+  transition: color .2s ease, transform .1s ease;
+}
+.announcement-nav:hover { color: #ffe9a3; transform: translateY(-1px); }
+.announcement-nav:active { transform: translateY(0); }
+.announcement-nav:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249, 228, 168, .4); border-radius: 999px; }
+.announcement-nav span { pointer-events: none; }
 .hero h1 {
   font-family: var(--font-heading);
   font-size: clamp(2.6rem, 4vw, 3.4rem);
