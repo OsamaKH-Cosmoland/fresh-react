@@ -19,16 +19,11 @@ export default function Navbar({
     <header className={`navbar ${sticky ? "sticky" : ""} ${elevated ? "elevated" : ""}`}>
       <div className="nav-inner">
         <a className="brand" href="/">{brand}</a>
-        <div className="debug-box"></div>
-
-        {/* Desktop nav */}
         <nav className="nav-links">
           <a href="#grid">Grid</a>
           <a href="#forms">Forms</a>
           <a href="#about">About</a>
         </nav>
-
-        {/* Right actions */}
         <div className="nav-actions">
           <button className="ghost-btn">Sign in</button>
           <button className="cta-btn">Get Started</button>
@@ -40,5 +35,5 @@ export default function Navbar({
         </div>
       </div>
     </header>
-  );
+  )
 }
