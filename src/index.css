@@ -35,10 +35,10 @@ button:hover {
   position: sticky;
   top: 0;
   z-index: 80;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, auto) 1fr minmax(0, auto);
   align-items: center;
-  padding: .35rem .85rem;
+  padding: .35rem .6rem;
   margin: 0 0 .75rem;
   border-radius: 12px;
   background: linear-gradient(135deg, rgba(6, 30, 21, .92), rgba(10, 46, 32, .92));
@@ -46,6 +46,7 @@ button:hover {
   box-shadow: 0 10px 26px rgba(4, 26, 18, .4);
   overflow: hidden;
   min-height: 36px;
+  gap: .25rem;
 }
 .announcement-message {
   position: absolute;
@@ -55,6 +56,17 @@ button:hover {
   letter-spacing: .3px;
   font-size: .92rem;
   color: rgba(247, 236, 212, .82);
+  justify-self: center;
+  text-align: center;
+  padding: 0 1.5rem;
+}
+.announcement-bar::before {
+  content: "";
+  grid-column: 2;
+}
+.announcement-bar::after {
+  content: "";
+  grid-column: 2;
 }
 .announcement-message--primary,
 .announcement-message--secondary {
