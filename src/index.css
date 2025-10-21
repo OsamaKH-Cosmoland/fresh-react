@@ -54,7 +54,8 @@ button:hover {
   font-size: .92rem;
   color: rgba(247, 236, 212, .82);
 }
-.announcement-message--primary {
+.announcement-message--primary,
+.announcement-message--secondary {
   font-family: var(--font-heading);
   color: #f9e4a8;
   font-weight: 700;

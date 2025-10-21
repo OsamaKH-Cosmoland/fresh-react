@@ -4,8 +4,8 @@ import Sidebar from "../components/Sidebar.jsx";
 import CardGrid from "../components/CardGrid.jsx";
 
 const ANNOUNCEMENTS = [
-  { id: 0, text: "Because your body deserves natural luxury", primary: false },
-  { id: 1, text: "Inspired by European cosmetic standards, handcrafted in Egypt", primary: true },
+  { id: 0, text: "Because your body deserves natural luxury", className: "announcement-message--secondary" },
+  { id: 1, text: "Inspired by European cosmetic standards, handcrafted in Egypt", className: "announcement-message--primary" },
 ];
 
 function CartIcon() {
@@ -72,7 +72,7 @@ export default function LayoutLab() {
         {ANNOUNCEMENTS.map((announcement, index) => (
           <span
             key={announcement.id}
-            className={`announcement-message ${announcement.primary ? "announcement-message--primary" : ""} ${index === activeAnnouncement ? "is-active" : ""}`}
+            className={`announcement-message ${announcement.className ?? ""} ${index === activeAnnouncement ? "is-active" : ""}`}
           >
             {announcement.text}
           </span>
