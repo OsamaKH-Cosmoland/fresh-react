@@ -16,8 +16,6 @@ function Heart({ filled }) {
 
 export default function CardGrid({
   onAddToCart = () => {},
-  onRemoveFromCart = () => {},
-  cartQuantities = {},
 }) {
   const initial = [
     { id: 1, title: "Silk Blossom Body Soap", desc: "Infused with jasmine petals for a velvety cleanse and lingering floral aura.", price: "231.99 EGP" },
@@ -48,7 +46,6 @@ export default function CardGrid({
     <section id="grid" className="card-grid">
       {initial.map((c) => {
         const isFav = favs.has(c.id);
-        const quantityInCart = cartQuantities[c.id] ?? 0;
         return (
           <article
           key={c.id}
@@ -69,23 +66,13 @@ export default function CardGrid({
             </header>
             <p className="card-desc">{c.desc}</p>
             <p className="card-price">{c.price}</p>
-            <div className="card-actions">
-              <button
-                className="primary-btn"
-                type="button"
-                onClick={() => onAddToCart(c)}
-              >
-                Add to cart
-              </button>
-              <button
-                className="remove-btn"
-                type="button"
-                onClick={() => onRemoveFromCart(c)}
-                disabled={quantityInCart === 0}
-              >
-                Remove item
-              </button>
-            </div>
+            <button
+              className="primary-btn card-add"
+              type="button"
+              onClick={() => onAddToCart(c)}
+            >
+              Add to cart
+            </button>
           </article>
         );
       })}

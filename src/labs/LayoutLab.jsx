@@ -52,14 +52,6 @@ export default function LayoutLab() {
     [cartItems]
   );
 
-  const cartQuantities = useMemo(() => {
-    const map = {};
-    for (const item of cartItems) {
-      map[item.id] = item.quantity;
-    }
-    return map;
-  }, [cartItems]);
-
   return (
     <div>
       {/* Sticky variant demo */}
@@ -120,44 +112,7 @@ export default function LayoutLab() {
 
         <CardGrid
           onAddToCart={handleAddToCart}
-          onRemoveFromCart={handleRemoveFromCart}
-          cartQuantities={cartQuantities}
         />
-
-        <section id="forms" className="stack-lg">
-          <h2>Responsive 2-Column Form (Stretch Goal)</h2>
-          <form className="form-grid" onSubmit={(e) => e.preventDefault()}>
-            <label>
-              First Name
-              <input type="text" placeholder="Jane" required />
-            </label>
-            <label>
-              Last Name
-              <input type="text" placeholder="Doe" required />
-            </label>
-            <label className="span-2">
-              Email
-              <input type="email" placeholder="jane@doe.com" required />
-            </label>
-            <label>
-              City
-              <input type="text" placeholder="Alexandria" />
-            </label>
-            <label>
-              Country
-              <input type="text" placeholder="Egypt" />
-            </label>
-            <label className="span-2">
-              Message
-              <textarea rows="4" placeholder="Write your message..." />
-            </label>
-
-            <div className="span-2 form-actions">
-              <button className="ghost-btn" type="reset">Reset</button>
-              <button className="cta-btn" type="submit">Submit</button>
-            </div>
-          </form>
-        </section>
       </main>
 
       {/* Non-sticky variant demo */}
