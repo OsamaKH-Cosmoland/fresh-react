@@ -1,7 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import CardGrid from "../components/CardGrid.jsx";
+
+const ANNOUNCEMENTS = [
+  { id: 0, text: "Because your body deserves natural luxury", primary: false },
+  { id: 1, text: "Inspired by European cosmetic standards, handcrafted in Egypt", primary: true },
+];
 
 function CartIcon() {
   return (
@@ -17,6 +22,14 @@ function CartIcon() {
 export default function LayoutLab() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [activeAnnouncement, setActiveAnnouncement] = useState(1);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setActiveAnnouncement((prev) => (prev + 1) % ANNOUNCEMENTS.length);
+    }, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleAddToCart = (item) => {
     setCartItems((prev) => {
@@ -55,6 +68,16 @@ export default function LayoutLab() {
   return (
     <div>
       {/* Sticky variant demo */}
+      <div className="announcement-bar" role="status" aria-live="polite">
+        {ANNOUNCEMENTS.map((announcement, index) => (
+          <span
+            key={announcement.id}
+            className={`announcement-message ${announcement.primary ? "announcement-message--primary" : ""} ${index === activeAnnouncement ? "is-active" : ""}`}
+          >
+            {announcement.text}
+          </span>
+        ))}
+      </div>
       <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
