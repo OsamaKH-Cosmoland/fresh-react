@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 export default function Navbar({
   onMenuToggle,
   sticky = false,
-  brand = "LayoutLab",
+  brand = "NaturaGloss",
 }) {
   const [elevated, setElevated] = useState(false);
 
@@ -20,8 +20,8 @@ export default function Navbar({
       <div className="nav-inner">
         <a className="brand" href="/">{brand}</a>
         <nav className="nav-links">
-          <a href="#grid">Grid</a>
-          <a href="#forms">Forms</a>
+          <a href="#grid">Collection</a>
+          <a href="#forms">Consult</a>
           <a href="#about">About</a>
         </nav>
         <div className="nav-actions">

@@ -69,8 +69,8 @@ export default function LayoutLab() {
       <main className="container">
         <section className="hero-layout">
           <div className="hero">
-            <h1>Fresh Harvest Market</h1>
-            <p>Taste the season with handpicked fruits delivered straight from local farms.</p>
+            <h1>NaturaGloss</h1>
+            <p>Elevate your daily ritual with nutrient-rich botanicals and luminous finishes.</p>
           </div>
           <aside className="cart-summary" aria-label="Shopping cart" aria-live="polite">
             <header className="cart-header">
@@ -83,7 +83,7 @@ export default function LayoutLab() {
               </div>
             </header>
             {cartItems.length === 0 ? (
-              <p className="cart-empty">Add a fruit to see it here.</p>
+              <p className="cart-empty">Add a treatment to see it here.</p>
             ) : (
               <ul className="cart-list">
                 {cartItems.map((item) => (
@@ -164,7 +164,7 @@ export default function LayoutLab() {
       <section className="container stack-lg">
         <h2>Navbar (Non-Sticky Variant)</h2>
         <div className="demo-box">
-          <Navbar sticky={false} onMenuToggle={() => setDrawerOpen(true)} brand="LayoutLab (Static)" />
+          <Navbar sticky={false} onMenuToggle={() => setDrawerOpen(true)} brand="NaturaGloss (Static)" />
         </div>
       </section>
     </div>

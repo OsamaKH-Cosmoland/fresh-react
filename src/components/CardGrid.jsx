@@ -20,12 +20,12 @@ export default function CardGrid({
   cartQuantities = {},
 }) {
   const initial = [
-    { id: 1, title: "Apple", desc: "Crisp and sweet, perfect for an afternoon snack.", price: "$1.29" },
-    { id: 2, title: "Banana", desc: "Naturally creamy and loaded with potassium.", price: "$0.79" },
-    { id: 3, title: "Pineapple", desc: "Tropical treat with bright, juicy flavor.", price: "$3.49" },
-    { id: 4, title: "Peach", desc: "Fragrant stone fruit picked at peak ripeness.", price: "$2.19" },
-    { id: 5, title: "Berries", desc: "Mixed berries bursting with antioxidants.", price: "$4.99" },
-    { id: 6, title: "Mango", desc: "Golden slices that melt with tropical sweetness.", price: "$2.79" }
+    { id: 1, title: "Silk Blossom Body Soap", desc: "Infused with jasmine petals for a velvety cleanse and lingering floral aura.", price: "$18.00" },
+    { id: 2, title: "Calm & Glow Body Soap", desc: "Soothing chamomile and neroli calm the skin while mica pearls add a soft glow.", price: "$22.00" },
+    { id: 3, title: "Body Balm", desc: "A concentrated butter blend that melts on contact to replenish deep hydration.", price: "$34.00" },
+    { id: 4, title: "Hand Balm", desc: "Fast-absorbing restorative balm that cushions hands with botanical ceramides.", price: "$16.00" },
+    { id: 5, title: "Hair Growth Oil", desc: "Lightweight elixir powered by rosemary stem cells and biotin to fortify roots.", price: "$42.00" },
+    { id: 6, title: "Hair Shine & Anti-Frizz Oil", desc: "Silica-rich formula that seals cuticles for mirror-like gloss without weight.", price: "$38.00" }
   ];
 
   const [favs, setFavs] = useState(() => new Set());
