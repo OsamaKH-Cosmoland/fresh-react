@@ -54,7 +54,7 @@ button:hover {
 .primary-btn:hover, .ghost-btn:hover { background: #202020; }
 .cta-btn:hover { filter: brightness(1.05); }
 .icon-btn { padding: .4rem .5rem; display: inline-grid; place-items: center; }
-.icon-btn[aria-pressed="true"] { background: #27212f; border-color: #6d28d9; color: #c4b5fd; }
+.icon-btn[aria-pressed="true"] { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
 
 /* --- Drawer / Sidebar --- */
 .drawer {
