@@ -30,10 +30,35 @@ export default function LayoutLab() {
     });
   };
 
+  const handleRemoveFromCart = (item) => {
+    setCartItems((prev) => {
+      const existing = prev.find((entry) => entry.id === item.id);
+      if (!existing) {
+        return prev;
+      }
+      if (existing.quantity <= 1) {
+        return prev.filter((entry) => entry.id !== item.id);
+      }
+      return prev.map((entry) =>
+        entry.id === item.id ? { ...entry, quantity: entry.quantity - 1 } : entry
+      );
+    });
+  };
+
+  const handleClearCart = () => setCartItems([]);
+
   const totalItems = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
     [cartItems]
   );
+
+  const cartQuantities = useMemo(() => {
+    const map = {};
+    for (const item of cartItems) {
+      map[item.id] = item.quantity;
+    }
+    return map;
+  }, [cartItems]);
 
   return (
     <div>
@@ -63,16 +88,41 @@ export default function LayoutLab() {
               <ul className="cart-list">
                 {cartItems.map((item) => (
                   <li key={item.id} className="cart-item">
-                    <span>{item.title}</span>
-                    <span className="cart-qty">×{item.quantity}</span>
+                    <div className="cart-item-info">
+                      <span>{item.title}</span>
+                      <span className="cart-qty">×{item.quantity}</span>
+                    </div>
+                    <button
+                      type="button"
+                      className="remove-btn"
+                      onClick={() => handleRemoveFromCart(item)}
+                      aria-label={`Remove one ${item.title}`}
+                    >
+                      Remove item
+                    </button>
                   </li>
                 ))}
               </ul>
             )}
+            {cartItems.length > 0 && (
+              <footer className="cart-footer">
+                <button
+                  type="button"
+                  className="clear-cart-btn"
+                  onClick={handleClearCart}
+                >
+                  Delete all
+                </button>
+              </footer>
+            )}
           </aside>
         </section>
 
-        <CardGrid onAddToCart={handleAddToCart} />
+        <CardGrid
+          onAddToCart={handleAddToCart}
+          onRemoveFromCart={handleRemoveFromCart}
+          cartQuantities={cartQuantities}
+        />
 
         <section id="forms" className="stack-lg">
           <h2>Responsive 2-Column Form (Stretch Goal)</h2>

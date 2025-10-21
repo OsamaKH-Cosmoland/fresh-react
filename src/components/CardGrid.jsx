@@ -14,7 +14,11 @@ function Heart({ filled }) {
   )
 }
 
-export default function CardGrid({ onAddToCart = () => {} }) {
+export default function CardGrid({
+  onAddToCart = () => {},
+  onRemoveFromCart = () => {},
+  cartQuantities = {},
+}) {
   const initial = [
     { id: 1, title: "Apple", desc: "Crisp and sweet, perfect for an afternoon snack.", price: "$1.29" },
     { id: 2, title: "Banana", desc: "Naturally creamy and loaded with potassium.", price: "$0.79" },
@@ -44,6 +48,7 @@ export default function CardGrid({ onAddToCart = () => {} }) {
     <section id="grid" className="card-grid">
       {initial.map((c) => {
         const isFav = favs.has(c.id);
+        const quantityInCart = cartQuantities[c.id] ?? 0;
         return (
           <article
           key={c.id}
@@ -64,13 +69,23 @@ export default function CardGrid({ onAddToCart = () => {} }) {
             </header>
             <p className="card-desc">{c.desc}</p>
             <p className="card-price">{c.price}</p>
-            <button
-              className="primary-btn"
-              type="button"
-              onClick={() => onAddToCart(c)}
-            >
-              Add to cart
-            </button>
+            <div className="card-actions">
+              <button
+                className="primary-btn"
+                type="button"
+                onClick={() => onAddToCart(c)}
+              >
+                Add to cart
+              </button>
+              <button
+                className="remove-btn"
+                type="button"
+                onClick={() => onRemoveFromCart(c)}
+                disabled={quantityInCart === 0}
+              >
+                Remove item
+              </button>
+            </div>
           </article>
         );
       })}

@@ -65,13 +65,41 @@ button:hover {
 }
 .cart-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: .75rem;
   font-size: .95rem;
   font-weight: 600;
+  flex-wrap: wrap;
+}
+.cart-item-info {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
 }
 .cart-qty { color: #1e3a8a; }
+.cart-footer {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+.clear-cart-btn {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: .35rem .9rem;
+  border-radius: 999px;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .2px;
+  box-shadow: 0 10px 20px rgba(220,38,38,.3);
+  transition: background .2s ease, transform .1s ease, box-shadow .2s ease;
+}
+.clear-cart-btn:hover {
+  background: #b91c1c;
+  box-shadow: 0 14px 28px rgba(220,38,38,.35);
+}
+.clear-cart-btn:active { transform: translateY(1px); }
 
 @media (min-width: 900px) {
   .hero-layout { flex-direction: row; align-items: flex-start; justify-content: space-between; }
@@ -190,12 +218,45 @@ button:hover {
   font-size: 1.05rem;
   color: #1e3a8a;
 }
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: .75rem;
+}
+.card-actions .primary-btn {
+  flex: 1;
+  min-width: 140px;
+}
 .card:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,.25); }
 .card:active { transform: translateY(0) scale(.995); }
 .card:focus-visible { box-shadow: 0 0 0 3px #4f46e5; }
 
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .5rem; }
 .card.is-fav { border-color: #6d28d9; box-shadow: 0 12px 28px rgba(109,40,217,.15); }
+
+.remove-btn {
+  background: rgba(248,113,113,.12);
+  color: #b91c1c;
+  border: 1px solid rgba(248,113,113,.5);
+  padding: .45rem .85rem;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, transform .08s ease;
+}
+.remove-btn:hover {
+  background: rgba(248,113,113,.2);
+  border-color: #f87171;
+  color: #7f1d1d;
+}
+.remove-btn:active { transform: translateY(1px); }
+.remove-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+  background: rgba(248,113,113,.08);
+  border-color: rgba(248,113,113,.2);
+  color: rgba(127,29,29,.5);
+}
 
 /* --- Forms (CSS Grid, responsive) --- */
 .form-grid {
