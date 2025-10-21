@@ -35,9 +35,9 @@ button:hover {
   position: sticky;
   top: 0;
   z-index: 80;
-  display: grid;
-  grid-template-columns: minmax(0, auto) 1fr minmax(0, auto);
+  display: flex;
   align-items: center;
+  gap: .35rem;
   padding: .35rem .6rem;
   margin: 0 0 .75rem;
   border-radius: 12px;
@@ -46,27 +46,27 @@ button:hover {
   box-shadow: 0 10px 26px rgba(4, 26, 18, .4);
   overflow: hidden;
   min-height: 36px;
-  gap: .25rem;
+}
+.announcement-track {
+  position: relative;
+  flex: 1;
+  min-height: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .announcement-message {
   position: absolute;
+  left: 50%;
   opacity: 0;
-  transform: translateY(12px);
+  transform: translate(-50%, 12px);
   transition: opacity .5s ease, transform .5s ease;
   letter-spacing: .3px;
   font-size: .92rem;
   color: rgba(247, 236, 212, .82);
-  justify-self: center;
   text-align: center;
   padding: 0 1.5rem;
-}
-.announcement-bar::before {
-  content: "";
-  grid-column: 2;
-}
-.announcement-bar::after {
-  content: "";
-  grid-column: 2;
+  width: 100%;
 }
 .announcement-message--primary,
 .announcement-message--secondary {
@@ -77,7 +77,7 @@ button:hover {
 }
 .announcement-message.is-active {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
 }
 .announcement-nav {
   background: transparent;

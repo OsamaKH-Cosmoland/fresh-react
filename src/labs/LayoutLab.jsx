@@ -84,14 +84,16 @@ export default function LayoutLab() {
         >
           <span aria-hidden="true">‹</span>
         </button>
-        {ANNOUNCEMENTS.map((announcement, index) => (
-          <span
-            key={announcement.id}
-            className={`announcement-message ${announcement.className ?? ""} ${index === activeAnnouncement ? "is-active" : ""}`}
-          >
-            {announcement.text}
-          </span>
-        ))}
+        <div className="announcement-track">
+          {ANNOUNCEMENTS.map((announcement, index) => (
+            <span
+              key={announcement.id}
+              className={`announcement-message ${announcement.className ?? ""} ${index === activeAnnouncement ? "is-active" : ""}`}
+            >
+              {announcement.text}
+            </span>
+          ))}
+        </div>
         <button
           type="button"
           className="announcement-nav announcement-nav--next"
