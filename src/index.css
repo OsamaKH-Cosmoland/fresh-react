@@ -1,5 +1,10 @@
+:root {
+  --font-heading: "Playfair Display", "Times New Roman", serif;
+  --font-body: "Cormorant Garamond", "Garamond", serif;
+}
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: var(--font-body);
   margin: 2rem;
   background: #04110b;
   color: #f7ecd4;
@@ -13,6 +18,8 @@ button {
   border-radius: 999px;
   cursor: pointer;
   transition: background .2s ease, transform .1s ease, box-shadow .2s ease;
+  font-family: var(--font-heading);
+  letter-spacing: .3px;
 }
 
 button:hover {
@@ -25,6 +32,7 @@ button:hover {
 .stack-lg > * + * { margin-top: 1rem; }
 .hero { padding: 2.5rem 0 1rem; }
 .hero h1 {
+  font-family: var(--font-heading);
   font-size: clamp(2.6rem, 4vw, 3.4rem);
   margin: 0 0 .6rem;
   background: linear-gradient(135deg, #f9ecb7, #dcb768);
@@ -34,11 +42,13 @@ button:hover {
   letter-spacing: .45px;
 }
 .hero p {
+  font-family: var(--font-body);
   margin: 0;
   max-width: 32ch;
   color: rgba(247, 236, 212, .75);
   font-size: 1.05rem;
   line-height: 1.6;
+  letter-spacing: .25px;
 }
 .hero-layout {
   display: flex;
@@ -73,9 +83,15 @@ button:hover {
   color: #f4d087;
   flex-shrink: 0;
 }
-.cart-title { font-weight: 700; font-size: 1.1rem; margin: 0; letter-spacing: .35px; }
-.cart-count { display: block; font-size: .85rem; color: rgba(247, 236, 212, .7); }
-.cart-empty { margin: 0; font-size: .9rem; color: rgba(247, 236, 212, .65); }
+.cart-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+  letter-spacing: .35px;
+}
+.cart-count { display: block; font-size: .85rem; color: rgba(247, 236, 212, .7); font-family: var(--font-body); letter-spacing: .2px; }
+.cart-empty { margin: 0; font-size: .9rem; color: rgba(247, 236, 212, .65); font-family: var(--font-body); letter-spacing: .2px; }
 .cart-list {
   list-style: none;
   padding: 0;
@@ -91,11 +107,17 @@ button:hover {
   font-size: .95rem;
   font-weight: 600;
   flex-wrap: wrap;
+  font-family: var(--font-body);
+  letter-spacing: .2px;
 }
 .cart-item-info {
   display: flex;
   align-items: baseline;
   gap: .45rem;
+}
+.cart-item-info span:first-child {
+  font-family: var(--font-heading);
+  font-weight: 600;
 }
 .cart-qty { color: #f4d087; }
 .cart-footer {
@@ -143,10 +165,18 @@ button:hover {
   width: min(1100px, 92%);
   margin-inline: auto;
 }
-.brand { font-weight: 800; letter-spacing: .32px; color: inherit; text-decoration: none; font-size: 1.15rem; }
+.brand {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: .32px;
+  color: inherit;
+  text-decoration: none;
+  font-size: 1.15rem;
+}
 
 .nav-links { display: none; gap: .75rem; }
 .nav-links a {
+  font-family: var(--font-heading);
   color: rgba(245, 220, 168, .85);
   text-decoration: none;
   font-weight: 600;
@@ -244,12 +274,20 @@ button:hover {
   outline: none;
   color: #f7ecd4;
 }
-.card-desc { margin: .45rem 0 .6rem; font-size: .95rem; color: rgba(247, 236, 212, .78); }
+.card-desc {
+  margin: .45rem 0 .6rem;
+  font-size: .95rem;
+  color: rgba(247, 236, 212, .78);
+  font-family: var(--font-body);
+  letter-spacing: .25px;
+}
 .card-price {
   margin-bottom: .65rem;
   font-weight: 700;
   font-size: 1.05rem;
   color: #f4d087;
+  font-family: var(--font-heading);
+  letter-spacing: .35px;
 }
 .card-actions {
   display: flex;
@@ -266,7 +304,13 @@ button:hover {
 .card:focus-visible { box-shadow: 0 0 0 3px rgba(244, 208, 135, .45); }
 
 .card-head { display: flex; align-items: center; justify-content: space-between; gap: .65rem; margin-bottom: .65rem; }
-.card-head h3 { margin: 0; font-size: 1.05rem; letter-spacing: .3px; font-weight: 700; }
+.card-head h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: .3px;
+  font-weight: 700;
+  font-family: var(--font-heading);
+}
 .card.is-fav { border-color: rgba(244, 208, 135, .6); box-shadow: 0 16px 36px rgba(244, 208, 135, .22); }
 
 .remove-btn {
@@ -300,7 +344,14 @@ button:hover {
   border-radius: 18px;
   padding: 1.1rem;
 }
-.form-grid label { display: grid; gap: .35rem; font-size: .95rem; color: rgba(247, 236, 212, .85); }
+.form-grid label {
+  display: grid;
+  gap: .35rem;
+  font-size: .95rem;
+  color: rgba(247, 236, 212, .85);
+  font-family: var(--font-body);
+  letter-spacing: .25px;
+}
 .form-grid input, .form-grid textarea {
   background: rgba(8, 32, 24, .85);
   color: #f7ecd4;
