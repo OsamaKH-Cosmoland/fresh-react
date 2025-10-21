@@ -69,8 +69,8 @@ export default function LayoutLab() {
       <main className="container">
         <section className="hero-layout">
           <div className="hero">
-            <h1>Structure & Layout Lab</h1>
-            <p>Responsive navbar, grid cards with interactions, and a mobile sidebar.</p>
+            <h1>Fresh Harvest Market</h1>
+            <p>Taste the season with handpicked fruits delivered straight from local farms.</p>
           </div>
           <aside className="cart-summary" aria-label="Shopping cart" aria-live="polite">
             <header className="cart-header">
