@@ -1,10 +1,39 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import CardGrid from "../components/CardGrid.jsx";
 
+function CartIcon() {
+  return (
+    <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path
+        fill="currentColor"
+        d="M7 4h-2a1 1 0 0 0 0 2h1.15l1.64 7.37a2 2 0 0 0 1.95 1.56h7.3a2 2 0 0 0 1.94-1.52l1.1-4.23A1 1 0 0 0 19.1 8H8.54l-.36-1.6A2 2 0 0 0 7 4Zm3 15a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm8-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"
+      />
+    </svg>
+  );
+}
+
 export default function LayoutLab() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+
+  const handleAddToCart = (item) => {
+    setCartItems((prev) => {
+      const next = prev.map((entry) =>
+        entry.id === item.id ? { ...entry, quantity: entry.quantity + 1 } : entry
+      );
+      if (prev.some((entry) => entry.id === item.id)) {
+        return next;
+      }
+      return [...prev, { ...item, quantity: 1 }];
+    });
+  };
+
+  const totalItems = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    [cartItems]
+  );
 
   return (
     <div>
@@ -13,12 +42,37 @@ export default function LayoutLab() {
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="container">
-        <section className="hero">
-          <h1>Structure & Layout Lab</h1>
-          <p>Responsive navbar, grid cards with interactions, and a mobile sidebar.</p>
+        <section className="hero-layout">
+          <div className="hero">
+            <h1>Structure & Layout Lab</h1>
+            <p>Responsive navbar, grid cards with interactions, and a mobile sidebar.</p>
+          </div>
+          <aside className="cart-summary" aria-label="Shopping cart" aria-live="polite">
+            <header className="cart-header">
+              <span className="cart-icon">
+                <CartIcon />
+              </span>
+              <div>
+                <p className="cart-title">Cart</p>
+                <span className="cart-count">{totalItems} item{totalItems === 1 ? "" : "s"}</span>
+              </div>
+            </header>
+            {cartItems.length === 0 ? (
+              <p className="cart-empty">Add a fruit to see it here.</p>
+            ) : (
+              <ul className="cart-list">
+                {cartItems.map((item) => (
+                  <li key={item.id} className="cart-item">
+                    <span>{item.title}</span>
+                    <span className="cart-qty">×{item.quantity}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </aside>
         </section>
 
-        <CardGrid />
+        <CardGrid onAddToCart={handleAddToCart} />
 
         <section id="forms" className="stack-lg">
           <h2>Responsive 2-Column Form (Stretch Goal)</h2>

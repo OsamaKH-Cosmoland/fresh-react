@@ -14,7 +14,7 @@ function Heart({ filled }) {
   )
 }
 
-export default function CardGrid() {
+export default function CardGrid({ onAddToCart = () => {} }) {
   const initial = [
     { id: 1, title: "Apple", desc: "Crisp and sweet, perfect for an afternoon snack.", price: "$1.29" },
     { id: 2, title: "Banana", desc: "Naturally creamy and loaded with potassium.", price: "$0.79" },
@@ -64,7 +64,13 @@ export default function CardGrid() {
             </header>
             <p className="card-desc">{c.desc}</p>
             <p className="card-price">{c.price}</p>
-            <button className="primary-btn">Open</button>
+            <button
+              className="primary-btn"
+              type="button"
+              onClick={() => onAddToCart(c)}
+            >
+              Add to cart
+            </button>
           </article>
         );
       })}
