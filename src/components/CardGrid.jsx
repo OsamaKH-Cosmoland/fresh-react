@@ -16,12 +16,12 @@ function Heart({ filled }) {
 
 export default function CardGrid() {
   const initial = [
-    { id: 1, title: "Apple", desc: "Short description" },
-    { id: 2, title: "Banana", desc: "Short description" },
-    { id: 3, title: "Pineapple", desc: "Short description" },
-    { id: 4, title: "Peach", desc: "Short description" },
-    { id: 5, title: "Berries", desc: "Short description" },
-    { id: 6, title: "Mango", desc: "Short description"}
+    { id: 1, title: "Apple", desc: "Crisp and sweet, perfect for an afternoon snack.", price: "$1.29" },
+    { id: 2, title: "Banana", desc: "Naturally creamy and loaded with potassium.", price: "$0.79" },
+    { id: 3, title: "Pineapple", desc: "Tropical treat with bright, juicy flavor.", price: "$3.49" },
+    { id: 4, title: "Peach", desc: "Fragrant stone fruit picked at peak ripeness.", price: "$2.19" },
+    { id: 5, title: "Berries", desc: "Mixed berries bursting with antioxidants.", price: "$4.99" },
+    { id: 6, title: "Mango", desc: "Golden slices that melt with tropical sweetness.", price: "$2.79" }
   ];
 
   const [favs, setFavs] = useState(() => new Set());
@@ -62,7 +62,8 @@ export default function CardGrid() {
                 <Heart filled={isFav} />
               </button>
             </header>
-            <p> {c.desc} </p>
+            <p className="card-desc">{c.desc}</p>
+            <p className="card-price">{c.price}</p>
             <button className="primary-btn">Open</button>
           </article>
         );
