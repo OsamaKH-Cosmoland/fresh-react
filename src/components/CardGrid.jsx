@@ -16,12 +16,12 @@ function Heart({ filled }) {
 
 export default function CardGrid() {
   const initial = [
-    { id: 1, title: "Card One", desc: "Short description" },
-    { id: 2, title: "Card Two", desc: "Short description" },
-    { id: 3, title: "Card Three", desc: "Short description" },
-    { id: 4, title: "Card Four", desc: "Short description" },
-    { id: 5, title: "Card Five", desc: "Short description" },
-    { id: 6, title: "Card Six", desc: "Short description"}
+    { id: 1, title: "Apple", desc: "Short description" },
+    { id: 2, title: "Banana", desc: "Short description" },
+    { id: 3, title: "Pineapple", desc: "Short description" },
+    { id: 4, title: "Peach", desc: "Short description" },
+    { id: 5, title: "Berries", desc: "Short description" },
+    { id: 6, title: "Mango", desc: "Short description"}
   ];
 
   const [favs, setFavs] = useState(() => new Set());
