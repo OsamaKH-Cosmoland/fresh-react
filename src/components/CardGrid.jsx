@@ -32,7 +32,7 @@ export default function CardGrid({
   ];
 
   const [favs, setFavs] = useState(() => new Set());
-  const [showToast, setShowToast] = useState(false);
+  const [toast, setToast] = useState(null);
   const hideTimer = useRef(null);
 
   const toggleFav = (id) => {
@@ -43,16 +43,33 @@ export default function CardGrid({
     });
   };
 
-  const handleAdd = (item) => {
-    onAddToCart(item);
-    setShowToast(true);
+  const clearToastTimer = () => {
     if (hideTimer.current) {
       clearTimeout(hideTimer.current);
-    }
-    hideTimer.current = setTimeout(() => {
-      setShowToast(false);
       hideTimer.current = null;
-    }, 2200);
+    }
+  };
+
+  const scheduleToastHide = () => {
+    clearToastTimer();
+    hideTimer.current = setTimeout(() => {
+      setToast(null);
+      hideTimer.current = null;
+    }, 2800);
+  };
+
+  const handleAdd = (item) => {
+    onAddToCart(item);
+    setToast({ visible: true, item });
+    scheduleToastHide();
+  };
+
+  const dismissToast = () => {
+    setToast(null);
+    if (hideTimer.current) {
+      clearTimeout(hideTimer.current);
+      hideTimer.current = null;
+    }
   };
 
   const handleFavKey = (e, id) => {
@@ -63,18 +80,35 @@ export default function CardGrid({
   };
 
   useEffect(() => {
-    return () => {
-      if (hideTimer.current) {
-        clearTimeout(hideTimer.current);
-      }
-    };
+    return clearToastTimer;
   }, []);
 
   return (
     <>
-      {showToast && (
+      {toast?.visible && (
         <div className="toast" role="status" aria-live="polite">
-          new item added to the cart
+          <span className="toast-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path
+                d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm4.707 8.293-4.5 4.5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414l1.293 1.293 3.793-3.793a1 1 0 1 1 1.414 1.414Z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+          <div className="toast-body">
+            <p className="toast-title">Added to your cart</p>
+            <p className="toast-copy">
+              {toast.item?.title ?? "New item"} is now in your bag. Review your cart anytime.
+            </p>
+          </div>
+          <button
+            type="button"
+            className="toast-close"
+            aria-label="Dismiss notification"
+            onClick={dismissToast}
+          >
+            ×
+          </button>
         </div>
       )}
       <section id="grid" className="card-grid">

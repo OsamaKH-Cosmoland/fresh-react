@@ -387,14 +387,83 @@ button:hover {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
-  padding: .75rem 1.2rem;
-  background: rgba(8, 46, 32, .92);
-  color: #f4d087;
-  border-radius: 12px;
-  box-shadow: 0 14px 32px rgba(0, 0, 0, .32);
-  font-family: var(--font-heading);
-  letter-spacing: .4px;
+  display: flex;
+  align-items: flex-start;
+  gap: .85rem;
+  padding: 1rem 1.2rem;
+  min-width: 280px;
+  max-width: clamp(280px, 30vw, 340px);
+  border-radius: 18px;
+  border: 1px solid rgba(244, 208, 135, .35);
+  background: linear-gradient(145deg, rgba(12, 52, 38, .92), rgba(5, 22, 15, .92));
+  box-shadow: 0 20px 42px rgba(0, 0, 0, .38);
+  color: #f7ecd4;
+  font-family: var(--font-body);
+  letter-spacing: .25px;
   z-index: 120;
+  backdrop-filter: blur(12px);
+  animation: toast-slide-in .32s ease-out;
+}
+.toast-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(244, 208, 135, .12);
+  color: #f4d087;
+  box-shadow: inset 0 0 0 1px rgba(244, 208, 135, .18);
+}
+.toast-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.toast-body {
+  flex: 1;
+}
+.toast-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: .35px;
+  color: #f4d087;
+}
+.toast-copy {
+  margin: .2rem 0 0;
+  font-size: .9rem;
+  line-height: 1.35;
+  color: rgba(247, 236, 212, .85);
+}
+.toast-close {
+  border: none;
+  background: transparent;
+  color: rgba(247, 236, 212, .8);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: .2rem;
+  border-radius: 50%;
+  transition: color .18s ease, background .18s ease;
+}
+.toast-close:hover,
+.toast-close:focus-visible {
+  background: rgba(244, 208, 135, .12);
+  color: #fdf2ce;
+  outline: none;
+}
+
+@keyframes toast-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .remove-btn {
