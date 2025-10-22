@@ -31,6 +31,13 @@ export default function CardGrid({
     { id: 6, title: "Hair Shine & Anti-Frizz Oil", desc: "Silica-rich formula that seals cuticles for mirror-like gloss without weight.", price: "196.99 EGP", image: hairShineImage }
   ];
 
+  const recommendationMap = {
+    3: 5,
+    5: 3,
+    4: 6,
+    6: 4,
+  };
+
   const [favs, setFavs] = useState(() => new Set());
   const [toast, setToast] = useState(null);
   const hideTimer = useRef(null);
@@ -60,16 +67,17 @@ export default function CardGrid({
 
   const handleAdd = (item) => {
     onAddToCart(item);
-    setToast({ visible: true, item });
+    const recommendationId = recommendationMap[item.id];
+    const recommendation = recommendationId
+      ? initial.find((entry) => entry.id === recommendationId)
+      : undefined;
+    setToast({ visible: true, item, recommendation });
     scheduleToastHide();
   };
 
   const dismissToast = () => {
     setToast(null);
-    if (hideTimer.current) {
-      clearTimeout(hideTimer.current);
-      hideTimer.current = null;
-    }
+    clearToastTimer();
   };
 
   const handleFavKey = (e, id) => {
@@ -100,6 +108,20 @@ export default function CardGrid({
             <p className="toast-copy">
               {toast.item?.title ?? "New item"} is now in your bag. Review your cart anytime.
             </p>
+            {toast.recommendation && (
+              <div className="toast-actions">
+                <p className="toast-suggestion">
+                  Pair it with <strong>{toast.recommendation.title}</strong> for a complete ritual.
+                </p>
+                <button
+                  type="button"
+                  className="toast-button"
+                  onClick={() => handleAdd(toast.recommendation)}
+                >
+                  Add {toast.recommendation.title}
+                </button>
+              </div>
+            )}
           </div>
           <button
             type="button"

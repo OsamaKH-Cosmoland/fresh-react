@@ -437,6 +437,40 @@ button:hover {
   line-height: 1.35;
   color: rgba(247, 236, 212, .85);
 }
+.toast-actions {
+  margin-top: .75rem;
+  display: grid;
+  gap: .45rem;
+}
+.toast-suggestion {
+  margin: 0;
+  font-size: .85rem;
+  color: rgba(247, 236, 212, .78);
+}
+.toast-suggestion strong {
+  color: #fdf2ce;
+  font-weight: 700;
+}
+.toast-button {
+  justify-self: start;
+  padding: .55rem 1rem;
+  border-radius: 999px;
+  background: rgba(244, 208, 135, .18);
+  color: #fdf2ce;
+  border: 1px solid rgba(244, 208, 135, .38);
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .16s ease, box-shadow .2s ease, background .18s ease;
+  box-shadow: 0 8px 22px rgba(0,0,0,.28);
+}
+.toast-button:hover,
+.toast-button:focus-visible {
+  outline: none;
+  background: rgba(244, 208, 135, .28);
+  box-shadow: 0 12px 26px rgba(0,0,0,.32);
+  transform: translateY(-1px);
+}
 .toast-close {
   border: none;
   background: transparent;
