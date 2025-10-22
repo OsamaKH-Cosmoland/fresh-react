@@ -1,4 +1,5 @@
 import { useState } from "react";
+import soapImage from "../assets/soap.png";
 
 function Heart({ filled }) {
   return (
@@ -18,8 +19,8 @@ export default function CardGrid({
   onAddToCart = () => {},
 }) {
   const initial = [
-    { id: 1, title: "Silk Blossom Body Soap", desc: "Infused with jasmine petals for a velvety cleanse and lingering floral aura.", price: "231.99 EGP" },
-    { id: 2, title: "Calm & Glow Body Soap", desc: "Soothing chamomile and neroli calm the skin while mica pearls add a soft glow.", price: "228.99 EGP" },
+    { id: 1, title: "Silk Blossom Body Soap", desc: "Infused with jasmine petals for a velvety cleanse and lingering floral aura.", price: "231.99 EGP", image: soapImage },
+    { id: 2, title: "Calm & Glow Body Soap", desc: "Soothing chamomile and neroli calm the skin while mica pearls add a soft glow.", price: "228.99 EGP", image: soapImage },
     { id: 3, title: "Body Balm", desc: "A concentrated butter blend that melts on contact to replenish deep hydration.", price: "197.99 EGP" },
     { id: 4, title: "Hand Balm", desc: "Fast-absorbing restorative balm that cushions hands with botanical ceramides.", price: "195.99 EGP" },
     { id: 5, title: "Hair Growth Oil", desc: "Lightweight elixir powered by rosemary stem cells and biotin to fortify roots.", price: "229.99 EGP" },
@@ -52,6 +53,13 @@ export default function CardGrid({
           className={`card ${isFav ? "is-fav" : ""}`}
           tabIndex="0"
           >
+            {c.image && (
+              <img
+                src={c.image}
+                alt={c.title}
+                className="card-img"
+              />
+            )}
             <header className="card-head">
               <h3> {c.title} </h3>
               <button
