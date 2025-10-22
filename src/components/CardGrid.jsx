@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import soapImage from "../assets/soap.png";
 import bodyBalmImage from "../assets/BodyBalm.png";
 import handBalmImage from "../assets/HandBalm.png";
@@ -32,12 +32,27 @@ export default function CardGrid({
   ];
 
   const [favs, setFavs] = useState(() => new Set());
+  const [showToast, setShowToast] = useState(false);
+  const hideTimer = useRef(null);
+
   const toggleFav = (id) => {
     setFavs((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+  };
+
+  const handleAdd = (item) => {
+    onAddToCart(item);
+    setShowToast(true);
+    if (hideTimer.current) {
+      clearTimeout(hideTimer.current);
+    }
+    hideTimer.current = setTimeout(() => {
+      setShowToast(false);
+      hideTimer.current = null;
+    }, 2200);
   };
 
   const handleFavKey = (e, id) => {
@@ -47,47 +62,62 @@ export default function CardGrid({
     }
   };
 
+  useEffect(() => {
+    return () => {
+      if (hideTimer.current) {
+        clearTimeout(hideTimer.current);
+      }
+    };
+  }, []);
+
   return (
-    <section id="grid" className="card-grid">
-      {initial.map((c) => {
-        const isFav = favs.has(c.id);
-        return (
-          <article
-          key={c.id}
-          className={`card ${isFav ? "is-fav" : ""}`}
-          tabIndex="0"
-          >
-            {c.image && (
-              <img
-                src={c.image}
-                alt={c.title}
-                className="card-img"
-              />
-            )}
-            <header className="card-head">
-              <h3> {c.title} </h3>
-              <button
-              className="icon-btn"
-              aria-pressed={isFav}
-              aria-label={isFav ? "Unfavorite" : "Favorite"} 
-              onClick={() => toggleFav(c.id)}
-              onKeyDown={(e) => handleFavKey(e, c.id)}
-              >
-                <Heart filled={isFav} />
-              </button>
-            </header>
-            <p className="card-desc">{c.desc}</p>
-            <p className="card-price">{c.price}</p>
-            <button
-              className="primary-btn card-add"
-              type="button"
-              onClick={() => onAddToCart(c)}
+    <>
+      {showToast && (
+        <div className="toast" role="status" aria-live="polite">
+          new item added to the cart
+        </div>
+      )}
+      <section id="grid" className="card-grid">
+        {initial.map((c) => {
+          const isFav = favs.has(c.id);
+          return (
+            <article
+            key={c.id}
+            className={`card ${isFav ? "is-fav" : ""}`}
+            tabIndex="0"
             >
-              Add to cart
-            </button>
-          </article>
-        );
-      })}
-    </section>
+              {c.image && (
+                <img
+                  src={c.image}
+                  alt={c.title}
+                  className="card-img"
+                />
+              )}
+              <header className="card-head">
+                <h3> {c.title} </h3>
+                <button
+                className="icon-btn"
+                aria-pressed={isFav}
+                aria-label={isFav ? "Unfavorite" : "Favorite"} 
+                onClick={() => toggleFav(c.id)}
+                onKeyDown={(e) => handleFavKey(e, c.id)}
+                >
+                  <Heart filled={isFav} />
+                </button>
+              </header>
+              <p className="card-desc">{c.desc}</p>
+              <p className="card-price">{c.price}</p>
+              <button
+                className="primary-btn card-add"
+                type="button"
+                onClick={() => handleAdd(c)}
+              >
+                Add to cart
+              </button>
+            </article>
+          );
+        })}
+      </section>
+    </>
   );
 }

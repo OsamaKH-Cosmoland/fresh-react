@@ -383,6 +383,20 @@ button:hover {
 }
 .card.is-fav { border-color: rgba(244, 208, 135, .6); box-shadow: 0 16px 36px rgba(244, 208, 135, .22); }
 
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  padding: .75rem 1.2rem;
+  background: rgba(8, 46, 32, .92);
+  color: #f4d087;
+  border-radius: 12px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, .32);
+  font-family: var(--font-heading);
+  letter-spacing: .4px;
+  z-index: 120;
+}
+
 .remove-btn {
   background: rgba(248,113,113,.12);
   color: #b91c1c;
