@@ -606,6 +606,7 @@ button:hover {
   display: grid;
   gap: 1rem;
   max-width: 960px;
+  padding-left: 3.5rem;
 }
 .ritual-hero::after {
   content: "";
