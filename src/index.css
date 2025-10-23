@@ -177,6 +177,15 @@ button:hover {
   box-shadow: 0 32px 64px rgba(0, 0, 0, .45);
   border: 1px solid rgba(244, 208, 135, .2);
 }
+
+.legacy-section {
+  padding: clamp(2.5rem, 8vw, 5rem) 0 clamp(3.5rem, 10vw, 6rem);
+}
+
+.legacy-content {
+  display: grid;
+  gap: clamp(2rem, 6vw, 3rem);
+}
 .hero-layout {
   display: flex;
   flex-direction: column;
