@@ -3,6 +3,9 @@ import Navbar from "../components/Navbar.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import CardGrid from "../components/CardGrid.jsx";
 import collectionImage from "../assets/collection.png";
+import iconLeft from "../assets/NaturaGloss_shiny_gold_icon_left.webp";
+import iconMiddle from "../assets/NaturaGloss_shiny_gold_icon_middle.webp";
+import iconRight from "../assets/NaturaGloss_shiny_gold_icon_right.webp";
 import { PRODUCT_INDEX } from "../data/products.js";
 
 const ANNOUNCEMENTS = [
@@ -162,6 +165,33 @@ export default function LayoutLab() {
           <img src={collectionImage} alt="NaturaGloss collection of botanical care" />
         </figure>
       </main>
+
+      <section className="landing-values">
+        <h2>Why Choose NaturaGloss</h2>
+        <div className="landing-values__grid">
+          <article>
+            <img src={iconLeft} alt="" aria-hidden="true" />
+            <h3>Small-Batch Quality</h3>
+            <p>
+              Handcrafted in limited runs to ensure every bar and balm is fresh and carefully made.
+            </p>
+          </article>
+          <article>
+            <img src={iconMiddle} alt="" aria-hidden="true" />
+            <h3>Ingredient Transparency</h3>
+            <p>
+              Every ingredient fully listed — no hidden chemicals, just pure botanicals.
+            </p>
+          </article>
+          <article>
+            <img src={iconRight} alt="" aria-hidden="true" />
+            <h3>EU-Inspired Standards</h3>
+            <p>
+              Formulated with guidance from European cosmetic safety and quality practices.
+            </p>
+          </article>
+        </div>
+      </section>
 
       <div className="legacy-section">
         <div className="container legacy-content">
