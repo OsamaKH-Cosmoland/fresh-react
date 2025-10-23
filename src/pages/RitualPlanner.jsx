@@ -61,10 +61,19 @@ export default function RitualPlanner() {
   };
 
   const handleBackToLab = () => {
-    if (typeof window !== "undefined") {
+    const base = import.meta.env.BASE_URL ?? "/";
+    const target =
+      typeof window !== "undefined" && window.opener && !window.opener.closed
+        ? window.opener
+        : window;
+    try {
+      target.location.href = base;
+    } catch {
+      handleBackHome();
+    }
+    if (target !== window) {
       window.close();
     }
-    handleBackHome();
   };
 
   return (
@@ -83,7 +92,6 @@ export default function RitualPlanner() {
         </svg>
       </button>
       <header className="ritual-hero">
-        <p className="ritual-hero-kicker">NaturaGloss Atelier</p>
         <h1>Design your signature body ritual</h1>
         <p className="ritual-hero-copy">
           Begin with an intention, preview sensorial steps, then send your curated kit back to the

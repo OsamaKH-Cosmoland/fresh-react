@@ -614,13 +614,6 @@ button:hover {
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(173, 246, 205, .85), rgba(64, 185, 132, .35));
 }
-.ritual-hero-kicker {
-  font-size: .8rem;
-  letter-spacing: .36em;
-  text-transform: uppercase;
-  color: rgba(251, 231, 173, .82);
-  margin: 0;
-}
 .ritual-hero h1 {
   margin: 0;
   font-size: clamp(2rem, 4vw, 2.8rem);
