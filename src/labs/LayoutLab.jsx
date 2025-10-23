@@ -163,13 +163,6 @@ export default function LayoutLab() {
         />
       </main>
 
-      {/* Non-sticky variant demo */}
-      <section className="container stack-lg">
-        <h2>Navbar (Non-Sticky Variant)</h2>
-        <div className="demo-box">
-          <Navbar sticky={false} onMenuToggle={() => setDrawerOpen(true)} brand="NaturaGloss (Static)" />
-        </div>
-      </section>
     </div>
   );
 }
