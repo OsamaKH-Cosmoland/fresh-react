@@ -570,6 +570,36 @@ button:hover {
   padding: clamp(1.6rem, 4vw, 2.6rem);
   display: grid;
   gap: clamp(1.6rem, 4vw, 2.6rem);
+  position: relative;
+}
+
+.ritual-back-btn {
+  position: absolute;
+  top: clamp(1rem, 3vw, 1.6rem);
+  left: clamp(1rem, 3vw, 1.6rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(173, 246, 205, .45);
+  background: rgba(10, 33, 24, .85);
+  color: #fbe7ad;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .2s ease, background .18s ease;
+}
+.ritual-back-btn:hover,
+.ritual-back-btn:focus-visible {
+  outline: none;
+  transform: translateY(-1px);
+  border-color: rgba(173, 246, 205, .75);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, .35);
+  background: rgba(15, 53, 39, .9);
+}
+.ritual-back-btn svg {
+  width: 20px;
+  height: 20px;
 }
 
 .ritual-hero {

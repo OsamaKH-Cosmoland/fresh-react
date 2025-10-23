@@ -69,6 +69,19 @@ export default function RitualPlanner() {
 
   return (
     <div className="ritual-page">
+      <button
+        type="button"
+        className="ritual-back-btn"
+        aria-label="Back to NaturaGloss collection"
+        onClick={handleBackToLab}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path
+            d="M5.707 12.707a1 1 0 0 1 0-1.414l4.95-4.95a1 1 0 1 1 1.414 1.414L8.828 11H18a1 1 0 1 1 0 2H8.828l3.243 3.243a1 1 0 0 1-1.414 1.414l-4.95-4.95Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
       <header className="ritual-hero">
         <p className="ritual-hero-kicker">NaturaGloss Atelier</p>
         <h1>Design your signature body ritual</h1>
@@ -79,12 +92,6 @@ export default function RitualPlanner() {
         <div className="ritual-hero-actions">
           <button type="button" className="cta-btn" onClick={handleAddKit}>
             Send current ritual to bag
-          </button>
-          <button type="button" className="ghost-btn" onClick={handleBackHome}>
-            Return to collection
-          </button>
-          <button type="button" className="ghost-btn" onClick={handleBackToLab}>
-            Close planner tab
           </button>
         </div>
       </header>
