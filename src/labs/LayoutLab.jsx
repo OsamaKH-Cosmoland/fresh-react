@@ -107,10 +107,9 @@ export default function LayoutLab() {
   }, [addProductById]);
 
   const openRitualPlanner = () => {
-    const base = (import.meta.env.BASE_URL ?? "/");
+    const base = import.meta.env.BASE_URL ?? "/";
     const plannerUrl = new URL(base, window.location.origin);
-    const cleanBasePath = plannerUrl.pathname.replace(/\/$/, "");
-    plannerUrl.pathname = `${cleanBasePath}/rituals`;
+    plannerUrl.searchParams.set("view", "ritualplanner");
     plannerUrl.hash = "";
     window.open(plannerUrl.toString(), "_blank");
   };

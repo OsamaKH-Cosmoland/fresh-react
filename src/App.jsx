@@ -182,12 +182,16 @@ function FruitShop() {
 
 // ✅ Export logic — toggles between your two apps
 export default function App() {
+  const view =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("view")
+      : null;
   const path =
     typeof window !== "undefined"
       ? window.location.pathname.replace(/\/+$/, "") || "/"
       : "/";
 
-  if (path === "/rituals") {
+  if (view === "ritualplanner" || path === "/rituals") {
     return <RitualPlanner />;
   }
 
