@@ -563,10 +563,10 @@ button:hover {
 .ritual-page {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 8% 12%, rgba(113, 226, 176, .12), transparent 62%),
-    radial-gradient(circle at 92% 18%, rgba(246, 217, 154, .18), transparent 58%),
+    radial-gradient(circle at 8% 12%, rgba(255, 219, 149, .18), transparent 62%),
+    radial-gradient(circle at 92% 18%, rgba(250, 203, 120, .14), transparent 58%),
     #04130e;
-  color: rgba(247, 236, 212, .94);
+  color: #fbe7ad;
   padding: clamp(1.6rem, 4vw, 2.6rem);
   display: grid;
   gap: clamp(1.6rem, 4vw, 2.6rem);
@@ -582,24 +582,25 @@ button:hover {
   width: 160px;
   height: 2px;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(173, 246, 205, .85), rgba(64, 185, 132, .35));
+  background: linear-gradient(135deg, rgba(255, 227, 170, .95), rgba(247, 198, 109, .55));
 }
 .ritual-hero-kicker {
   font-size: .8rem;
   letter-spacing: .36em;
   text-transform: uppercase;
-  color: rgba(173, 246, 205, .72);
+  color: rgba(255, 231, 183, .85);
   margin: 0;
 }
 .ritual-hero h1 {
   margin: 0;
   font-size: clamp(2rem, 4vw, 2.8rem);
   letter-spacing: .02em;
+  color: #ffeac1;
 }
 .ritual-hero-copy {
   max-width: 60ch;
   line-height: 1.7;
-  color: rgba(247, 236, 212, .8);
+  color: rgba(255, 233, 186, .82);
 }
 .ritual-hero-actions {
   display: flex;
@@ -619,8 +620,8 @@ button:hover {
   gap: 1.4rem;
   padding: clamp(1.1rem, 2vw, 1.6rem);
   border-radius: 24px;
-  border: 1px solid rgba(173, 246, 205, .15);
-  background: rgba(8, 26, 19, .78);
+  border: 1px solid rgba(255, 220, 166, .2);
+  background: rgba(20, 20, 12, .78);
   backdrop-filter: blur(12px);
 }
 
@@ -628,7 +629,7 @@ button:hover {
   font-size: .78rem;
   letter-spacing: .36em;
   text-transform: uppercase;
-  color: rgba(173, 246, 205, .72);
+  color: rgba(255, 230, 182, .78);
 }
 
 .ritual-focus-list {
@@ -642,34 +643,34 @@ button:hover {
   padding: 1rem 1.1rem;
   text-align: left;
   border-radius: 18px;
-  border: 1px solid rgba(173, 246, 205, .18);
-  background: rgba(255, 255, 255, .02);
-  color: rgba(247, 236, 212, .78);
+  border: 1px solid rgba(255, 220, 166, .26);
+  background: rgba(63, 47, 22, .32);
+  color: #ffe4b0;
   font-weight: 600;
   transition: border .2s ease, background .2s ease, transform .2s ease, color .2s ease, box-shadow .2s ease;
 }
 .ritual-focus-btn:hover {
-  border-color: rgba(173, 246, 205, .42);
-  background: rgba(26, 83, 61, .46);
-  color: rgba(247, 236, 212, .92);
+  border-color: rgba(255, 227, 170, .66);
+  background: rgba(116, 84, 37, .55);
+  color: #ffefc8;
   transform: translateY(-1px);
 }
 .ritual-focus-btn.is-active {
-  border-color: rgba(173, 246, 205, .75);
-  background: linear-gradient(135deg, rgba(20, 89, 64, .95), rgba(12, 52, 38, .95));
-  color: #f7ecd4;
-  box-shadow: 0 18px 42px rgba(15, 71, 51, .55);
+  border-color: rgba(255, 231, 183, .85);
+  background: linear-gradient(135deg, rgba(255, 228, 176, .95), rgba(227, 184, 102, .92));
+  color: #f6d384;
+  box-shadow: 0 18px 42px rgba(193, 147, 68, .55);
 }
 .ritual-focus-title {
   font-size: 1.02rem;
 }
 .ritual-focus-sub {
   font-size: .85rem;
-  color: rgba(247, 236, 212, .65);
+  color: rgba(255, 231, 183, .68);
 }
 
 .ritual-services {
-  border-top: 1px solid rgba(173, 246, 205, .12);
+  border-top: 1px solid rgba(255, 220, 166, .2);
   padding-top: 1.1rem;
   display: grid;
   gap: .65rem;
@@ -679,14 +680,14 @@ button:hover {
   font-size: .9rem;
   text-transform: uppercase;
   letter-spacing: .22em;
-  color: rgba(173, 246, 205, .78);
+  color: rgba(255, 233, 189, .82);
 }
 .ritual-services ul {
   list-style: disc;
   margin: 0 0 0 1.1rem;
   display: grid;
   gap: .45rem;
-  color: rgba(247, 236, 212, .72);
+  color: rgba(255, 232, 188, .75);
   font-size: .92rem;
   line-height: 1.6;
 }
@@ -699,10 +700,11 @@ button:hover {
   margin: 0;
   font-size: clamp(1.8rem, 3vw, 2.3rem);
   letter-spacing: .015em;
+  color: #ffeac1;
 }
 .ritual-description {
   line-height: 1.7;
-  color: rgba(247, 236, 212, .78);
+  color: rgba(255, 233, 188, .82);
   max-width: 65ch;
 }
 
@@ -718,21 +720,22 @@ button:hover {
   gap: 1rem;
   padding: 1rem 1.2rem;
   border-radius: 20px;
-  background: rgba(15, 53, 39, .38);
-  border: 1px solid rgba(173, 246, 205, .16);
+  background: rgba(63, 47, 22, .32);
+  border: 1px solid rgba(255, 220, 166, .16);
 }
 .ritual-step-index {
   font-size: 1.1rem;
   font-weight: 700;
-  color: rgba(173, 246, 205, .86);
+  color: rgba(255, 235, 190, .86);
   letter-spacing: .12em;
 }
 .ritual-step-title {
   font-weight: 700;
   margin-bottom: .25rem;
+  color: #ffeac1;
 }
 .ritual-step-body {
-  color: rgba(247, 236, 212, .7);
+  color: rgba(255, 233, 188, .7);
   line-height: 1.6;
 }
 
@@ -741,8 +744,8 @@ button:hover {
   gap: 1.2rem;
   padding: 1.4rem 1.6rem;
   border-radius: 24px;
-  background: rgba(10, 33, 24, .78);
-  border: 1px solid rgba(173, 246, 205, .16);
+  background: rgba(41, 30, 12, .72);
+  border: 1px solid rgba(255, 220, 166, .22);
 }
 .ritual-kit header {
   display: flex;
@@ -758,7 +761,7 @@ button:hover {
 }
 .ritual-kit-count {
   font-size: .85rem;
-  color: rgba(173, 246, 205, .75);
+  color: rgba(255, 232, 188, .78);
 }
 
 .ritual-product-grid {
@@ -773,8 +776,8 @@ button:hover {
   text-align: center;
   padding: 1rem;
   border-radius: 18px;
-  background: rgba(6, 24, 17, .78);
-  border: 1px solid rgba(173, 246, 205, .12);
+  background: rgba(51, 36, 17, .72);
+  border: 1px solid rgba(255, 220, 166, .18);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .02);
 }
 .ritual-product-card img {
@@ -785,10 +788,11 @@ button:hover {
 }
 .ritual-product-name {
   font-weight: 600;
+  color: #ffeec6;
 }
 .ritual-product-price {
   font-size: .9rem;
-  color: rgba(173, 246, 205, .75);
+  color: rgba(255, 233, 188, .75);
 }
 .ghost-btn--compact {
   padding: .45rem .75rem;
@@ -797,12 +801,12 @@ button:hover {
 }
 
 .ritual-tip {
-  color: rgba(247, 236, 212, .75);
+  color: rgba(255, 233, 188, .78);
   font-size: .92rem;
   line-height: 1.6;
 }
 .ritual-tip strong {
-  color: rgba(173, 246, 205, .9);
+  color: #ffeec6;
 }
 
 .ritual-actions {
@@ -814,15 +818,15 @@ button:hover {
 .ritual-add-btn {
   min-width: 230px;
   font-weight: 700;
-  box-shadow: 0 18px 38px rgba(19, 92, 58, .45);
+  box-shadow: 0 18px 38px rgba(193, 147, 68, .45);
 }
 .ritual-secondary-btn {
-  border-color: rgba(173, 246, 205, .45);
-  color: rgba(173, 246, 205, .9);
+  border-color: rgba(255, 232, 188, .45);
+  color: #ffe8b9;
 }
 .ritual-secondary-btn:hover {
-  border-color: rgba(173, 246, 205, .85);
-  color: #f7ecd4;
+  border-color: rgba(255, 232, 188, .85);
+  color: #fff2cf;
 }
 
 .ritual-status {
@@ -833,14 +837,25 @@ button:hover {
   box-shadow: 0 14px 32px rgba(0, 0, 0, .35);
 }
 .ritual-status--success {
-  background: rgba(113, 226, 176, .18);
-  border: 1px solid rgba(113, 226, 176, .45);
-  color: rgba(206, 255, 232, .92);
+  background: rgba(255, 228, 176, .2);
+  border: 1px solid rgba(255, 220, 166, .55);
+  color: rgba(255, 239, 201, .95);
 }
 .ritual-status--info {
-  background: rgba(244, 208, 135, .16);
-  border: 1px solid rgba(244, 208, 135, .4);
-  color: rgba(255, 243, 212, .9);
+  background: rgba(247, 198, 109, .18);
+  border: 1px solid rgba(247, 198, 109, .42);
+  color: rgba(255, 238, 205, .92);
+}
+
+.ritual-page .ghost-btn {
+  color: #ffe9ba;
+  border-color: rgba(255, 232, 188, .42);
+  background: rgba(255, 232, 188, .1);
+}
+.ritual-page .ghost-btn:hover {
+  color: #fff2cf;
+  border-color: rgba(255, 232, 188, .72);
+  background: rgba(255, 232, 188, .18);
 }
 
 @media (max-width: 960px) {
