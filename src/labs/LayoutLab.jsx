@@ -7,26 +7,21 @@ import iconLeft from "../assets/NaturaGloss_shiny_gold_icon_left.webp";
 import iconMiddle from "../assets/NaturaGloss_shiny_gold_icon_middle.webp";
 import iconRight from "../assets/NaturaGloss_shiny_gold_icon_right.webp";
 import { PRODUCT_INDEX } from "../data/products.js";
+import {
+  addCartItem,
+  readCart,
+  subscribeToCart,
+  writeCart,
+} from "../utils/cartStorage.js";
 
 const ANNOUNCEMENTS = [
   { id: 0, text: "Because your body deserves natural luxury", className: "announcement-message--secondary" },
   { id: 1, text: "Inspired by European cosmetic standards, handcrafted in Egypt", className: "announcement-message--primary" },
 ];
 
-function CartIcon() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path
-        fill="currentColor"
-        d="M7 4h-2a1 1 0 0 0 0 2h1.15l1.64 7.37a2 2 0 0 0 1.95 1.56h7.3a2 2 0 0 0 1.94-1.52l1.1-4.23A1 1 0 0 0 19.1 8H8.54l-.36-1.6A2 2 0 0 0 7 4Zm3 15a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm8-1a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z"
-      />
-    </svg>
-  );
-}
-
 export default function LayoutLab() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => readCart());
   const [activeAnnouncement, setActiveAnnouncement] = useState(1);
 
   useEffect(() => {
@@ -34,6 +29,14 @@ export default function LayoutLab() {
       setActiveAnnouncement((prev) => (prev + 1) % ANNOUNCEMENTS.length);
     }, 5000);
     return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    writeCart(cartItems);
+  }, [cartItems]);
+
+  useEffect(() => {
+    return subscribeToCart(setCartItems);
   }, []);
 
   const showPrevAnnouncement = () => {
@@ -45,16 +48,7 @@ export default function LayoutLab() {
   };
 
   const addItemToCart = useCallback((item) => {
-    setCartItems((previous) => {
-      const prev = Array.isArray(previous) ? previous : [];
-      const next = prev.map((entry) =>
-        entry.id === item.id ? { ...entry, quantity: entry.quantity + 1 } : entry
-      );
-      if (prev.some((entry) => entry.id === item.id)) {
-        return next;
-      }
-      return [...prev, { ...item, quantity: 1 }];
-    });
+    setCartItems((previous) => addCartItem(previous, item));
   }, []);
 
   const handleAddToCart = useCallback(
@@ -63,23 +57,6 @@ export default function LayoutLab() {
     },
     [addItemToCart]
   );
-
-  const handleRemoveFromCart = (item) => {
-    setCartItems((prev) => {
-      const existing = prev.find((entry) => entry.id === item.id);
-      if (!existing) {
-        return prev;
-      }
-      if (existing.quantity <= 1) {
-        return prev.filter((entry) => entry.id !== item.id);
-      }
-      return prev.map((entry) =>
-        entry.id === item.id ? { ...entry, quantity: entry.quantity - 1 } : entry
-      );
-    });
-  };
-
-  const handleClearCart = () => setCartItems([]);
 
   const totalItems = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -150,7 +127,7 @@ export default function LayoutLab() {
           </button>
         </div>
       </div>
-      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} onGetStarted={openPlanner} />
+      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} onGetStarted={openPlanner} cartCount={totalItems} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="landing-hero">
@@ -195,55 +172,12 @@ export default function LayoutLab() {
 
       <div className="legacy-section">
         <div className="container legacy-content">
-          <section className="hero-layout">
-            <div className="hero">
-              <h1>NaturaGloss</h1>
-              <p>Elevate your daily ritual with nutrient-rich botanicals and luminous finishes.</p>
-            </div>
-            <aside className="cart-summary" aria-label="Shopping cart" aria-live="polite">
-              <header className="cart-header">
-                <span className="cart-icon">
-                  <CartIcon />
-                </span>
-                <div>
-                  <p className="cart-title">Cart</p>
-                  <span className="cart-count">{totalItems} item{totalItems === 1 ? "" : "s"}</span>
-                </div>
-              </header>
-              {cartItems.length === 0 ? (
-                <p className="cart-empty">Add a treatment to see it here.</p>
-              ) : (
-                <ul className="cart-list">
-                  {cartItems.map((item) => (
-                    <li key={item.id} className="cart-item">
-                      <div className="cart-item-info">
-                        <span>{item.title}</span>
-                        <span className="cart-qty">×{item.quantity}</span>
-                      </div>
-                      <button
-                        type="button"
-                        className="remove-btn"
-                        onClick={() => handleRemoveFromCart(item)}
-                        aria-label={`Remove one ${item.title}`}
-                      >
-                        Remove item
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {cartItems.length > 0 && (
-                <footer className="cart-footer">
-                  <button
-                    type="button"
-                    className="clear-cart-btn"
-                    onClick={handleClearCart}
-                  >
-                    Delete all
-                  </button>
-                </footer>
-              )}
-            </aside>
+          <section className="hero legacy-hero-intro" id="about">
+            <h1>NaturaGloss</h1>
+            <p>
+              Elevate your daily ritual with nutrient-rich botanicals and luminous finishes, crafted
+              in small batches for those who seek intentional, radiant self-care.
+            </p>
           </section>
 
           <CardGrid

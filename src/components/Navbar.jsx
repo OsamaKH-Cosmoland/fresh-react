@@ -5,6 +5,7 @@ export default function Navbar({
   onGetStarted = () => {},
   sticky = false,
   brand = "NaturaGloss",
+  cartCount = 0,
 }) {
   const [elevated, setElevated] = useState(false);
 
@@ -22,11 +23,13 @@ export default function Navbar({
         <a className="brand" href="/">{brand}</a>
         <nav className="nav-links">
           <a href="#grid">Collection</a>
-          <a href="#forms">Consult</a>
           <a href="#about">About</a>
+          <a href="?view=cart">Cart ({cartCount})</a>
         </nav>
         <div className="nav-actions">
-          <button className="ghost-btn">Sign in</button>
+          <a className="ghost-btn nav-cart" href="?view=cart">
+            Cart ({cartCount})
+          </a>
           <button className="cta-btn" onClick={onGetStarted}>Get Started</button>
           <button className="hamburger" aria-label="Open menu" onClick={onMenuToggle}>
             <span />

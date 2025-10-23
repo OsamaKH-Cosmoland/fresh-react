@@ -13,8 +13,8 @@ export default function Sidebar ({ open, onClose}) {
        </button>
        <a href="#home" onClick={onClose}>Home</a>
        <a href="#grid" onClick={onClose}>Card Grid</a>
-       <a href="#forms" onClick={onClose}>Forms</a>
        <a href="#about" onClick={onClose}>About</a>
+       <a href="?view=cart" onClick={onClose}>Cart</a>
       </aside>
     </div>
     {open && <div className="backdrop" onClick={onClose} aria-hidden="true" />}

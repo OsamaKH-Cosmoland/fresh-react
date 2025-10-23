@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import LayoutLab from "./labs/LayoutLab.jsx"; // ✅ added
 import RitualPlanner from "./pages/RitualPlanner.jsx";
+import CartPage from "./pages/CartPage.jsx";
 
 const SHOW_LAB = true; // ✅ toggle between lab & fruit shop
 
@@ -190,6 +191,10 @@ export default function App() {
     typeof window !== "undefined"
       ? window.location.pathname.replace(/\/+$/, "") || "/"
       : "/";
+
+  if (view === "cart" || path === "/cart") {
+    return <CartPage />;
+  }
 
   if (view === "ritualplanner" || path === "/rituals") {
     return <RitualPlanner />;

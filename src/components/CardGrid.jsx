@@ -97,8 +97,8 @@ export default function CardGrid({
             <p className="toast-copy">
               {toast.item?.title ?? "New item"} is now in your bag. Review your cart anytime.
             </p>
-            {toast.recommendation && (
-              <div className="toast-actions">
+            <div className="toast-actions">
+              {toast.recommendation && (
                 <p className="toast-suggestion">
                   Pair it with <strong>{toast.recommendation.title}</strong> for a complete ritual.
                 </p>
@@ -109,8 +109,15 @@ export default function CardGrid({
                 >
                   Add {toast.recommendation.title}
                 </button>
-              </div>
-            )}
+              )}
+              <button
+                type="button"
+                className="ghost-btn ghost-btn--compact"
+                onClick={() => { window.location.href = `${import.meta.env.BASE_URL ?? "/"}?view=cart`; }}
+              >
+                View bag
+              </button>
+            </div>
           </div>
           <button
             type="button"
