@@ -99,16 +99,18 @@ export default function CardGrid({
             </p>
             <div className="toast-actions">
               {toast.recommendation && (
-                <p className="toast-suggestion">
-                  Pair it with <strong>{toast.recommendation.title}</strong> for a complete ritual.
-                </p>
-                <button
-                  type="button"
-                  className="toast-button"
-                  onClick={() => handleAdd(toast.recommendation)}
-                >
-                  Add {toast.recommendation.title}
-                </button>
+                <>
+                  <p className="toast-suggestion">
+                    Pair it with <strong>{toast.recommendation.title}</strong> for a complete ritual.
+                  </p>
+                  <button
+                    type="button"
+                    className="toast-button"
+                    onClick={() => handleAdd(toast.recommendation)}
+                  >
+                    Add {toast.recommendation.title}
+                  </button>
+                </>
               )}
               <button
                 type="button"
