@@ -32,10 +32,10 @@ export default function CardGrid({
   ];
 
   const recommendationMap = {
-    3: 5,
-    5: 3,
-    4: 6,
-    6: 4,
+    2: 3,
+    3: 2,
+    1: 4,
+    4: 1,
   };
 
   const [favs, setFavs] = useState(() => new Set());
