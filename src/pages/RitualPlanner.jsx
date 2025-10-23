@@ -60,6 +60,13 @@ export default function RitualPlanner() {
     window.location.href = base;
   };
 
+  const handleBackToLab = () => {
+    if (typeof window !== "undefined") {
+      window.close();
+    }
+    handleBackHome();
+  };
+
   return (
     <div className="ritual-page">
       <header className="ritual-hero">
@@ -75,6 +82,9 @@ export default function RitualPlanner() {
           </button>
           <button type="button" className="ghost-btn" onClick={handleBackHome}>
             Return to collection
+          </button>
+          <button type="button" className="ghost-btn" onClick={handleBackToLab}>
+            Close planner tab
           </button>
         </div>
       </header>
