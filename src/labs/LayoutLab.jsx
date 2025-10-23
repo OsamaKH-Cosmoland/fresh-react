@@ -111,7 +111,7 @@ export default function LayoutLab() {
     const plannerUrl = new URL(base, window.location.origin);
     plannerUrl.searchParams.set("view", "ritualplanner");
     plannerUrl.hash = "";
-    window.open(plannerUrl.toString(), "_blank");
+    window.location.href = plannerUrl.toString();
   };
 
   return (

@@ -62,18 +62,7 @@ export default function RitualPlanner() {
 
   const handleBackToLab = () => {
     const base = import.meta.env.BASE_URL ?? "/";
-    const target =
-      typeof window !== "undefined" && window.opener && !window.opener.closed
-        ? window.opener
-        : window;
-    try {
-      target.location.href = base;
-    } catch {
-      handleBackHome();
-    }
-    if (target !== window) {
-      window.close();
-    }
+    window.location.href = base;
   };
 
   return (
