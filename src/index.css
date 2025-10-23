@@ -96,6 +96,22 @@ button:hover {
 .announcement-nav:active { transform: translateY(0); }
 .announcement-nav:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(249, 228, 168, .4); border-radius: 999px; }
 .announcement-nav span { pointer-events: none; }
+.announcement-bar--single {
+  justify-content: center;
+  gap: .75rem;
+  padding: .6rem 1.2rem;
+}
+.announcement-bar--single .announcement-message {
+  position: static;
+  transform: none;
+  opacity: 1;
+  width: auto;
+  padding: 0;
+}
+.announcement-bar--single .announcement-nav,
+.announcement-bar--single .announcement-track {
+  display: none;
+}
 .hero h1 {
   font-family: var(--font-heading);
   font-size: clamp(2.6rem, 4vw, 3.4rem);
@@ -114,6 +130,52 @@ button:hover {
   font-size: 1.05rem;
   line-height: 1.6;
   letter-spacing: .25px;
+}
+
+.landing-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #042216 0%, #04110b 100%);
+  color: #fbe7ad;
+}
+
+.landing-hero {
+  width: min(980px, 92%);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 8vw, 5rem) 0 clamp(3.5rem, 10vw, 6.5rem);
+  display: grid;
+  gap: clamp(2.4rem, 6vw, 3.6rem);
+  justify-items: center;
+  text-align: center;
+}
+
+.landing-hero__copy h1 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(2.4rem, 5vw, 3.2rem);
+  letter-spacing: .04em;
+  color: #ffecc5;
+}
+
+.landing-hero__copy p {
+  margin: 1rem auto 0;
+  max-width: 52ch;
+  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+  line-height: 1.8;
+  color: rgba(255, 236, 197, .85);
+}
+
+.landing-hero__media {
+  margin: 0;
+  width: min(640px, 92%);
+}
+
+.landing-hero__media img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 28px;
+  box-shadow: 0 32px 64px rgba(0, 0, 0, .45);
+  border: 1px solid rgba(244, 208, 135, .2);
 }
 .hero-layout {
   display: flex;
