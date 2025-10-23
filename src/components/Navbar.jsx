@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function Navbar({
   onMenuToggle,
+  onGetStarted = () => {},
   sticky = false,
   brand = "NaturaGloss",
 }) {
@@ -26,7 +27,7 @@ export default function Navbar({
         </nav>
         <div className="nav-actions">
           <button className="ghost-btn">Sign in</button>
-          <button className="cta-btn">Get Started</button>
+          <button className="cta-btn" onClick={onGetStarted}>Get Started</button>
           <button className="hamburger" aria-label="Open menu" onClick={onMenuToggle}>
             <span />
             <span />
