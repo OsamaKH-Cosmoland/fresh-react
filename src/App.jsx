@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import LayoutLab from "./labs/LayoutLab.jsx"; // ✅ added
+import RitualPlanner from "./pages/RitualPlanner.jsx";
 
 const SHOW_LAB = true; // ✅ toggle between lab & fruit shop
 
@@ -181,5 +182,14 @@ function FruitShop() {
 
 // ✅ Export logic — toggles between your two apps
 export default function App() {
+  const path =
+    typeof window !== "undefined"
+      ? window.location.pathname.replace(/\/+$/, "") || "/"
+      : "/";
+
+  if (path === "/rituals") {
+    return <RitualPlanner />;
+  }
+
   return SHOW_LAB ? <LayoutLab /> : <FruitShop />;
 }
