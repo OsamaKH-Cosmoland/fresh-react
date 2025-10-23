@@ -5,8 +5,6 @@ import CardGrid from "../components/CardGrid.jsx";
 import collectionImage from "../assets/collection.png";
 import { PRODUCT_INDEX } from "../data/products.js";
 
-const LANDING_ANNOUNCEMENT = "Inspired by European cosmetic standards, handcrafted in Egypt";
-
 const ANNOUNCEMENTS = [
   { id: 0, text: "Because your body deserves natural luxury", className: "announcement-message--secondary" },
   { id: 1, text: "Inspired by European cosmetic standards, handcrafted in Egypt", className: "announcement-message--primary" },
@@ -119,11 +117,6 @@ export default function LayoutLab() {
 
   return (
     <div className="landing-page">
-      <div className="announcement-bar announcement-bar--single" role="status" aria-live="polite">
-        <span className="announcement-message announcement-message--primary is-active">
-          {LANDING_ANNOUNCEMENT}
-        </span>
-      </div>
       <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} onGetStarted={openPlanner} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
@@ -141,33 +134,35 @@ export default function LayoutLab() {
       </main>
 
       <div className="legacy-section">
-        <div className="announcement-bar" role="status" aria-live="polite">
-          <button
-            type="button"
-            className="announcement-nav announcement-nav--prev"
-            aria-label="Previous announcement"
-            onClick={showPrevAnnouncement}
-          >
-            <span aria-hidden="true">‹</span>
-          </button>
-          <div className="announcement-track">
-            {ANNOUNCEMENTS.map((announcement, index) => (
-              <span
-                key={announcement.id}
-                className={`announcement-message ${announcement.className ?? ""} ${index === activeAnnouncement ? "is-active" : ""}`}
-              >
-                {announcement.text}
-              </span>
-            ))}
+        <div className="legacy-announcement">
+          <div className="announcement-bar" role="status" aria-live="polite">
+            <button
+              type="button"
+              className="announcement-nav announcement-nav--prev"
+              aria-label="Previous announcement"
+              onClick={showPrevAnnouncement}
+            >
+              <span aria-hidden="true">‹</span>
+            </button>
+            <div className="announcement-track">
+              {ANNOUNCEMENTS.map((announcement, index) => (
+                <span
+                  key={announcement.id}
+                  className={`announcement-message ${announcement.className ?? ""} ${index === activeAnnouncement ? "is-active" : ""}`}
+                >
+                  {announcement.text}
+                </span>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="announcement-nav announcement-nav--next"
+              aria-label="Next announcement"
+              onClick={showNextAnnouncement}
+            >
+              <span aria-hidden="true">›</span>
+            </button>
           </div>
-          <button
-            type="button"
-            className="announcement-nav announcement-nav--next"
-            aria-label="Next announcement"
-            onClick={showNextAnnouncement}
-          >
-            <span aria-hidden="true">›</span>
-          </button>
         </div>
 
         <div className="container legacy-content">
