@@ -117,6 +117,36 @@ export default function LayoutLab() {
 
   return (
     <div className="landing-page">
+      <div className="legacy-announcement">
+        <div className="announcement-bar" role="status" aria-live="polite">
+          <button
+            type="button"
+            className="announcement-nav announcement-nav--prev"
+            aria-label="Previous announcement"
+            onClick={showPrevAnnouncement}
+          >
+            <span aria-hidden="true">‹</span>
+          </button>
+          <div className="announcement-track">
+            {ANNOUNCEMENTS.map((announcement, index) => (
+              <span
+                key={announcement.id}
+                className={`announcement-message ${announcement.className ?? ""} ${index === activeAnnouncement ? "is-active" : ""}`}
+              >
+                {announcement.text}
+              </span>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="announcement-nav announcement-nav--next"
+            aria-label="Next announcement"
+            onClick={showNextAnnouncement}
+          >
+            <span aria-hidden="true">›</span>
+          </button>
+        </div>
+      </div>
       <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} onGetStarted={openPlanner} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
@@ -134,37 +164,6 @@ export default function LayoutLab() {
       </main>
 
       <div className="legacy-section">
-        <div className="legacy-announcement">
-          <div className="announcement-bar" role="status" aria-live="polite">
-            <button
-              type="button"
-              className="announcement-nav announcement-nav--prev"
-              aria-label="Previous announcement"
-              onClick={showPrevAnnouncement}
-            >
-              <span aria-hidden="true">‹</span>
-            </button>
-            <div className="announcement-track">
-              {ANNOUNCEMENTS.map((announcement, index) => (
-                <span
-                  key={announcement.id}
-                  className={`announcement-message ${announcement.className ?? ""} ${index === activeAnnouncement ? "is-active" : ""}`}
-                >
-                  {announcement.text}
-                </span>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="announcement-nav announcement-nav--next"
-              aria-label="Next announcement"
-              onClick={showNextAnnouncement}
-            >
-              <span aria-hidden="true">›</span>
-            </button>
-          </div>
-        </div>
-
         <div className="container legacy-content">
           <section className="hero-layout">
             <div className="hero">
