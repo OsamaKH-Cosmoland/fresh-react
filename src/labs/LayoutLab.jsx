@@ -131,36 +131,36 @@ export default function LayoutLab() {
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="landing-hero">
-        <div className="landing-hero__copy">
+        <div className="landing-hero__copy rise-sequence">
           <h1>Luxury Inspired by Nature’s Essence</h1>
           <p>
             Indulge in a world of serenity and sophistication, natural care designed for those who
             value beauty with soul.
           </p>
         </div>
-        <figure className="landing-hero__media">
+        <figure className="landing-hero__media rise-once">
           <img src={collectionImage} alt="NaturaGloss collection of botanical care" />
         </figure>
       </main>
 
-      <section className="landing-values">
+      <section className="landing-values rise-sequence">
         <h2>Why Choose NaturaGloss</h2>
-        <div className="landing-values__grid">
-          <article>
+        <div className="landing-values__grid rise-grid">
+          <article className="rise-sequence">
             <img src={iconLeft} alt="" aria-hidden="true" />
             <h3>Small-Batch Quality</h3>
             <p>
               Handcrafted in limited runs to ensure every bar and balm is fresh and carefully made.
             </p>
           </article>
-          <article>
+          <article className="rise-sequence">
             <img src={iconMiddle} alt="" aria-hidden="true" />
             <h3>Ingredient Transparency</h3>
             <p>
               Every ingredient fully listed — no hidden chemicals, just pure botanicals.
             </p>
           </article>
-          <article>
+          <article className="rise-sequence">
             <img src={iconRight} alt="" aria-hidden="true" />
             <h3>EU-Inspired Standards</h3>
             <p>
@@ -172,7 +172,7 @@ export default function LayoutLab() {
 
       <div className="legacy-section">
         <div className="container legacy-content">
-          <section className="hero legacy-hero-intro" id="about">
+          <section className="hero legacy-hero-intro rise-sequence" id="about">
             <h1>NaturaGloss</h1>
             <p>
               Elevate your daily ritual with nutrient-rich botanicals and luminous finishes, crafted

@@ -137,7 +137,7 @@ export default function CardGrid({
           return (
             <article
             key={c.id}
-            className={`card ${isFav ? "is-fav" : ""}`}
+            className={`card rise-card ${isFav ? "is-fav" : ""}`}
             tabIndex="0"
             >
               {c.image && (
