@@ -265,12 +265,19 @@ button:hover {
   text-align: left;
   color: rgba(255, 236, 197, .88);
   box-shadow: 0 18px 40px rgba(0, 0, 0, .35);
+  transition: transform .22s ease, box-shadow .25s ease, border-color .2s ease;
 }
 .landing-values__grid article img {
   width: 72px;
   height: 72px;
   object-fit: contain;
   filter: drop-shadow(0 12px 24px rgba(0, 0, 0, .35));
+}
+.landing-values__grid article:hover,
+.landing-values__grid article:focus-within {
+  transform: translateY(-6px);
+  border-color: rgba(244, 208, 135, .32);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, .45);
 }
 .landing-values__grid article h3 {
   margin: 0;
