@@ -127,7 +127,7 @@ export default function LayoutLab() {
           </button>
         </div>
       </div>
-      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} onGetStarted={openPlanner} cartCount={totalItems} />
+      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} cartCount={totalItems} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="landing-hero">

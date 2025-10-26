@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 export default function Navbar({
   onMenuToggle,
-  onGetStarted = () => {},
   sticky = false,
   brand = "NaturaGloss",
   cartCount = 0,
@@ -50,7 +49,6 @@ export default function Navbar({
             <span className="nav-cart__label">Cart</span>
             <span className="nav-cart__count">{cartCount}</span>
           </a>
-          <button className="cta-btn" onClick={onGetStarted}>Get Started</button>
           <button className="hamburger" aria-label="Open menu" onClick={onMenuToggle}>
             <span />
             <span />

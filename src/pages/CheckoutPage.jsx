@@ -137,7 +137,6 @@ export default function CheckoutPage() {
       <Navbar
         sticky={false}
         onMenuToggle={() => setDrawerOpen(true)}
-        onGetStarted={goToCollection}
         cartCount={totalItems}
       />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />

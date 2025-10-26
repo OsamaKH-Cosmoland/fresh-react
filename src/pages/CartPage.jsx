@@ -24,14 +24,6 @@ export default function CartPage() {
     window.location.href = base;
   };
 
-  const openPlanner = () => {
-    const base = import.meta.env.BASE_URL ?? "/";
-    const plannerUrl = new URL(base, window.location.origin);
-    plannerUrl.searchParams.set("view", "ritualplanner");
-    plannerUrl.hash = "";
-    window.location.href = plannerUrl.toString();
-  };
-
   const goToCheckout = () => {
     const base = import.meta.env.BASE_URL ?? "/";
     const checkoutUrl = new URL(base, window.location.origin);
@@ -92,7 +84,6 @@ export default function CartPage() {
       <Navbar
         sticky={false}
         onMenuToggle={() => setDrawerOpen(true)}
-        onGetStarted={openPlanner}
         cartCount={totalItems}
       />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
