@@ -32,6 +32,14 @@ export default function CartPage() {
     window.location.href = plannerUrl.toString();
   };
 
+  const goToCheckout = () => {
+    const base = import.meta.env.BASE_URL ?? "/";
+    const checkoutUrl = new URL(base, window.location.origin);
+    checkoutUrl.searchParams.set("view", "checkout");
+    checkoutUrl.hash = "";
+    window.location.href = checkoutUrl.toString();
+  };
+
   useEffect(() => {
     writeCart(cartItems);
   }, [cartItems]);
@@ -165,7 +173,7 @@ export default function CartPage() {
               <p className="cart-summary-note">
                 Shipping and taxes are calculated at checkout. NaturaGloss offers complimentary ritual fitting on orders over 750 EGP.
               </p>
-              <button type="button" className="cta-btn">
+              <button type="button" className="cta-btn" onClick={goToCheckout}>
                 Proceed to checkout
               </button>
             </aside>

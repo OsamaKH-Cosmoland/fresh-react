@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import LayoutLab from "./labs/LayoutLab.jsx"; // ✅ added
 import RitualPlanner from "./pages/RitualPlanner.jsx";
 import CartPage from "./pages/CartPage.jsx";
+import CheckoutPage from "./pages/CheckoutPage.jsx";
 
 const SHOW_LAB = true; // ✅ toggle between lab & fruit shop
 
@@ -194,6 +195,10 @@ export default function App() {
 
   if (view === "cart" || path === "/cart") {
     return <CartPage />;
+  }
+
+  if (view === "checkout" || path === "/checkout") {
+    return <CheckoutPage />;
   }
 
   if (view === "ritualplanner" || path === "/rituals") {
