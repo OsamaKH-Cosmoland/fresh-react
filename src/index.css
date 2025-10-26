@@ -305,6 +305,7 @@ button:hover {
   display: grid;
   gap: .8rem;
   padding: 0 clamp(1rem, 4vw, 2rem);
+  scroll-margin-top: clamp(5rem, 12vh, 7.5rem);
 }
 .legacy-hero-intro h1 {
   font-family: var(--font-heading);
