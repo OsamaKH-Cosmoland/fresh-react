@@ -658,6 +658,7 @@ button:hover {
 .card-grid {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1rem; padding: 1.5rem 0;
+  scroll-margin-top: clamp(5rem, 12vh, 7.5rem);
 }
 .card {
   background: linear-gradient(155deg, rgba(8, 46, 32, .95), rgba(6, 27, 19, .95));
