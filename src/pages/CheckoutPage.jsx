@@ -7,10 +7,10 @@ import {
   subscribeToCart,
 } from "../utils/cartStorage.js";
 import { PRODUCT_INDEX } from "../data/products.js";
-import { addOrder } from "../utils/orderStorage.js";
 
 const EMPTY_FORM = {
   fullName: "",
+  email: "",
   phone: "",
   address: "",
   city: "",
@@ -76,11 +76,12 @@ export default function CheckoutPage() {
 
   const isFormValid =
     formData.fullName.trim() &&
+    formData.email.trim() &&
     formData.phone.trim() &&
     formData.address.trim() &&
     formData.city.trim();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (cartIsEmpty) {
       setStatus({ type: "error", message: "Add at least one product before placing an order." });
@@ -91,6 +92,7 @@ export default function CheckoutPage() {
       return;
     }
     setIsSubmitting(true);
+    setStatus(null);
     try {
       const orderId = generateOrderId();
       const order = {
@@ -104,6 +106,7 @@ export default function CheckoutPage() {
         },
         customer: {
           name: formData.fullName.trim(),
+          email: formData.email.trim(),
           phone: formData.phone.trim(),
           address: formData.address.trim(),
           city: formData.city.trim(),
@@ -119,14 +122,35 @@ export default function CheckoutPage() {
           };
         }),
       };
-      addOrder(order);
+
+      const apiBase = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
+      const endpoint = apiBase ? `${apiBase}/api/orders` : "/api/orders";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(order),
+      });
+      if (!response.ok) {
+        let message = `Unable to submit order (status ${response.status}).`;
+        try {
+          const errorBody = await response.json();
+          if (errorBody?.error) message = errorBody.error;
+        } catch {
+          // ignore
+        }
+        throw new Error(message);
+      }
+      const savedOrder = await response.json().catch(() => order);
       writeCart([]);
       setCartItems([]);
       setFormData(EMPTY_FORM);
       setStatus({
         type: "success",
-        message: `Your cash order ${orderId} has been received. Our concierge will call to confirm delivery and collect payment in cash upon arrival.`,
+        message: `Your cash order ${savedOrder.id ?? orderId} has been received. Our concierge will call to confirm delivery and collect payment in cash upon arrival.`,
       });
+    } catch (error) {
+      console.error("Checkout submit failed", error);
+      setStatus({ type: "error", message: error.message ?? "Unable to place order right now." });
     } finally {
       setIsSubmitting(false);
     }
@@ -173,6 +197,17 @@ export default function CheckoutPage() {
                   name="phone"
                   placeholder="+20 1X XXX XXXX"
                   value={formData.phone}
+                  onChange={handleChange}
+                  required
+                />
+              </label>
+              <label>
+                Email
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="sara@example.com"
+                  value={formData.email}
                   onChange={handleChange}
                   required
                 />

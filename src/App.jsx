@@ -3,6 +3,8 @@ import LayoutLab from "./labs/LayoutLab.jsx"; // ✅ added
 import RitualPlanner from "./pages/RitualPlanner.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
+import OrdersAdmin from "./pages/OrdersAdmin.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 
 const SHOW_LAB = true; // ✅ toggle between lab & fruit shop
 
@@ -199,6 +201,14 @@ export default function App() {
 
   if (view === "checkout" || path === "/checkout") {
     return <CheckoutPage />;
+  }
+
+  if (view === "admin" || path === "/admin") {
+    return <AdminDashboard />;
+  }
+
+  if (view === "orders" || path === "/orders") {
+    return <OrdersAdmin />;
   }
 
   if (view === "ritualplanner" || path === "/rituals") {

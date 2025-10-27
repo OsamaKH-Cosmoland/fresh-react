@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 import { MongoClient, ObjectId } from "mongodb";
 
 let cachedClient = null;
