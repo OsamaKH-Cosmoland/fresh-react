@@ -5,6 +5,8 @@ import http from "http";
 import { URL } from "url";
 
 import ordersHandler, { notifyTelegramTest, streamOrders } from "../api/orders.js";
+import reviewsHandler from "../api/reviews.js";
+import fruitsHandler from "../api/fruits.js";
 
 const PORT = Number(process.env.API_PORT ?? 3000);
 
@@ -49,22 +51,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (!parsedUrl.pathname.startsWith("/api/orders")) {
-    respondNotFound(res);
-    return;
-  }
-
-  if (parsedUrl.pathname === "/api/orders/stream") {
-    streamOrders(req, res);
-    return;
-  }
-
-  if (req.method && req.method !== "GET") {
-    req.body = await parseRequestBody(req);
-  } else {
-    req.body = {};
-  }
-
+  const pathname = parsedUrl.pathname;
   res.status = (code) => {
     res.statusCode = code;
     return res;
@@ -77,14 +64,38 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify(payload));
   };
 
-  try {
-    await ordersHandler(req, res);
-  } catch (error) {
-    console.error("Server error handling /api/orders:", error);
-    res.statusCode = 500;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ error: "Server error" }));
+  if (pathname === "/api/orders/stream") {
+    streamOrders(req, res);
+    return;
   }
+
+  if (req.method && req.method !== "GET") {
+    req.body = await parseRequestBody(req);
+  } else {
+    req.body = {};
+  }
+
+  if (pathname === "/api/notify-test") {
+    await notifyTelegramTest(req, res);
+    return;
+  }
+
+  if (pathname.startsWith("/api/orders")) {
+    await ordersHandler(req, res);
+    return;
+  }
+
+  if (pathname.startsWith("/api/reviews")) {
+    await reviewsHandler(req, res);
+    return;
+  }
+
+  if (pathname.startsWith("/api/fruits")) {
+    await fruitsHandler(req, res);
+    return;
+  }
+
+  respondNotFound(res);
 });
 
 server.listen(PORT, () => {

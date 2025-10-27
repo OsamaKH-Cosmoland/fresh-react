@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import CardGrid from "../components/CardGrid.jsx";
+import ReviewsSection from "../components/ReviewsSection.jsx";
 import collectionImage from "../assets/collection.png";
 import iconLeft from "../assets/NaturaGloss_shiny_gold_icon_left.webp";
 import iconMiddle from "../assets/NaturaGloss_shiny_gold_icon_middle.webp";
@@ -185,6 +186,8 @@ export default function LayoutLab() {
           />
         </div>
       </div>
+
+      <ReviewsSection />
     </div>
   );
 }

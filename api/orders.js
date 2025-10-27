@@ -2,11 +2,8 @@
 
 import "dotenv/config";
 import { EventEmitter } from "events";
-import { MongoClient } from "mongodb";
 import nodemailer from "nodemailer";
-
-let cachedClient = null;
-let cachedDb = null;
+import { connectToDb } from "./_db.js";
 let cachedTransporter = null;
 const bus = new EventEmitter();
 bus.setMaxListeners(0);
@@ -15,24 +12,6 @@ const sanitizeString = (value) => {
   if (value === null || value === undefined) return "";
   return String(value).trim();
 };
-
-async function connectToDb() {
-  if (cachedClient && cachedDb) return { client: cachedClient, db: cachedDb };
-
-  const uri = process.env.MONGODB_URI;
-  const dbName = process.env.MONGODB_DB;
-  if (!uri || !dbName) {
-    throw new Error("Missing MONGODB_URI or MONGODB_DB env vars");
-  }
-
-  const client = new MongoClient(uri);
-  await client.connect();
-  const db = client.db(dbName);
-
-  cachedClient = client;
-  cachedDb = db;
-  return { client, db };
-}
 
 function sanitizePayload(rawBody) {
   let body = rawBody;
