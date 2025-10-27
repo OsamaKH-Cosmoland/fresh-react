@@ -252,7 +252,7 @@ export default async function handler(req, res) {
 
     if (req.method === "POST") {
       const payload = sanitizePayload(req.body);
-      if (!payload.customer.name || !payload.customer.email || !payload.customer.phone) {
+      if (!payload.customer.name || !payload.customer.phone) {
         return res.status(400).json({ error: "Missing customer contact information." });
       }
       if (payload.items.length === 0) {

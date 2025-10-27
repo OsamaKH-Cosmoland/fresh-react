@@ -74,12 +74,11 @@ export default function CheckoutPage() {
     window.location.href = cartUrl.toString();
   };
 
-  const isFormValid =
-    formData.fullName.trim() &&
-    formData.email.trim() &&
-    formData.phone.trim() &&
-    formData.address.trim() &&
-    formData.city.trim();
+const isFormValid =
+  formData.fullName.trim() &&
+  formData.phone.trim() &&
+  formData.address.trim() &&
+  formData.city.trim();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -201,17 +200,16 @@ export default function CheckoutPage() {
                   required
                 />
               </label>
-              <label>
-                Email
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="sara@example.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </label>
+            <label>
+              Email
+              <input
+                type="email"
+                name="email"
+                placeholder="sara@example.com"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </label>
               <label>
                 City
                 <input
