@@ -139,20 +139,21 @@ export const notifyTelegram = async (order) => {
         ? "-"
         : String(value);
 
-    const text =
-      `🧾 *New Order* \`${fmt(order.orderCode)}\`\n` +
-      `👤 *Name:* ${fmt(order.customer?.name)}\n` +
-      `📧 *Email:* ${fmt(order.customer?.email)}\n` +
-      `📞 *Phone:* ${fmt(order.customer?.phone)}\n` +
-      `🏙️ *City:* ${fmt(order.customer?.city)}\n` +
-      `💰 *Total:* ${fmt(order.total ?? order?.totals?.subtotal)}\n` +
-      `🕒 *Time:* ${new Date(order.createdAt ?? Date.now()).toLocaleString()}`;
+    const textLines = [
+      `🧾 New Order ${fmt(order.orderCode)}`,
+      `👤 Name: ${fmt(order.customer?.name)}`,
+      `📧 Email: ${fmt(order.customer?.email)}`,
+      `📞 Phone: ${fmt(order.customer?.phone)}`,
+      `🏙️ City: ${fmt(order.customer?.city)}`,
+      `💰 Total: ${fmt(order.total ?? order?.totals?.subtotal)}`,
+      `🕒 Time: ${new Date(order.createdAt ?? Date.now()).toLocaleString()}`,
+    ];
+    const text = textLines.join("\n");
 
     const url = `https://api.telegram.org/bot${token}/sendMessage`;
     const body = {
       chat_id: chatId,
       text,
-      parse_mode: "Markdown",
       disable_web_page_preview: true,
     };
 
