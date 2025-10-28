@@ -2,6 +2,7 @@
 
 import "dotenv/config";
 import { EventEmitter } from "events";
+import https from "https";
 import nodemailer from "nodemailer";
 import { connectToDb } from "./_db.js";
 let cachedTransporter = null;
@@ -11,6 +12,51 @@ bus.setMaxListeners(0);
 const sanitizeString = (value) => {
   if (value === null || value === undefined) return "";
   return String(value).trim();
+};
+
+const postJson = async (url, payload) => {
+  if (typeof fetch === "function") {
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  }
+
+  const target = new URL(url);
+  const bodyString = JSON.stringify(payload);
+
+  return new Promise((resolve, reject) => {
+    const request = https.request(
+      {
+        hostname: target.hostname,
+        port: target.port || 443,
+        path: `${target.pathname}${target.search}`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(bodyString),
+        },
+      },
+      (response) => {
+        const chunks = [];
+        response.on("data", (chunk) => chunks.push(chunk));
+        response.on("end", () => {
+          const text = Buffer.concat(chunks).toString();
+          resolve({
+            ok: response.statusCode >= 200 && response.statusCode < 300,
+            status: response.statusCode ?? 0,
+            statusText: response.statusMessage ?? "",
+            text: async () => text,
+          });
+        });
+      }
+    );
+
+    request.on("error", reject);
+    request.write(bodyString);
+    request.end();
+  });
 };
 
 function sanitizePayload(rawBody) {
@@ -131,8 +177,7 @@ export const notifyTelegram = async (order) => {
       return { ok: false, missingEnv: true };
     }
     if (typeof fetch !== "function") {
-      console.warn("[telegram] global fetch unavailable in this runtime");
-      return { ok: false, fetchMissing: true };
+      console.warn("[telegram] global fetch unavailable; using https fallback");
     }
     const fmt = (value) =>
       value === null || value === undefined || value === ""
@@ -157,11 +202,7 @@ export const notifyTelegram = async (order) => {
       disable_web_page_preview: true,
     };
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const res = await postJson(url, body);
     if (!res.ok) {
       const textBody = await res.text().catch(() => "");
       console.error(
