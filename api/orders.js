@@ -3,6 +3,8 @@
 import "dotenv/config";
 import { EventEmitter } from "events";
 import https from "https";
+import fs from "fs";
+import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import { connectToDb } from "./_db.js";
 let cachedTransporter = null;
@@ -57,6 +59,59 @@ const postJson = async (url, payload) => {
     request.write(bodyString);
     request.end();
   });
+};
+
+let cachedTelegramConfig = null;
+const resolveFromCandidates = (...values) => {
+  for (const value of values) {
+    const cleaned = sanitizeString(value);
+    if (cleaned) return cleaned;
+  }
+  return "";
+};
+
+const loadTelegramConfigFile = () => {
+  try {
+    const configPath = new URL("../config/telegram.config.json", import.meta.url);
+    const resolvedPath = fileURLToPath(configPath);
+    if (!fs.existsSync(resolvedPath)) return {};
+    const raw = fs.readFileSync(resolvedPath, "utf8");
+    if (!raw.trim()) return {};
+    const parsed = JSON.parse(raw);
+    return {
+      token: sanitizeString(parsed.botToken ?? parsed.token ?? parsed.telegramBotToken),
+      chatId: sanitizeString(parsed.chatId ?? parsed.telegramChatId ?? parsed.telegram_chat_id),
+    };
+  } catch (error) {
+    console.warn("[telegram] failed to read telegram.config.json", error);
+    return {};
+  }
+};
+
+const getTelegramConfig = () => {
+  if (cachedTelegramConfig) return cachedTelegramConfig;
+  const envToken = resolveFromCandidates(
+    process.env.TELEGRAM_BOT_TOKEN,
+    process.env.VITE_TELEGRAM_BOT_TOKEN,
+    process.env.REACT_APP_TELEGRAM_BOT_TOKEN,
+    process.env.NG_TELEGRAM_BOT_TOKEN
+  );
+  const envChat = resolveFromCandidates(
+    process.env.TELEGRAM_CHAT_ID,
+    process.env.VITE_TELEGRAM_CHAT_ID,
+    process.env.REACT_APP_TELEGRAM_CHAT_ID,
+    process.env.NG_TELEGRAM_CHAT_ID
+  );
+  if (envToken && envChat) {
+    cachedTelegramConfig = { token: envToken, chatId: envChat };
+    return cachedTelegramConfig;
+  }
+  const fileConfig = loadTelegramConfigFile();
+  cachedTelegramConfig = {
+    token: envToken || fileConfig.token || "",
+    chatId: envChat || fileConfig.chatId || "",
+  };
+  return cachedTelegramConfig;
 };
 
 function sanitizePayload(rawBody) {
@@ -168,11 +223,10 @@ export const notifyTelegram = async (order) => {
     console.log(
       `[telegram] notifying for order ${order?.orderCode ?? order?.id ?? "unknown"}`
     );
-    const token = sanitizeString(process.env.TELEGRAM_BOT_TOKEN);
-    const chatId = sanitizeString(process.env.TELEGRAM_CHAT_ID);
+    const { token, chatId } = getTelegramConfig();
     if (!token || !chatId) {
       console.warn(
-        "[telegram] env missing: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID"
+        "[telegram] credentials missing: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID"
       );
       return { ok: false, missingEnv: true };
     }
@@ -353,8 +407,7 @@ export default async function handler(req, res) {
 }
 
 export const notifyTelegramTest = async (req, res) => {
-  const token = sanitizeString(process.env.TELEGRAM_BOT_TOKEN);
-  const chatId = sanitizeString(process.env.TELEGRAM_CHAT_ID);
+  const { token, chatId } = getTelegramConfig();
   if (!token || !chatId) {
     console.warn("[telegram] env missing for test endpoint");
     return res
