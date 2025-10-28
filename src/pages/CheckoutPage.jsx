@@ -63,7 +63,10 @@ export default function CheckoutPage() {
 
   const goToCollection = () => {
     const base = import.meta.env.BASE_URL ?? "/";
-    window.location.href = base;
+    const collectionUrl = new URL(base, window.location.origin);
+    collectionUrl.searchParams.delete("view");
+    collectionUrl.hash = "grid";
+    window.location.href = collectionUrl.toString();
   };
 
   const goToCart = () => {
