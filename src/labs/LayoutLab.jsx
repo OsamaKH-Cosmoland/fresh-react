@@ -88,14 +88,6 @@ export default function LayoutLab() {
     return () => window.removeEventListener("message", handleMessage);
   }, [addProductById]);
 
-  const openPlanner = () => {
-    const base = import.meta.env.BASE_URL ?? "/";
-    const plannerUrl = new URL(base, window.location.origin);
-    plannerUrl.searchParams.set("view", "ritualplanner");
-    plannerUrl.hash = "";
-    window.location.href = plannerUrl.toString();
-  };
-
   return (
     <div className="landing-page">
       <div className="legacy-announcement">
