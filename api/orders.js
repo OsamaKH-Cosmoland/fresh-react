@@ -6,7 +6,7 @@ import https from "https";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
-import { connectToDb } from "./_db.js";
+import { resolveOrdersStore } from "./_ordersStore.js";
 let cachedTransporter = null;
 const bus = new EventEmitter();
 bus.setMaxListeners(0);
@@ -315,13 +315,12 @@ export default async function handler(req, res) {
       return res.status(204).end();
     }
 
-    const { db } = await connectToDb();
-    const col = db.collection("orders");
+    const { store } = await resolveOrdersStore();
 
     if (req.method === "GET") {
       const limitParam = Number.parseInt(req.query?.limit ?? "50", 10);
       const limit = Number.isFinite(limitParam) ? Math.max(1, Math.min(limitParam, 500)) : 50;
-      const docs = await col.find({}).sort({ createdAt: -1 }).limit(limit).toArray();
+      const docs = await store.list(limit);
       return res.status(200).json(docs.map(cleanOrderDoc));
     }
 
@@ -338,11 +337,7 @@ export default async function handler(req, res) {
       const cutoff = new Date(now.getTime() - 2 * 60 * 1000).toISOString();
 
       if (payload.paymentMethod === "cash_on_delivery" && payload.customer.phone) {
-        const duplicate = await col.findOne({
-          "customer.phone": payload.customer.phone,
-          paymentMethod: "cash_on_delivery",
-          createdAt: { $gte: cutoff },
-        });
+        const duplicate = await store.findRecentCashOrderByPhone(payload.customer.phone, cutoff);
         if (duplicate) {
           return res
             .status(409)
@@ -357,25 +352,24 @@ export default async function handler(req, res) {
         createdAt: payload.createdAt ?? now.toISOString(),
         updatedAt: payload.updatedAt ?? now.toISOString(),
       };
-      const insertResult = await col.insertOne(doc);
-      doc._id = doc._id ?? insertResult.insertedId;
+      const storedDoc = await store.create(doc);
 
       try {
-        await sendAdminEmail(doc);
+        await sendAdminEmail(storedDoc);
       } catch (emailError) {
-        console.error("Failed to send admin email for order", doc.id, emailError);
+        console.error("Failed to send admin email for order", storedDoc.id, emailError);
       }
 
-      const cleanDoc = cleanOrderDoc(doc);
+      const cleanDoc = cleanOrderDoc(storedDoc);
       bus.emit("new-order", cleanDoc);
 
       try {
         await notifyTelegram({ ...cleanDoc, total: cleanDoc?.totals?.subtotal });
       } catch (telegramError) {
-        console.error("Failed to notify Telegram for order", doc.id, telegramError);
+        console.error("Failed to notify Telegram for order", storedDoc.id, telegramError);
       }
 
-      return res.status(201).json({ ok: true, orderId: doc.id, orderCode: doc.orderCode });
+      return res.status(201).json({ ok: true, orderId: storedDoc.id, orderCode: storedDoc.orderCode });
     }
 
     if (req.method === "PATCH") {
@@ -387,15 +381,11 @@ export default async function handler(req, res) {
       if (!status) {
         return res.status(400).json({ error: "Missing status" });
       }
-      const result = await col.findOneAndUpdate(
-        { id },
-        { $set: { status, updatedAt: new Date().toISOString() } },
-        { returnDocument: "after" }
-      );
-      if (!result.value) {
+      const updated = await store.updateStatus(id, status);
+      if (!updated) {
         return res.status(404).json({ error: "Order not found" });
       }
-      return res.status(200).json(cleanOrderDoc(result.value));
+      return res.status(200).json(cleanOrderDoc(updated));
     }
 
     res.setHeader("Allow", ["GET", "POST", "PATCH"]);
