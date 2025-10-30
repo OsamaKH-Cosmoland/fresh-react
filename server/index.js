@@ -8,35 +8,21 @@ import ordersHandler, { notifyTelegramTest, streamOrders } from "../api/orders.j
 import reviewsHandler from "../api/reviews.js";
 import fruitsHandler from "../api/fruits.js";
 
-// 👇 Render sets PORT. Keep API_PORT as fallback for local use.
-const PORT = Number(process.env.PORT ?? process.env.API_PORT ?? 3000);
+// ✅ Railway sets PORT for you; also keep API_PORT fallback for local
+const PORT = Number(process.env.PORT || process.env.API_PORT || 3000);
 
-// --- CORS helpers (needed when frontend and API are on different origins) ---
-const allowedOrigins = new Set([
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-  "https://fruit-shop-osama.vercel.app",     // your live site
-  // add any other domains that should be allowed to call your API
-]);
-
-function setCorsHeaders(req, res) {
-  const origin = req.headers.origin;
-  if (origin && (allowedOrigins.has(origin) || process.env.CORS_ANY === "1")) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
-  res.setHeader("Vary", "Origin"); // ensure caches vary by origin
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-}
-
-// --- utils ---
-const respond = (res, code, payload) => {
-  res.statusCode = code;
-  if (!res.getHeader("Content-Type")) res.setHeader("Content-Type", "application/json");
-  res.end(typeof payload === "string" ? payload : JSON.stringify(payload));
+const respondNotFound = (res) => {
+  res.statusCode = 404;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify({ error: "Not Found" }));
 };
 
-const respondNotFound = (res) => respond(res, 404, { error: "Not Found" });
+// ✅ CORS helper
+function setCors(res) {
+  res.setHeader("Access-Control-Allow-Origin", "*"); // or set your domain instead of *
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+}
 
 const parseRequestBody = async (req) => {
   const chunks = [];
@@ -50,55 +36,80 @@ const parseRequestBody = async (req) => {
 
   const contentType = req.headers["content-type"] ?? "";
   if (contentType.includes("application/json")) {
-    try { return JSON.parse(raw); } catch { return {}; }
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return {};
+    }
   }
   return raw;
 };
 
 const server = http.createServer(async (req, res) => {
-  // CORS for all requests
-  setCorsHeaders(req, res);
-
-  // Handle preflight early
-  if (req.method === "OPTIONS") {
+  setCors(res);                         // ✅ add CORS on every response
+  if (req.method === "OPTIONS") {       // ✅ handle preflight
     res.statusCode = 204;
     return res.end();
   }
 
-  if (!req.url) return respondNotFound(res);
+  if (!req.url) {
+    respondNotFound(res);
+    return;
+  }
 
   const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
   req.query = Object.fromEntries(parsedUrl.searchParams.entries());
+
+  if (parsedUrl.pathname === "/api/notify-test") {
+    await notifyTelegramTest(req, res);
+    return;
+  }
+
   const pathname = parsedUrl.pathname;
+  res.status = (code) => {
+    res.statusCode = code;
+    return res;
+  };
 
-  // helpers like res.status / res.json (optional sugar)
-  res.status = (code) => { res.statusCode = code; return res; };
-  res.json = (payload) => respond(res, res.statusCode || 200, payload);
+  res.json = (payload) => {
+    if (!res.getHeader("Content-Type")) {
+      res.setHeader("Content-Type", "application/json");
+    }
+    res.end(JSON.stringify(payload));
+  };
 
-  // Health check
-  if (pathname === "/api/health") {
-    return respond(res, 200, { ok: true, time: new Date().toISOString() });
-  }
-
-  // Test Telegram (keep once)
-  if (pathname === "/api/notify-test") {
-    return await notifyTelegramTest(req, res);
-  }
-
-  // SSE stream
   if (pathname === "/api/orders/stream") {
-    return streamOrders(req, res);
+    streamOrders(req, res);
+    return;
   }
 
-  // Body only for non-GET
-  req.body = (req.method && req.method !== "GET") ? await parseRequestBody(req) : {};
+  if (req.method && req.method !== "GET") {
+    req.body = await parseRequestBody(req);
+  } else {
+    req.body = {};
+  }
 
-  // Route to handlers
-  if (pathname.startsWith("/api/orders"))  return await ordersHandler(req, res);
-  if (pathname.startsWith("/api/reviews")) return await reviewsHandler(req, res);
-  if (pathname.startsWith("/api/fruits"))  return await fruitsHandler(req, res);
+  if (pathname === "/api/notify-test") {
+    await notifyTelegramTest(req, res);
+    return;
+  }
 
-  return respondNotFound(res);
+  if (pathname.startsWith("/api/orders")) {
+    await ordersHandler(req, res);
+    return;
+  }
+
+  if (pathname.startsWith("/api/reviews")) {
+    await reviewsHandler(req, res);
+    return;
+  }
+
+  if (pathname.startsWith("/api/fruits")) {
+    await fruitsHandler(req, res);
+    return;
+  }
+
+  respondNotFound(res);
 });
 
 server.listen(PORT, () => {
