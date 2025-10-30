@@ -1,17 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-
-const sanitizeBaseUrl = (value) => (value ?? "").replace(/\/$/, "");
-
-const resolveApiUrl = (path) => {
-  const base = sanitizeBaseUrl(import.meta.env.VITE_API_BASE_URL);
-  if (!base) return path;
-  if (path.startsWith("http")) return path;
-  return `${base}${path}`;
-};
+import { apiGet, apiPost } from "../lib/api";
 
 const buildStars = (count) => {
   const full = Math.min(5, Math.max(0, Math.round(count)));
-  return Array.from({ length: 5 }, (_, index) => (index < full ? "★" : "☆")).join("");
+  return Array.from({ length: 5 }, (_, i) => (i < full ? "★" : "☆")).join("");
 };
 
 const RATING_OPTIONS = [5, 4, 3, 2, 1];
@@ -24,54 +16,49 @@ export default function ReviewsSection() {
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState(null);
 
-  const reviewsEndpoint = resolveApiUrl("/api/reviews?limit=50");
-
   useEffect(() => {
-    let isMounted = true;
+    let mounted = true;
     (async () => {
       try {
         setLoading(true);
-        const response = await fetch(reviewsEndpoint);
+        const response = await apiGet("/reviews?limit=50");
         if (!response.ok) {
           const body = await response.json().catch(() => ({}));
           throw new Error(body?.error ?? `Failed to load reviews (${response.status}).`);
         }
         const data = await response.json();
-        if (isMounted) {
-          setReviews(Array.isArray(data) ? data : []);
-        }
+        if (mounted) setReviews(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Failed to fetch reviews:", err);
-        if (isMounted) setError(err.message ?? "Unable to load reviews.");
+        if (mounted) setError(err.message ?? "Unable to load reviews.");
       } finally {
-        if (isMounted) setLoading(false);
+        if (mounted) setLoading(false);
       }
     })();
-    return () => {
-      isMounted = false;
-    };
-  }, [reviewsEndpoint]);
+    return () => { mounted = false; };
+  }, []);
 
   const averageRating = useMemo(() => {
     if (!reviews.length) return 0;
-    const sum = reviews.reduce((total, review) => total + Number(review.rating ?? 0), 0);
+    const sum = reviews.reduce((t, r) => t + Number(r.rating ?? 0), 0);
     return sum / reviews.length;
   }, [reviews]);
 
-  const ratingCounts = useMemo(() => {
-    return RATING_OPTIONS.reduce((acc, rating) => {
-      acc[rating] = reviews.filter((review) => Number(review.rating) === rating).length;
+  const ratingCounts = useMemo(
+    () => RATING_OPTIONS.reduce((acc, r) => {
+      acc[r] = reviews.filter((rev) => Number(rev.rating) === r).length;
       return acc;
-    }, {});
-  }, [reviews]);
+    }, {}),
+    [reviews]
+  );
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setStatus(null);
     if (!form.message.trim()) {
       setStatus({ type: "error", message: "Please share a few words about your experience." });
@@ -84,11 +71,7 @@ export default function ReviewsSection() {
         rating: Number(form.rating),
         message: form.message.trim(),
       };
-      const response = await fetch(resolveApiUrl("/api/reviews"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const response = await apiPost("/reviews", payload);
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
         throw new Error(body?.error ?? "Unable to submit review.");
@@ -99,7 +82,6 @@ export default function ReviewsSection() {
       setStatus({ type: "success", message: "Thank you for sharing your ritual!" });
     } catch (err) {
       console.error("Failed to submit review:", err);
-
       setStatus({ type: "error", message: err.message ?? "Unable to submit review." });
     } finally {
       setSubmitting(false);
@@ -113,15 +95,13 @@ export default function ReviewsSection() {
           <p className="reviews-eyebrow">Our community&apos;s experiences</p>
           <h2>Customer Reviews</h2>
           <p className="reviews-average">
-            <span className="reviews-stars" aria-hidden="true">
-              {buildStars(averageRating)}
-            </span>
+            <span className="reviews-stars" aria-hidden="true">{buildStars(averageRating)}</span>
             <span className="reviews-average-score">
-              {averageRating ? averageRating.toFixed(1) : "0.0"} / 5.0 · {reviews.length}{" "}
-              {reviews.length === 1 ? "review" : "reviews"}
+              {averageRating ? averageRating.toFixed(1) : "0.0"} / 5.0 · {reviews.length} {reviews.length === 1 ? "review" : "reviews"}
             </span>
           </p>
         </div>
+
         <div className="reviews-distribution">
           {RATING_OPTIONS.map((rating) => (
             <div key={rating} className="reviews-distribution__row">
@@ -129,28 +109,18 @@ export default function ReviewsSection() {
               <div className="reviews-distribution__bar">
                 <div
                   className="reviews-distribution__fill"
-                  style={{
-                    width: reviews.length
-                      ? `${(ratingCounts[rating] / reviews.length) * 100}%`
-                      : 0,
-                  }}
+                  style={{ width: reviews.length ? `${(ratingCounts[rating] / reviews.length) * 100}%` : 0 }}
                 />
               </div>
               <span>{ratingCounts[rating] ?? 0}</span>
             </div>
           ))}
         </div>
+
         <form className="reviews-form" onSubmit={handleSubmit}>
           <label className="reviews-form__field">
             <span>Your name</span>
-            <input
-              name="name"
-              type="text"
-              placeholder="Anonymous"
-              value={form.name}
-              onChange={handleChange}
-              maxLength={80}
-            />
+            <input name="name" type="text" placeholder="Anonymous" value={form.name} onChange={handleChange} maxLength={80} />
           </label>
           <label className="reviews-form__field">
             <span>Rating</span>
@@ -178,11 +148,7 @@ export default function ReviewsSection() {
             {submitting ? "Sending..." : "Share review"}
           </button>
           {status && (
-            <p
-              className={`reviews-status ${
-                status.type === "error" ? "reviews-status--error" : "reviews-status--success"
-              }`}
-            >
+            <p className={`reviews-status ${status.type === "error" ? "reviews-status--error" : "reviews-status--success"}`}>
               {status.message}
             </p>
           )}
@@ -201,14 +167,10 @@ export default function ReviewsSection() {
             <article key={review.mongoId ?? `${review.name}-${review.createdAt}`} className="review-card">
               <header>
                 <div>
-                  <p className="review-card__stars" aria-hidden="true">
-                    {buildStars(review.rating)}
-                  </p>
+                  <p className="review-card__stars" aria-hidden="true">{buildStars(review.rating)}</p>
                   <h3>{review.name || "Anonymous"}</h3>
                 </div>
-                <time dateTime={review.createdAt}>
-                  {new Date(review.createdAt).toLocaleDateString()}
-                </time>
+                <time dateTime={review.createdAt}>{new Date(review.createdAt).toLocaleDateString()}</time>
               </header>
               <p>{review.message}</p>
             </article>

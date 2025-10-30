@@ -1,12 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Sidebar from "../components/Sidebar.jsx";
-import {
-  readCart,
-  writeCart,
-  subscribeToCart,
-} from "../utils/cartStorage.js";
+import { readCart, writeCart, subscribeToCart } from "../utils/cartStorage.js";
 import { PRODUCT_INDEX } from "../data/products.js";
+import { apiPost } from "../lib/api";
 
 const EMPTY_FORM = {
   fullName: "",
@@ -31,13 +28,8 @@ export default function CheckoutPage() {
   const [status, setStatus] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    writeCart(cartItems);
-  }, [cartItems]);
-
-  useEffect(() => {
-    return subscribeToCart(setCartItems);
-  }, []);
+  useEffect(() => { writeCart(cartItems); }, [cartItems]);
+  useEffect(() => subscribeToCart(setCartItems), []);
 
   const totalItems = useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -56,8 +48,8 @@ export default function CheckoutPage() {
 
   const cartIsEmpty = cartItems.length === 0;
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -77,11 +69,11 @@ export default function CheckoutPage() {
     window.location.href = cartUrl.toString();
   };
 
-const isFormValid =
-  formData.fullName.trim() &&
-  formData.phone.trim() &&
-  formData.address.trim() &&
-  formData.city.trim();
+  const isFormValid =
+    formData.fullName.trim() &&
+    formData.phone.trim() &&
+    formData.address.trim() &&
+    formData.city.trim();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -125,23 +117,16 @@ const isFormValid =
         }),
       };
 
-      const apiBase = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
-      const endpoint = apiBase ? `${apiBase}/api/orders` : "/api/orders";
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(order),
-      });
+      const response = await apiPost("/orders", order);
       if (!response.ok) {
         let message = `Unable to submit order (status ${response.status}).`;
         try {
           const errorBody = await response.json();
           if (errorBody?.error) message = errorBody.error;
-        } catch {
-          // ignore
-        }
+        } catch {}
         throw new Error(message);
       }
+
       const savedOrder = await response.json().catch(() => order);
       writeCart([]);
       setCartItems([]);
@@ -160,11 +145,7 @@ const isFormValid =
 
   return (
     <div className="checkout-page">
-      <Navbar
-        sticky={false}
-        onMenuToggle={() => setDrawerOpen(true)}
-        cartCount={totalItems}
-      />
+      <Navbar sticky={false} onMenuToggle={() => setDrawerOpen(true)} cartCount={totalItems} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="checkout-shell">
@@ -183,67 +164,27 @@ const isFormValid =
               <legend>Delivery details</legend>
               <label>
                 Full name
-                <input
-                  type="text"
-                  name="fullName"
-                  placeholder="Sara Nour"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="text" name="fullName" placeholder="Sara Nour" value={formData.fullName} onChange={handleChange} required />
               </label>
               <label>
                 Phone number
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="+20 1X XXX XXXX"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="tel" name="phone" placeholder="+20 1X XXX XXXX" value={formData.phone} onChange={handleChange} required />
               </label>
-            <label>
-              Email
-              <input
-                type="email"
-                name="email"
-                placeholder="sara@example.com"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </label>
+              <label>
+                Email
+                <input type="email" name="email" placeholder="sara@example.com" value={formData.email} onChange={handleChange} />
+              </label>
               <label>
                 City
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="Cairo"
-                  value={formData.city}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="text" name="city" placeholder="Cairo" value={formData.city} onChange={handleChange} required />
               </label>
               <label className="checkout-span-2">
                 Address / Landmark
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Building, street, floor..."
-                  value={formData.address}
-                  onChange={handleChange}
-                  required
-                />
+                <input type="text" name="address" placeholder="Building, street, floor..." value={formData.address} onChange={handleChange} required />
               </label>
               <label className="checkout-span-2">
                 Notes for the courier (optional)
-                <textarea
-                  name="notes"
-                  rows="3"
-                  placeholder="Entrance code, ideal delivery slot, etc."
-                  value={formData.notes}
-                  onChange={handleChange}
-                />
+                <textarea name="notes" rows="3" placeholder="Entrance code, ideal delivery slot, etc." value={formData.notes} onChange={handleChange} />
               </label>
             </fieldset>
 
@@ -261,14 +202,8 @@ const isFormValid =
             {status?.type === "error" && <p className="checkout-status checkout-status--error">{status.message}</p>}
 
             <div className="checkout-actions">
-              <button type="button" className="ghost-btn" onClick={goToCart}>
-                Adjust bag
-              </button>
-              <button
-                type="submit"
-                className="cta-btn"
-                disabled={!isFormValid || cartIsEmpty || isSubmitting}
-              >
+              <button type="button" className="ghost-btn" onClick={goToCart}>Adjust bag</button>
+              <button type="submit" className="cta-btn" disabled={!isFormValid || cartIsEmpty || isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Place cash order"}
               </button>
             </div>
@@ -279,9 +214,7 @@ const isFormValid =
             {cartIsEmpty ? (
               <div className="checkout-empty">
                 <p>Your bag is empty. Add a treatment to continue.</p>
-                <button type="button" className="cta-btn" onClick={goToCollection}>
-                  Return to collection
-                </button>
+                <button type="button" className="cta-btn" onClick={goToCollection}>Return to collection</button>
               </div>
             ) : (
               <>
@@ -304,18 +237,9 @@ const isFormValid =
                   })}
                 </ul>
                 <dl className="checkout-totals">
-                  <div>
-                    <dt>Items</dt>
-                    <dd>{totalItems}</dd>
-                  </div>
-                  <div>
-                    <dt>Subtotal</dt>
-                    <dd>{subtotal.toFixed(2)} EGP</dd>
-                  </div>
-                  <div>
-                    <dt>Payment</dt>
-                    <dd>Cash on delivery</dd>
-                  </div>
+                  <div><dt>Items</dt><dd>{totalItems}</dd></div>
+                  <div><dt>Subtotal</dt><dd>{subtotal.toFixed(2)} EGP</dd></div>
+                  <div><dt>Payment</dt><dd>Cash on delivery</dd></div>
                 </dl>
                 <p className="checkout-note">
                   Our concierge will contact you to confirm the delivery window. Payment is collected
@@ -327,9 +251,7 @@ const isFormValid =
             {status?.type === "success" && (
               <div className="checkout-status checkout-status--success">
                 <p>{status.message}</p>
-                <button type="button" className="ghost-btn" onClick={goToCollection}>
-                  Continue shopping
-                </button>
+                <button type="button" className="ghost-btn" onClick={goToCollection}>Continue shopping</button>
               </div>
             )}
           </aside>

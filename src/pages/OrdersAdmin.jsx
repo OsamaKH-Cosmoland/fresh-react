@@ -1,13 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Sidebar from "../components/Sidebar.jsx";
+import { apiGet } from "../lib/api";
 
 const formatDate = (isoString) => {
-  try {
-    return new Date(isoString).toLocaleString();
-  } catch {
-    return isoString ?? "—";
-  }
+  try { return new Date(isoString).toLocaleString(); } catch { return isoString ?? "—"; }
 };
 
 export default function OrdersAdmin() {
@@ -20,9 +17,7 @@ export default function OrdersAdmin() {
     setLoading(true);
     setError(null);
     try {
-      const apiBase = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
-      const endpoint = apiBase ? `${apiBase}/api/orders` : "/api/orders";
-      const response = await fetch(endpoint);
+      const response = await apiGet("/orders");
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
         throw new Error(body?.error ?? `Unable to load orders (${response.status}).`);
@@ -42,11 +37,7 @@ export default function OrdersAdmin() {
   }, []);
 
   const totalCashValue = useMemo(
-    () =>
-      orders.reduce(
-        (sum, order) => sum + Number.parseFloat(order?.totals?.subtotal ?? 0),
-        0
-      ),
+    () => orders.reduce((sum, order) => sum + Number.parseFloat(order?.totals?.subtotal ?? 0), 0),
     [orders]
   );
 

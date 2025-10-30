@@ -1,28 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "../components/Navbar.jsx";
 import Sidebar from "../components/Sidebar.jsx";
-
-const sanitizeBaseUrl = (value) => (value ?? "").replace(/\/$/, "");
-
-const resolveApiUrl = (path) => {
-  const base = sanitizeBaseUrl(import.meta.env.VITE_API_BASE_URL);
-  if (!base) return path;
-  if (path.startsWith("http")) return path;
-  return `${base}${path}`;
-};
+import { apiGet, API_BASE } from "../lib/api";
 
 const formatCurrency = (value) =>
-  new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP" }).format(
-    Number(value ?? 0)
-  );
+  new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP" }).format(Number(value ?? 0));
 
 const formatTimestamp = (value) => {
   if (!value) return "—";
-  try {
-    return new Date(value).toLocaleString();
-  } catch {
-    return value;
-  }
+  try { return new Date(value).toLocaleString(); } catch { return value; }
 };
 
 const getOrderKey = (order) =>
@@ -49,8 +35,8 @@ export default function AdminDashboard() {
   const streamRef = useRef(null);
   const notificationSupported = typeof window !== "undefined" && "Notification" in window;
 
-  const ordersEndpoint = resolveApiUrl("/api/orders?limit=100");
-  const streamEndpoint = resolveApiUrl("/api/orders/stream");
+  const ordersEndpoint = `${API_BASE}/orders?limit=100`;
+  const streamEndpoint = `${API_BASE}/orders/stream`;
 
   const pushToast = useCallback((message) => {
     const toastId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -65,7 +51,7 @@ export default function AdminDashboard() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(ordersEndpoint);
+      const response = await apiGet("/orders?limit=100");
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
         throw new Error(body?.error ?? `Unable to load orders (${response.status}).`);
@@ -78,7 +64,7 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [ordersEndpoint]);
+  }, []);
 
   const highlightOrder = useCallback((orderKey) => {
     setHighlighted((prev) => ({ ...prev, [orderKey]: true }));
@@ -122,12 +108,8 @@ export default function AdminDashboard() {
             incoming.customer?.email,
             incoming.customer?.phone,
             `${formatCurrency(incoming?.totals?.subtotal)} | ${incoming.customer?.city ?? ""}`,
-          ]
-            .filter(Boolean)
-            .join(" · ");
-          new Notification(`New order ${incoming.orderCode ?? incoming.id}`, {
-            body: notificationBody,
-          });
+          ].filter(Boolean).join(" · ");
+          new Notification(`New order ${incoming.orderCode ?? incoming.id}`, { body: notificationBody });
         } catch (notifyError) {
           console.error("Unable to show desktop notification", notifyError);
         }
@@ -141,9 +123,7 @@ export default function AdminDashboard() {
   }, [fetchOrders]);
 
   useEffect(() => {
-    if (streamRef.current) {
-      streamRef.current.close();
-    }
+    if (streamRef.current) streamRef.current.close();
     const source = new EventSource(streamEndpoint);
     streamRef.current = source;
 
@@ -174,11 +154,7 @@ export default function AdminDashboard() {
   }, []);
 
   const totalValue = useMemo(
-    () =>
-      orders.reduce(
-        (sum, order) => sum + Number.parseFloat(order?.totals?.subtotal ?? 0),
-        0
-      ),
+    () => orders.reduce((sum, order) => sum + Number.parseFloat(order?.totals?.subtotal ?? 0), 0),
     [orders]
   );
 
@@ -211,11 +187,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="admin-dashboard">
-      <Navbar
-        sticky={false}
-        onMenuToggle={() => setDrawerOpen(true)}
-        cartCount={0}
-      />
+      <Navbar sticky={false} onMenuToggle={() => setDrawerOpen(true)} cartCount={0} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="admin-container" aria-live="polite">

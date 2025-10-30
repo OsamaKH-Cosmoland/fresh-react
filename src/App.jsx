@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import LayoutLab from "./labs/LayoutLab.jsx"; // ✅ added
+import LayoutLab from "./labs/LayoutLab.jsx";
 import RitualPlanner from "./pages/RitualPlanner.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import OrdersAdmin from "./pages/OrdersAdmin.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
+import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 
-const SHOW_LAB = true; // ✅ toggle between lab & fruit shop
+const SHOW_LAB = true;
 
 const PRESET_FRUITS = [
   { name: "Apple", price: 12 },
@@ -26,14 +27,14 @@ function FruitShop() {
   const [loading, setLoading] = useState(true);
   const [minPrice, setMinPrice] = useState(0);
   const [query, setQuery] = useState("");
-  const [sortBy, setSortBy] = useState("none"); // 'asc' | 'desc' | 'none'
+  const [sortBy, setSortBy] = useState("none");
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/api/fruits");
+        const res = await apiGet("/fruits");
         if (!res.ok) throw new Error("Failed to fetch fruits");
         const data = await res.json();
         setFruits(data);
@@ -50,17 +51,11 @@ function FruitShop() {
     const clean = name.trim();
     if (!clean || Number.isNaN(n) || n < 0) return;
 
-    const res = await fetch("/api/fruits", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: clean, price: n }),
-    });
-
+    const res = await apiPost("/fruits", { name: clean, price: n });
     if (!res.ok) {
       console.error("Failed to create fruit");
       return;
     }
-
     const created = await res.json();
     setFruits((prev) => [created, ...prev]);
     setName("");
@@ -68,7 +63,7 @@ function FruitShop() {
   }
 
   async function deleteFruit(id) {
-    const res = await fetch(`/api/fruits?id=${id}`, { method: "DELETE" });
+    const res = await apiDelete(`/fruits?id=${encodeURIComponent(id)}`);
     if (!res.ok) {
       console.error("Failed to delete fruit");
       return;
@@ -81,19 +76,16 @@ function FruitShop() {
     const newPrice = prompt("Enter New Price:", price);
     if (!newName || !newPrice) return;
 
-    const res = await fetch(`/api/fruits.js?id${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newName, price: Number(newPrice) }),
+    const res = await apiPut(`/fruits?id=${encodeURIComponent(id)}`, {
+      name: newName,
+      price: Number(newPrice),
     });
-
     if (!res.ok) {
       alert("Failed to update fruit");
       return;
     }
-
     const updated = await res.json();
-    setFruits((prev) => prev.map((f) => (f.id === id ? updated : f)));
+    setFruits((prev) => prev.map((f) => (f._id === id ? updated : f)));
   }
 
   const filtered = useMemo(() => {
@@ -111,7 +103,6 @@ function FruitShop() {
   }, [filtered, sortBy]);
 
   const total = useMemo(() => sorted.reduce((sum, item) => sum + item.price, 0), [sorted]);
-
   const canAdd = name.trim() && !Number.isNaN(Number(price)) && Number(price) >= 0;
 
   return (
@@ -120,11 +111,7 @@ function FruitShop() {
 
       <fieldset style={{ marginBottom: 16 }}>
         <legend>Add Fruit</legend>
-        <input
-          placeholder="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <input placeholder="name" value={name} onChange={(e) => setName(e.target.value)} />
         <input
           placeholder="price"
           type="number"
@@ -139,20 +126,12 @@ function FruitShop() {
       <div style={{ display: "grid", gap: 12, marginBottom: 16 }}>
         <label>
           Min Price:{" "}
-          <input
-            type="number"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-          />
+          <input type="number" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
         </label>
 
         <label>
           Search By Name:{" "}
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Apple, Banana..."
-          />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Apple, Banana..." />
         </label>
 
         <div style={{ display: "flex", gap: 8 }}>
@@ -184,7 +163,6 @@ function FruitShop() {
   );
 }
 
-// ✅ Export logic — toggles between your two apps
 export default function App() {
   const view =
     typeof window !== "undefined"
@@ -195,25 +173,11 @@ export default function App() {
       ? window.location.pathname.replace(/\/+$/, "") || "/"
       : "/";
 
-  if (view === "cart" || path === "/cart") {
-    return <CartPage />;
-  }
-
-  if (view === "checkout" || path === "/checkout") {
-    return <CheckoutPage />;
-  }
-
-  if (view === "admin" || path === "/admin") {
-    return <AdminDashboard />;
-  }
-
-  if (view === "orders" || path === "/orders") {
-    return <OrdersAdmin />;
-  }
-
-  if (view === "ritualplanner" || path === "/rituals") {
-    return <RitualPlanner />;
-  }
+  if (view === "cart" || path === "/cart") return <CartPage />;
+  if (view === "checkout" || path === "/checkout") return <CheckoutPage />;
+  if (view === "admin" || path === "/admin") return <AdminDashboard />;
+  if (view === "orders" || path === "/orders") return <OrdersAdmin />;
+  if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;
 
   return SHOW_LAB ? <LayoutLab /> : <FruitShop />;
 }
