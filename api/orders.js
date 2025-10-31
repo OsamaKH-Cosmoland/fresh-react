@@ -6,6 +6,8 @@ import https from "https";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
+import crypto from "crypto";
+import { ObjectId } from "mongodb";
 import { resolveOrdersStore } from "./_ordersStore.js";
 let cachedTransporter = null;
 const bus = new EventEmitter();
@@ -70,6 +72,57 @@ const resolveFromCandidates = (...values) => {
   return "";
 };
 
+const parseAmount = (value) => {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (typeof value === "string" && value.trim().length) {
+    const numeric = Number.parseFloat(value.replace(/[^\d.-]/g, ""));
+    return Number.isFinite(numeric) ? numeric : null;
+  }
+  return null;
+};
+
+const roundCurrency = (value) =>
+  Number.isFinite(value) ? Math.round((value + Number.EPSILON) * 100) / 100 : 0;
+
+const extractCurrencyFromPrice = (price) => {
+  const text = sanitizeString(price);
+  if (!text) return "";
+  const matches = text.match(/[A-Za-z]{3,}/g);
+  return matches?.pop()?.toUpperCase() ?? "";
+};
+
+const resolveCustomerId = (...candidates) => {
+  for (const candidate of candidates) {
+    const cleaned = sanitizeString(candidate).replace(/\s+/g, "");
+    if (cleaned) return cleaned;
+  }
+  return "";
+};
+
+const ensureObjectId = (value, fallbackSeed = "") => {
+  if (value instanceof ObjectId) return value;
+  if (value && typeof value === "object" && typeof value.$oid === "string") {
+    const oid = value.$oid.trim();
+    if (ObjectId.isValid(oid)) return new ObjectId(oid);
+  }
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed) {
+      if (ObjectId.isValid(trimmed)) return new ObjectId(trimmed);
+      const hash = crypto.createHash("sha1").update(trimmed).digest("hex").slice(0, 24);
+      const padded = hash.padEnd(24, "0");
+      return new ObjectId(padded);
+    }
+  }
+  if (fallbackSeed && typeof fallbackSeed === "string" && fallbackSeed.trim()) {
+    const hash = crypto.createHash("sha1").update(fallbackSeed.trim()).digest("hex").slice(0, 24);
+    return new ObjectId(hash.padEnd(24, "0"));
+  }
+  return new ObjectId();
+};
+
 const loadTelegramConfigFile = () => {
   try {
     const configPath = new URL("../config/telegram.config.json", import.meta.url);
@@ -124,45 +177,158 @@ function sanitizePayload(rawBody) {
     }
   }
   if (!body || typeof body !== "object") body = {};
-  const items = Array.isArray(body.items)
-    ? body.items.map((item) => ({
-        id: sanitizeString(item?.id),
-        title: sanitizeString(item?.title) || "Custom item",
-        quantity: Number(item?.quantity ?? 0),
-        unitPrice: sanitizeString(item?.unitPrice ?? ""),
-      }))
-    : [];
 
-  const totalsItems = Number(
-    body?.totals?.items ?? items.reduce((sum, item) => sum + (item?.quantity ?? 0), 0)
+  const rawItems = Array.isArray(body.items) ? body.items : [];
+  const sanitizedItems = rawItems.map((item) => {
+    const rawVariant = item?.variant ?? item?.selectedVariant ?? item;
+    const variantSize =
+      sanitizeString(rawVariant?.size ?? rawVariant?.name ?? rawVariant?.label ?? rawVariant) ||
+      "standard";
+    const variantPriceSource =
+      parseAmount(
+        typeof rawVariant?.price === "object" && rawVariant?.price !== null
+          ? rawVariant?.price?.amount ?? rawVariant?.price?.value
+          : rawVariant?.price
+      ) ?? parseAmount(item?.price) ?? parseAmount(item?.unitPrice);
+    const sanitizedUnitPrice = sanitizeString(item?.unitPrice ?? "");
+
+    return {
+      id: sanitizeString(item?.id),
+      title: sanitizeString(item?.title) || "Custom item",
+      quantity: Number(item?.quantity ?? 0),
+      unitPrice: sanitizedUnitPrice,
+      variant: {
+        name: variantSize.toLowerCase(),
+        label: variantSize,
+        size: variantSize,
+        price: Number.isFinite(variantPriceSource) ? roundCurrency(variantPriceSource) : null,
+      },
+    };
+  });
+
+  const filteredItems = sanitizedItems.filter((item) => item.id && item.quantity > 0);
+  const enrichedItems = filteredItems.map((item) => {
+    const qty = Number.isFinite(item.quantity) ? item.quantity : 0;
+    const unitPriceValue = parseAmount(item.unitPrice) ?? 0;
+    const lineTotal = roundCurrency(unitPriceValue * qty);
+    const variantSize =
+      sanitizeString(item.variant?.size ?? item.variant?.label ?? item.variant?.name) || "standard";
+    const variantCurrency = sanitizeString(
+      item.variant?.currency || body?.totals?.currency || extractCurrencyFromPrice(item.unitPrice)
+    );
+    const variantPriceRaw =
+      typeof item.variant?.price === "object" && item.variant?.price !== null
+        ? parseAmount(item.variant?.price?.amount ?? item.variant?.price?.value)
+        : parseAmount(item.variant?.price);
+    const variantPrice = Number.isFinite(variantPriceRaw) ? roundCurrency(variantPriceRaw) : unitPriceValue;
+    const variant =
+      item.variant && typeof item.variant === "object" && !Array.isArray(item.variant)
+        ? {
+            ...item.variant,
+            name: sanitizeString(item.variant.name ?? item.variant.label) || variantSize.toLowerCase(),
+            label: sanitizeString(item.variant.label ?? item.variant.name) || variantSize,
+            size: variantSize,
+            currency: variantCurrency || "EGP",
+            price: variantPrice,
+          }
+        : {
+            name: variantSize.toLowerCase(),
+            label: variantSize,
+            size: variantSize,
+            currency: variantCurrency || "EGP",
+            price: variantPrice,
+          };
+    return {
+      ...item,
+      productSlug: item.id,
+      variant,
+      qty,
+      lineTotal,
+      unitPriceValue,
+    };
+  });
+
+  const totalsItemsProvided = Number.parseInt(body?.totals?.items, 10);
+  const itemsQuantity = enrichedItems.reduce((sum, item) => sum + (item?.qty ?? 0), 0);
+  const totalsItems =
+    Number.isFinite(totalsItemsProvided) && totalsItemsProvided >= 0
+      ? totalsItemsProvided
+      : itemsQuantity;
+
+  const subtotalProvided = parseAmount(body?.totals?.subtotal);
+  const subTotalProvided = parseAmount(body?.totals?.subTotal);
+  const shippingProvided = parseAmount(body?.totals?.shipping);
+  const grandTotalProvided = parseAmount(body?.totals?.grandTotal);
+
+  const subtotalFromItems = roundCurrency(
+    enrichedItems.reduce((sum, item) => sum + (item?.lineTotal ?? 0), 0)
   );
-  const subtotal = Number(body?.totals?.subtotal ?? 0);
+  const subtotal = subtotalProvided ?? subtotalFromItems;
+  const subTotal = subTotalProvided ?? subtotal;
+  const shipping = shippingProvided ?? 0;
+  const grandTotal = grandTotalProvided ?? roundCurrency(subTotal + shipping);
+
+  const currencyCandidate =
+    sanitizeString(body?.totals?.currency) ||
+    extractCurrencyFromPrice(enrichedItems.find((item) => item.unitPrice)?.unitPrice) ||
+    "EGP";
+  const currency = currencyCandidate ? currencyCandidate.toUpperCase() : "EGP";
+
+  const customer = {
+    name: sanitizeString(body?.customer?.name),
+    email: sanitizeString(body?.customer?.email),
+    phone: sanitizeString(body?.customer?.phone),
+    address: sanitizeString(body?.customer?.address),
+    city: sanitizeString(body?.customer?.city),
+    notes: sanitizeString(body?.customer?.notes),
+  };
+
+  const id = sanitizeString(body.id) || `NG-${Date.now().toString(36).toUpperCase()}`;
+  const customerIdentifier = resolveCustomerId(
+    body?.customerId,
+    body?.customer?.customerId,
+    customer.phone,
+    customer.email
+  );
+  const customerFingerprint =
+    customerIdentifier || customer.phone || customer.email || `cust-${id}`;
+  const customerId = ensureObjectId(customerIdentifier, customerFingerprint);
 
   return {
-    id: sanitizeString(body.id) || `NG-${Date.now().toString(36).toUpperCase()}`,
+    id,
+    customerId,
     paymentMethod: sanitizeString(body.paymentMethod) || "cash_on_delivery",
     status: sanitizeString(body.status) || "pending",
     totals: {
       items: Number.isFinite(totalsItems) ? totalsItems : 0,
-      subtotal: Number.isFinite(subtotal) ? subtotal : 0,
+      subtotal: Number.isFinite(subtotal) ? subtotal : subtotalFromItems,
+      subTotal: Number.isFinite(subTotal) ? subTotal : subtotalFromItems,
+      shipping: Number.isFinite(shipping) ? shipping : 0,
+      grandTotal: Number.isFinite(grandTotal)
+        ? grandTotal
+        : roundCurrency((Number.isFinite(subTotal) ? subTotal : subtotalFromItems) + (Number.isFinite(shipping) ? shipping : 0)),
+      currency,
     },
-    customer: {
-      name: sanitizeString(body?.customer?.name),
-      email: sanitizeString(body?.customer?.email),
-      phone: sanitizeString(body?.customer?.phone),
-      address: sanitizeString(body?.customer?.address),
-      city: sanitizeString(body?.customer?.city),
-      notes: sanitizeString(body?.customer?.notes),
-    },
-    items: items.filter((item) => item.id && item.quantity > 0),
+    customer,
+    items: enrichedItems,
   };
 }
 
-const cleanOrderDoc = ({ _id, ...rest }) => ({ ...rest, mongoId: _id?.toString() });
+const cleanOrderDoc = ({ _id, customerId, ...rest }) => ({
+  ...rest,
+  customerId: customerId instanceof ObjectId ? customerId.toString() : customerId,
+  mongoId: _id?.toString(),
+});
 
 const generateOrderCode = () => {
   const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
   return `NG-${randomPart}`;
+};
+
+const toValidDate = (value, fallback) => {
+  if (!value) return fallback;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? fallback : date;
 };
 
 const ensureMailer = async () => {
@@ -334,7 +500,7 @@ export default async function handler(req, res) {
       }
 
       const now = new Date();
-      const cutoff = new Date(now.getTime() - 2 * 60 * 1000).toISOString();
+      const cutoff = new Date(now.getTime() - 2 * 60 * 1000);
 
       if (payload.paymentMethod === "cash_on_delivery" && payload.customer.phone) {
         const duplicate = await store.findRecentCashOrderByPhone(payload.customer.phone, cutoff);
@@ -345,13 +511,16 @@ export default async function handler(req, res) {
         }
       }
 
+      const createdAt = toValidDate(payload.createdAt, now);
+      const updatedAt = toValidDate(payload.updatedAt, now);
       const orderCode = generateOrderCode();
       const doc = {
         ...payload,
         orderCode,
-        createdAt: payload.createdAt ?? now.toISOString(),
-        updatedAt: payload.updatedAt ?? now.toISOString(),
+        createdAt,
+        updatedAt,
       };
+      console.log(JSON.stringify(doc, null, 2))
       const storedDoc = await store.create(doc);
 
       try {
@@ -392,6 +561,16 @@ export default async function handler(req, res) {
     return res.status(405).end("Method Not Allowed");
   } catch (error) {
     console.error("API /api/orders error:", error);
+    if (error?.errInfo) {
+      try {
+        console.error(
+          "API /api/orders error details:",
+          JSON.stringify(error.errInfo, null, 2)
+        );
+      } catch {
+        console.error("API /api/orders errInfo:", error.errInfo);
+      }
+    }
     return res.status(500).json({ error: "Server error" });
   }
 }

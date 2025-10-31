@@ -11,6 +11,7 @@ export async function connectToDb() {
 
   const uri = process.env.MONGODB_URI;
   const dbName = process.env.MONGODB_DB;
+  console.log({dbName})
   if (!uri || !dbName) {
     throw new Error("Missing MONGODB_URI or MONGODB_DB env vars");
   }

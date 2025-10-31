@@ -36,9 +36,15 @@ class MongoOrdersStore {
   }
 
   async create(doc) {
-    const insertResult = await this.collection.insertOne(doc);
-    doc._id = doc._id ?? insertResult.insertedId;
-    return doc;
+    try {
+      const insertResult = await this.collection.insertOne(doc);
+      doc._id = doc._id ?? insertResult.insertedId;
+      return doc;
+      
+    } catch (error) {
+      console.log(JSON.stringify(error, null, 2))
+      throw new Error(error)
+    }
   }
 
   async updateStatus(id, status) {
@@ -122,7 +128,112 @@ class FileOrdersStore {
   }
 }
 
-const fallbackStore = new FileOrdersStore(fallbackFilePath);
+class MemoryOrdersStore {
+  constructor(initialOrders = []) {
+    this.orders = initialOrders.map(cloneOrder);
+  }
+
+  replaceAll(orders) {
+    this.orders = orders.map(cloneOrder);
+  }
+
+  snapshot() {
+    return this.orders.map(cloneOrder);
+  }
+
+  async list(limit) {
+    const sorted = this.orders
+      .slice()
+      .sort(
+        (a, b) =>
+          new Date(b?.createdAt ?? 0).getTime() - new Date(a?.createdAt ?? 0).getTime()
+      );
+    return sorted.slice(0, limit);
+  }
+
+  async findRecentCashOrderByPhone(phone, sinceIso) {
+    const since = new Date(sinceIso).getTime();
+    return (
+      this.orders.find(
+        (order) =>
+          order?.paymentMethod === "cash_on_delivery" &&
+          (order?.customer?.phone ?? "") === phone &&
+          new Date(order?.createdAt ?? 0).getTime() >= since
+      ) ?? null
+    );
+  }
+
+  async create(doc) {
+    const stored = cloneOrder(doc);
+    this.orders.push(stored);
+    return stored;
+  }
+
+  async updateStatus(id, status) {
+    const index = this.orders.findIndex((order) => order?.id === id);
+    if (index === -1) return null;
+    const updated = {
+      ...this.orders[index],
+      status,
+      updatedAt: new Date().toISOString(),
+    };
+    this.orders[index] = updated;
+    return updated;
+  }
+}
+
+const READONLY_FS_ERROR_CODES = new Set(["EACCES", "EPERM", "EROFS", "ENOSPC"]);
+
+const fileFallbackStore = new FileOrdersStore(fallbackFilePath);
+const memoryFallbackStore = new MemoryOrdersStore();
+let activeFallbackStore = fileFallbackStore;
+let fallbackStoreType = "file";
+
+const isReadOnlyFsError = (error) => READONLY_FS_ERROR_CODES.has(error?.code);
+
+const switchToMemoryFallback = async (error) => {
+  if (fallbackStoreType === "memory") {
+    throw error;
+  }
+  console.warn(
+    `[orders:fallback] write failed (${error?.code ?? error}). Switching to in-memory store.`
+  );
+  const existingOrders = await fileFallbackStore.readAll().catch(() => []);
+  const memorySnapshot = memoryFallbackStore.snapshot();
+  const seenIds = new Set(existingOrders.map((order) => order?.id).filter(Boolean));
+  for (const order of memorySnapshot) {
+    if (!seenIds.has(order?.id)) {
+      existingOrders.push(order);
+      if (order?.id) {
+        seenIds.add(order.id);
+      }
+    }
+  }
+  memoryFallbackStore.replaceAll(existingOrders);
+  activeFallbackStore = memoryFallbackStore;
+  fallbackStoreType = "memory";
+};
+
+const withReadonlyGuard = (method) => {
+  return async (...args) => {
+    try {
+      return await activeFallbackStore[method](...args);
+    } catch (error) {
+      if (activeFallbackStore === fileFallbackStore && isReadOnlyFsError(error)) {
+        await switchToMemoryFallback(error);
+        return activeFallbackStore[method](...args);
+      }
+      throw error;
+    }
+  };
+};
+
+const fallbackStore = {
+  list: withReadonlyGuard("list"),
+  findRecentCashOrderByPhone: withReadonlyGuard("findRecentCashOrderByPhone"),
+  create: withReadonlyGuard("create"),
+  updateStatus: withReadonlyGuard("updateStatus"),
+};
 let cachedMongoStore = null;
 
 export const resolveOrdersStore = async () => {
@@ -140,10 +251,12 @@ export const resolveOrdersStore = async () => {
     console.warn(
       `[orders] MongoDB unavailable, using local fallback store: ${error?.message ?? error}`
     );
-    return { type: "file", store: fallbackStore };
+    return { type: fallbackStoreType, store: fallbackStore };
   }
 };
 
 export const resetOrdersStoreCache = () => {
   cachedMongoStore = null;
+  activeFallbackStore = fileFallbackStore;
+  fallbackStoreType = "file";
 };
