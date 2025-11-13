@@ -4,6 +4,7 @@ import Sidebar from "../components/Sidebar.jsx";
 import { readCart, writeCart, subscribeToCart } from "../utils/cartStorage.js";
 import { PRODUCT_INDEX } from "../data/products.js";
 import { apiPost } from "../lib/api";
+import { sendOrderToN8N } from "../api/orders.js";
 
 const EMPTY_FORM = {
   fullName: "",
@@ -75,8 +76,8 @@ export default function CheckoutPage() {
     formData.address.trim() &&
     formData.city.trim();
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handlePlaceOrder = async (event) => {
+    event?.preventDefault?.();
     if (cartIsEmpty) {
       setStatus({ type: "error", message: "Add at least one product before placing an order." });
       return;
@@ -88,7 +89,10 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
     setStatus(null);
     try {
-      const orderId = generateOrderId();
+      const orderId =
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID()
+          : generateOrderId();
       const order = {
         id: orderId,
         createdAt: new Date().toISOString(),
@@ -128,6 +132,25 @@ export default function CheckoutPage() {
       }
 
       const savedOrder = await response.json().catch(() => order);
+
+      const orderPayload = {
+        orderId: savedOrder.id ?? orderId,
+        orderNumber: savedOrder.orderCode ?? orderId,
+        email: formData.email.trim() || "guest@example.com", // TODO: require customer email once UX allows
+        customerName: formData.fullName.trim() || "Guest Customer",
+        items: cartItems.map((item) => {
+          const product = PRODUCT_INDEX[item.id] ?? {};
+          return {
+            title: product.title ?? "Custom item",
+            quantity: item.quantity,
+          };
+        }),
+        total: Number(subtotal.toFixed(2)),
+        currency: "EGP", // TODO: derive currency dynamically when multi-currency is supported
+      };
+
+      const n8nResponse = await sendOrderToN8N(orderPayload);
+      console.log("[checkout] order forwarded to n8n", n8nResponse);
       writeCart([]);
       setCartItems([]);
       setFormData(EMPTY_FORM);
@@ -135,9 +158,11 @@ export default function CheckoutPage() {
         type: "success",
         message: `Your cash order ${savedOrder.id ?? orderId} has been received. Our concierge will call to confirm delivery and collect payment in cash upon arrival.`,
       });
+      window.alert("Your cash order was placed successfully!");
     } catch (error) {
       console.error("Checkout submit failed", error);
       setStatus({ type: "error", message: error.message ?? "Unable to place order right now." });
+      window.alert(error.message ?? "Unable to place order right now.");
     } finally {
       setIsSubmitting(false);
     }
@@ -159,7 +184,7 @@ export default function CheckoutPage() {
         </header>
 
         <section className="checkout-grid">
-          <form className="checkout-form" onSubmit={handleSubmit}>
+          <form className="checkout-form" onSubmit={handlePlaceOrder}>
             <fieldset className="checkout-fields">
               <legend>Delivery details</legend>
               <label>
@@ -203,7 +228,12 @@ export default function CheckoutPage() {
 
             <div className="checkout-actions">
               <button type="button" className="ghost-btn" onClick={goToCart}>Adjust bag</button>
-              <button type="submit" className="cta-btn" disabled={!isFormValid || cartIsEmpty || isSubmitting}>
+              <button
+                type="submit"
+                className="cta-btn"
+                onClick={handlePlaceOrder}
+                disabled={!isFormValid || cartIsEmpty || isSubmitting}
+              >
                 {isSubmitting ? "Submitting..." : "Place cash order"}
               </button>
             </div>
