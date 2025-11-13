@@ -49,5 +49,5 @@ export default async function handler(req, res) {
 
 // Vercel config (ensure Node runtime)
 export const config = {
-  runtime: 'nodejs18.x',
+  runtime: 'nodejs',
 };
