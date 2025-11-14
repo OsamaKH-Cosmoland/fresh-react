@@ -5,9 +5,16 @@ export default function Navbar({
   sticky = false,
   brand = "NaturaGloss",
   cartCount = 0,
+  showSectionLinks = true,
 }) {
   const [elevated, setElevated] = useState(false);
   const itemLabel = cartCount === 1 ? "item" : "items";
+  const buildSectionHref = (hash) => {
+    const base = import.meta.env.BASE_URL || "/";
+    const normalized = base.endsWith("/") ? base : `${base}/`;
+    const target = String(hash).replace(/^#/, "");
+    return `${normalized}#${target}`;
+  };
 
   useEffect(() => {
     if (!sticky) return;
@@ -21,10 +28,12 @@ export default function Navbar({
     <header className={`navbar rise-once ${sticky ? "sticky" : ""} ${elevated ? "elevated" : ""}`}>
       <div className="nav-inner">
         <a className="brand" href="/">{brand}</a>
-        <nav className="nav-links">
-          <a className="nav-pill" href="#grid">Collection</a>
-          <a className="nav-pill" href="#about">About</a>
-        </nav>
+        {showSectionLinks && (
+          <nav className="nav-links">
+            <a className="nav-pill" href={buildSectionHref("grid")}>Collection</a>
+            <a className="nav-pill" href="?view=ritualfinder">Ritual Finder</a>
+          </nav>
+        )}
         <div className="nav-actions">
           <a
             className="nav-cart"

@@ -22,6 +22,21 @@ const parsePrice = (price) => {
 
 const generateOrderId = () => `NG-${Date.now().toString(36).toUpperCase()}`;
 
+const TRUST_POINTS = [
+  {
+    title: "Secure checkout",
+    copy: "Your details are encrypted and confirmed directly with our concierge.",
+  },
+  {
+    title: "Cash on delivery",
+    copy: "Review your NaturaGloss ritual before paying the courier in cash.",
+  },
+  {
+    title: "Complimentary care",
+    copy: "Every order ships with tailored ritual guidance and after-care support.",
+  },
+];
+
 export default function CheckoutPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartItems, setCartItems] = useState(() => readCart());
@@ -216,7 +231,12 @@ export default function CheckoutPage() {
 
   return (
     <div className="checkout-page">
-      <Navbar sticky={false} onMenuToggle={() => setDrawerOpen(true)} cartCount={totalItems} />
+      <Navbar
+        sticky={false}
+        onMenuToggle={() => setDrawerOpen(true)}
+        cartCount={totalItems}
+        showSectionLinks={false}
+      />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="checkout-shell">
@@ -331,6 +351,21 @@ export default function CheckoutPage() {
                 </p>
               </>
             )}
+
+            <div className="checkout-trust-card" aria-live="polite">
+              <h3>You&apos;re in safe hands</h3>
+              <ul className="checkout-trust-list">
+                {TRUST_POINTS.map((point) => (
+                  <li key={point.title} className="checkout-trust-item">
+                    <span className="checkout-trust-icon" aria-hidden="true">✶</span>
+                    <div>
+                      <strong>{point.title}</strong>
+                      <p>{point.copy}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             {status?.type === "success" && (
               <div className="checkout-status checkout-status--success">

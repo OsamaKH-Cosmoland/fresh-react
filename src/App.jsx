@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import LayoutLab from "./labs/LayoutLab.jsx";
 import RitualPlanner from "./pages/RitualPlanner.jsx";
+import RitualFinder from "./pages/RitualFinder.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import CheckoutPage from "./pages/CheckoutPage.jsx";
 import OrdersAdmin from "./pages/OrdersAdmin.jsx";
@@ -178,6 +179,7 @@ export default function App() {
   if (view === "admin" || path === "/admin") return <AdminDashboard />;
   if (view === "orders" || path === "/orders") return <OrdersAdmin />;
   if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;
+  if (view === "ritualfinder" || path === "/ritual-finder") return <RitualFinder />;
 
   return SHOW_LAB ? <LayoutLab /> : <FruitShop />;
 }
