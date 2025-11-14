@@ -27,6 +27,7 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState(() => readCart());
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [status, setStatus] = useState(null);
+  const [checkoutStatus, setCheckoutStatus] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => { writeCart(cartItems); }, [cartItems]);
@@ -73,6 +74,7 @@ export default function CheckoutPage() {
   const isFormValid =
     formData.fullName.trim() &&
     formData.phone.trim() &&
+    formData.email.trim() &&
     formData.address.trim() &&
     formData.city.trim();
 
@@ -88,6 +90,7 @@ export default function CheckoutPage() {
     }
     setIsSubmitting(true);
     setStatus(null);
+    setCheckoutStatus(null);
     try {
       const orderId =
         typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
@@ -133,11 +136,28 @@ export default function CheckoutPage() {
 
       const savedOrder = await response.json().catch(() => order);
 
+      const payloadOrderId = savedOrder.id ?? orderId;
+      const itemsSummary = cartItems
+        .map((item) => {
+          const product = PRODUCT_INDEX[item.id] ?? {};
+          return `${item.quantity}x ${product.title ?? "Custom item"}`;
+        })
+        .join(", ");
       const orderPayload = {
-        orderId: savedOrder.id ?? orderId,
-        orderNumber: savedOrder.orderCode ?? orderId,
-        email: formData.email.trim() || "guest@example.com", // TODO: require customer email once UX allows
-        customerName: formData.fullName.trim() || "Guest Customer",
+        orderId: payloadOrderId,
+        orderNumber: savedOrder.orderCode ?? `NG-${Date.now()}`,
+        email: formData.email.trim(),
+        customerName: formData.fullName.trim(),
+        items: itemsSummary,
+        total: subtotal.toFixed(2),
+        currency: "EGP",
+      };
+
+      const n8nResponse = await sendOrderToN8N({
+        orderId: payloadOrderId,
+        orderNumber: orderPayload.orderNumber,
+        email: orderPayload.email || "guest@example.com",
+        customerName: orderPayload.customerName || "Guest Customer",
         items: cartItems.map((item) => {
           const product = PRODUCT_INDEX[item.id] ?? {};
           return {
@@ -146,11 +166,37 @@ export default function CheckoutPage() {
           };
         }),
         total: Number(subtotal.toFixed(2)),
-        currency: "EGP", // TODO: derive currency dynamically when multi-currency is supported
-      };
-
-      const n8nResponse = await sendOrderToN8N(orderPayload);
+        currency: "EGP",
+      });
       console.log("[checkout] order forwarded to n8n", n8nResponse);
+
+      try {
+        const vercelResponse = await fetch("/api/order-created", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderPayload),
+        });
+        const vercelData = await vercelResponse.json().catch(() => ({}));
+        if (vercelResponse.ok && vercelData?.ok) {
+          setCheckoutStatus({
+            type: "success",
+            message: "Order confirmation email sent. Please check your inbox shortly.",
+          });
+        } else {
+          console.error("order-created API error", vercelData);
+          setCheckoutStatus({
+            type: "error",
+            message: "Order received, but we could not send the confirmation email yet.",
+          });
+        }
+      } catch (workflowError) {
+        console.error("order-created API request failed", workflowError);
+        setCheckoutStatus({
+          type: "error",
+          message: "Order received, but we could not send the confirmation email yet.",
+        });
+      }
+
       writeCart([]);
       setCartItems([]);
       setFormData(EMPTY_FORM);
@@ -197,7 +243,7 @@ export default function CheckoutPage() {
               </label>
               <label>
                 Email
-                <input type="email" name="email" placeholder="sara@example.com" value={formData.email} onChange={handleChange} />
+                <input type="email" name="email" placeholder="sara@example.com" value={formData.email} onChange={handleChange} required />
               </label>
               <label>
                 City
@@ -225,13 +271,21 @@ export default function CheckoutPage() {
             </fieldset>
 
             {status?.type === "error" && <p className="checkout-status checkout-status--error">{status.message}</p>}
+            {checkoutStatus && (
+              <p
+                className={`checkout-status ${
+                  checkoutStatus.type === "success" ? "checkout-status--success" : "checkout-status--error"
+                }`}
+              >
+                {checkoutStatus.message}
+              </p>
+            )}
 
             <div className="checkout-actions">
               <button type="button" className="ghost-btn" onClick={goToCart}>Adjust bag</button>
               <button
                 type="submit"
                 className="cta-btn"
-                onClick={handlePlaceOrder}
                 disabled={!isFormValid || cartIsEmpty || isSubmitting}
               >
                 {isSubmitting ? "Submitting..." : "Place cash order"}
