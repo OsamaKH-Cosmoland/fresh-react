@@ -31,7 +31,7 @@ export default async function orderCreatedWebhookHandler(req: Request, res: Resp
         .slice(0, 10);
     payload.createdAt = payload.createdAt || new Date().toISOString();
 
-    const webhook = process.env.N8N_ORDERS_WEBHOOK;
+    const webhook = process.env.N8N_ORDERS_WEBHOOK ?? process.env.VITE_N8N_ORDERS_WEBHOOK;
     if (!webhook) {
       return res.status(500).json({ ok: false, error: "Missing N8N_ORDERS_WEBHOOK" });
     }

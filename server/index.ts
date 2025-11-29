@@ -2,11 +2,16 @@ import "dotenv/config";
 import http, { type IncomingMessage, type ServerResponse } from "http";
 import { URL } from "url";
 
-import { ordersHandler, notifyTestHandler, streamOrdersHandler } from "../api/http/ordersHandler";
+import {
+  buildOrdersHandler,
+  notifyTestHandler,
+  streamOrdersHandler,
+} from "../api/http/ordersHandler";
 import reviewsHandler from "../api/http/reviewsHandler";
 import fruitsHandler from "../api/http/fruitsHandler";
 import orderCreatedWebhookHandler from "../api/http/orderCreatedWebhookHandler";
 import healthHandler from "../api/http/healthHandler";
+import { GmailEmailProvider } from "../src/providers/gmailEmailProvider";
 
 type Request = IncomingMessage & {
   url?: string;
@@ -22,6 +27,9 @@ type Response = ServerResponse & {
 
 // ✅ Railway sets PORT for you; also keep API_PORT fallback for local
 const PORT = Number(process.env.PORT || process.env.API_PORT || 3000);
+
+const emailProvider = new GmailEmailProvider();
+const ordersHandler = buildOrdersHandler({ emailProvider });
 
 const respondNotFound = (res: Response) => {
   res.statusCode = 404;

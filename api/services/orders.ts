@@ -10,6 +10,7 @@ import { ObjectId } from "mongodb";
 import { resolveOrdersRepository } from "../repositories";
 import type { OrdersRepository } from "../repositories/OrdersRepository";
 import type { Order } from "../domain/Order";
+import type { EmailProvider } from "../../src/providers/emailProvider";
 
 let cachedTransporter: nodemailer.Transporter | null = null;
 const bus = new EventEmitter();
@@ -433,13 +434,134 @@ export const notifyTelegram = async (order: Partial<Order>) => {
 
 export const ordersStream = () => bus;
 
+const formatAmount = (value: number | null | undefined) =>
+  Number.isFinite(value) ? value.toFixed(2) : "0.00";
+
+const sanitizeCurrencyLabel = (currency?: string) => sanitizeString(currency) || "EGP";
+
+const buildOrderConfirmationHtml = (order: Order) => {
+  const orderNumber = sanitizeString(order.orderCode ?? order.id);
+  const customerName = sanitizeString(order.customer?.name) || "valued guest";
+  const currencyLabel = sanitizeCurrencyLabel(order.totals?.currency);
+  const totalValue = order.totals?.grandTotal ?? order.totals?.subtotal ?? 0;
+  const totalDisplay = `${formatAmount(totalValue)} ${currencyLabel}`;
+  const deliveryDate =
+    sanitizeString((order as any).etaDate) || "We’ll share shipping updates as soon as your package ships.";
+
+  const itemRows = order.items
+    .map((item) => {
+      const title = sanitizeString(item.title);
+      const variantLabel = sanitizeString(item.variant?.size ?? item.variant?.label ?? "");
+      const quantity = Number.isFinite(item.quantity) ? item.quantity : Number(item.qty ?? 0) || 0;
+      const unitPriceCandidate =
+        typeof item.variant?.price === "number"
+          ? item.variant.price
+          : typeof item.unitPriceValue === "number"
+          ? item.unitPriceValue
+          : Number(
+              String(item.unitPrice ?? "")
+                .replace(/[^0-9.-]/g, "")
+                .trim()
+            );
+      const unitPrice = Number.isFinite(unitPriceCandidate) ? unitPriceCandidate : null;
+      const lineTotal =
+        unitPrice !== null && Number.isFinite(quantity) ? unitPrice * quantity : null;
+      const formattedUnitPrice =
+        unitPrice !== null ? `${unitPrice.toFixed(2)} ${currencyLabel}` : sanitizeString(item.unitPrice) || "-";
+      const formattedLineTotal =
+        lineTotal !== null ? `${lineTotal.toFixed(2)} ${currencyLabel}` : "";
+
+      return `
+        <tr>
+          <td style="padding:12px 0; border-bottom:1px solid #e5e5e5; vertical-align:top;">
+            <p style="margin:0; font-weight:600; color:#1a3a2c;">${title}</p>
+            ${variantLabel ? `<p style="margin:4px 0 0; color:#5c5c5c; font-size:13px;">Size: ${variantLabel}</p>` : ""}
+          </td>
+          <td style="padding:12px 0; border-bottom:1px solid #e5e5e5; text-align:right; vertical-align:top;">
+            <p style="margin:0; font-weight:600; color:#1a3a2c;">${quantity}</p>
+            <p style="margin:4px 0 0; color:#5c5c5c; font-size:13px;">Qty</p>
+          </td>
+          <td style="padding:12px 0; border-bottom:1px solid #e5e5e5; text-align:right; vertical-align:top;">
+            <p style="margin:0; font-weight:600; color:#c9a94a;">${formattedUnitPrice}</p>
+            ${formattedLineTotal ? `<p style="margin:4px 0 0; color:#5c5c5c; font-size:13px;">${formattedLineTotal}</p>` : ""}
+          </td>
+        </tr>`;
+    })
+    .join("");
+
+  const itemsSection = order.items.length
+    ? `<table style="width:100%; border-collapse:collapse; margin-top:10px;">
+         <thead>
+           <tr>
+             <th style="text-align:left; padding-bottom:8px; font-size:14px; color:#0f5132;">Item</th>
+             <th style="text-align:right; padding-bottom:8px; font-size:14px; color:#0f5132;">Qty</th>
+             <th style="text-align:right; padding-bottom:8px; font-size:14px; color:#0f5132;">Price</th>
+           </tr>
+         </thead>
+         <tbody>
+           ${itemRows}
+         </tbody>
+       </table>`
+    : "";
+
+  return `
+    <div style="font-family: 'Segoe UI', Arial, sans-serif; background:#fafafa; padding:25px; color:#2a2a2a;">
+      <div style="max-width:600px; margin:auto; background:white; border-radius:12px; padding:30px; border:1px solid #e5e5e5;">
+        <div style="text-align:center; margin-bottom:25px;">
+          <h2 style="color:#0f5132; margin:0; font-size:26px; font-weight:700;">
+            🌿 Thank You for Your Order!
+          </h2>
+          <p style="color:#777; margin-top:8px; font-size:14px;">
+            Your wellness journey with NaturaGloss has officially begun ✨
+          </p>
+        </div>
+
+        <div style="background:#f0f7f3; padding:20px; border-radius:10px; border-left:5px solid #c9a94a; margin-bottom:25px;">
+          <h3 style="margin:0; color:#0f5132; font-size:20px;">Order Details</h3>
+          <p style="margin:12px 0 0; font-size:15px;">
+            <strong>Order #:</strong> ${orderNumber}<br>
+            <strong>Customer:</strong> ${customerName}<br>
+            <strong>Total:</strong> <span style="color:#c9a94a; font-weight:bold;">${totalDisplay}</span>
+          </p>
+        </div>
+
+        ${itemsSection}
+
+        <p style="font-size:15px; line-height:1.7;">
+          Hi <strong>${customerName}</strong>,<br><br>
+          We’re excited to let you know that your order has been received and is now being prepared with care 💚
+          You will receive another update once your package is on its way!
+        </p>
+
+        <div style="margin-top:20px; padding:18px; background:#fff8e5; border:1px solid #f1e0b8; border-radius:10px;">
+          <h3 style="margin:0; color:#c9a94a; font-size:18px;">
+            📦 Estimated Delivery
+          </h3>
+          <p style="margin:10px 0 0; font-size:15px;">
+            ${deliveryDate}
+          </p>
+        </div>
+
+        <div style="text-align:center; margin-top:35px;">
+          <p style="font-size:14px; color:#777;">
+            Thank you for choosing <strong style="color:#0f5132;">NaturaGloss</strong> —
+            where beauty meets nature 🌿✨
+          </p>
+          <p style="font-size:13px; color:#aaa; margin-top:10px;">
+            If you need help, reply directly to this email.
+          </p>
+        </div>
+      </div>
+    </div>`;
+};
+
 export async function listOrders(limit: number, repo?: OrdersRepository) {
   const store = repo ?? (await resolveOrdersRepository()).store;
   const docs = await store.list(limit);
   return docs.map(cleanOrderDoc);
 }
 
-export async function createOrder(rawBody: any, repo?: OrdersRepository) {
+export async function createOrder(rawBody: any, repo?: OrdersRepository, emailProvider?: EmailProvider) {
   const store = repo ?? (await resolveOrdersRepository()).store;
   const payload = sanitizeOrderPayload(rawBody);
   if (!payload.customer.name || !payload.customer.phone) {
@@ -473,6 +595,22 @@ export async function createOrder(rawBody: any, repo?: OrdersRepository) {
     updatedAt,
   };
   const storedDoc = await store.create(doc);
+
+  if (emailProvider) {
+    const customerName = sanitizeString(payload.customer?.name) || "customer";
+    const candidate = sanitizeString(payload.customer?.email);
+    const safeName = customerName.replace(/\s+/g, ".").toLowerCase();
+    const recipient = candidate || `${safeName}@example.com`;
+    try {
+      await emailProvider.send(
+        recipient,
+        "Order Confirmation",
+        `Your order ${storedDoc.id} was successfully created.`
+      );
+    } catch (emailError) {
+      console.error("Failed to send confirmation email for order", storedDoc.id, emailError);
+    }
+  }
 
   try {
     await sendAdminEmail(storedDoc);

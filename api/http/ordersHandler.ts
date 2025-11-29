@@ -1,5 +1,6 @@
 // HTTP adapter for order endpoints.
 import type { IncomingMessage, ServerResponse } from "http";
+import type { EmailProvider } from "../../src/providers/emailProvider";
 import { createOrder, listOrders, notifyTelegramTest, ordersStream, updateOrderStatus } from "../services/orders";
 
 type Request = IncomingMessage & { method?: string; body?: any; query?: Record<string, string>; url?: string };
@@ -36,51 +37,53 @@ export function streamOrdersHandler(_req: Request, res: Response) {
   _req.on("error", close);
 }
 
-export async function ordersHandler(req: Request, res: Response) {
-  try {
-    if (req.method === "OPTIONS") {
-      res.setHeader("Allow", "GET,POST,PATCH,OPTIONS");
-      return res.status(204).end();
-    }
-
-    if (req.method === "GET") {
-      const limitParam = Number.parseInt(req.query?.limit ?? "50", 10);
-      const limit = Number.isFinite(limitParam) ? Math.max(1, Math.min(limitParam, 500)) : 50;
-      const docs = await listOrders(limit);
-      return res.status(200).json(docs);
-    }
-
-    if (req.method === "POST") {
-      const result = await createOrder(req.body);
-      return res
-        .status(201)
-        .json({ ok: true, orderId: result.stored.id, orderCode: result.stored.orderCode });
-    }
-
-    if (req.method === "PATCH") {
-      const id = req.query?.id || (req.body as any)?.id;
-      if (!id) {
-        return res.status(400).json({ error: "Missing order id" });
+export function buildOrdersHandler({ emailProvider }: { emailProvider: EmailProvider }) {
+  return async function ordersHandler(req: Request, res: Response) {
+    try {
+      if (req.method === "OPTIONS") {
+        res.setHeader("Allow", "GET,POST,PATCH,OPTIONS");
+        return res.status(204).end();
       }
-      const status = (req.body as any)?.status;
-      if (!status) {
-        return res.status(400).json({ error: "Missing status" });
-      }
-      const updated = await updateOrderStatus(id, status);
-      if (!updated) {
-        return res.status(404).json({ error: "Order not found" });
-      }
-      return res.status(200).json(updated);
-    }
 
-    res.setHeader("Allow", ["GET", "POST", "PATCH"]);
-    return res.status(405).end("Method Not Allowed");
-  } catch (error: any) {
-    const statusCode = error?.statusCode ?? 500;
-    const message = error?.message ?? "Server error";
-    console.error("API /api/orders error:", error);
-    return res.status(statusCode).json({ error: message });
-  }
+      if (req.method === "GET") {
+        const limitParam = Number.parseInt(req.query?.limit ?? "50", 10);
+        const limit = Number.isFinite(limitParam) ? Math.max(1, Math.min(limitParam, 500)) : 50;
+        const docs = await listOrders(limit);
+        return res.status(200).json(docs);
+      }
+
+      if (req.method === "POST") {
+        const result = await createOrder(req.body, undefined, emailProvider);
+        return res
+          .status(201)
+          .json({ ok: true, orderId: result.stored.id, orderCode: result.stored.orderCode });
+      }
+
+      if (req.method === "PATCH") {
+        const id = req.query?.id || (req.body as any)?.id;
+        if (!id) {
+          return res.status(400).json({ error: "Missing order id" });
+        }
+        const status = (req.body as any)?.status;
+        if (!status) {
+          return res.status(400).json({ error: "Missing status" });
+        }
+        const updated = await updateOrderStatus(id, status);
+        if (!updated) {
+          return res.status(404).json({ error: "Order not found" });
+        }
+        return res.status(200).json(updated);
+      }
+
+      res.setHeader("Allow", ["GET", "POST", "PATCH"]);
+      return res.status(405).end("Method Not Allowed");
+    } catch (error: any) {
+      const statusCode = error?.statusCode ?? 500;
+      const message = error?.message ?? "Server error";
+      console.error("API /api/orders error:", error);
+      return res.status(statusCode).json({ error: message });
+    }
+  };
 }
 
 export async function notifyTestHandler(_req: Request, res: Response) {

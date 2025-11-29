@@ -1,6 +1,3 @@
-// src/lib/api.js
-// Works locally (VITE_API_BASE_URL=http://localhost:3000/api)
-// and on Vercel (defaults to same-origin /api)
 const BASE = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/+$/, "");
 
 export const apiGet = (path: string, init?: RequestInit) =>
