@@ -51,14 +51,16 @@ export class GmailEmailProvider implements EmailProvider {
   }
 
   async send(to: string, subject: string, body: string): Promise<void> {
-    const address = pickEnv(
-      process.env.EMAIL_FROM_ADDRESS,
-      process.env.FROM_EMAIL,
+    const userAddress = pickEnv(
       process.env.SMTP_USER,
-      process.env.EMAIL_USER
+      process.env.EMAIL_USER,
+      process.env.FROM_EMAIL,
+      process.env.EMAIL_FROM_ADDRESS
     );
-    const name = pickEnv(process.env.EMAIL_FROM_NAME);
-    const from = address ? (name ? `${name} <${address}>` : address) : "no-reply@natureskincare.local";
+    const displayName = pickEnv(process.env.EMAIL_FROM_NAME, "NaturaGloss");
+    const replyTo = pickEnv(process.env.EMAIL_FROM_ADDRESS, process.env.FROM_EMAIL);
+    const fromAddress = userAddress || "no-reply@natureskincare.local";
+    const from = `${displayName} <${fromAddress}>`;
     const textFallback = stripHtml(body) || "Thank you for your NaturaGloss order.";
 
     await this.transporter.sendMail({
@@ -67,6 +69,7 @@ export class GmailEmailProvider implements EmailProvider {
       subject,
       text: textFallback,
       html: body,
+      replyTo: replyTo || undefined,
     });
   }
 }
