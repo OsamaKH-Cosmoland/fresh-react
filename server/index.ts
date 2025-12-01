@@ -12,6 +12,8 @@ import fruitsHandler from "../api/http/fruitsHandler";
 import orderCreatedWebhookHandler from "../api/http/orderCreatedWebhookHandler";
 import healthHandler from "../api/http/healthHandler";
 import { GmailEmailProvider } from "../src/providers/gmailEmailProvider";
+import { FakeEmailProvider } from "../src/providers/fakeEmailProvider";
+import type { EmailProvider } from "../src/providers/emailProvider";
 
 type Request = IncomingMessage & {
   url?: string;
@@ -28,7 +30,13 @@ type Response = ServerResponse & {
 // ✅ Railway sets PORT for you; also keep API_PORT fallback for local
 const PORT = Number(process.env.PORT || process.env.API_PORT || 3000);
 
-const emailProvider = new GmailEmailProvider();
+let emailProvider: EmailProvider;
+try {
+  emailProvider = new GmailEmailProvider();
+} catch (error) {
+  console.warn("[email] GmailEmailProvider unavailable:", error);
+  emailProvider = new FakeEmailProvider();
+}
 const ordersHandler = buildOrdersHandler({ emailProvider });
 
 const respondNotFound = (res: Response) => {

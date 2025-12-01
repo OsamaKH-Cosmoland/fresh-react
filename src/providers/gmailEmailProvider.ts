@@ -1,6 +1,11 @@
 import nodemailer from "nodemailer";
 import { EmailProvider } from "./emailProvider";
 
+const stripHtml = (value: string): string => {
+  const plain = value.replace(/<\/?[^>]+(>|$)/g, " ");
+  return plain.replace(/\s+/g, " ").trim();
+};
+
 export class GmailEmailProvider implements EmailProvider {
   private readonly transporter: nodemailer.Transporter;
 
@@ -27,12 +32,14 @@ export class GmailEmailProvider implements EmailProvider {
 
   async send(to: string, subject: string, body: string): Promise<void> {
     const from = process.env.FROM_EMAIL || process.env.SMTP_USER;
+    const textFallback = stripHtml(body) || "Thank you for your NaturaGloss order.";
 
     await this.transporter.sendMail({
       from,
       to,
       subject,
-      text: body,
+      text: textFallback,
+      html: body,
     });
   }
 }

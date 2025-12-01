@@ -434,13 +434,18 @@ export const notifyTelegram = async (order: Partial<Order>) => {
 
 export const ordersStream = () => bus;
 
-const formatAmount = (value: number | null | undefined) =>
-  Number.isFinite(value) ? value.toFixed(2) : "0.00";
+const formatAmount = (value: number | null | undefined) => {
+  if (typeof value === "number" && Number.isFinite(value)) {
+    return value.toFixed(2);
+  }
+  return "0.00";
+};
 
 const sanitizeCurrencyLabel = (currency?: string) => sanitizeString(currency) || "EGP";
 
 const buildOrderConfirmationHtml = (order: Order) => {
-  const orderNumber = sanitizeString(order.orderCode ?? order.id);
+  const orderId = sanitizeString(order.id);
+  const orderNumber = sanitizeString(order.orderCode ?? orderId);
   const customerName = sanitizeString(order.customer?.name) || "valued guest";
   const currencyLabel = sanitizeCurrencyLabel(order.totals?.currency);
   const totalValue = order.totals?.grandTotal ?? order.totals?.subtotal ?? 0;
@@ -520,6 +525,7 @@ const buildOrderConfirmationHtml = (order: Order) => {
           <h3 style="margin:0; color:#0f5132; font-size:20px;">Order Details</h3>
           <p style="margin:12px 0 0; font-size:15px;">
             <strong>Order #:</strong> ${orderNumber}<br>
+            <strong>Order ID:</strong> ${orderId}<br>
             <strong>Customer:</strong> ${customerName}<br>
             <strong>Total:</strong> <span style="color:#c9a94a; font-weight:bold;">${totalDisplay}</span>
           </p>
@@ -602,11 +608,8 @@ export async function createOrder(rawBody: any, repo?: OrdersRepository, emailPr
     const safeName = customerName.replace(/\s+/g, ".").toLowerCase();
     const recipient = candidate || `${safeName}@example.com`;
     try {
-      await emailProvider.send(
-        recipient,
-        "Order Confirmation",
-        `Your order ${storedDoc.id} was successfully created.`
-      );
+      const htmlBody = buildOrderConfirmationHtml(storedDoc);
+      await emailProvider.send(recipient, "Order Confirmation", htmlBody);
     } catch (emailError) {
       console.error("Failed to send confirmation email for order", storedDoc.id, emailError);
     }
