@@ -1,6 +1,6 @@
 // HTTP adapter for reviews endpoints.
 import type { IncomingMessage, ServerResponse } from "http";
-import { createReview, listReviews } from "../services/reviews";
+import { createReview, listReviews } from "../../server/services/reviews";
 
 type Request = IncomingMessage & { method?: string; body?: any; query?: Record<string, string> };
 type Response = ServerResponse & { status: (code: number) => Response; json: (payload: unknown) => void };

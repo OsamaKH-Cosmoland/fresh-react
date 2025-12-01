@@ -1,6 +1,6 @@
 // HTTP adapter for fruits CRUD endpoints.
 import type { IncomingMessage, ServerResponse } from "http";
-import { createFruit, deleteFruit, listFruits, updateFruit } from "../services/fruits";
+import { createFruit, deleteFruit, listFruits, updateFruit } from "../../server/services/fruits";
 
 type Request = IncomingMessage & { method?: string; body?: any; query?: Record<string, string> };
 type Response = ServerResponse & { status: (code: number) => Response; json: (payload: unknown) => void };
