@@ -14,6 +14,14 @@ const pickEnv = (...candidates: Array<string | undefined>) => {
   return "";
 };
 
+const parseBoolean = (value?: string) => {
+  if (!value) return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "true" || normalized === "1" || normalized === "yes") return true;
+  if (normalized === "false" || normalized === "0" || normalized === "no") return false;
+  return null;
+};
+
 export class GmailEmailProvider implements EmailProvider {
   private readonly transporter: nodemailer.Transporter;
 
@@ -24,14 +32,17 @@ export class GmailEmailProvider implements EmailProvider {
     const user = pickEnv(process.env.SMTP_USER, process.env.EMAIL_USER);
     const pass = pickEnv(process.env.SMTP_PASS, process.env.EMAIL_PASS);
 
-    if (!host || !user || !pass) {
+    if (!host || !user || !pass || Number.isNaN(port)) {
       throw new Error("Missing SMTP configuration (SMTP_HOST/SMTP_USER/SMTP_PASS)");
     }
+
+    const explicitSecure = parseBoolean(process.env.SMTP_SECURE ?? process.env.EMAIL_SECURE);
+    const secure = explicitSecure ?? port === 465;
 
     this.transporter = nodemailer.createTransport({
       host,
       port,
-      secure: port === 465,
+      secure,
       auth: {
         user,
         pass,
@@ -40,9 +51,14 @@ export class GmailEmailProvider implements EmailProvider {
   }
 
   async send(to: string, subject: string, body: string): Promise<void> {
-    const from =
-      pickEnv(process.env.FROM_EMAIL, process.env.SMTP_USER, process.env.EMAIL_USER) ||
-      "no-reply@natureskincare.local";
+    const address = pickEnv(
+      process.env.EMAIL_FROM_ADDRESS,
+      process.env.FROM_EMAIL,
+      process.env.SMTP_USER,
+      process.env.EMAIL_USER
+    );
+    const name = pickEnv(process.env.EMAIL_FROM_NAME);
+    const from = address ? (name ? `${name} <${address}>` : address) : "no-reply@natureskincare.local";
     const textFallback = stripHtml(body) || "Thank you for your NaturaGloss order.";
 
     await this.transporter.sendMail({
