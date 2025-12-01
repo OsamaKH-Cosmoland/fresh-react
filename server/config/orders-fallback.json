@@ -1,0 +1,46 @@
+[
+  {
+    "id": "NG-MINRPUJJ",
+    "customerId": "acb72b94764e480255cf52e9",
+    "paymentMethod": "cash_on_delivery",
+    "status": "pending",
+    "totals": {
+      "items": 1,
+      "subtotal": 100,
+      "subTotal": 100,
+      "shipping": 0,
+      "grandTotal": 100,
+      "currency": "EGP"
+    },
+    "customer": {
+      "name": "Test",
+      "email": "test@example.com",
+      "phone": "+1",
+      "address": "a",
+      "city": "b",
+      "notes": ""
+    },
+    "items": [
+      {
+        "id": "prod1",
+        "title": "Test",
+        "quantity": 1,
+        "unitPrice": "100",
+        "variant": {
+          "name": "[object object]",
+          "label": "[object Object]",
+          "size": "[object Object]",
+          "price": 100,
+          "currency": "EGP"
+        },
+        "productSlug": "prod1",
+        "qty": 1,
+        "lineTotal": 100,
+        "unitPriceValue": 100
+      }
+    ],
+    "orderCode": "NG-IQ1LJG",
+    "createdAt": "2025-12-01T23:16:09.824Z",
+    "updatedAt": "2025-12-01T23:16:09.824Z"
+  }
+]
