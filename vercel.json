@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/orders/stream", "destination": "/api/orders" },
+    { "source": "/api/notify-test", "destination": "/api/orders" }
+  ]
+}
