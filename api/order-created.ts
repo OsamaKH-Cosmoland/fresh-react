@@ -1,4 +1,4 @@
-import orderCreatedWebhookHandler from "../server/http/orderCreatedWebhookHandler";
+import orderCreatedWebhookHandler from "./http/orderCreatedWebhookHandler";
 import { enhanceApiResponse } from "./http/responseHelpers";
 import { normalizeServerlessRequest } from "./http/serverlessHelpers";
 

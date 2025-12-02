@@ -1,4 +1,4 @@
-import { notifyTestHandler } from "../server/http/ordersHandler";
+import { notifyTestHandler } from "./http/ordersHandler";
 import { enhanceApiResponse } from "./http/responseHelpers";
 
 export default function handler(req: Parameters<typeof notifyTestHandler>[0], res: Parameters<typeof notifyTestHandler>[1]) {
