@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { InMemoryOrdersRepository } from "../repositories/InMemoryOrdersRepository";
 import { createOrder } from "./orders";
-import { FakeEmailProvider } from "../../server/providers/fakeEmailProvider";
+import { FakeEmailProvider } from "../../api/providers/fakeEmailProvider";
 
 const buildPayload = (overrides: any = {}) => ({
   paymentMethod: "cash_on_delivery",
