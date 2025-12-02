@@ -10,7 +10,7 @@ import { ObjectId } from "mongodb";
 import { resolveOrdersRepository } from "../repositories";
 import type { OrdersRepository } from "../repositories/OrdersRepository";
 import type { Order } from "../domain/Order";
-import type { EmailProvider } from "../../src/providers/emailProvider";
+import type { EmailProvider } from "../../server/providers/emailProvider";
 
 let cachedTransporter: nodemailer.Transporter | null = null;
 const bus = new EventEmitter();
