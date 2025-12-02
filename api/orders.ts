@@ -1,9 +1,9 @@
 import type { EmailProvider } from "./providers/emailProvider";
 import { FakeEmailProvider } from "./providers/fakeEmailProvider";
 import { GmailEmailProvider } from "./providers/gmailEmailProvider";
-import { buildOrdersHandler } from "./http/ordersHandler";
-import { enhanceApiResponse } from "./http/responseHelpers";
-import { normalizeServerlessRequest } from "./http/serverlessHelpers";
+import { buildOrdersHandler } from "../lib/http/ordersHandler";
+import { enhanceApiResponse } from "../lib/http/responseHelpers";
+import { normalizeServerlessRequest } from "../lib/http/serverlessHelpers";
 import type { IncomingMessage, ServerResponse } from "http";
 import { URL } from "url";
 

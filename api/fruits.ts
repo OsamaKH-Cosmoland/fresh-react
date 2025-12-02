@@ -1,4 +1,4 @@
-import fruitsHandler from "./http/fruitsHandler";
+import fruitsHandler from "../lib/http/fruitsHandler";
 import { enhanceApiResponse } from "./http/responseHelpers";
 import { normalizeServerlessRequest } from "./http/serverlessHelpers";
 

@@ -6,11 +6,11 @@ import {
   buildOrdersHandler,
   notifyTestHandler,
   streamOrdersHandler,
-} from "../api/http/ordersHandler";
-import reviewsHandler from "../api/http/reviewsHandler";
-import fruitsHandler from "../api/http/fruitsHandler";
-import orderCreatedWebhookHandler from "../api/http/orderCreatedWebhookHandler";
-import healthHandler from "../api/http/healthHandler";
+} from "../lib/http/ordersHandler";
+import reviewsHandler from "../lib/http/reviewsHandler";
+import fruitsHandler from "../lib/http/fruitsHandler";
+import orderCreatedWebhookHandler from "../lib/http/orderCreatedWebhookHandler";
+import healthHandler from "../lib/http/healthHandler";
 import { GmailEmailProvider } from "../api/providers/gmailEmailProvider";
 import { FakeEmailProvider } from "../api/providers/fakeEmailProvider";
 import type { EmailProvider } from "../api/providers/emailProvider";

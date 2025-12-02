@@ -1,4 +1,4 @@
-import reviewsHandler from "./http/reviewsHandler";
+import reviewsHandler from "../lib/http/reviewsHandler";
 import { enhanceApiResponse } from "./http/responseHelpers";
 import { normalizeServerlessRequest } from "./http/serverlessHelpers";
 
