@@ -1,1 +1,1 @@
-export * from "../../providers/gmailEmailProvider";
+export * from "../../api/providers/gmailEmailProvider";
