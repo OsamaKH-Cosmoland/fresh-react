@@ -1,6 +1,6 @@
 // HTTP adapter for order endpoints.
 import type { IncomingMessage, ServerResponse } from "http";
-import type { EmailProvider } from "../server/providers/emailProvider";
+import type { EmailProvider } from "../../api/providers/emailProvider";
 import { createOrder, listOrders, notifyTelegramTest, ordersStream, updateOrderStatus } from "../../server/services/orders";
 
 type Request = IncomingMessage & { method?: string; body?: any; query?: Record<string, string>; url?: string };
