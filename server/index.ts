@@ -11,9 +11,9 @@ import reviewsHandler from "../lib/http/reviewsHandler";
 import fruitsHandler from "../lib/http/fruitsHandler";
 import orderCreatedWebhookHandler from "../lib/http/orderCreatedWebhookHandler";
 import healthHandler from "../lib/http/healthHandler";
-import { GmailEmailProvider } from "../api/providers/gmailEmailProvider";
-import { FakeEmailProvider } from "../api/providers/fakeEmailProvider";
-import type { EmailProvider } from "../api/providers/emailProvider";
+import { GmailEmailProvider } from "./providers/gmailEmailProvider";
+import { FakeEmailProvider } from "./providers/fakeEmailProvider";
+import type { EmailProvider } from "./providers/emailProvider";
 
 type Request = IncomingMessage & {
   url?: string;

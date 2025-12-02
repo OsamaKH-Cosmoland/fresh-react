@@ -1,1 +1,3 @@
-export * from "../api/providers/emailProvider";
+export interface EmailProvider {
+  send(to: string, subject: string, body: string): Promise<void>;
+}
