@@ -1,9 +1,9 @@
-import type { EmailProvider } from "./providers/emailProvider";
-import { FakeEmailProvider } from "./providers/fakeEmailProvider";
-import { GmailEmailProvider } from "./providers/gmailEmailProvider";
-import { buildOrdersHandler, notifyTestHandler, streamOrdersHandler } from "./lib/http/ordersHandler";
-import { enhanceApiResponse } from "./lib/http/responseHelpers";
-import { normalizeServerlessRequest } from "./lib/http/serverlessHelpers";
+import type { EmailProvider } from "../providers/emailProvider";
+import { FakeEmailProvider } from "../providers/fakeEmailProvider";
+import { GmailEmailProvider } from "../providers/gmailEmailProvider";
+import { buildOrdersHandler, notifyTestHandler, streamOrdersHandler } from "../lib/http/ordersHandler";
+import { enhanceApiResponse } from "../lib/http/responseHelpers";
+import { normalizeServerlessRequest } from "../lib/http/serverlessHelpers";
 import type { IncomingMessage, ServerResponse } from "http";
 import { URL } from "url";
 
@@ -19,8 +19,16 @@ const createEmailProvider = (): EmailProvider => {
 const emailProvider = createEmailProvider();
 const ordersHandler = buildOrdersHandler({ emailProvider });
 
-export default async function handler(req: IncomingMessage, res: ServerResponse) {
+type ServerlessRequest = IncomingMessage & { body?: any; query?: Record<string, string> };
+type ServerlessResponse = ServerResponse & {
+  status: (code: number) => ServerlessResponse;
+  json: (payload: unknown) => ServerlessResponse;
+};
+
+export default async function handler(rawReq: ServerlessRequest, rawRes: ServerlessResponse) {
   console.log("orders handler version 2 loaded");
+  const req = rawReq;
+  const res = rawRes;
   enhanceApiResponse(res);
 
   try {

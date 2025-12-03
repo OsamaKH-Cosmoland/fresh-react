@@ -1,9 +1,16 @@
-import reviewsHandler from "./lib/http/reviewsHandler";
-import { enhanceApiResponse } from "./lib/http/responseHelpers";
-import { normalizeServerlessRequest } from "./lib/http/serverlessHelpers";
+import reviewsHandler from "../lib/http/reviewsHandler";
+import { enhanceApiResponse } from "../lib/http/responseHelpers";
+import { normalizeServerlessRequest } from "../lib/http/serverlessHelpers";
+import type { IncomingMessage, ServerResponse } from "http";
 
-export default async function handler(req: Parameters<typeof reviewsHandler>[0], res: Parameters<typeof reviewsHandler>[1]) {
+type ServerlessRequest = IncomingMessage & { body?: any; query?: Record<string, string> };
+type ServerlessResponse = ServerResponse & {
+  status: (code: number) => ServerlessResponse;
+  json: (payload: unknown) => ServerlessResponse;
+};
+
+export default async function handler(req: ServerlessRequest, res: ServerlessResponse) {
   await normalizeServerlessRequest(req);
   enhanceApiResponse(res);
-  return reviewsHandler(req, res);
+  return reviewsHandler(req as any, res as any);
 }
