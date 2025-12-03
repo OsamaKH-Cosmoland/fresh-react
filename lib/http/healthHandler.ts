@@ -1,1 +1,1 @@
-export * from "../../api/lib/http/healthHandler";
+export * from "../api/http";

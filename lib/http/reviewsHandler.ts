@@ -1,1 +1,1 @@
-export * from "../../api/lib/http/reviewsHandler";
+export * from "../api/http";

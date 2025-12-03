@@ -1,5 +1,16 @@
 import nodemailer from "nodemailer";
-import { EmailProvider } from "./emailProvider";
+
+export interface EmailProvider {
+  send(to: string, subject: string, body: string): Promise<void>;
+}
+
+export class FakeEmailProvider implements EmailProvider {
+  sentEmails: { to: string; subject: string; body: string }[] = [];
+
+  async send(to: string, subject: string, body: string): Promise<void> {
+    this.sentEmails.push({ to, subject, body });
+  }
+}
 
 const stripHtml = (value: string): string => {
   const plain = value.replace(/<\/?[^>]+(>|$)/g, " ");

@@ -1,6 +1,4 @@
-import reviewsHandler from "./lib/http/reviewsHandler";
-import { enhanceApiResponse } from "./lib/http/responseHelpers";
-import { normalizeServerlessRequest } from "./lib/http/serverlessHelpers";
+import { reviewsHandler, enhanceApiResponse, normalizeServerlessRequest } from "./http";
 import type { IncomingMessage, ServerResponse } from "http";
 
 type ServerlessRequest = IncomingMessage & { body?: any; query?: Record<string, string> };

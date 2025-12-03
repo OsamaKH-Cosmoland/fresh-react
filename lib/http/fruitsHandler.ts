@@ -1,1 +1,1 @@
-export * from "../../api/lib/http/fruitsHandler";
+export * from "../api/http";

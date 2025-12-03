@@ -1,1 +1,1 @@
-export * from "../api/providers/emailProvider";
+export * from "../api/providers";

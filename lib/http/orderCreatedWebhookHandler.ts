@@ -1,1 +1,1 @@
-export * from "../../api/lib/http/orderCreatedWebhookHandler";
+export * from "../api/http";

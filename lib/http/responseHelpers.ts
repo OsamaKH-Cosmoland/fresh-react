@@ -1,1 +1,1 @@
-export * from "../../api/lib/http/responseHelpers";
+export * from "../api/http";

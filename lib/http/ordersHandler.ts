@@ -1,1 +1,1 @@
-export * from "../../api/lib/http/ordersHandler";
+export * from "../api/http";
