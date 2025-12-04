@@ -1,7 +1,7 @@
 import { URL } from "url";
 import type { IncomingMessage, ServerResponse } from "http";
 import nodemailer from "nodemailer";
-import { createOrder, listOrders, notifyTelegramTest, ordersStream, updateOrderStatus } from "../server/services/orders";
+import { createOrder, listOrders, notifyTelegramTest, ordersStream, updateOrderStatus } from "../shared/services/ordersService";
 
 type ServerlessRequest = IncomingMessage & { body?: any; query?: Record<string, string>; url?: string; method?: string };
 type ServerlessResponse = ServerResponse & {
