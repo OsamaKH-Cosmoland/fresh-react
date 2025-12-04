@@ -1,7 +1,7 @@
 // Review services: validation and persistence.
 import "dotenv/config";
-import type { Review } from "../server/domain/Review";
-import { connectToDb } from "../server/_db";
+import type { Review } from "../../server/domain/Review";
+import { connectToDb } from "../../server/_db";
 
 const sanitizeString = (value: unknown, { maxLength = 500 } = {}): string => {
   if (value === null || value === undefined) return "";

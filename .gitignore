@@ -25,3 +25,10 @@ dist-ssr
 .vercel
 .env
 config/orders-fallback.json
+shared/services/*.js
+.buildcache
+server/**/*.js
+server/**/*.js.map
+providers/*.js
+providers/*.js.map
+shared/*.js

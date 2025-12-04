@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "incremental": true,
+    "tsBuildInfoFile": ".buildcache/tsconfig.shared.tsbuildinfo"
+  },
+  "include": ["shared/services/**/*.ts"]
+}

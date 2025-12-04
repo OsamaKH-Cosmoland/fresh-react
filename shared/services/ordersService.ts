@@ -1,4 +1,3 @@
-// Order domain services: validation, creation, duplicate detection, notifications.
 import "dotenv/config";
 import { EventEmitter } from "events";
 import https from "https";
@@ -7,10 +6,10 @@ import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { ObjectId } from "mongodb";
-import { resolveOrdersRepository } from "../server/repositories";
-import type { OrdersRepository } from "../server/repositories/OrdersRepository";
-import type { Order } from "../server/domain/Order";
-import type { EmailProvider } from "../providers/emailProvider";
+import { resolveOrdersRepository } from "../../server/repositories";
+import type { OrdersRepository } from "../../server/repositories/OrdersRepository";
+import type { Order } from "../../server/domain/Order";
+import type { EmailProvider } from "../../providers/emailProvider";
 
 let cachedTransporter: nodemailer.Transporter | null = null;
 const bus = new EventEmitter();
@@ -460,7 +459,7 @@ const buildOrderConfirmationHtml = (order: Order) => {
     sanitizeString((order as any).etaDate) || "We’ll share shipping updates as soon as your package ships.";
 
   const itemRows = order.items
-    .map((item) => {
+    .map((item: any) => {
       const title = sanitizeString(item.title);
       const variantLabel = sanitizeString(item.variant?.size ?? item.variant?.label ?? "");
       const quantity = Number.isFinite(item.quantity) ? item.quantity : Number(item.qty ?? 0) || 0;
@@ -595,7 +594,6 @@ export async function createOrder(rawBody: any, repo?: OrdersRepository, emailPr
     error.statusCode = 400;
     throw error;
   }
-  // Fallback: if sanitizer dropped all items, try to restore them from rawBody
   if (!Array.isArray(payload.items) || payload.items.length === 0) {
     const body = typeof rawBody === "string" ? JSON.parse(rawBody || "{}") : rawBody || {};
     const fallbackItems = Array.isArray(body.items)
@@ -618,7 +616,7 @@ export async function createOrder(rawBody: any, repo?: OrdersRepository, emailPr
             price: Number(item.price ?? 0),
           },
         }))
-        .filter((i) => i.id && i.quantity > 0);
+        .filter((i: any) => i.id && i.quantity > 0);
     }
   }
   if (payload.items.length === 0) {
