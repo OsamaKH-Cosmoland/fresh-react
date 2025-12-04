@@ -181,7 +181,13 @@ export function sanitizeOrderPayload(rawBody: any): Order {
   }
   if (!body || typeof body !== "object") body = {};
 
-  const rawItems = Array.isArray(body.items) ? body.items : [];
+  const sourceItems =
+    Array.isArray(body.items) && body.items.length > 0
+      ? body.items
+      : Array.isArray(body.orderItems) && body.orderItems.length > 0
+      ? body.orderItems
+      : [];
+  const rawItems = sourceItems;
   const sanitizedItems = rawItems.map((item: any) => {
     const rawVariant = item?.variant ?? item?.selectedVariant ?? item;
     const variantSize =
@@ -198,7 +204,7 @@ export function sanitizeOrderPayload(rawBody: any): Order {
     return {
       id: sanitizeString(item?.id),
       title: sanitizeString(item?.title) || "Custom item",
-      quantity: Number(item?.quantity ?? 0),
+      quantity: Number(item?.quantity ?? 1),
       unitPrice: sanitizedUnitPrice,
       variant: {
         name: variantSize.toLowerCase(),
@@ -570,11 +576,55 @@ export async function listOrders(limit: number, repo?: OrdersRepository) {
 export async function createOrder(rawBody: any, repo?: OrdersRepository, emailProvider?: EmailProvider) {
   const store = repo ?? (await resolveOrdersRepository()).store;
   const payload = sanitizeOrderPayload(rawBody);
+  console.log(
+    "createOrder payload debug:",
+    JSON.stringify(
+      {
+        rawBodyType: typeof rawBody,
+        rawBody,
+        items: payload.items,
+        itemsLength: payload.items?.length,
+        customer: payload.customer,
+      },
+      null,
+      2
+    )
+  );
   if (!payload.customer.name || !payload.customer.phone) {
-    throw new Error("Missing customer contact information.");
+    const error: any = new Error("Missing customer contact information.");
+    error.statusCode = 400;
+    throw error;
+  }
+  // Fallback: if sanitizer dropped all items, try to restore them from rawBody
+  if (!Array.isArray(payload.items) || payload.items.length === 0) {
+    const body = typeof rawBody === "string" ? JSON.parse(rawBody || "{}") : rawBody || {};
+    const fallbackItems = Array.isArray(body.items)
+      ? body.items
+      : Array.isArray(body.orderItems)
+      ? body.orderItems
+      : [];
+
+    if (fallbackItems.length > 0) {
+      payload.items = fallbackItems
+        .map((item: any) => ({
+          id: String(item.id ?? item._id ?? ""),
+          title: String(item.title ?? item.name ?? "Custom item"),
+          quantity: Number(item.quantity ?? 1),
+          unitPrice: String(item.unitPrice ?? item.price ?? ""),
+          variant: {
+            name: "standard",
+            label: "Standard",
+            size: "standard",
+            price: Number(item.price ?? 0),
+          },
+        }))
+        .filter((i) => i.id && i.quantity > 0);
+    }
   }
   if (payload.items.length === 0) {
-    throw new Error("Missing order items.");
+    const error: any = new Error("Missing order items.");
+    error.statusCode = 400;
+    throw error;
   }
 
   const now = new Date();
