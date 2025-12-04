@@ -7,7 +7,7 @@ import {
   notifyTelegramTest,
   ordersStream,
   updateOrderStatus,
-} from "../shared/services/ordersService";
+} from "./services/ordersService";
 
 type ServerlessRequest = IncomingMessage & {
   body?: any;
