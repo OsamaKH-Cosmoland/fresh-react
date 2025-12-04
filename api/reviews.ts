@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { URL } from "url";
-import { createReview, listReviews } from "../server/services/reviews";
+import { createReview, listReviews } from "../shared/services/reviewsService";
 
 type ServerlessRequest = IncomingMessage & {
   body?: any;
