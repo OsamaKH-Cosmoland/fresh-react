@@ -1,8 +1,13 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { URL } from "url";
-import { createReview, listReviews } from "../shared/services/reviewsService";
+import { createReview, listReviews } from "../server/services/reviews";
 
-type ServerlessRequest = IncomingMessage & { body?: any; query?: Record<string, string>; url?: string; method?: string };
+type ServerlessRequest = IncomingMessage & {
+  body?: any;
+  query?: Record<string, string>;
+  url?: string;
+  method?: string;
+};
 type ServerlessResponse = ServerResponse & {
   status: (code: number) => ServerlessResponse;
   json: (payload: unknown) => ServerlessResponse;
@@ -58,20 +63,27 @@ function enhanceApiResponse(res: ServerlessResponse) {
   }
 }
 
-export default async function handler(req: ServerlessRequest, res: ServerlessResponse) {
+export default async function handler(
+  req: ServerlessRequest,
+  res: ServerlessResponse
+) {
   await normalizeServerlessRequest(req);
   enhanceApiResponse(res);
 
   try {
     if (req.method === "GET") {
       const limitParam = Number.parseInt(req.query?.limit ?? "50", 10);
-      const limit = Number.isFinite(limitParam) ? Math.max(1, Math.min(limitParam, 200)) : 50;
+      const limit = Number.isFinite(limitParam)
+        ? Math.max(1, Math.min(limitParam, 200))
+        : 50;
       const docs = await listReviews(limit);
       return res.status(200).json(docs);
     }
 
     if (req.method === "POST") {
-      const saved = await createReview(typeof req.body === "string" ? JSON.parse(req.body) : req.body);
+      const saved = await createReview(
+        typeof req.body === "string" ? JSON.parse(req.body) : req.body
+      );
       return res.status(201).json(saved);
     }
 
@@ -80,6 +92,8 @@ export default async function handler(req: ServerlessRequest, res: ServerlessRes
   } catch (error: any) {
     console.error("API /api/reviews error:", error);
     const statusCode = error?.statusCode ?? 500;
-    return res.status(statusCode).json({ error: error?.message ?? "Server error" });
+    return res
+      .status(statusCode)
+      .json({ error: error?.message ?? "Server error" });
   }
 }

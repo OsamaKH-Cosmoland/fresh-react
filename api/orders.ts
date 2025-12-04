@@ -1,9 +1,20 @@
 import { URL } from "url";
 import type { IncomingMessage, ServerResponse } from "http";
 import nodemailer from "nodemailer";
-import { createOrder, listOrders, notifyTelegramTest, ordersStream, updateOrderStatus } from "../shared/services/ordersService";
+import {
+  createOrder,
+  listOrders,
+  notifyTelegramTest,
+  ordersStream,
+  updateOrderStatus,
+} from "../server/services/orders";
 
-type ServerlessRequest = IncomingMessage & { body?: any; query?: Record<string, string>; url?: string; method?: string };
+type ServerlessRequest = IncomingMessage & {
+  body?: any;
+  query?: Record<string, string>;
+  url?: string;
+  method?: string;
+};
 type ServerlessResponse = ServerResponse & {
   status: (code: number) => ServerlessResponse;
   json: (payload: unknown) => ServerlessResponse;
@@ -12,7 +23,9 @@ type ServerlessResponse = ServerResponse & {
 type Request = ServerlessRequest;
 type Response = ServerlessResponse;
 
-type EmailProvider = { send(to: string, subject: string, body: string): Promise<void> };
+type EmailProvider = {
+  send(to: string, subject: string, body: string): Promise<void>;
+};
 
 const stripHtml = (value: string): string => {
   const plain = value.replace(/<\/?[^>]+(>|$)/g, " ");
@@ -226,7 +239,9 @@ const notifyTestHandler = async (_req: Request, res: Response) => {
     const result = await notifyTelegramTest();
     return res.status(200).json(result);
   } catch (error: any) {
-    return res.status(error?.statusCode ?? 500).json({ ok: false, error: error?.message ?? "Server error" });
+    return res
+      .status(error?.statusCode ?? 500)
+      .json({ ok: false, error: error?.message ?? "Server error" });
   }
 };
 
@@ -242,14 +257,20 @@ const createEmailProvider = (): EmailProvider => {
 const emailProvider = createEmailProvider();
 const ordersHandler = buildOrdersHandler({ emailProvider });
 
-export default async function handler(rawReq: ServerlessRequest, rawRes: ServerlessResponse) {
+export default async function handler(
+  rawReq: ServerlessRequest,
+  rawRes: ServerlessResponse
+) {
   console.log("orders handler version 2 loaded");
   const req = await normalizeServerlessRequest(rawReq);
   const res = rawRes;
   enhanceApiResponse(res);
 
   try {
-    const pathname = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`).pathname;
+    const pathname = new URL(
+      req.url ?? "/",
+      `http://${req.headers.host ?? "localhost"}`
+    ).pathname;
 
     if (pathname === "/api/orders/stream") {
       return streamOrdersHandler(req, res);
@@ -262,8 +283,10 @@ export default async function handler(rawReq: ServerlessRequest, rawRes: Serverl
     if (req.method === "POST") {
       const payload = req.body ?? {};
       const customer = typeof payload?.customer === "object" ? payload.customer : {};
-      const hasCustomerName = typeof customer?.name === "string" && customer.name.trim().length > 0;
-      const hasCustomerPhone = typeof customer?.phone === "string" && customer.phone.trim().length > 0;
+      const hasCustomerName =
+        typeof customer?.name === "string" && customer.name.trim().length > 0;
+      const hasCustomerPhone =
+        typeof customer?.phone === "string" && customer.phone.trim().length > 0;
       const items = Array.isArray(payload?.items) ? payload.items : [];
 
       if (!hasCustomerName || !hasCustomerPhone) {
@@ -278,10 +301,13 @@ export default async function handler(rawReq: ServerlessRequest, rawRes: Serverl
     return await ordersHandler(req, res);
   } catch (error: any) {
     console.error("orders handler error", error);
-    const message = typeof error?.message === "string" ? error.message : "Unexpected server error";
+    const message =
+      typeof error?.message === "string" ? error.message : "Unexpected server error";
     if (res.headersSent) {
       return res.end();
     }
-    return res.status(500).json({ error: "Internal server error", details: message });
+    return res
+      .status(500)
+      .json({ error: "Internal server error", details: message });
   }
 }
