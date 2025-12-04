@@ -1,1 +1,1 @@
-export * from "../shared/services/reviewsService";
+export * from "../../shared/services/reviewsService";
