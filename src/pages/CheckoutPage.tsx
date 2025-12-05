@@ -7,6 +7,7 @@ import { PRODUCT_INDEX } from "../data/products";
 import { apiPost } from "../lib/api";
 import { sendOrderToN8N, type OrderWebhookPayload } from "../api/orders";
 import type { Order } from "../types/order";
+import { Button, Card, InputField, SectionTitle, TextareaField } from "../components/ui";
 
 const EMPTY_FORM = {
   fullName: "",
@@ -48,6 +49,7 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>(() => readCart());
   const [formData, setFormData] = useState<CheckoutForm>(EMPTY_FORM);
   const [status, setStatus] = useState<StatusMessage | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [checkoutStatus, setCheckoutStatus] = useState<StatusMessage | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -74,6 +76,12 @@ export default function CheckoutPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
   };
 
   const goToCollection = () => {
@@ -92,6 +100,7 @@ export default function CheckoutPage() {
     window.location.href = cartUrl.toString();
   };
 
+  const requiredFields = ["fullName", "phone", "email", "address", "city"] as const;
   const isFormValid =
     formData.fullName.trim() &&
     formData.phone.trim() &&
@@ -105,13 +114,21 @@ export default function CheckoutPage() {
       setStatus({ type: "error", message: "Add at least one product before placing an order." });
       return;
     }
-    if (!isFormValid) {
+    const newFieldErrors: Record<string, string> = {};
+    requiredFields.forEach((field) => {
+      if (!formData[field].trim()) {
+        newFieldErrors[field] = "Can't leave this field empty";
+      }
+    });
+    if (Object.keys(newFieldErrors).length) {
+      setFieldErrors(newFieldErrors);
       setStatus({ type: "error", message: "Please complete the required delivery details." });
       return;
     }
     setIsSubmitting(true);
     setStatus(null);
     setCheckoutStatus(null);
+    setFieldErrors({});
     try {
       const orderId =
         typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
@@ -256,66 +273,114 @@ export default function CheckoutPage() {
 
         <section className="checkout-grid">
           <form className="checkout-form" onSubmit={handlePlaceOrder}>
-            <fieldset className="checkout-fields">
-              <legend>Delivery details</legend>
-              <label>
-                Full name
-                <input type="text" name="fullName" placeholder="Sara Nour" value={formData.fullName} onChange={handleChange} required />
-              </label>
-              <label>
-                Phone number
-                <input type="tel" name="phone" placeholder="+20 1X XXX XXXX" value={formData.phone} onChange={handleChange} required />
-              </label>
-              <label>
-                Email
-                <input type="email" name="email" placeholder="sara@example.com" value={formData.email} onChange={handleChange} required />
-              </label>
-              <label>
-                City
-                <input type="text" name="city" placeholder="Cairo" value={formData.city} onChange={handleChange} required />
-              </label>
-              <label className="checkout-span-2">
-                Address / Landmark
-                <input type="text" name="address" placeholder="Building, street, floor..." value={formData.address} onChange={handleChange} required />
-              </label>
-              <label className="checkout-span-2">
-                Notes for the courier (optional)
-                <textarea name="notes" rows={3} placeholder="Entrance code, ideal delivery slot, etc." value={formData.notes} onChange={handleChange} />
-              </label>
-            </fieldset>
+            <Card className="checkout-form-card">
+              <SectionTitle
+                title="Delivery details"
+                subtitle="Complete the delivery info and our concierge will confirm the order."
+              />
+              <div className="checkout-fields">
+                <InputField
+                  label="Full name"
+                  name="fullName"
+                  placeholder="Sara Nour"
+                  value={formData.fullName}
+                  onChange={handleChange}
+                  required
+                  error={fieldErrors.fullName}
+                />
+                <InputField
+                  label="Phone number"
+                  name="phone"
+                  type="tel"
+                  placeholder="+20 1X XXX XXXX"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  required
+                  error={fieldErrors.phone}
+                />
+                <InputField
+                  label="Email"
+                  name="email"
+                  type="email"
+                  placeholder="sara@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  error={fieldErrors.email}
+                />
+                <InputField
+                  label="City"
+                  name="city"
+                  placeholder="Cairo"
+                  value={formData.city}
+                  onChange={handleChange}
+                  required
+                  error={fieldErrors.city}
+                />
+                <InputField
+                  label="Address / Landmark"
+                  name="address"
+                  placeholder="Building, street, floor..."
+                  value={formData.address}
+                  onChange={handleChange}
+                  required
+                  containerClassName="checkout-span-2"
+                  error={fieldErrors.address}
+                />
+                <TextareaField
+                  label="Notes for the courier (optional)"
+                  name="notes"
+                  placeholder="Entrance code, ideal delivery slot, etc."
+                  value={formData.notes}
+                  onChange={handleChange}
+                  rows={3}
+                  containerClassName="checkout-span-2"
+                />
+              </div>
 
-            <fieldset className="checkout-payment">
-              <legend>Payment method</legend>
-              <label className="checkout-cash-option">
-                <input type="radio" name="payment" checked readOnly />
-                <div>
-                  <strong>Cash on Delivery</strong>
-                  <span>Pay the courier once your NaturaGloss box is delivered.</span>
-                </div>
-              </label>
-            </fieldset>
+              <SectionTitle title="Payment method" className="mt-6" />
+              <fieldset className="checkout-payment">
+                <label className="checkout-cash-option">
+                  <input type="radio" name="payment" checked readOnly />
+                  <div>
+                    <strong>Cash on Delivery</strong>
+                    <span>Pay the courier once your NaturaGloss box is delivered.</span>
+                  </div>
+                </label>
+              </fieldset>
 
-            {status?.type === "error" && <p className="checkout-status checkout-status--error">{status.message}</p>}
-            {checkoutStatus && (
-              <p
-                className={`checkout-status ${
-                  checkoutStatus.type === "success" ? "checkout-status--success" : "checkout-status--error"
-                }`}
-              >
-                {checkoutStatus.message}
-              </p>
-            )}
+              {status?.type === "error" && <p className="checkout-status checkout-status--error">{status.message}</p>}
+              {checkoutStatus && (
+                <p
+                  className={`checkout-status ${
+                    checkoutStatus.type === "success" ? "checkout-status--success" : "checkout-status--error"
+                  }`}
+                >
+                  {checkoutStatus.message}
+                </p>
+              )}
 
-            <div className="checkout-actions">
-              <button type="button" className="ghost-btn" onClick={goToCart}>Adjust bag</button>
-              <button
-                type="submit"
-                className="cta-btn"
-                disabled={!isFormValid || cartIsEmpty || isSubmitting}
-              >
-                {isSubmitting ? "Submitting..." : "Place cash order"}
-              </button>
-            </div>
+              <div className="checkout-actions">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="md"
+                  className="ghost-btn"
+                  onClick={goToCart}
+                >
+                  Adjust bag
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  className="cta-btn"
+                  disabled={!isFormValid || cartIsEmpty || isSubmitting}
+                >
+                  {isSubmitting ? "Submitting..." : "Place cash order"}
+                </Button>
+              </div>
+            </Card>
           </form>
 
           <aside className="checkout-summary" aria-live="polite">

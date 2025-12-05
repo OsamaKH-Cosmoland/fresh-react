@@ -1,296 +1,265 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Navbar from "../components/Navbar";
-import Sidebar from "../components/Sidebar";
-import { apiGet, API_BASE } from "../lib/api";
-import type { Order } from "../types/order";
+import { useEffect, useMemo, useState } from "react";
+import { Button, Card, SectionTitle } from "../components/ui";
 
-const formatCurrency = (value: number | string | null | undefined) =>
-  new Intl.NumberFormat("en-EG", { style: "currency", currency: "EGP" }).format(Number(value ?? 0));
+type OrderStatus = "pending" | "confirmed" | "shipped" | "cancelled" | string;
 
-const formatTimestamp = (value: string | number | Date | null | undefined): string => {
-  if (!value) return "—";
-  try { return new Date(value).toLocaleString(); } catch { return String(value); }
-};
+interface AdminOrder {
+  id: string;
+  orderCode?: string;
+  status: OrderStatus;
+  createdAt?: string;
+  totalAmount?: number;
+  customerName?: string;
+  customerPhone?: string;
+  city?: string;
+}
 
-const getOrderKey = (order: Order) =>
-  order?.id ??
-  order?.mongoId ??
-  order?.orderCode ??
-  `${order?.customer?.phone ?? "guest"}-${order?.createdAt ?? order?.totals?.subtotal ?? ""}`;
+interface AdminReview {
+  id: string;
+  name?: string;
+  rating?: number;
+  message?: string;
+  createdAt?: string;
+}
 
-const NOTIFY_STORAGE_KEY = "admin-notifications";
-
-type Toast = { id: string; message: string };
+const STATUS_OPTIONS: OrderStatus[] = ["pending", "confirmed", "shipped", "cancelled"];
 
 export default function AdminDashboard() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.localStorage.getItem(NOTIFY_STORAGE_KEY) === "true";
-  });
-  const [toasts, setToasts] = useState<Toast[]>([]);
-  const [highlighted, setHighlighted] = useState<Record<string, boolean>>({});
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
+  const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
 
-  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const streamRef = useRef<EventSource | null>(null);
-  const notificationSupported = typeof window !== "undefined" && "Notification" in window;
+  const [reviews, setReviews] = useState<AdminReview[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsError, setReviewsError] = useState<string | null>(null);
 
-  const ordersEndpoint = `${API_BASE}/orders?limit=100`;
-  const streamEndpoint = `${API_BASE}/orders/stream`;
+  useEffect(() => {
+    let cancelled = false;
+    const loadOrders = async () => {
+      setOrdersLoading(true);
+      setOrdersError(null);
+      try {
+        const res = await fetch("/api/orders?limit=100");
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body?.error ?? `Failed to load orders (${res.status}).`);
+        }
+        const data = (await res.json()) as any[];
+        if (cancelled) return;
+        const mapped = data.map((order) => ({
+          id: order.id ?? order.mongoId ?? order.orderCode ?? `${order._id ?? Date.now()}`,
+          orderCode: order.orderCode,
+          status: order.status ?? "pending",
+          createdAt: order.createdAt,
+          totalAmount:
+            order.totals?.subtotal ?? order.totals?.total ?? order.total ?? order.subtotal ?? 0,
+          customerName: order.customer?.name,
+          customerPhone: order.customer?.phone,
+          city: order.customer?.city,
+        }));
+        setOrders(mapped);
+      } catch (error) {
+        if (cancelled) return;
+        console.error("Failed to load orders:", error);
+        setOrdersError((error as Error)?.message ?? "Unable to load orders.");
+      } finally {
+        if (!cancelled) setOrdersLoading(false);
+      }
+    };
+    const loadReviews = async () => {
+      setReviewsLoading(true);
+      setReviewsError(null);
+      try {
+        const res = await fetch("/api/reviews?limit=100");
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(body?.error ?? `Failed to load reviews (${res.status}).`);
+        }
+        const data = (await res.json()) as any[];
+        if (cancelled) return;
+        const mapped = data.map((review) => ({
+          id: review.mongoId ?? review.id ?? `${review.name}-${review.createdAt}`,
+          name: review.name,
+          rating: Number(review.rating ?? 0),
+          message: review.message,
+          createdAt: review.createdAt,
+        }));
+        setReviews(mapped);
+      } catch (error) {
+        if (cancelled) return;
+        console.error("Failed to load reviews:", error);
+        setReviewsError((error as Error)?.message ?? "Unable to load reviews.");
+      } finally {
+        if (!cancelled) setReviewsLoading(false);
+      }
+    };
 
-  const pushToast = useCallback((message: string) => {
-    const toastId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    setToasts((prev) => [...prev, { id: toastId, message }]);
-    const timeout = setTimeout(() => {
-      setToasts((prev) => prev.filter((toast) => toast.id !== toastId));
-    }, 5000);
-    timersRef.current.push(timeout);
+    loadOrders();
+    loadReviews();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const fetchOrders = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const filteredOrders = useMemo(
+    () =>
+      orders.filter((order) => statusFilter === "all" || order.status === statusFilter),
+    [orders, statusFilter]
+  );
+
+  const handleStatusUpdate = async (orderId: string, newStatus: OrderStatus) => {
+    if (!newStatus || !orderId) return;
+    setUpdatingOrderId(orderId);
     try {
-      const response = await apiGet("/orders?limit=100");
+      const response = await fetch(`/api/orders?id=${encodeURIComponent(orderId)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        throw new Error(body?.error ?? `Unable to load orders (${response.status}).`);
+        throw new Error(body?.error ?? `Failed to update (status ${response.status}).`);
       }
-      const data = (await response.json()) as Order[];
-      setOrders(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Failed to fetch orders", err);
-      setError((err as Error).message ?? "Unable to load orders.");
+      setOrders((prev) =>
+        prev.map((order) => (order.id === orderId ? { ...order, status: newStatus } : order))
+      );
+    } catch (error) {
+      console.error("Order status update failed:", error);
+      setOrdersError((error as Error)?.message ?? "Unable to update order status.");
     } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const highlightOrder = useCallback((orderKey: string) => {
-    setHighlighted((prev) => ({ ...prev, [orderKey]: true }));
-    const timeout = setTimeout(() => {
-      setHighlighted((prev) => {
-        const next = { ...prev };
-        delete next[orderKey];
-        return next;
-      });
-    }, 4000);
-    timersRef.current.push(timeout);
-  }, []);
-
-  const handleNewOrder = useCallback(
-    (incoming: Order | null) => {
-      if (!incoming) return;
-      const orderKey = getOrderKey(incoming);
-
-      setOrders((prev) => {
-        const existingIndex = prev.findIndex(
-          (entry) => getOrderKey(entry) === orderKey || entry.id === incoming.id
-        );
-        const next = existingIndex >= 0 ? [...prev] : [incoming, ...prev];
-        if (existingIndex >= 0) {
-          next.splice(existingIndex, 1);
-          next.unshift(incoming);
-        }
-        return next.slice(0, 100);
-      });
-
-      highlightOrder(orderKey);
-      pushToast(`New order ${incoming.orderCode ?? incoming.id} from ${incoming.customer?.name ?? "Unknown"}`);
-
-      if (
-        notificationsEnabled &&
-        notificationSupported &&
-        window.Notification.permission === "granted"
-      ) {
-        try {
-          const notificationBody = [
-            incoming.customer?.email,
-            incoming.customer?.phone,
-            `${formatCurrency(incoming?.totals?.subtotal)} | ${incoming.customer?.city ?? ""}`,
-          ].filter(Boolean).join(" · ");
-          new Notification(`New order ${incoming.orderCode ?? incoming.id}`, { body: notificationBody });
-        } catch (notifyError) {
-          console.error("Unable to show desktop notification", notifyError);
-        }
-      }
-    },
-    [highlightOrder, notificationSupported, notificationsEnabled, pushToast]
-  );
-
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
-
-  useEffect(() => {
-    if (streamRef.current) streamRef.current.close();
-    const source = new EventSource(streamEndpoint);
-    streamRef.current = source;
-
-    source.addEventListener("new-order", (event) => {
-      try {
-        const parsed = JSON.parse(event.data) as Order;
-        handleNewOrder(parsed);
-      } catch (err) {
-        console.error("Failed to parse new-order event", err);
-      }
-    });
-
-    source.onerror = (event) => {
-      console.error("Orders event stream error:", event);
-    };
-
-    return () => {
-      source.close();
-      streamRef.current = null;
-    };
-  }, [handleNewOrder, streamEndpoint]);
-
-  useEffect(() => {
-    return () => {
-      timersRef.current.forEach((timer) => clearTimeout(timer));
-      timersRef.current = [];
-    };
-  }, []);
-
-  const totalValue = useMemo(
-    () => orders.reduce((sum, order) => sum + Number(order?.totals?.subtotal ?? 0), 0),
-    [orders]
-  );
-
-  const toggleNotifications = async () => {
-    if (!notificationSupported) {
-      pushToast("Desktop notifications are not supported in this browser.");
-      return;
-    }
-
-    if (!notificationsEnabled) {
-      const permission =
-        window.Notification.permission === "default"
-          ? await window.Notification.requestPermission()
-          : window.Notification.permission;
-      if (permission === "granted") {
-        setNotificationsEnabled(true);
-        window.localStorage.setItem(NOTIFY_STORAGE_KEY, "true");
-        pushToast("Desktop notifications enabled.");
-      } else {
-        setNotificationsEnabled(false);
-        window.localStorage.setItem(NOTIFY_STORAGE_KEY, "false");
-        pushToast("Desktop notifications blocked.");
-      }
-    } else {
-      setNotificationsEnabled(false);
-      window.localStorage.setItem(NOTIFY_STORAGE_KEY, "false");
-      pushToast("Desktop notifications disabled.");
+      setUpdatingOrderId(null);
     }
   };
 
   return (
-    <div className="admin-dashboard">
-      <Navbar sticky={false} onMenuToggle={() => setDrawerOpen(true)} cartCount={0} />
-      <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+    <main className="admin-dashboard" style={{ padding: 32, gap: 32 }}>
+      <SectionTitle
+        title="Admin Dashboard"
+        subtitle="Monitor orders and reviews without touching the API layer."
+        align="left"
+      />
 
-      <main className="admin-container" aria-live="polite">
-        <header className="admin-header">
-          <div>
-            <h1>Order Control Center</h1>
-            <p>Monitor cash-on-delivery orders in real time.</p>
+      <div className="admin-panels" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        <Card className="admin-orders-card">
+          <SectionTitle
+            title="Orders"
+            subtitle="Review and update recent NaturaGloss orders."
+            align="left"
+            className="mb-4"
+          />
+          <div className="admin-orders-toolbar" style={{ marginBottom: 16, display: "flex", gap: 8 }}>
+            <div>
+              <label htmlFor="status-filter" className="text-sm text-gray-600 mr-2">
+                Filter:
+              </label>
+              <select
+                id="status-filter"
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value as OrderStatus | "all")}
+              >
+                <option value="all">All</option>
+                {STATUS_OPTIONS.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div className="admin-actions">
-            <button type="button" className="admin-button" onClick={fetchOrders} disabled={loading}>
-              {loading ? "Refreshing…" : "Refresh"}
-            </button>
-            <button
-              type="button"
-              className={`admin-button ${notificationsEnabled ? "admin-button--active" : ""}`}
-              onClick={toggleNotifications}
-            >
-              {notificationsEnabled ? "Disable Notifications" : "Enable Notifications"}
-            </button>
-          </div>
-        </header>
 
-        {error && <p className="admin-status admin-status--error">{error}</p>}
-
-        <section className="admin-summary">
-          <div>
-            <span className="admin-summary__label">Orders</span>
-            <span className="admin-summary__value">{orders.length}</span>
-          </div>
-          <div>
-            <span className="admin-summary__label">Cash Value</span>
-            <span className="admin-summary__value">{formatCurrency(totalValue)}</span>
-          </div>
-          <div>
-            <span className="admin-summary__label">Notifications</span>
-            <span className="admin-summary__value">
-              {notificationSupported ? (notificationsEnabled ? "Enabled" : "Disabled") : "Unsupported"}
-            </span>
-          </div>
-        </section>
-
-        <div className="admin-table-container">
-          {loading ? (
-            <p className="admin-status">Loading orders…</p>
+          {ordersLoading ? (
+            <p>Loading orders…</p>
+          ) : ordersError ? (
+            <p className="text-rose-600">{ordersError}</p>
           ) : (
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>Order Code</th>
-                  <th>Customer</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Total</th>
-                  <th>Submitted</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.length === 0 ? (
+            <div className="admin-orders-table" style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
                   <tr>
-                    <td colSpan={6} className="admin-empty">
-                      No orders yet. Fresh submissions will appear here instantly.
-                    </td>
+                    <th>Date</th>
+                    <th>Order</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>City</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th />
                   </tr>
-                ) : (
-                  orders.map((order) => {
-                    const orderKey = getOrderKey(order);
-                    const isHighlighted = highlighted[orderKey];
-                    return (
-                      <tr key={orderKey} className={isHighlighted ? "admin-row--new" : ""}>
-                        <td className="font-semibold">{order.orderCode ?? order.id}</td>
-                        <td>
-                          <div className="admin-customer">
-                            <span>{order.customer?.name ?? "—"}</span>
-                            {order.customer?.city && <span className="admin-customer__muted">{order.customer.city}</span>}
-                            {order.customer?.address && (
-                              <span className="admin-customer__muted">{order.customer.address}</span>
-                            )}
-                          </div>
-                        </td>
-                        <td>{order.customer?.email ?? "—"}</td>
-                        <td>{order.customer?.phone ?? "—"}</td>
-                        <td>{formatCurrency(order?.totals?.subtotal)}</td>
-                        <td>{formatTimestamp(order.createdAt)}</td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredOrders.map((order) => (
+                    <tr key={order.id}>
+                      <td>{order.createdAt ? new Date(order.createdAt).toLocaleString() : "—"}</td>
+                      <td>{order.orderCode ?? order.id}</td>
+                      <td>{order.customerName ?? "—"}</td>
+                      <td>{order.customerPhone ?? "—"}</td>
+                      <td>{order.city ?? "—"}</td>
+                      <td>{order.totalAmount ? `${order.totalAmount} EGP` : "—"}</td>
+                      <td>
+                        <select
+                          value={order.status}
+                          onChange={(event) => handleStatusUpdate(order.id, event.target.value)}
+                          disabled={updatingOrderId === order.id}
+                        >
+                          {[...STATUS_OPTIONS, order.status]
+                            .filter((value, index, array) => array.indexOf(value) === index)
+                            .map((status) => (
+                              <option key={status} value={status}>
+                                {status}
+                              </option>
+                            ))}
+                        </select>
+                      </td>
+                      <td>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleStatusUpdate(order.id, order.status)}
+                          disabled={updatingOrderId === order.id}
+                        >
+                          {updatingOrderId === order.id ? "Updating…" : "Update"}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
-        </div>
-      </main>
+        </Card>
 
-      <div className="admin-toast-stack" aria-live="assertive" aria-atomic="true">
-        {toasts.map((toast) => (
-          <div key={toast.id} className="admin-toast">
-            {toast.message}
-          </div>
-        ))}
+        <Card className="admin-reviews-card">
+          <SectionTitle
+            title="Customer Reviews"
+            subtitle="See what customers are saying about NaturaGloss."
+            align="left"
+            className="mb-4"
+          />
+          {reviewsLoading ? (
+            <p>Loading reviews…</p>
+          ) : reviewsError ? (
+            <p className="text-rose-600">{reviewsError}</p>
+          ) : (
+            <div className="admin-reviews-list" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {reviews.map((review) => (
+                <Card key={review.id}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                    <strong>{review.name || "Anonymous"}</strong>
+                    <span>
+                      ⭐ {review.rating ?? 0} / 5 ·{" "}
+                      {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : "—"}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-700">{review.message}</p>
+                </Card>
+              ))}
+            </div>
+          )}
+        </Card>
       </div>
-    </div>
+    </main>
   );
 }

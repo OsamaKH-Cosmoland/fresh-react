@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type React from "react";
 import { apiGet, apiPost } from "../lib/api";
 import type { Review } from "../types/review";
+import { Button, Card, SectionTitle, InputField, TextareaField } from "./ui";
 
 const buildStars = (count: number) => {
   const full = Math.min(5, Math.max(0, Math.round(count)));
@@ -95,67 +96,90 @@ export default function ReviewsSection() {
   return (
     <section id="reviews" className="reviews-section">
       <div className="reviews-header">
-        <div>
-          <p className="reviews-eyebrow">Our community&apos;s experiences</p>
-          <h2>Customer Reviews</h2>
-          <p className="reviews-average">
-            <span className="reviews-stars" aria-hidden="true">{buildStars(averageRating)}</span>
-            <span className="reviews-average-score">
-              {averageRating ? averageRating.toFixed(1) : "0.0"} / 5.0 · {reviews.length} {reviews.length === 1 ? "review" : "reviews"}
-            </span>
-          </p>
-        </div>
+        <Card className="reviews-summary-card">
+          <div>
+            <p className="reviews-eyebrow">Our community&apos;s experiences</p>
+            <SectionTitle
+              title="Customer Reviews"
+              subtitle="Discover how NaturaGloss rituals have elevated everyday routines."
+            />
+            <p className="reviews-average">
+              <span className="reviews-stars" aria-hidden="true">
+                {buildStars(averageRating)}
+              </span>
+              <span className="reviews-average-score">
+                {averageRating ? averageRating.toFixed(1) : "0.0"} / 5.0 · {reviews.length}{" "}
+                {reviews.length === 1 ? "review" : "reviews"}
+              </span>
+            </p>
+          </div>
 
-        <div className="reviews-distribution">
-          {RATING_OPTIONS.map((rating) => (
-            <div key={rating} className="reviews-distribution__row">
-              <span aria-hidden="true">{buildStars(rating)}</span>
-              <div className="reviews-distribution__bar">
-                <div
-                  className="reviews-distribution__fill"
-                  style={{ width: reviews.length ? `${(ratingCounts[rating] / reviews.length) * 100}%` : 0 }}
-                />
+          <div className="reviews-distribution">
+            {RATING_OPTIONS.map((rating) => (
+              <div key={rating} className="reviews-distribution__row">
+                <span aria-hidden="true">{buildStars(rating)}</span>
+                <div className="reviews-distribution__bar">
+                  <div
+                    className="reviews-distribution__fill"
+                    style={{
+                      width: reviews.length ? `${(ratingCounts[rating] / reviews.length) * 100}%` : 0,
+                    }}
+                  />
+                </div>
+                <span>{ratingCounts[rating] ?? 0}</span>
               </div>
-              <span>{ratingCounts[rating] ?? 0}</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Card>
 
         <form className="reviews-form" onSubmit={handleSubmit}>
-          <label className="reviews-form__field">
-            <span>Your name</span>
-            <input name="name" type="text" placeholder="Anonymous" value={form.name} onChange={handleChange} maxLength={80} />
-          </label>
-          <label className="reviews-form__field">
-            <span>Rating</span>
-            <select name="rating" value={form.rating} onChange={handleChange}>
-              {RATING_OPTIONS.map((rating) => (
-                <option key={rating} value={rating}>
-                  {rating} {rating === 1 ? "Star" : "Stars"}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="reviews-form__field reviews-form__field--wide">
-            <span>Your experience</span>
-            <textarea
-              name="message"
-              placeholder="Tell us about your ritual..."
-              rows={4}
-              value={form.message}
-              onChange={handleChange}
-              maxLength={1000}
-              required
-            />
-          </label>
-          <button type="submit" className="reviews-submit" disabled={submitting}>
-            {submitting ? "Sending..." : "Share review"}
-          </button>
-          {status && (
-            <p className={`reviews-status ${status.type === "error" ? "reviews-status--error" : "reviews-status--success"}`}>
-              {status.message}
-            </p>
-          )}
+          <Card className="reviews-form-card">
+            <SectionTitle title="Share your ritual" subtitle="Tell us about your NaturaGloss moment." />
+            <div className="reviews-form__grid">
+              <InputField
+                label="Your name"
+                name="name"
+                placeholder="Anonymous"
+                value={form.name}
+                onChange={handleChange}
+                maxLength={80}
+                containerClassName="reviews-form__field"
+              />
+              <div className="reviews-form__field">
+                <span>Rating</span>
+                <select name="rating" value={form.rating} onChange={handleChange}>
+                  {RATING_OPTIONS.map((rating) => (
+                    <option key={rating} value={rating}>
+                      {rating} {rating === 1 ? "Star" : "Stars"}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <TextareaField
+                label="Your experience"
+                name="message"
+                placeholder="Tell us about your ritual..."
+                rows={4}
+                value={form.message}
+                onChange={handleChange}
+                maxLength={1000}
+                required
+                containerClassName="reviews-form__field reviews-form__field--wide"
+              />
+            </div>
+            <Button type="submit" variant="primary" disabled={submitting} className="reviews-submit">
+              {submitting ? "Sending..." : "Share review"}
+            </Button>
+            {status && (
+              <p
+                className={`reviews-status ${
+                  status.type === "error" ? "reviews-status--error" : "reviews-status--success"
+                }`}
+              >
+                {status.message}
+              </p>
+            )}
+          </Card>
         </form>
       </div>
 
@@ -168,16 +192,21 @@ export default function ReviewsSection() {
           <p className="reviews-empty">No stories yet — be the first to share your ritual.</p>
         ) : (
           reviews.map((review) => (
-            <article key={review.mongoId ?? `${review.name}-${review.createdAt}`} className="review-card">
+            <Card
+              key={review.mongoId ?? `${review.name}-${review.createdAt}`}
+              className="review-card"
+            >
               <header>
                 <div>
-                  <p className="review-card__stars" aria-hidden="true">{buildStars(review.rating)}</p>
+                  <p className="review-card__stars" aria-hidden="true">
+                    {buildStars(review.rating)}
+                  </p>
                   <h3>{review.name || "Anonymous"}</h3>
                 </div>
                 <time dateTime={review.createdAt}>{new Date(review.createdAt).toLocaleDateString()}</time>
               </header>
               <p>{review.message}</p>
-            </article>
+            </Card>
           ))
         )}
       </div>
