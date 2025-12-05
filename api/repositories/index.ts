@@ -2,7 +2,7 @@ import "dotenv/config";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { connectToDb } from "../_db";
+import { connectToDb } from "../_db.js";
 import type { Collection } from "mongodb";
 import { createFakeIdGenerator } from "../../shared/fakeId";
 import type { Order } from "../server/domain/Order";
