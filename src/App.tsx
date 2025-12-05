@@ -7,25 +7,20 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrdersAdmin from "./pages/OrdersAdmin";
 import AdminDashboard from "./pages/AdminDashboard";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
-import type { Fruit } from "./types/fruit";
+import type { Product } from "./types/product";
 
 const SHOW_LAB = true;
 
-const PRESET_FRUITS = [
-  { name: "Apple", price: 12 },
-  { name: "Banana", price: 8 },
-  { name: "Cherry", price: 15 },
-  { name: "Grapes", price: 18 },
-  { name: "Mango", price: 20 },
-  { name: "Orange", price: 10 },
-  { name: "Peach", price: 14 },
-  { name: "Pear", price: 11 },
-  { name: "Plum", price: 9 },
-  { name: "Kiwi", price: 13 },
+const PRESET_PRODUCTS = [
+  { name: "Hydra Serum", price: 45 },
+  { name: "Glow Cream", price: 32 },
+  { name: "Velvet Cleanser", price: 28 },
+  { name: "Silk Toner", price: 22 },
+  { name: "Botanical Mist", price: 18 },
 ];
 
-function FruitShop() {
-  const [fruits, setFruits] = useState<Fruit[]>([]);
+function ProductShop() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [minPrice, setMinPrice] = useState<number>(0);
   const [query, setQuery] = useState("");
@@ -36,10 +31,10 @@ function FruitShop() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await apiGet("/fruits");
-        if (!res.ok) throw new Error("Failed to fetch fruits");
-        const data = (await res.json()) as Fruit[];
-        setFruits(data);
+        const res = await apiGet("/products");
+        if (!res.ok) throw new Error("Failed to fetch products");
+        const data = (await res.json()) as Product[];
+        setProducts(data);
       } catch (e) {
         console.error(e);
       } finally {
@@ -48,56 +43,56 @@ function FruitShop() {
     })();
   }, []);
 
-  async function addFruit() {
+  async function addProduct() {
     const n = Number(price);
     const clean = name.trim();
     if (!clean || Number.isNaN(n) || n < 0) return;
 
-    const res = await apiPost("/fruits", { name: clean, price: n });
+    const res = await apiPost("/products", { name: clean, price: n });
     if (!res.ok) {
-      console.error("Failed to create fruit");
+      console.error("Failed to create product");
       return;
     }
-    const created = (await res.json()) as Fruit;
-    setFruits((prev) => [created, ...prev]);
+    const created = (await res.json()) as Product;
+    setProducts((prev) => [created, ...prev]);
     setName("");
     setPrice("");
   }
 
-  async function deleteFruit(id: string) {
-    const res = await apiDelete(`/fruits?id=${encodeURIComponent(id)}`);
+  async function deleteProduct(id: string) {
+    const res = await apiDelete(`/products?id=${encodeURIComponent(id)}`);
     if (!res.ok) {
-      console.error("Failed to delete fruit");
+      console.error("Failed to delete product");
       return;
     }
-    setFruits((prev) => prev.filter((f) => f._id !== id));
+    setProducts((prev) => prev.filter((f) => f._id !== id));
   }
 
-  async function updateFruit(id: string, currentName: string, currentPrice: number) {
+  async function updateProduct(id: string, currentName: string, currentPrice: number) {
     const newName = prompt("Enter New Name:", currentName);
     const newPrice = prompt("Enter New Price:", String(currentPrice));
     const parsedPrice = newPrice ? Number(newPrice) : NaN;
     if (!newName || Number.isNaN(parsedPrice)) return;
 
-    const res = await apiPut(`/fruits?id=${encodeURIComponent(id)}`, {
+    const res = await apiPut(`/products?id=${encodeURIComponent(id)}`, {
       name: newName,
       price: parsedPrice,
     });
     if (!res.ok) {
-      alert("Failed to update fruit");
+      alert("Failed to update product");
       return;
     }
-    const updated = (await res.json()) as Fruit;
-    setFruits((prev) => prev.map((f) => (f._id === id ? updated : f)));
+    const updated = (await res.json()) as Product;
+    setProducts((prev) => prev.map((f) => (f._id === id ? updated : f)));
   }
 
   const filtered = useMemo(() => {
     const n = Number(minPrice || 0);
     const q = query.trim().toLowerCase();
-    return fruits.filter(
+    return products.filter(
       (item) => item.price >= n && (q === "" || item.name.toLowerCase().includes(q))
     );
-  }, [fruits, minPrice, query]);
+  }, [products, minPrice, query]);
 
   const sorted = useMemo(() => {
     if (sortBy === "asc") return [...filtered].sort((a, b) => a.price - b.price);
@@ -110,10 +105,10 @@ function FruitShop() {
 
   return (
     <main style={{ fontFamily: "system-ui", padding: 24, maxWidth: 640, margin: "0 auto" }}>
-      <h1>Fruit Shop</h1>
+      <h1>Product Lab</h1>
 
       <fieldset style={{ marginBottom: 16 }}>
-        <legend>Add Fruit</legend>
+        <legend>Add Product</legend>
         <input placeholder="name" value={name} onChange={(e) => setName(e.target.value)} />
         <input
           placeholder="price"
@@ -121,7 +116,7 @@ function FruitShop() {
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
-        <button onClick={addFruit} disabled={!canAdd}>
+        <button onClick={addProduct} disabled={!canAdd}>
           Add
         </button>
       </fieldset>
@@ -156,8 +151,8 @@ function FruitShop() {
             {sorted.map((item) => (
               <li key={item._id}>
                 {item.name} — ${item.price}{" "}
-                <button onClick={() => deleteFruit(item._id)}>Delete</button>
-                <button onClick={() => updateFruit(item._id, item.name, item.price)}>Edit</button>
+                <button onClick={() => deleteProduct(item._id)}>Delete</button>
+                <button onClick={() => updateProduct(item._id, item.name, item.price)}>Edit</button>
               </li>
             ))}
           </ul>
@@ -187,5 +182,5 @@ export default function App() {
   if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;
   if (view === "ritualfinder" || path === "/ritual-finder") return <RitualFinder />;
 
-  return SHOW_LAB ? <LayoutLab /> : <FruitShop />;
+  return SHOW_LAB ? <LayoutLab /> : <ProductShop />;
 }

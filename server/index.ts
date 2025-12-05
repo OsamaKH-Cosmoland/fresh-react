@@ -8,7 +8,7 @@ import {
   streamOrdersHandler,
 } from "../lib/http/ordersHandler";
 import reviewsHandler from "../lib/http/reviewsHandler";
-import fruitsHandler from "../lib/http/fruitsHandler";
+import productsHandler from "../lib/http/productsHandler";
 import orderCreatedWebhookHandler from "../lib/http/orderCreatedWebhookHandler";
 import healthHandler from "../lib/http/healthHandler";
 import { GmailEmailProvider } from "../providers/gmailEmailProvider";
@@ -139,8 +139,8 @@ const server = http.createServer(async (rawReq, rawRes) => {
     return;
   }
 
-  if (pathname.startsWith("/api/fruits")) {
-    await fruitsHandler(req, res);
+  if (pathname.startsWith("/api/products")) {
+    await productsHandler(req, res);
     return;
   }
 

@@ -1,4 +1,3 @@
-// MongoDB-backed orders repository.
 import type { Collection } from "mongodb";
 import type { Order } from "../domain/Order";
 import type { OrdersRepository } from "./OrdersRepository";

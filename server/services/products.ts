@@ -1,6 +1,5 @@
-// Fruit services: CRUD helpers wrapping Mongo collections.
 import { MongoClient, ObjectId, type Db, type Collection } from "mongodb";
-import type { Fruit } from "../domain/Fruit";
+import type { Product } from "../domain/Product";
 
 let cachedClient: MongoClient | null = null;
 let cachedDb: Db | null = null;
@@ -20,17 +19,17 @@ async function connect(): Promise<{ client: MongoClient; db: Db }> {
   return { client, db };
 }
 
-export async function listFruits() {
+export async function listProducts() {
   const { db } = await connect();
-  const col: Collection<Fruit> = db.collection("fruits");
+  const col: Collection<Product> = db.collection("products");
   const docs = await col.find({}).sort({ _id: -1 }).toArray();
   return docs.map(({ _id, ...rest }: any) => ({ _id: _id?.toString(), ...rest }));
 }
 
-export async function createFruit(raw: unknown) {
+export async function createProduct(raw: unknown) {
   const { db } = await connect();
-  const col: Collection<Fruit> = db.collection("fruits");
-  const body = readBody(raw) as Partial<Fruit>;
+  const col: Collection<Product> = db.collection("products");
+  const body = readBody(raw) as Partial<Product>;
   const name = String(body?.name || "").trim();
   const price = Number(body?.price);
   if (!name || Number.isNaN(price) || price < 0) {
@@ -42,9 +41,9 @@ export async function createFruit(raw: unknown) {
   return { _id: result.insertedId.toString(), name, price };
 }
 
-export async function deleteFruit(id?: string) {
+export async function deleteProduct(id?: string) {
   const { db } = await connect();
-  const col: Collection<Fruit> = db.collection("fruits");
+  const col: Collection<Product> = db.collection("products");
   if (!id) {
     await col.deleteMany({});
     return { ok: true };
@@ -53,10 +52,10 @@ export async function deleteFruit(id?: string) {
   return { ok: true };
 }
 
-export async function updateFruit(id: string, raw: unknown) {
+export async function updateProduct(id: string, raw: unknown) {
   const { db } = await connect();
-  const col: Collection<Fruit> = db.collection("fruits");
-  const body = readBody(raw) as Partial<Fruit>;
+  const col: Collection<Product> = db.collection("products");
+  const body = readBody(raw) as Partial<Product>;
   const name = String(body?.name || "").trim();
   const price = Number(body?.price);
 
@@ -65,7 +64,7 @@ export async function updateFruit(id: string, raw: unknown) {
     { $set: { name, price } },
     { returnDocument: "after" }
   );
-  const updated = (result as any)?.value as Fruit | null;
+  const updated = (result as any)?.value as Product | null;
   if (!updated) {
     const err: any = new Error("Not found");
     err.statusCode = 404;

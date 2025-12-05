@@ -5,7 +5,7 @@ export {
 } from "../lib/http/ordersHandler";
 
 export { default as reviewsHandler } from "../lib/http/reviewsHandler";
-export { default as fruitsHandler } from "../lib/http/fruitsHandler";
+export { default as productsHandler } from "../lib/http/productsHandler";
 export { default as healthHandler } from "../lib/http/healthHandler";
 export { default as orderCreatedWebhookHandler } from "../lib/http/orderCreatedWebhookHandler";
 

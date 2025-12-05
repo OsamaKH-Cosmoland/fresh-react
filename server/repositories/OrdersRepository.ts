@@ -1,4 +1,3 @@
-// Core repository contract for Orders persistence.
 import type { Order } from "../domain/Order";
 
 export interface OrdersRepository {
