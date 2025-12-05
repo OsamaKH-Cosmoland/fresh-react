@@ -7,7 +7,7 @@ import { ObjectId } from "mongodb";
 import { URL, fileURLToPath } from "url";
 import crypto from "crypto";
 import type { IncomingMessage, ServerResponse } from "http";
-import { resolveOrdersRepository } from "./repositories/index";
+import { resolveOrdersRepository } from "./repositories/index.js";
 import type { OrdersRepository } from "../server/repositories/OrdersRepository";
 import type { Order } from "../server/domain/Order";
 
