@@ -4,12 +4,16 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { connectToDb } from "../_db.js";
 import type { Collection } from "mongodb";
-import { createFakeIdGenerator } from "../../shared/fakeId";
 import type { Order } from "../server/domain/Order";
 import type { OrdersRepository } from "../server/repositories/OrdersRepository";
 
 const FALLBACK_LIMIT = 500;
 const READONLY_FS_ERROR_CODES = new Set(["EACCES", "EPERM", "EROFS", "ENOSPC"]);
+
+const createFakeIdGenerator = (prefix = "ID", startAt = 1) => {
+  let current = startAt;
+  return () => `${prefix}-${current++}`;
+};
 
 const nextId = createFakeIdGenerator("NG");
 
