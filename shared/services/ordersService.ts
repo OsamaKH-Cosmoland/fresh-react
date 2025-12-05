@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { ObjectId } from "mongodb";
-import { resolveOrdersRepository } from "../../server/repositories";
+import { resolveOrdersRepository } from "../../server/repositories/index";
 import type { OrdersRepository } from "../../server/repositories/OrdersRepository";
 import type { Order } from "../../server/domain/Order";
 import type { EmailProvider } from "../../providers/emailProvider";
