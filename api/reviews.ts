@@ -1,7 +1,7 @@
 import "dotenv/config";
 import type { IncomingMessage, ServerResponse } from "http";
 import { URL } from "url";
-import { connectToDb } from "../server/_db";
+import { connectToDb } from "./_db";
 import type { Review } from "../server/domain/Review";
 
 type ServerlessRequest = IncomingMessage & {

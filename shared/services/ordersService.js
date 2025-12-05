@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { ObjectId } from "mongodb";
-import { resolveOrdersRepository } from "../../server/repositories";
+import { resolveOrdersRepository } from "../../server/repositories/index";
 let cachedTransporter = null;
 const bus = new EventEmitter();
 bus.setMaxListeners(0);
