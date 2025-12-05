@@ -1,4 +1,4 @@
-import { productsHandler, enhanceApiResponse, normalizeServerlessRequest } from "./http";
+import { productsHandler, enhanceApiResponse, normalizeServerlessRequest } from "./http-barrel.js";
 
 export default async function handler(
   req: Parameters<typeof productsHandler>[0],
