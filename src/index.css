@@ -187,6 +187,7 @@ button:hover {
   margin: 0 0 .6rem;
   background: linear-gradient(135deg, #f9ecb7, #dcb768);
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   font-weight: 800;
   letter-spacing: .45px;
@@ -903,7 +904,21 @@ button:hover {
 
 /* desktop breakpoint */
 @media (min-width: 768px) {
-  .hamburger { display: none; }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  .hamburger {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+  }
 }
 
 /* buttons */
