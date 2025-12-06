@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type React from "react";
 import { PRODUCTS } from "../data/products";
 import type { Product } from "../types/product";
+import { Button, Card } from "@/components/ui";
 
 interface CardGridProps {
   onAddToCart?: (product: Product) => void;
@@ -105,28 +106,28 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
             <p className="toast-copy">
               {toast.item?.title ?? "New item"} is now in your bag. Review your cart anytime.
             </p>
-            <div className="toast-actions">
+      <div className="toast-actions">
               {toast.recommendation && (
                 <>
                   <p className="toast-suggestion">
                     Pair it with <strong>{toast.recommendation.title}</strong> for a complete ritual.
                   </p>
-              <button
-                type="button"
-                className="toast-button"
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() => handleAdd(toast.recommendation as Product)}
               >
                 Add {toast.recommendation.title}
-                  </button>
+              </Button>
                 </>
               )}
-              <button
-                type="button"
-                className="ghost-btn ghost-btn--compact"
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => { window.location.href = `${import.meta.env.BASE_URL ?? "/"}?view=cart`; }}
               >
                 View bag
-              </button>
+              </Button>
             </div>
           </div>
           <button
@@ -139,11 +140,11 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
           </button>
         </div>
       )}
-      <section id="grid" className="card-grid">
+          <section id="grid" className="card-grid">
         {initial.map((c: Product) => {
           const isFav = favs.has(c.id);
           return (
-            <article
+            <Card
             key={c.id}
             className={`card rise-card ${isFav ? "is-fav" : ""}`}
             tabIndex={0}
@@ -169,14 +170,15 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
               </header>
               <p className="card-desc">{c.desc}</p>
               <p className="card-price">{c.price}</p>
-              <button
-                className="primary-btn card-add"
+              <Button
+                className="card-add"
+                variant="primary"
                 type="button"
                 onClick={() => handleAdd(c)}
               >
                 Add to cart
-              </button>
-            </article>
+              </Button>
+            </Card>
           );
         })}
       </section>

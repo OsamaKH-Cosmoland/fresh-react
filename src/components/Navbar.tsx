@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui";
+import { FadeIn } from "@/components/animate";
 
 interface NavbarProps {
   onMenuToggle: () => void;
@@ -34,9 +36,15 @@ export default function Navbar({
 
   const navActions = (
     <div className="nav-actions">
-      <a
+      <Button
+        variant="secondary"
         className="nav-cart"
-        href="?view=cart"
+        size="md"
+        onClick={() => {
+          const base = import.meta.env.BASE_URL ?? "/";
+          const location = `${base}?view=cart`;
+          window.location.href = location;
+        }}
         aria-label={`View cart (${cartCount} ${itemLabel})`}
       >
         <span className="nav-cart__glow" aria-hidden="true" />
@@ -56,7 +64,7 @@ export default function Navbar({
         </span>
         <span className="nav-cart__label">Cart</span>
         <span className="nav-cart__count">{cartCount}</span>
-      </a>
+      </Button>
       <button className="hamburger" aria-label="Open menu" onClick={onMenuToggle}>
         <span />
         <span />
@@ -68,26 +76,30 @@ export default function Navbar({
   return (
     <header className={`navbar rise-once ${sticky ? "sticky" : ""} ${elevated ? "elevated" : ""}`}>
       <div className="nav-inner">
-        <a className="brand" href="/">
-          {brand}
-        </a>
+        <FadeIn>
+          <a className="brand" href="/">
+            {brand}
+          </a>
+        </FadeIn>
         {showSectionLinks ? (
-          <div className="nav-main">
-            <div className="nav-links-row">
-              <nav className="nav-links">
-                <a className="nav-pill" href={buildSectionHref("grid")}>
-                  Collection
-                </a>
-                <a className="nav-pill" href="?view=ritualfinder">
-                  Find My Product
-                </a>
-                <a className="nav-pill" href="/stories">
-                  Our Journal
-                </a>
-              </nav>
+          <FadeIn>
+            <div className="nav-main">
+              <div className="nav-links-row">
+                <nav className="nav-links">
+                  <a className="nav-pill" href={buildSectionHref("grid")}>
+                    Collection
+                  </a>
+                  <a className="nav-pill" href="?view=ritualfinder">
+                    Find My Product
+                  </a>
+                  <a className="nav-pill" href="/stories">
+                    Our Journal
+                  </a>
+                </nav>
+              </div>
+              {navActions}
             </div>
-            {navActions}
-          </div>
+          </FadeIn>
         ) : (
           navActions
         )}

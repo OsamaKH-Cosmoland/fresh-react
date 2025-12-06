@@ -1,4 +1,4 @@
-import { Button } from "../components/ui";
+import { Button, SectionTitle } from "../components/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
@@ -135,11 +135,12 @@ export default function LayoutLab() {
 
       <main className="landing-hero">
         <div className="landing-hero__copy rise-sequence">
-          <h1>Luxury Inspired by Nature’s Essence</h1>
-          <p>
-            Indulge in a world of serenity and sophistication, natural care designed for those who
-            value beauty with soul.
-          </p>
+          <SectionTitle
+            title="Luxury Inspired by Nature’s Essence"
+            subtitle="Indulge in a world of serenity and sophistication, natural care designed for those who value beauty with soul."
+            align="center"
+            className="landing-hero__title"
+          />
         </div>
         <figure className="landing-hero__media rise-once">
           <img src={collectionImage} alt="NaturaGloss collection of botanical care" />
@@ -151,11 +152,12 @@ export default function LayoutLab() {
       >
         <div className="landing-stories__content">
           <p className="landing-stories__eyebrow">The Ritual Journal</p>
-          <h2 id="landing-stories-title">Our Journal</h2>
-          <p className="landing-stories__subtitle">
-            Slow, sensory routines captured in words—read how botanicals, breath, and intention
-            guide each evening, morning, and pause.
-          </p>
+          <SectionTitle
+            title="Our Journal"
+            subtitle="Slow, sensory routines captured in words—read how botanicals, breath, and intention guide each evening, morning, and pause."
+            align="center"
+            className="landing-stories__title"
+          />
           <div className="landing-stories__actions">
             <Button
               variant="secondary"
