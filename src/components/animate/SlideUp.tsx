@@ -1,5 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useInView } from "@/hooks/useInView";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+import { ANIMATION_DEFAULTS } from "./config";
 
 export interface AnimationProps {
   children: ReactNode;
@@ -11,26 +13,34 @@ export interface AnimationProps {
   style?: CSSProperties;
 }
 
-const DEFAULT_DURATION = 0.7;
-
 export function SlideUp({
   children,
   className,
-  delay = 0,
-  duration = DEFAULT_DURATION,
+  delay = ANIMATION_DEFAULTS.fadeDelay,
+  duration = ANIMATION_DEFAULTS.duration,
   rootMargin = "0px",
   threshold = 0.15,
   style,
 }: AnimationProps) {
   const { ref, inView } = useInView<HTMLDivElement>({ rootMargin, threshold });
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  const transition = `opacity ${duration}s ease ${delay}s, transform ${duration}s ease ${delay}s`;
+  const animationDuration = prefersReducedMotion ? 0 : duration;
+  const animationDelay = prefersReducedMotion ? 0 : delay;
+
+  const transition = prefersReducedMotion
+    ? undefined
+    : `opacity ${animationDuration}s ${ANIMATION_DEFAULTS.easing} ${animationDelay}s, transform ${animationDuration}s ${ANIMATION_DEFAULTS.easing} ${animationDelay}s`;
 
   const combinedStyle: CSSProperties = {
-    opacity: inView ? 1 : 0,
-    transform: inView ? "translateY(0)" : "translateY(24px)",
+    opacity: prefersReducedMotion ? 1 : inView ? 1 : 0,
+    transform: prefersReducedMotion
+      ? "translateY(0)"
+      : inView
+        ? "translateY(0)"
+        : `translateY(${ANIMATION_DEFAULTS.slideDistance}px)`,
     transition,
-    willChange: "opacity, transform",
+    willChange: prefersReducedMotion ? undefined : "opacity, transform",
     ...style,
   };
 

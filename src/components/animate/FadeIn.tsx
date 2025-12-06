@@ -1,5 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useInView } from "@/hooks/useInView";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+import { ANIMATION_DEFAULTS } from "./config";
 
 export interface AnimationProps {
   children: ReactNode;
@@ -11,25 +13,29 @@ export interface AnimationProps {
   style?: CSSProperties;
 }
 
-const DEFAULT_DURATION = 0.6;
-
 export function FadeIn({
   children,
   className,
-  delay = 0,
-  duration = DEFAULT_DURATION,
+  delay = ANIMATION_DEFAULTS.fadeDelay,
+  duration = ANIMATION_DEFAULTS.duration,
   rootMargin = "0px",
   threshold = 0.2,
   style,
 }: AnimationProps) {
   const { ref, inView } = useInView<HTMLDivElement>({ rootMargin, threshold });
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  const transition = `opacity ${duration}s ease ${delay}s`;
+  const animationDuration = prefersReducedMotion ? 0 : duration;
+  const animationDelay = prefersReducedMotion ? 0 : delay;
+
+  const transition = prefersReducedMotion
+    ? undefined
+    : `opacity ${animationDuration}s ${ANIMATION_DEFAULTS.easing} ${animationDelay}s`;
 
   const combinedStyle: CSSProperties = {
-    opacity: inView ? 1 : 0,
+    opacity: prefersReducedMotion ? 1 : inView ? 1 : 0,
     transition,
-    willChange: "opacity",
+    willChange: prefersReducedMotion ? undefined : "opacity",
     ...style,
   };
 

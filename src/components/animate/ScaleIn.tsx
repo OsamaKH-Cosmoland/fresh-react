@@ -1,5 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import { useInView } from "@/hooks/useInView";
+import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
+import { ANIMATION_DEFAULTS } from "./config";
 
 export interface AnimationPropsF {
   children: ReactNode;
@@ -11,26 +13,34 @@ export interface AnimationPropsF {
   style?: CSSProperties;
 }
 
-const DEFAULT_DURATION = 0.65;
-
 export function ScaleIn({
   children,
   className,
-  delay = 0,
-  duration = DEFAULT_DURATION,
+  delay = ANIMATION_DEFAULTS.fadeDelay,
+  duration = ANIMATION_DEFAULTS.duration,
   rootMargin = "0px",
   threshold = 0.15,
   style,
 }: AnimationPropsF) {
   const { ref, inView } = useInView<HTMLDivElement>({ rootMargin, threshold });
+  const prefersReducedMotion = usePrefersReducedMotion();
 
-  const transition = `opacity ${duration}s ease ${delay}s, transform ${duration}s ease ${delay}s`;
+  const animationDuration = prefersReducedMotion ? 0 : duration;
+  const animationDelay = prefersReducedMotion ? 0 : delay;
+
+  const transition = prefersReducedMotion
+    ? undefined
+    : `opacity ${animationDuration}s ${ANIMATION_DEFAULTS.easing} ${animationDelay}s, transform ${animationDuration}s ${ANIMATION_DEFAULTS.easing} ${animationDelay}s`;
 
   const combinedStyle: CSSProperties = {
-    opacity: inView ? 1 : 0,
-    transform: inView ? "scale(1)" : "scale(0.96)",
+    opacity: prefersReducedMotion ? 1 : inView ? 1 : 0,
+    transform: prefersReducedMotion
+      ? "scale(1)"
+      : inView
+        ? "scale(1)"
+        : `scale(${ANIMATION_DEFAULTS.scaleFrom})`,
     transition,
-    willChange: "opacity, transform",
+    willChange: prefersReducedMotion ? undefined : "opacity, transform",
     ...style,
   };
 
