@@ -1,3 +1,4 @@
+import { Button } from "../components/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
@@ -144,6 +145,28 @@ export default function LayoutLab() {
           <img src={collectionImage} alt="NaturaGloss collection of botanical care" />
         </figure>
       </main>
+      <section
+        className="landing-stories rise-sequence"
+        aria-labelledby="landing-stories-title"
+      >
+        <div className="landing-stories__content">
+          <p className="landing-stories__eyebrow">The Ritual Journal</p>
+          <h2 id="landing-stories-title">Ritual Stories</h2>
+          <p>
+            Slow, sensory routines captured in words—read how botanicals, breath, and intention
+            guide each evening, morning, and pause.
+          </p>
+          <div className="landing-stories__actions">
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() => (window.location.href = "/stories")}
+            >
+              Our Journal
+            </Button>
+          </div>
+        </div>
+      </section>
 
       <section className="landing-values rise-sequence">
         <h2>Why Choose NaturaGloss</h2>

@@ -1,8 +1,9 @@
-import soapImage from "../assets/soap.png";
-import bodyBalmImage from "../assets/BodyBalm.png";
-import handBalmImage from "../assets/HandBalm.png";
-import hairGrowthImage from "../assets/HairGrowth.png";
-import hairShineImage from "../assets/HairShine.png";
+import bodySoapOne from "../assets/BodySoap1.jpg";
+import bodySoapTwo from "../assets/BodySoap2.png";
+import bodyBalmImage from "../assets/BodyBalmEnhanced1.jpg";
+import handBalmImage from "../assets/HandBalmEnhanced.jpg";
+import hairGrowthImage from "../assets/HairGrowthEnhanced.jpg";
+import hairShineImage from "../assets/HairShineEnhanced.jpg";
 import type { Product, ProductIndex } from "../types/product";
 
 export const PRODUCTS: Product[] = [
@@ -11,7 +12,7 @@ export const PRODUCTS: Product[] = [
     title: "Silk Blossom Body Soap",
     desc: "Infused with jasmine petals for a velvety cleanse and lingering floral aura.",
     price: "231.99 EGP",
-    image: soapImage,
+    image: bodySoapTwo,
     category: "cleansing",
   },
   {
@@ -19,7 +20,7 @@ export const PRODUCTS: Product[] = [
     title: "Calm & Glow Body Soap",
     desc: "Soothing chamomile and neroli calm the skin while mica pearls add a soft glow.",
     price: "228.99 EGP",
-    image: soapImage,
+    image: bodySoapOne,
     category: "cleansing",
   },
   {

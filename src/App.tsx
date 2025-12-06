@@ -6,6 +6,8 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersAdmin from "./pages/OrdersAdmin";
 import AdminDashboard from "./pages/AdminDashboard";
+import RitualStoriesListPage from "./pages/RitualStoriesListPage";
+import RitualStoryDetailPage from "./pages/RitualStoryDetailPage";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 import type { Product } from "./types/product";
 
@@ -177,6 +179,11 @@ export default function App() {
 
   if (view === "cart" || path === "/cart") return <CartPage />;
   if (view === "checkout" || path === "/checkout") return <CheckoutPage />;
+  if (path === "/stories") return <RitualStoriesListPage />;
+  if (path.startsWith("/stories/")) {
+    const slug = path.replace("/stories/", "");
+    return <RitualStoryDetailPage slug={slug} />;
+  }
   if (view === "admin" || path === "/admin") return <AdminDashboard />;
   if (view === "orders" || path === "/orders") return <OrdersAdmin />;
   if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;

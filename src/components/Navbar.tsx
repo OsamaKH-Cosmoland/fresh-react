@@ -39,7 +39,8 @@ export default function Navbar({
         {showSectionLinks && (
           <nav className="nav-links">
             <a className="nav-pill" href={buildSectionHref("grid")}>Collection</a>
-            <a className="nav-pill" href="?view=ritualfinder">Ritual Finder</a>
+            <a className="nav-pill" href="?view=ritualfinder">Find My Product</a>
+            <a className="nav-pill" href="/stories">Our Journal</a>
           </nav>
         )}
         <div className="nav-actions">
