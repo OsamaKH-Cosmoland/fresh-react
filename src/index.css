@@ -754,7 +754,12 @@ button:hover {
   transform: scaleX(1.05);
 }
 
-.nav-links { display: none; gap: .9rem; justify-content: center; }
+.nav-links {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: .9rem;
+}
 .nav-pill {
   position: relative;
   display: inline-flex;
@@ -898,7 +903,6 @@ button:hover {
 
 /* desktop breakpoint */
 @media (min-width: 768px) {
-  .nav-links { display: flex; align-items: center; justify-content: center; }
   .hamburger { display: none; }
 }
 
