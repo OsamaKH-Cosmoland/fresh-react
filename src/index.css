@@ -2025,7 +2025,7 @@ button:hover {
 .cart-drawer {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: 9999;
   display: none;
   pointer-events: none;
 }
@@ -2033,11 +2033,14 @@ button:hover {
   display: block;
   pointer-events: auto;
 }
+.cart-drawer.is-open {
+}
 .cart-drawer__backdrop {
   position: fixed;
   inset: 0;
   background: rgba(3, 11, 6, 0.65);
   backdrop-filter: blur(2px);
+  z-index: 1001;
 }
 .cart-drawer__panel {
   position: fixed;
@@ -2053,6 +2056,7 @@ button:hover {
   gap: 1rem;
   color: #fff;
   overflow: hidden;
+  z-index: 1002;
 }
 .cart-drawer__header {
   display: flex;
