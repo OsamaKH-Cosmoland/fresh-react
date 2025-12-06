@@ -41,15 +41,63 @@ const TRUST_POINTS = [
 
 export default function CheckoutPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-const { cartItems, totalQuantity, subtotal, clearCart } = useCart();
+  const {
+    cartItems,
+    totalQuantity,
+    subtotal,
+    clearCart,
+    savedCarts,
+    activeSavedCartId,
+    saveCurrentCart,
+    loadSavedCart,
+    deleteSavedCart,
+    renameSavedCart,
+  } = useCart();
   const [formData, setFormData] = useState<CheckoutForm>(EMPTY_FORM);
   const [status, setStatus] = useState<StatusMessage | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [checkoutStatus, setCheckoutStatus] = useState<StatusMessage | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [saveName, setSaveName] = useState("");
+  const [savedFeedback, setSavedFeedback] = useState<string | null>(null);
 
   const totalItems = totalQuantity;
   const cartIsEmpty = cartItems.length === 0;
+  const canSaveBag = Boolean(saveName.trim()) && cartItems.length > 0;
+
+  const handleSaveBag = () => {
+    setSavedFeedback(null);
+    if (!canSaveBag) {
+      setSavedFeedback("Name your ritual and add a product before saving.");
+      return;
+    }
+    if (saveCurrentCart(saveName)) {
+      setSavedFeedback("Bag saved.");
+      setSaveName("");
+    } else {
+      setSavedFeedback("Unable to save the bag right now.");
+    }
+  };
+
+  const handleLoadBag = (id: string, name: string) => {
+    if (loadSavedCart(id)) {
+      setSavedFeedback(`Loaded "${name}".`);
+    }
+  };
+
+  const handleDeleteBag = (id: string, name: string) => {
+    if (deleteSavedCart(id)) {
+      setSavedFeedback(`Deleted "${name}".`);
+    }
+  };
+
+  const handleRenameBag = (id: string, currentName: string) => {
+    const nextName = window.prompt("Rename saved bag", currentName);
+    if (!nextName) return;
+    if (renameSavedCart(id, nextName)) {
+      setSavedFeedback(`Renamed to "${nextName}".`);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -398,6 +446,71 @@ const handlePlaceOrder = async (event?: React.FormEvent<HTMLFormElement>) => {
                 </p>
               </>
             )}
+
+            <Card className="checkout-saved-bags">
+              <SectionTitle
+                title="Saved bags"
+                subtitle="Reuse rituals or save the bag you already curated."
+                align="left"
+                className="mb-4"
+              />
+              <div className="saved-bags-form">
+                <InputField
+                  label="Bag name"
+                  placeholder="Evening Ritual, Gift Set..."
+                  value={saveName}
+                  onChange={(e) => setSaveName(e.target.value)}
+                  containerClassName="saved-bags-form-field"
+                />
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={handleSaveBag}
+                  disabled={!canSaveBag}
+                  className="saved-bags-save-btn"
+                >
+                  Save bag
+                </Button>
+              </div>
+              {savedFeedback && <p className="saved-bags-feedback">{savedFeedback}</p>}
+              {savedCarts.length === 0 ? (
+                <p className="saved-bags-empty">You haven&apos;t saved a bag yet.</p>
+              ) : (
+                <ul className="saved-bags-list">
+                  {savedCarts.map((saved) => {
+                    const savedTotal = saved.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                    const isActive = saved.id === activeSavedCartId;
+                    return (
+                      <li key={saved.id} className={`saved-bag ${isActive ? "is-active" : ""}`}>
+                        <div>
+                          <p className="saved-bag-title">{saved.name}</p>
+                          <p className="saved-bag-meta">
+                            {saved.items.length} {saved.items.length === 1 ? "item" : "items"} ·{" "}
+                            {savedTotal.toFixed(2)} EGP
+                          </p>
+                        </div>
+                        <div className="saved-bag-actions">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleLoadBag(saved.id, saved.name)}
+                            disabled={isActive}
+                          >
+                            {isActive ? "Active" : "Load"}
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleRenameBag(saved.id, saved.name)}>
+                            Rename
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleDeleteBag(saved.id, saved.name)}>
+                            Delete
+                          </Button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </Card>
 
             <div className="checkout-trust-card" aria-live="polite">
               <h3>You&apos;re in safe hands</h3>

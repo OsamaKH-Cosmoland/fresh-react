@@ -1948,6 +1948,80 @@ button:hover {
   line-height: 1.6;
   color: rgba(255, 236, 197, .74);
 }
+.checkout-saved-bags {
+  border-radius: 24px;
+  border: 1px solid rgba(244, 208, 135, .2);
+  background: rgba(7, 24, 16, .9);
+  padding: 1.4rem 1.6rem;
+  margin-top: 1.2rem;
+  box-shadow: inset 0 0 20px rgba(4, 12, 8, .4);
+}
+.saved-bags-form {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.saved-bags-form-field {
+  flex: 1;
+  min-width: 180px;
+}
+.saved-bags-save-btn {
+  white-space: nowrap;
+}
+.saved-bags-feedback {
+  margin: 0.7rem 0 0;
+  font-size: 0.9rem;
+  color: rgba(255, 236, 197, .9);
+}
+.saved-bags-empty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 236, 197, .7);
+}
+.saved-bags-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.saved-bag {
+  border-radius: 18px;
+  border: 1px solid rgba(244, 208, 135, .15);
+  padding: 0.85rem 1.1rem;
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(7, 24, 16, .85);
+}
+.saved-bag.is-active {
+  border-color: rgba(244, 208, 135, .6);
+  box-shadow: 0 0 20px rgba(244, 208, 135, .2);
+}
+.saved-bag-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffecc5;
+}
+.saved-bag-meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.8rem;
+  color: rgba(255, 236, 197, .7);
+}
+.saved-bag-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.saved-bag-actions button {
+  padding: 0.25rem 0.7rem;
+  font-size: 0.78rem;
+}
 .checkout-trust-card {
   border-radius: 22px;
   border: 1px solid rgba(244, 208, 135, .25);
