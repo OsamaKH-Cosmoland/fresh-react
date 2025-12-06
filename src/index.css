@@ -1,9 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Libre+Baskerville:wght@400;600&display=swap");
 
 :root {
   --font-heading: "Playfair Display", "Times New Roman", serif;
   --font-body: "Cormorant Garamond", "Garamond", serif;
   --font-brand: "Cinzel", "Playfair Display", "Times New Roman", serif;
+  --font-intro: "Libre Baskerville", "Cormorant Garamond", serif;
 }
 
 body {
@@ -237,15 +238,18 @@ button:hover {
 .landing-stories {
   width: min(980px, 92%);
   margin: 0 auto;
-  padding: clamp(2rem, 6vw, 3.5rem);
+  padding: clamp(2.25rem, 6vw, 3.75rem);
   border-radius: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: radial-gradient(circle at top, rgba(255, 255, 255, 0.25), transparent 40%),
-    linear-gradient(180deg, rgba(15, 32, 20, 0.9), rgba(7, 19, 12, 0.95));
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: radial-gradient(circle at 20% 20%, rgba(255, 235, 194, 0.2), transparent 48%),
+    radial-gradient(circle at 80% 0%, rgba(2, 120, 84, 0.45), transparent 40%),
+    linear-gradient(145deg, #04130a, #051b0d 45%, #022110 90%);
+  box-shadow: 0 35px 60px rgba(0, 0, 0, 0.55), inset 0 0 45px rgba(0, 0, 0, 0.35);
   text-align: center;
-  color: #fff;
-  margin-bottom: clamp(2rem, 6vw, 3.5rem);
+  color: #ffecc5;
+  margin-bottom: clamp(2rem, 6vw, 3.75rem);
+  position: relative;
+  overflow: hidden;
 }
 
 .landing-stories__content {
@@ -254,6 +258,7 @@ button:hover {
   display: grid;
   gap: 1rem;
   justify-items: center;
+  color: #ffecc5;
 }
 
 .landing-stories__eyebrow {
@@ -271,19 +276,32 @@ button:hover {
   letter-spacing: 0.06em;
 }
 
-.landing-stories__content p {
+.landing-stories__subtitle {
   margin: 0;
-  max-width: 64ch;
-  font-size: clamp(1rem, 2vw, 1.2rem);
+  max-width: 70ch;
+  font-size: clamp(1rem, 2vw, 1.15rem);
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 236, 197, 0.9);
 }
 
+.landing-stories__content p {
+  margin: 0;
+}
 .landing-stories__actions {
   display: flex;
   justify-content: center;
   width: 100%;
   margin-top: 0.5rem;
+}
+
+.landing-stories::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  mix-blend-mode: screen;
 }
 
 .landing-values {
@@ -345,29 +363,171 @@ button:hover {
   color: rgba(255, 236, 197, .75);
 }
 
+.stories-page {
+  margin: clamp(1rem, 3vw, 1.8rem) auto clamp(2.5rem, 4vw, 3rem);
+  padding: clamp(2.75rem, 4vw, 3.5rem);
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(155deg, rgba(6, 25, 19, 0.9), rgba(2, 15, 11, 0.95));
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.65), inset 0 0 25px rgba(255, 255, 255, 0.06);
+}
+
+.stories-page::before {
+  content: "";
+  position: absolute;
+  inset: 45% 8% 3%;
+  border-radius: 32px;
+  background: radial-gradient(circle at 20% 20%, rgba(255, 223, 154, 0.15), transparent 55%),
+    radial-gradient(circle at 80% 0%, rgba(2, 145, 102, 0.55), transparent 45%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.stories-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.stories-page__title {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+.stories-page__title h2 {
+  color: #ffecc5 !important;
+  font-family: var(--font-brand);
+  font-size: clamp(2.5rem, 4vw, 3.3rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.65);
+  position: relative;
+  padding-bottom: 1.25rem;
+}
+
+.stories-page__title p {
+  color: rgba(255, 236, 197, 0.8) !important;
+  font-family: var(--font-intro);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: -0.35rem;
+}
+
+.stories-page__title h2::after {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 2px;
+  margin: 0 auto;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 223, 154, 0.9));
+  box-shadow: 0 0 15px rgba(255, 215, 143, 0.8);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0.2rem;
+}
+
+.stories-page__intro {
+  max-width: 780px;
+  margin: 0 auto 2rem;
+  color: rgba(255, 236, 197, 0.85);
+  font-size: 1.05rem;
+  line-height: 1.7;
+  text-align: center;
+  font-family: var(--font-intro);
+  letter-spacing: 0.15em;
+}
+
 .stories-grid {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: clamp(1.5rem, 2vw, 2.25rem);
+  position: relative;
+  z-index: 2;
 }
+
 .story-card {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  background: linear-gradient(180deg, rgba(5, 18, 13, 0.95), rgba(3, 15, 11, 0.95));
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-width: 1px !important;
+  border-radius: 24px !important;
+  color: #ffecc5;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55), inset 0 0 30px rgba(255, 255, 255, 0.04);
+  padding: 0;
+  overflow: hidden;
 }
-.story-card__image {
+
+.story-card__media img {
   width: 100%;
   height: 200px;
   object-fit: cover;
-  border-radius: 1.25rem;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  display: block;
 }
+
 .story-card__content {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  padding: 1.5rem;
 }
-.story-card__meta {
+
+.story-card__field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255, 236, 197, 0.7);
+}
+
+.story-card__field-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+}
+
+.story-card__field-value {
+  justify-self: end;
+  font-weight: 600;
+}
+
+.story-card__title {
   margin: 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  font-family: var(--font-heading);
+  color: #ffecc5;
+}
+
+.story-card__summary {
+  margin: 0;
+  color: rgba(255, 236, 197, 0.85);
+  line-height: 1.7;
+}
+
+.story-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.story-card__tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.story-card__actions {
+  margin-top: 0;
 }
 
 .legacy-section {

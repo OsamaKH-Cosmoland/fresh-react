@@ -151,8 +151,8 @@ export default function LayoutLab() {
       >
         <div className="landing-stories__content">
           <p className="landing-stories__eyebrow">The Ritual Journal</p>
-          <h2 id="landing-stories-title">Ritual Stories</h2>
-          <p>
+          <h2 id="landing-stories-title">Our Journal</h2>
+          <p className="landing-stories__subtitle">
             Slow, sensory routines captured in words—read how botanicals, breath, and intention
             guide each evening, morning, and pause.
           </p>
