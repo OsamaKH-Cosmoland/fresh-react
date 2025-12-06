@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animate";
+import { useCart } from "@/cart/cartStore";
 
 interface NavbarProps {
   onMenuToggle: () => void;
@@ -18,7 +19,9 @@ export default function Navbar({
   showSectionLinks = true,
 }: NavbarProps) {
   const [elevated, setElevated] = useState(false);
-  const itemLabel = cartCount === 1 ? "item" : "items";
+  const { totalQuantity } = useCart();
+  const displayCount = totalQuantity ?? cartCount;
+  const itemLabel = displayCount === 1 ? "item" : "items";
   const buildSectionHref = (hash: string) => {
     const base = import.meta.env.BASE_URL || "/";
     const normalized = base.endsWith("/") ? base : `${base}/`;
@@ -45,7 +48,7 @@ export default function Navbar({
           const location = `${base}?view=cart`;
           window.location.href = location;
         }}
-        aria-label={`View cart (${cartCount} ${itemLabel})`}
+        aria-label={`View cart (${displayCount} ${itemLabel})`}
       >
         <span className="nav-cart__glow" aria-hidden="true" />
         <span className="nav-cart__icon" aria-hidden="true">
@@ -63,7 +66,7 @@ export default function Navbar({
           </svg>
         </span>
         <span className="nav-cart__label">Cart</span>
-        <span className="nav-cart__count">{cartCount}</span>
+        <span className="nav-cart__count">{displayCount}</span>
       </Button>
       <button className="hamburger" aria-label="Open menu" onClick={onMenuToggle}>
         <span />

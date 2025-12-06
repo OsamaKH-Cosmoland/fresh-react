@@ -3,6 +3,7 @@ import type React from "react";
 import { PRODUCTS } from "../data/products";
 import type { Product } from "../types/product";
 import { Button, Card } from "@/components/ui";
+import { useCart } from "@/cart/cartStore";
 
 interface CardGridProps {
   onAddToCart?: (product: Product) => void;
@@ -24,6 +25,7 @@ function Heart({ filled }: { filled: boolean }) {
 
 export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
   const initial = PRODUCTS;
+  const { addItem } = useCart();
 
   const recommendationMap: Record<number, number> = {
     2: 3,
@@ -64,6 +66,15 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
   };
 
   const handleAdd = (item: Product) => {
+    const priceValue = Number(
+      String(item.price).replace(/[^\d.]/g, "") || "0"
+    );
+    addItem({
+      id: String(item.id ?? item._id ?? item.title),
+      name: item.title ?? item.name ?? "Product",
+      price: Number.isFinite(priceValue) ? priceValue : 0,
+      imageUrl: item.image ?? undefined,
+    });
     onAddToCart(item);
     const recommendationId = recommendationMap[item.id];
     const recommendation = recommendationId
