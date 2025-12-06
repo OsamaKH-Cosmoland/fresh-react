@@ -17,7 +17,11 @@ const ANNOUNCEMENTS = [
   { id: 1, text: "Inspired by European cosmetic standards, handcrafted in Egypt", className: "announcement-message--primary" },
 ];
 
-export default function LayoutLab() {
+interface LayoutLabProps {
+  onCartOpen?: () => void;
+}
+
+export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>(() => readCart());
   const [activeAnnouncement, setActiveAnnouncement] = useState(1);
@@ -130,7 +134,12 @@ export default function LayoutLab() {
           </button>
         </div>
       </div>
-      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} cartCount={totalItems} />
+      <Navbar
+        sticky
+        onMenuToggle={() => setDrawerOpen(true)}
+        cartCount={totalItems}
+        onCartOpen={onCartOpen}
+      />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="landing-hero">

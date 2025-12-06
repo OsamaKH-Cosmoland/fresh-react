@@ -9,6 +9,7 @@ interface NavbarProps {
   brand?: string;
   cartCount?: number;
   showSectionLinks?: boolean;
+  onCartOpen?: () => void;
 }
 
 export default function Navbar({
@@ -44,6 +45,10 @@ export default function Navbar({
         className="nav-cart"
         size="md"
         onClick={() => {
+          if (onCartOpen) {
+            onCartOpen();
+            return;
+          }
           const base = import.meta.env.BASE_URL ?? "/";
           const location = `${base}?view=cart`;
           window.location.href = location;

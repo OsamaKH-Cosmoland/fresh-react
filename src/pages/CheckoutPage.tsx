@@ -7,6 +7,7 @@ import { apiPost } from "../lib/api";
 import { sendOrderToN8N, type OrderWebhookPayload } from "../api/orders";
 import type { Order } from "../types/order";
 import { Button, Card, InputField, SectionTitle, TextareaField } from "../components/ui";
+import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
 
 const EMPTY_FORM = {
@@ -52,6 +53,8 @@ export default function CheckoutPage() {
     loadSavedCart,
     deleteSavedCart,
     renameSavedCart,
+    updateQuantity,
+    removeItem,
   } = useCart();
   const [formData, setFormData] = useState<CheckoutForm>(EMPTY_FORM);
   const [status, setStatus] = useState<StatusMessage | null>(null);
@@ -63,19 +66,19 @@ export default function CheckoutPage() {
 
   const totalItems = totalQuantity;
   const cartIsEmpty = cartItems.length === 0;
-  const canSaveBag = Boolean(saveName.trim()) && cartItems.length > 0;
+  const canSaveBag = Boolean(saveName.trim()) && totalQuantity > 0;
 
   const handleSaveBag = () => {
     setSavedFeedback(null);
     if (!canSaveBag) {
-      setSavedFeedback("Name your ritual and add a product before saving.");
+      setSavedFeedback("Add items to your bag and name your ritual before saving.");
       return;
     }
     if (saveCurrentCart(saveName)) {
-      setSavedFeedback("Bag saved.");
+      setSavedFeedback("Ritual saved.");
       setSaveName("");
     } else {
-      setSavedFeedback("Unable to save the bag right now.");
+      setSavedFeedback("Unable to save right now.");
     }
   };
 
@@ -87,16 +90,28 @@ export default function CheckoutPage() {
 
   const handleDeleteBag = (id: string, name: string) => {
     if (deleteSavedCart(id)) {
-      setSavedFeedback(`Deleted "${name}".`);
+      setSavedFeedback(`Removed "${name}".`);
     }
   };
 
   const handleRenameBag = (id: string, currentName: string) => {
-    const nextName = window.prompt("Rename saved bag", currentName);
+    const nextName = window.prompt("Rename this ritual", currentName);
     if (!nextName) return;
     if (renameSavedCart(id, nextName)) {
       setSavedFeedback(`Renamed to "${nextName}".`);
     }
+  };
+
+  const incrementQuantity = (item: typeof cartItems[number]) => {
+    updateQuantity(item.id, item.quantity + 1);
+  };
+
+  const decrementQuantity = (item: typeof cartItems[number]) => {
+    if (item.quantity <= 1) {
+      removeItem(item.id);
+      return;
+    }
+    updateQuantity(item.id, item.quantity - 1);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -426,10 +441,41 @@ const handlePlaceOrder = async (event?: React.FormEvent<HTMLFormElement>) => {
                         <div>
                           <p className="checkout-item-title">{product.title}</p>
                           <p className="checkout-item-desc">{product.desc}</p>
+                          <div className="checkout-item-actions">
+                            <div className="quantity-controls" aria-label="Adjust quantity">
+                              <button
+                                type="button"
+                                className="quantity-btn"
+                                onClick={() => decrementQuantity(item)}
+                                aria-label="Decrease quantity"
+                              >
+                                –
+                              </button>
+                              <span className="quantity-label">{item.quantity}</span>
+                              <button
+                                type="button"
+                                className="quantity-btn"
+                                onClick={() => incrementQuantity(item)}
+                                aria-label="Increase quantity"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="checkout-item-remove"
+                              onClick={() => removeItem(item.id)}
+                            >
+                              Remove
+                            </Button>
+                          </div>
                         </div>
                         <div className="checkout-item-meta">
                           <span>{product.price}</span>
-                          <span>× {item.quantity}</span>
+                          <span className="checkout-item-total">
+                            {(item.price * item.quantity).toFixed(2)} EGP
+                          </span>
                         </div>
                       </li>
                     );
@@ -447,36 +493,40 @@ const handlePlaceOrder = async (event?: React.FormEvent<HTMLFormElement>) => {
               </>
             )}
 
-            <Card className="checkout-saved-bags">
+            <FadeIn>
+              <Card className="checkout-saved-rituals">
               <SectionTitle
-                title="Saved bags"
-                subtitle="Reuse rituals or save the bag you already curated."
+                title="Saved rituals"
+                subtitle="Reuse the ritual you love or capture today’s combination."
                 align="left"
                 className="mb-4"
               />
-              <div className="saved-bags-form">
+              <div className="saved-rituals-form">
                 <InputField
-                  label="Bag name"
+                  label="Ritual name"
                   placeholder="Evening Ritual, Gift Set..."
                   value={saveName}
                   onChange={(e) => setSaveName(e.target.value)}
-                  containerClassName="saved-bags-form-field"
+                  containerClassName="saved-rituals-form-field"
                 />
                 <Button
                   variant="secondary"
                   size="md"
                   onClick={handleSaveBag}
                   disabled={!canSaveBag}
-                  className="saved-bags-save-btn"
+                  className="saved-rituals-save-btn"
                 >
-                  Save bag
+                  Save ritual
                 </Button>
               </div>
-              {savedFeedback && <p className="saved-bags-feedback">{savedFeedback}</p>}
+              {savedFeedback && <p className="saved-ritual-feedback">{savedFeedback}</p>}
+              <p className="saved-ritual-hint">
+                Add items to your bag before saving a ritual. Once saved, you can reuse it anytime.
+              </p>
               {savedCarts.length === 0 ? (
-                <p className="saved-bags-empty">You haven&apos;t saved a bag yet.</p>
+                <p className="saved-ritual-empty">You haven&apos;t saved a ritual yet.</p>
               ) : (
-                <ul className="saved-bags-list">
+                <ul className="saved-rituals-list">
                   {savedCarts.map((saved) => {
                     const savedTotal = saved.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
                     const isActive = saved.id === activeSavedCartId;
@@ -496,13 +546,13 @@ const handlePlaceOrder = async (event?: React.FormEvent<HTMLFormElement>) => {
                             onClick={() => handleLoadBag(saved.id, saved.name)}
                             disabled={isActive}
                           >
-                            {isActive ? "Active" : "Load"}
+                            {isActive ? "Active ritual" : "Use ritual"}
                           </Button>
                           <Button variant="ghost" size="sm" onClick={() => handleRenameBag(saved.id, saved.name)}>
-                            Rename
+                            Rename ritual
                           </Button>
                           <Button variant="ghost" size="sm" onClick={() => handleDeleteBag(saved.id, saved.name)}>
-                            Delete
+                            Remove ritual
                           </Button>
                         </div>
                       </li>
@@ -511,6 +561,7 @@ const handlePlaceOrder = async (event?: React.FormEvent<HTMLFormElement>) => {
                 </ul>
               )}
             </Card>
+            </FadeIn>
 
             <div className="checkout-trust-card" aria-live="polite">
               <h3>You&apos;re in safe hands</h3>

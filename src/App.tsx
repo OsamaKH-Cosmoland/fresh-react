@@ -1,4 +1,3 @@
-import { useEffect, useMemo, useState } from "react";
 import LayoutLab from "./labs/LayoutLab";
 import RitualPlanner from "./pages/RitualPlanner";
 import RitualFinder from "./pages/RitualFinder";
@@ -10,6 +9,7 @@ import RitualStoriesListPage from "./pages/RitualStoriesListPage";
 import RitualStoryDetailPage from "./pages/RitualStoryDetailPage";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 import type { Product } from "./types/product";
+import CartDrawer from "./components/cart/CartDrawer";
 
 const SHOW_LAB = true;
 
@@ -168,6 +168,7 @@ function ProductShop() {
 }
 
 export default function App() {
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const view =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("view")
@@ -176,6 +177,8 @@ export default function App() {
     typeof window !== "undefined"
       ? window.location.pathname.replace(/\/+$/, "") || "/"
       : "/";
+  const closeCartDrawer = () => setCartDrawerOpen(false);
+  const openCartDrawer = () => setCartDrawerOpen(true);
 
   if (view === "cart" || path === "/cart") return <CartPage />;
   if (view === "checkout" || path === "/checkout") return <CheckoutPage />;
@@ -189,5 +192,14 @@ export default function App() {
   if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;
   if (view === "ritualfinder" || path === "/ritual-finder") return <RitualFinder />;
 
-  return SHOW_LAB ? <LayoutLab /> : <ProductShop />;
+  return (
+    <>
+      {SHOW_LAB ? (
+        <LayoutLab onCartOpen={openCartDrawer} />
+      ) : (
+        <ProductShop />
+      )}
+      <CartDrawer open={cartDrawerOpen} onClose={closeCartDrawer} />
+    </>
+  );
 }
