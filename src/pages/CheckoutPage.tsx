@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import type React from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-import { readCart, writeCart, subscribeToCart, type CartItem } from "../utils/cartStorage";
 import { PRODUCT_INDEX } from "../data/products";
 import { apiPost } from "../lib/api";
 import { sendOrderToN8N, type OrderWebhookPayload } from "../api/orders";
 import type { Order } from "../types/order";
 import { Button, Card, InputField, SectionTitle, TextareaField } from "../components/ui";
+import { useCart } from "@/cart/cartStore";
 
 const EMPTY_FORM = {
   fullName: "",
@@ -21,11 +21,6 @@ const EMPTY_FORM = {
 type CheckoutForm = typeof EMPTY_FORM;
 
 type StatusMessage = { type: "error" | "success"; message: string };
-
-const parsePrice = (price: string | number) => {
-  const number = parseFloat(String(price).replace(/[^\d.]/g, ""));
-  return Number.isNaN(number) ? 0 : number;
-};
 
 const generateOrderId = () => `NG-${Date.now().toString(36).toUpperCase()}`;
 
@@ -46,31 +41,14 @@ const TRUST_POINTS = [
 
 export default function CheckoutPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => readCart());
+const { cartItems, totalQuantity, subtotal, clearCart } = useCart();
   const [formData, setFormData] = useState<CheckoutForm>(EMPTY_FORM);
   const [status, setStatus] = useState<StatusMessage | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [checkoutStatus, setCheckoutStatus] = useState<StatusMessage | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => { writeCart(cartItems); }, [cartItems]);
-  useEffect(() => subscribeToCart(setCartItems), []);
-
-  const totalItems = useMemo(
-    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
-    [cartItems]
-  );
-
-  const subtotal = useMemo(
-    () =>
-      cartItems.reduce((sum, item) => {
-        const product = PRODUCT_INDEX[item.id];
-        if (!product) return sum;
-        return sum + parsePrice(product.price) * item.quantity;
-      }, 0),
-    [cartItems]
-  );
-
+  const totalItems = totalQuantity;
   const cartIsEmpty = cartItems.length === 0;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -108,7 +86,7 @@ export default function CheckoutPage() {
     formData.address.trim() &&
     formData.city.trim();
 
-  const handlePlaceOrder = async (event?: React.FormEvent<HTMLFormElement>) => {
+const handlePlaceOrder = async (event?: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault?.();
     if (cartIsEmpty) {
       setStatus({ type: "error", message: "Add at least one product before placing an order." });
@@ -233,8 +211,7 @@ export default function CheckoutPage() {
         });
       }
 
-      writeCart([]);
-      setCartItems([]);
+      clearCart();
       setFormData(EMPTY_FORM);
       setStatus({
         type: "success",
