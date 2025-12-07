@@ -170,19 +170,21 @@ function ProductShop() {
 }
 
 export default function App() {
-  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const initialLocation = typeof window !== "undefined" ? window.location : null;
+  const initialView = initialLocation ? new URLSearchParams(initialLocation.search).get("view") : null;
+  const initialPath = initialLocation ? initialLocation.pathname.replace(/\/+$/, "") || "/" : "/";
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(initialView === "cart" || initialPath === "/cart");
   const view =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("view")
-      : null;
+      : initialView;
   const path =
     typeof window !== "undefined"
       ? window.location.pathname.replace(/\/+$/, "") || "/"
-      : "/";
+      : initialPath;
   const closeCartDrawer = () => setCartDrawerOpen(false);
   const openCartDrawer = () => setCartDrawerOpen(true);
 
-  if (view === "cart" || path === "/cart") return <CartPage />;
   if (view === "checkout" || path === "/checkout") return <CheckoutPage />;
   if (path === "/stories") return <RitualStoriesListPage />;
   if (path.startsWith("/stories/")) {

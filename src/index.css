@@ -2277,18 +2277,26 @@ button:hover {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  display: none;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 320ms ease;
 }
 .cart-drawer.is-open {
-  display: block;
   pointer-events: auto;
+  opacity: 1;
 }
 .cart-drawer__backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
   z-index: 1001;
+  opacity: 0;
+  transition: opacity 320ms ease;
+  pointer-events: none;
+}
+.cart-drawer.is-open .cart-drawer__backdrop {
+  opacity: 1;
+  pointer-events: auto;
 }
 .cart-drawer__panel {
   position: fixed;
@@ -2304,7 +2312,12 @@ button:hover {
   gap: 1rem;
   color: #fff;
   overflow: hidden;
-  z-index: 1002;
+  z-index: 1003;
+  transform: translateX(100%);
+  transition: transform 420ms cubic-bezier(.17, .65, .42, 1);
+}
+.cart-drawer.is-open .cart-drawer__panel {
+  transform: translateX(0);
 }
 .cart-drawer__header {
   display: flex;
