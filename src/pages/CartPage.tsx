@@ -1,14 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-import {
-  addCartItem,
-  readCart,
-  removeCartItem,
-  subscribeToCart,
-  writeCart,
-  type CartItem,
-} from "../utils/cartStorage";
+import { useCart } from "@/cart/cartStore";
 import { PRODUCT_INDEX } from "../data/products";
 
 const parsePrice = (price: string | number) => {
@@ -18,7 +11,7 @@ const parsePrice = (price: string | number) => {
 
 export default function CartPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>(() => readCart());
+  const { cartItems, totalQuantity, subtotal, updateQuantity, removeItem, clearCart } = useCart();
 
   const goToCollection = () => {
     const base = import.meta.env.BASE_URL ?? "/";
@@ -33,51 +26,16 @@ export default function CartPage() {
     window.location.href = checkoutUrl.toString();
   };
 
-  useEffect(() => {
-    writeCart(cartItems);
-  }, [cartItems]);
-
-  useEffect(() => {
-    return subscribeToCart(setCartItems);
-  }, []);
-
-  const totalItems = useMemo(
-    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
-    [cartItems]
-  );
-
-  const subtotal = useMemo(
-    () =>
-      cartItems.reduce((sum, item) => {
-        const product = PRODUCT_INDEX[item.id];
-        if (!product) return sum;
-        return sum + parsePrice(product.price) * item.quantity;
-      }, 0),
-    [cartItems]
-  );
-
-  const updateCart = (updater: (items: CartItem[]) => CartItem[]) => {
-    setCartItems((previous) => updater(previous));
+  const incrementItem = (itemId: string) => {
+    const item = cartItems.find((entry) => entry.id === itemId);
+    if (!item) return;
+    updateQuantity(itemId, item.quantity + 1);
   };
 
-  const incrementItem = (id: number) => {
-    const product = PRODUCT_INDEX[id];
-    if (!product) return;
-    updateCart((prev) => addCartItem(prev, product));
-  };
-
-  const decrementItem = (id: number) => {
-    const product = PRODUCT_INDEX[id];
-    if (!product) return;
-    updateCart((prev) => removeCartItem(prev, product));
-  };
-
-  const removeItem = (id: number) => {
-    updateCart((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const clearCart = () => {
-    updateCart(() => []);
+  const decrementItem = (itemId: string) => {
+    const item = cartItems.find((entry) => entry.id === itemId);
+    if (!item) return;
+    updateQuantity(itemId, item.quantity - 1);
   };
 
   return (
