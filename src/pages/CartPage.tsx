@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { useCart } from "@/cart/cartStore";
@@ -12,6 +12,7 @@ const parsePrice = (price: string | number) => {
 export default function CartPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { cartItems, totalQuantity, subtotal, updateQuantity, removeItem, clearCart } = useCart();
+  const totalItems = totalQuantity ?? cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const goToCollection = () => {
     const base = import.meta.env.BASE_URL ?? "/";
