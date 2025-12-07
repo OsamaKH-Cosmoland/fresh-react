@@ -5,6 +5,7 @@ import RitualFinder from "./pages/RitualFinder";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersAdmin from "./pages/OrdersAdmin";
+import AdminAnalyticsPage from "./pages/AdminAnalyticsPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import RitualStoriesListPage from "./pages/RitualStoriesListPage";
 import RitualStoryDetailPage from "./pages/RitualStoryDetailPage";
@@ -188,6 +189,7 @@ export default function App() {
     const slug = path.replace("/stories/", "");
     return <RitualStoryDetailPage slug={slug} />;
   }
+  if (view === "adminanalytics" || path === "/admin/analytics") return <AdminAnalyticsPage />;
   if (view === "admin" || path === "/admin") return <AdminDashboard />;
   if (view === "orders" || path === "/orders") return <OrdersAdmin />;
   if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;

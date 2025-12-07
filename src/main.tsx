@@ -4,6 +4,8 @@ import "./index.css";
 import App from "./App";
 import { registerServiceWorker } from "./pwa/registerServiceWorker";
 import { CartProvider } from "./cart/cartStore";
+import { initParallaxHero } from "./utils/parallaxHero";
+import { initScrollAnimations } from "./utils/scrollAnimations";
 
 const rootEl = document.getElementById("root");
 
@@ -15,6 +17,8 @@ if (rootEl) {
       </CartProvider>
     </StrictMode>
   );
+  initScrollAnimations();
+  initParallaxHero();
 }
 
 registerServiceWorker();

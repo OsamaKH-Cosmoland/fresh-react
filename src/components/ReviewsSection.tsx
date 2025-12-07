@@ -94,9 +94,9 @@ export default function ReviewsSection() {
   };
 
   return (
-    <section id="reviews" className="reviews-section">
+    <section id="reviews" className="reviews-section" data-animate="fade-up">
       <div className="reviews-header">
-        <Card className="reviews-summary-card">
+        <Card className="reviews-summary-card hover-lift" data-animate="fade-up">
           <div>
             <p className="reviews-eyebrow">Our community&apos;s experiences</p>
             <SectionTitle
@@ -191,10 +191,12 @@ export default function ReviewsSection() {
         ) : reviews.length === 0 ? (
           <p className="reviews-empty">No stories yet — be the first to share your ritual.</p>
         ) : (
-          reviews.map((review) => (
+          reviews.map((review, index) => (
             <Card
               key={review.mongoId ?? `${review.name}-${review.createdAt}`}
-              className="review-card"
+              className="review-card hover-lift"
+              data-animate="fade-up"
+              style={{ "--motion-delay": `${index * 70}ms` } as React.CSSProperties}
             >
               <header>
                 <div>

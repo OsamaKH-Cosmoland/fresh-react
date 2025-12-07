@@ -96,7 +96,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             )}
           </div>
 
-          <footer className="cart-drawer__footer">
+          <footer className="cart-drawer__footer" data-animate="fade-in">
             <div className="cart-drawer__subtotal">
               <span>Subtotal</span>
               <strong>{subtotal.toFixed(2)} EGP</strong>

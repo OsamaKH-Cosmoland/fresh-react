@@ -18,8 +18,10 @@ export default function Navbar({
   brand = "NaturaGloss",
   cartCount = 0,
   showSectionLinks = true,
+  onCartOpen,
 }: NavbarProps) {
   const [elevated, setElevated] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { totalQuantity } = useCart();
   const displayCount = totalQuantity ?? cartCount;
   const itemLabel = displayCount === 1 ? "item" : "items";
@@ -32,9 +34,13 @@ export default function Navbar({
 
   useEffect(() => {
     if (!sticky) return;
-    const onScroll = () => setElevated(window.scrollY > 4);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setElevated(y > 4);
+      setIsScrolled(y > 60);
+    };
     onScroll();
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [sticky]);
 
@@ -82,7 +88,11 @@ export default function Navbar({
   );
 
   return (
-    <header className={`navbar rise-once ${sticky ? "sticky" : ""} ${elevated ? "elevated" : ""}`}>
+    <header
+      className={`navbar rise-once ${sticky ? "sticky" : ""} ${elevated ? "elevated" : ""} ${
+        isScrolled ? "navbar-scrolled" : ""
+      }`}
+    >
       <div className="nav-inner">
         <FadeIn>
           <a className="brand" href="/">

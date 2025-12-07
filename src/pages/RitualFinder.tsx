@@ -277,7 +277,7 @@ export default function RitualFinder() {
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="ritual-finder-shell">
-        <header className="finder-hero">
+        <header className="finder-hero" data-animate="fade-up">
           <p className="finder-eyebrow">Personal Ritual Consultation</p>
           <h1>Find your NaturaGloss ritual in 4 steps</h1>
           <p>
@@ -288,7 +288,7 @@ export default function RitualFinder() {
 
         <section className="finder-grid">
           {!result && currentQuestion && (
-            <article className="finder-quiz-card" aria-live="polite">
+            <article className="finder-quiz-card" aria-live="polite" data-animate="fade-up">
               <div className="finder-progress">
                 <p>
                   Step {step + 1} of {QUESTIONS.length}
@@ -334,7 +334,7 @@ export default function RitualFinder() {
           )}
 
           {result && (
-            <article className="finder-result-card" aria-live="polite">
+            <article className="finder-result-card" aria-live="polite" data-animate="fade-up">
               <div className="finder-progress">
                 <p>Curated ritual ready</p>
                 <div className="finder-progress-bar" role="presentation">

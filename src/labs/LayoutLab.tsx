@@ -143,7 +143,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="landing-hero">
-        <div className="landing-hero__copy rise-sequence">
+        <div className="landing-hero__copy">
           <SectionTitle
             title="Luxury Inspired by Nature’s Essence"
             subtitle="Indulge in a world of serenity and sophistication, natural care designed for those who value beauty with soul."
@@ -151,13 +151,14 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             className="landing-hero__title"
           />
         </div>
-        <figure className="landing-hero__media rise-once">
+        <figure className="landing-hero__media" data-animate="fade-in" data-parallax="hero">
           <img src={collectionImage} alt="NaturaGloss collection of botanical care" />
         </figure>
       </main>
       <section
-        className="landing-stories rise-sequence"
+        className="landing-stories"
         aria-labelledby="landing-stories-title"
+        data-animate="fade-up"
       >
         <div className="landing-stories__content">
           <p className="landing-stories__eyebrow">The Ritual Journal</p>
@@ -179,24 +180,24 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
         </div>
       </section>
 
-      <section className="landing-values rise-sequence">
-        <h2>Why Choose NaturaGloss</h2>
-        <div className="landing-values__grid rise-grid">
-          <article className="rise-sequence">
+      <section className="landing-values">
+        <h2 data-animate="fade-up">Why Choose NaturaGloss</h2>
+        <div className="landing-values__grid">
+          <article data-animate="fade-in">
             <img src={iconLeft} alt="" aria-hidden="true" />
             <h3>Small-Batch Quality</h3>
             <p>
               Handcrafted in limited runs to ensure every bar and balm is fresh and carefully made.
             </p>
           </article>
-          <article className="rise-sequence">
+          <article data-animate="fade-in">
             <img src={iconMiddle} alt="" aria-hidden="true" />
             <h3>Ingredient Transparency</h3>
             <p>
               Every ingredient fully listed — no hidden chemicals, just pure botanicals.
             </p>
           </article>
-          <article className="rise-sequence">
+          <article data-animate="fade-in">
             <img src={iconRight} alt="" aria-hidden="true" />
             <h3>EU-Inspired Standards</h3>
             <p>
@@ -208,9 +209,9 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
 
       <div className="legacy-section">
         <div className="container legacy-content">
-          <section className="hero legacy-hero-intro rise-sequence" id="about">
-            <h1>NaturaGloss</h1>
-            <p>
+          <section className="hero legacy-hero-intro" id="about">
+            <h1 data-animate="fade-up">NaturaGloss</h1>
+            <p data-animate="fade-up">
               Elevate your daily ritual with nutrient-rich botanicals and luminous finishes, crafted
               in small batches for those who seek intentional, radiant self-care.
             </p>

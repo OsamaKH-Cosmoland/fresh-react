@@ -29,12 +29,15 @@ export function Button({
   const variantClass = variants[variant] ?? variants.primary;
   const sizeClass = sizes[size] ?? sizes.md;
 
+  const glowClass = variant === "primary" ? "button-glow" : "";
+
   return (
     <button
       className={[
         "rounded-full font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-400",
         variantClass,
         sizeClass,
+        glowClass,
         fullWidth ? "w-full" : "inline-flex",
         disabled ? "opacity-60 cursor-not-allowed" : "shadow-sm",
         className,

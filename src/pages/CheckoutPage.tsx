@@ -302,7 +302,7 @@ const handlePlaceOrder = async (event?: React.FormEvent<HTMLFormElement>) => {
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <main className="checkout-shell">
-        <header className="checkout-hero">
+        <header className="checkout-hero" data-animate="fade-up">
           <p className="checkout-eyebrow">Cash on Delivery</p>
           <h1>Secure your ritual delivery</h1>
           <p>
@@ -312,7 +312,7 @@ const handlePlaceOrder = async (event?: React.FormEvent<HTMLFormElement>) => {
         </header>
 
         <section className="checkout-grid">
-          <form className="checkout-form" onSubmit={handlePlaceOrder}>
+          <form className="checkout-form" onSubmit={handlePlaceOrder} data-animate="fade-in">
             <Card className="checkout-form-card">
               <SectionTitle
                 title="Delivery details"
@@ -423,7 +423,7 @@ const handlePlaceOrder = async (event?: React.FormEvent<HTMLFormElement>) => {
             </Card>
           </form>
 
-          <aside className="checkout-summary" aria-live="polite">
+          <aside className="checkout-summary" aria-live="polite" data-animate="fade-in">
             <h2>Order summary</h2>
             {cartIsEmpty ? (
               <div className="checkout-empty">

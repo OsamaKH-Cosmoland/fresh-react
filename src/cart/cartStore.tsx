@@ -317,3 +317,5 @@ export function CartProvider({ children }: { children: ReactNode }) {
     </CartContext.Provider>
   );
 }
+
+export { cartReducer, CartState, CartAction, STORAGE_KEY, SAVED_CART_KEY, createInitialState };

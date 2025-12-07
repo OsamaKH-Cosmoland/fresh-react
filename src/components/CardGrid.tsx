@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type React from "react";
+import type { CSSProperties } from "react";
 import { PRODUCTS } from "../data/products";
 import type { Product } from "../types/product";
 import { Button, Card } from "@/components/ui";
@@ -151,14 +152,17 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
           </button>
         </div>
       )}
-          <section id="grid" className="card-grid">
-        {initial.map((c: Product) => {
+      <section id="grid" className="card-grid">
+        {initial.map((c: Product, index: number) => {
           const isFav = favs.has(c.id);
+          const delayStyle = { "--motion-delay": `${index * 80}ms` } as CSSProperties;
           return (
             <Card
-            key={c.id}
-            className={`card rise-card ${isFav ? "is-fav" : ""}`}
-            tabIndex={0}
+              key={c.id}
+              className={`card hover-lift ${isFav ? "is-fav" : ""}`}
+              data-animate="fade-up"
+              style={delayStyle}
+              tabIndex={0}
             >
               {c.image && (
                 <img
@@ -168,13 +172,13 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                 />
               )}
               <header className="card-head">
-                <h3> {c.title} </h3>
+                <h3>{c.title}</h3>
                 <button
-                className="icon-btn"
-                aria-pressed={isFav}
-                aria-label={isFav ? "Unfavorite" : "Favorite"} 
-                onClick={() => toggleFav(c.id)}
-                onKeyDown={(e) => handleFavKey(e, c.id)}
+                  className="icon-btn"
+                  aria-pressed={isFav}
+                  aria-label={isFav ? "Unfavorite" : "Favorite"}
+                  onClick={() => toggleFav(c.id)}
+                  onKeyDown={(e) => handleFavKey(e, c.id)}
                 >
                   <Heart filled={isFav} />
                 </button>
