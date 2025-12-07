@@ -90,45 +90,28 @@ body {
   will-change: opacity, transform;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  [data-animate].is-visible {
-    animation-delay: var(--motion-delay, 0s);
-  }
+[data-animate].is-visible {
+  animation-delay: var(--motion-delay, 0s);
+}
 
-  .fade-in {
-    animation-name: fadeIn;
-    animation-duration: var(--motion-duration, 0.8s);
-    animation-timing-function: var(--motion-easing);
-    animation-fill-mode: both;
-  }
+.fade-in {
+  animation: fadeIn var(--motion-duration, 0.8s) var(--motion-easing) var(--motion-delay, 0s) forwards;
+}
 
-  .fade-up {
-    animation-name: fadeUp;
-    animation-duration: var(--motion-duration, 0.8s);
-    animation-timing-function: var(--motion-easing);
-    animation-fill-mode: both;
-  }
+.fade-up {
+  animation: fadeUp var(--motion-duration, 0.8s) var(--motion-easing) var(--motion-delay, 0s) forwards;
+}
 
-  .fade-down {
-    animation-name: fadeDown;
-    animation-duration: var(--motion-duration, 0.8s);
-    animation-timing-function: var(--motion-easing);
-    animation-fill-mode: both;
-  }
+.fade-down {
+  animation: fadeDown var(--motion-duration, 0.8s) var(--motion-easing) var(--motion-delay, 0s) forwards;
+}
 
-  .fade-left {
-    animation-name: fadeLeft;
-    animation-duration: var(--motion-duration, 0.8s);
-    animation-timing-function: var(--motion-easing);
-    animation-fill-mode: both;
-  }
+.fade-left {
+  animation: fadeLeft var(--motion-duration, 0.8s) var(--motion-easing) var(--motion-delay, 0s) forwards;
+}
 
-  .fade-right {
-    animation-name: fadeRight;
-    animation-duration: var(--motion-duration, 0.8s);
-    animation-timing-function: var(--motion-easing);
-    animation-fill-mode: both;
-  }
+.fade-right {
+  animation: fadeRight var(--motion-duration, 0.8s) var(--motion-easing) var(--motion-delay, 0s) forwards;
 }
 
 .rise-once,
@@ -183,6 +166,13 @@ body {
     opacity: 1 !important;
     transform: none !important;
     will-change: auto;
+  }
+  .fade-in,
+  .fade-up,
+  .fade-down,
+  .fade-left,
+  .fade-right {
+    animation: none !important;
   }
   .hover-lift,
   .button-glow {
