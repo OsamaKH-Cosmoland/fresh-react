@@ -15,6 +15,7 @@ import type { Product } from "./types/product";
 import ShopPage from "./pages/ShopPage";
 import SearchPage from "./pages/SearchPage";
 import FavoritesPage from "./pages/FavoritesPage";
+import ComparePage from "./pages/ComparePage";
 
 const SHOW_LAB = true;
 
@@ -195,6 +196,7 @@ export default function App() {
   if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;
   if (view === "ritualfinder" || path === "/ritual-finder") return <RitualFinder />;
   if (view === "search" || path === "/search") return <SearchPage />;
+  if (view === "compare" || path === "/compare") return <ComparePage />;
   if (view === "favorites" || path === "/favorites") return <FavoritesPage />;
   if (view === "shop" || path === "/shop") return <ShopPage />;
   if (path.startsWith("/products/")) {

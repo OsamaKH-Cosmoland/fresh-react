@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
+import { CompareToggle } from "@/components/CompareToggle";
 import { Button, Card, SectionTitle } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
 import { useBundleActions } from "@/cart/cartBundles";
@@ -107,12 +108,13 @@ export default function SearchPage() {
                 {products.map(({ entry, detail }) => {
                   const focusChips = focusLabels(entry.focus);
                   return (
-                  <Card
-                    key={detail.productId}
-                    className="shop-product-card hover-lift"
-                    data-animate="fade-up"
-                  >
-                    <FavoriteToggle id={detail.productId} type="product" />
+                    <Card
+                      key={detail.productId}
+                      className="shop-product-card hover-lift"
+                      data-animate="fade-up"
+                    >
+                      <CompareToggle id={detail.productId} type="product" />
+                      <FavoriteToggle id={detail.productId} type="product" />
                     {detail.heroImage && (
                         <div className="shop-product-card__media">
                           <img src={detail.heroImage} alt={detail.productName} />

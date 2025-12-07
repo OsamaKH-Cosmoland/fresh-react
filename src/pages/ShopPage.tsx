@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
+import { CompareToggle } from "@/components/CompareToggle";
 import { Button, Card, SectionTitle } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
 import { useBundleActions } from "@/cart/cartBundles";
@@ -174,12 +175,13 @@ export default function ShopPage() {
                   const focusLabels = focus.map((label) => shopFocusLookup[label]);
                   const extraLabels = extras?.map((label) => shopOptionalLookup[label]) ?? [];
                   return (
-              <Card
-                key={item.productId}
-                className="shop-product-card hover-lift"
-                data-animate="fade-up"
-              >
-                <FavoriteToggle id={item.productId} type="product" />
+                <Card
+                  key={item.productId}
+                  className="shop-product-card hover-lift"
+                  data-animate="fade-up"
+                >
+                  <CompareToggle id={item.productId} type="product" />
+                  <FavoriteToggle id={item.productId} type="product" />
                 {item.heroImage && (
                         <div className="shop-product-card__media">
                           <img

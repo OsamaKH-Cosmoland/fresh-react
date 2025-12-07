@@ -3,6 +3,7 @@ import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
 import { useGlobalSearch } from "@/hooks/useGlobalSearch";
+import { useCompare } from "@/compare/compareStore";
 
 const buildAppUrl = (pathname: string) => {
   const base = import.meta.env.BASE_URL ?? "/";
@@ -118,6 +119,8 @@ export default function Navbar({
 
   const dropdownResults = useGlobalSearch(searchQuery, 5);
   const showDropdown = searchActive && searchQuery.trim().length > 0;
+  const { listCompared } = useCompare();
+  const compareCount = listCompared().length;
 
   const handleResultClick = (url: string) => {
     if (typeof window === "undefined") {
@@ -225,8 +228,14 @@ export default function Navbar({
                 </nav>
               </div>
             )}
-            {searchField}
-            {navActions}
+        {searchField}
+        <a
+          className={`nav-compare${compareCount === 0 ? " is-empty" : ""}`}
+          href="/compare"
+        >
+          Compare{compareCount > 0 ? ` (${compareCount})` : ""}
+        </a>
+        {navActions}
           </div>
         </FadeIn>
     </div>

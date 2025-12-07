@@ -802,6 +802,60 @@ button:hover {
   right: 0.35rem;
 }
 
+.compare-toggle {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.35rem;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(5, 18, 12, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fbe7ad;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.compare-toggle.is-active {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #f9e4a8;
+  color: #f9e4a8;
+}
+
+.compare-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(249, 228, 168, 0.4);
+}
+
+.nav-compare {
+  margin-left: 1rem;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fbe7ad;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  background: transparent;
+  text-decoration: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.nav-compare.is-empty {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.nav-compare:not(.is-empty):hover,
+.nav-compare:not(.is-empty):focus-visible {
+  border-color: #f9e4a8;
+  color: #f9e4a8;
+  background: rgba(249, 228, 168, 0.08);
+}
+
 .shop-product-card__link:hover,
 .shop-product-card__link:focus-visible {
   color: #f9ca6b;
@@ -928,6 +982,107 @@ button:hover {
 
 .shop-empty-state button {
   margin-top: var(--space-3);
+}
+
+.compare-controls {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.compare-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.compare-column {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 30px;
+  padding: var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+}
+
+.compare-column__hero img {
+  width: 100%;
+  border-radius: 20px;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.compare-column__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.compare-column__header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.compare-column__remove {
+  border: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fbe7ad;
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  cursor: pointer;
+}
+
+.compare-column__body {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.compare-column__row {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.compare-column__row-label {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.compare-column__row-value {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.compare-column__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.compare-column__chips span {
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.compare-column__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 @media (max-width: 720px) {

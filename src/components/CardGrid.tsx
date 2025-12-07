@@ -6,6 +6,7 @@ import type { Product } from "../types/product";
 import { Button, Card } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
 import { PRODUCT_DETAIL_SLUGS_BY_TITLE } from "@/content/productDetails";
+import { CompareToggle } from "@/components/CompareToggle";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 
 interface CardGridProps {
@@ -174,6 +175,7 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                 style={delayStyle}
                 tabIndex={0}
               >
+                <CompareToggle id={String(c.id)} type="product" className="compare-toggle compare-toggle--grid" />
                 <FavoriteToggle id={String(c.id)} type="product" className="favorite-toggle favorite-toggle--grid" />
                 {c.image && (
                 <img

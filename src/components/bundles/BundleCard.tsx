@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Card } from "@/components/ui";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
+import { CompareToggle } from "@/components/CompareToggle";
 import { RitualBundle } from "@/content/bundles";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 
@@ -14,6 +15,7 @@ export interface BundleCardProps {
 export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: BundleCardProps) {
   return (
     <Card className="bundle-card hover-lift" data-animate="fade-up">
+      <CompareToggle id={bundle.id} type="bundle" />
       <FavoriteToggle id={bundle.id} type="bundle" />
       {heroImage && (
         <div className="bundle-card__hero">

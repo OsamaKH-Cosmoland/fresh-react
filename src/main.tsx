@@ -7,6 +7,7 @@ import { CartProvider } from "./cart/cartStore";
 import { initParallaxHero } from "./utils/parallaxHero";
 import { initScrollAnimations } from "./utils/scrollAnimations";
 import { FavoritesProvider } from "./favorites/favoritesStore";
+import { CompareProvider } from "./compare/compareStore";
 
 const rootEl = document.getElementById("root");
 
@@ -15,7 +16,9 @@ if (rootEl) {
     <StrictMode>
       <CartProvider>
         <FavoritesProvider>
-          <App />
+          <CompareProvider>
+            <App />
+          </CompareProvider>
         </FavoritesProvider>
       </CartProvider>
     </StrictMode>
