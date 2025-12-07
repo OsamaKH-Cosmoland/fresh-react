@@ -1,4 +1,4 @@
-import { Button, SectionTitle } from "../components/ui";
+import { Button, Card, SectionTitle } from "../components/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
@@ -11,10 +11,19 @@ import iconRight from "../assets/NaturaGloss_shiny_gold_icon_right.webp";
 import { PRODUCT_INDEX } from "../data/products";
 import { addCartItem, readCart, subscribeToCart, writeCart, type CartItem } from "../utils/cartStorage";
 import type { Product } from "../types/product";
+import type { ProductDetailContent } from "@/content/productDetails";
 import { BundleCard } from "../components/bundles/BundleCard";
 import { ritualBundles } from "../content/bundles";
 import { useBundleActions } from "../cart/cartBundles";
 import { getBundleHeroImage } from "../content/bundleHeroImages";
+import { useCart } from "@/cart/cartStore";
+import { usePersonalizationData } from "@/content/personalization";
+
+function formatSavedDate(value: string) {
+  const parsed = Date.parse(value);
+  if (!Number.isFinite(parsed)) return "Recent";
+  return new Date(parsed).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
 
 const ANNOUNCEMENTS = [
   { id: 0, text: "Because your body deserves natural luxury", className: "announcement-message--secondary" },
@@ -70,7 +79,57 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
     setCartItems((previous) => addCartItem(previous, item));
   }, []);
 
+  const { addItem: addItemFromContext, loadSavedCart } = useCart();
   const { addBundleToCart } = useBundleActions();
+  const {
+    savedRituals,
+    favoriteProducts,
+    favoriteBundles,
+    recentProducts,
+    recentBundles,
+  } = usePersonalizationData();
+
+  const hasSavedRituals = savedRituals.length > 0;
+  const hasFavoriteItems = favoriteProducts.length + favoriteBundles.length > 0;
+  const hasRecentItems = recentProducts.length + recentBundles.length > 0;
+  const showPersonalizationGuidance = !hasSavedRituals && !hasFavoriteItems && !hasRecentItems;
+  const showPersonalizationSection =
+    hasSavedRituals || hasFavoriteItems || hasRecentItems || showPersonalizationGuidance;
+
+  const handleAddPersonalizedProduct = useCallback(
+    (detail: ProductDetailContent) => {
+      addItemFromContext({
+        id: detail.productId,
+        name: detail.productName,
+        price: detail.priceNumber,
+        imageUrl: detail.heroImage,
+      });
+    },
+    [addItemFromContext]
+  );
+
+  const handleLoadSavedRitual = useCallback(
+    (id: string) => {
+      loadSavedCart(id);
+    },
+    [loadSavedCart]
+  );
+
+  const goToProductDetail = useCallback((slug: string) => {
+    if (typeof window === "undefined") return;
+    const base = import.meta.env.BASE_URL ?? "/";
+    const destination = new URL(base, window.location.origin);
+    destination.pathname = `/products/${slug}`;
+    window.location.href = destination.toString();
+  }, []);
+
+  const navigateToPath = useCallback((path: string) => {
+    if (typeof window === "undefined") return;
+    const base = import.meta.env.BASE_URL ?? "/";
+    const destination = new URL(base, window.location.origin);
+    destination.pathname = path;
+    window.location.href = destination.toString();
+  }, []);
 
   const handleAddToCart = useCallback(
     (item: Product) => {
@@ -172,6 +231,201 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           <img src={collectionImage} alt="NaturaGloss collection of botanical care" />
         </figure>
       </main>
+      {showPersonalizationSection && (
+        <section className="landing-personalization" data-animate="fade-up">
+          <div className="landing-personalization__intro">
+            <p className="landing-personalization__eyebrow">Your rituals</p>
+            <SectionTitle
+              title="Your rituals"
+              subtitle="Saved, loved, or simply recently admired—this space remembers each pause."
+              align="center"
+              className="landing-personalization__title"
+            />
+          </div>
+
+          {hasSavedRituals && (
+            <article className="landing-personalization__group" data-animate="fade-up">
+              <div className="landing-personalization__group-title">
+                <h3>Your saved rituals</h3>
+                <p>Pick up the bundles you kept for a rainy night or a luminous morning.</p>
+              </div>
+              <div className="landing-personalization__saved-grid">
+                {savedRituals.map((ritual) => (
+                  <Card key={ritual.id} className="landing-personalization__saved-card">
+                    <div>
+                      <p className="landing-personalization__saved-name">{ritual.name}</p>
+                      <p className="landing-personalization__saved-meta">
+                        {ritual.itemCount} item{ritual.itemCount === 1 ? "" : "s"} · Last updated{" "}
+                        {formatSavedDate(ritual.updatedAt)}
+                      </p>
+                      <ul className="landing-personalization__saved-items">
+                        {ritual.items.slice(0, 3).map((item) => (
+                          <li key={`${ritual.id}-${item.id}`}>
+                            {item.name} × {item.quantity}
+                          </li>
+                        ))}
+                      </ul>
+                      {ritual.items.length > 3 && (
+                        <p className="landing-personalization__saved-more">
+                          +{ritual.items.length - 3} more item
+                          {ritual.items.length - 3 === 1 ? "" : "s"}
+                        </p>
+                      )}
+                    </div>
+                    <div className="landing-personalization__saved-actions">
+                      <Button variant="secondary" size="md" onClick={() => handleLoadSavedRitual(ritual.id)}>
+                        Resume ritual
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </article>
+          )}
+
+          {hasFavoriteItems && (
+            <article className="landing-personalization__group" data-animate="fade-up">
+              <div className="landing-personalization__group-title">
+                <h3>Your favourites</h3>
+                <p>Products and rituals you marked to revisit.</p>
+              </div>
+              {favoriteProducts.length > 0 && (
+                <div className="landing-personalization__product-grid">
+                  {favoriteProducts.map((detail) => (
+                    <Card
+                      key={detail.productId}
+                      className="shop-product-card landing-personalization__product-card"
+                    >
+                      {detail.heroImage && (
+                        <div className="shop-product-card__media">
+                          <img src={detail.heroImage} alt={detail.productName} />
+                        </div>
+                      )}
+                      <div className="shop-product-card__body">
+                        <div className="shop-product-card__heading">
+                          <h3>{detail.productName}</h3>
+                          {detail.priceLabel && (
+                            <p className="shop-product-card__price">{detail.priceLabel}</p>
+                          )}
+                        </div>
+                        <p className="shop-product-card__tagline">{detail.shortTagline}</p>
+                        <div className="shop-product-card__actions landing-personalization__product-actions">
+                          <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => handleAddPersonalizedProduct(detail)}
+                          >
+                            Add to bag
+                          </Button>
+                          <button
+                            type="button"
+                            className="shop-product-card__link"
+                            onClick={() => goToProductDetail(detail.slug)}
+                          >
+                            View ritual
+                          </button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+              {favoriteBundles.length > 0 && (
+                <div className="landing-personalization__bundle-grid">
+                  {favoriteBundles.map((bundle) => (
+                    <BundleCard
+                      key={bundle.id}
+                      bundle={bundle}
+                      onAddBundle={addBundleToCart}
+                      heroImage={getBundleHeroImage(bundle.id)}
+                    />
+                  ))}
+                </div>
+              )}
+            </article>
+          )}
+
+          {hasRecentItems && (
+            <article className="landing-personalization__group" data-animate="fade-up">
+              <div className="landing-personalization__group-title">
+                <h3>Recently viewed</h3>
+                <p>Gentle reminders of what caught your eye recently.</p>
+              </div>
+              {recentProducts.length > 0 && (
+                <div className="landing-personalization__product-grid">
+                  {recentProducts.map((detail) => (
+                    <Card
+                      key={detail.productId}
+                      className="shop-product-card landing-personalization__product-card"
+                    >
+                      {detail.heroImage && (
+                        <div className="shop-product-card__media">
+                          <img src={detail.heroImage} alt={detail.productName} />
+                        </div>
+                      )}
+                      <div className="shop-product-card__body">
+                        <div className="shop-product-card__heading">
+                          <h3>{detail.productName}</h3>
+                          {detail.priceLabel && (
+                            <p className="shop-product-card__price">{detail.priceLabel}</p>
+                          )}
+                        </div>
+                        <p className="shop-product-card__tagline">{detail.shortTagline}</p>
+                        <div className="shop-product-card__actions landing-personalization__product-actions">
+                          <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => handleAddPersonalizedProduct(detail)}
+                          >
+                            Add to bag
+                          </Button>
+                          <button
+                            type="button"
+                            className="shop-product-card__link"
+                            onClick={() => goToProductDetail(detail.slug)}
+                          >
+                            View ritual
+                          </button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+              {recentBundles.length > 0 && (
+                <div className="landing-personalization__bundle-grid">
+                  {recentBundles.map((bundle) => (
+                    <BundleCard
+                      key={bundle.id}
+                      bundle={bundle}
+                      onAddBundle={addBundleToCart}
+                      heroImage={getBundleHeroImage(bundle.id)}
+                    />
+                  ))}
+                </div>
+              )}
+            </article>
+          )}
+          {showPersonalizationGuidance && (
+            <div className="landing-personalization__guidance" data-animate="fade-up">
+              <p className="landing-personalization__guidance-eyebrow">New here?</p>
+              <h3>Begin your ritual story</h3>
+              <p>
+                Explore the Ritual Finder for a curated path, or browse the shop for every ingredient that
+                sparks calm.
+              </p>
+              <div className="landing-personalization__guidance-actions">
+                <Button variant="secondary" size="lg" onClick={() => navigateToPath("/ritual-finder")}>
+                  Help me choose a ritual
+                </Button>
+                <Button variant="ghost" size="lg" onClick={() => navigateToPath("/shop")}>
+                  Browse rituals & products
+                </Button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
       <section
         className="landing-stories"
         aria-labelledby="landing-stories-title"

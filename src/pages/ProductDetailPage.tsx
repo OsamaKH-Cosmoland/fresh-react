@@ -1,8 +1,9 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Button, SectionTitle } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
 import { ProductDetailLayout } from "@/components/product/ProductDetailLayout";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
+import { recordView } from "@/hooks/useRecentlyViewed";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { ritualBundles } from "@/content/bundles";
 import { useBundleActions } from "@/cart/cartBundles";
@@ -19,6 +20,11 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   const { addBundleToCart } = useBundleActions();
 
   const priceNumber = detail?.priceNumber ?? 0;
+
+  useEffect(() => {
+    if (!detail) return;
+    recordView(detail.productId, "product");
+  }, [detail]);
 
   const addToBag = useCallback(() => {
     if (!detail || priceNumber <= 0) return;

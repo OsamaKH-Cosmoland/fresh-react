@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Card, SectionTitle } from "@/components/ui";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
@@ -7,6 +7,7 @@ import { useBundleActions } from "@/cart/cartBundles";
 import { useCart } from "@/cart/cartStore";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { RITUAL_QUESTIONS, matchRituals, type RitualFinderAnswers } from "@/content/ritualFinderQuiz";
+import { recordView } from "@/hooks/useRecentlyViewed";
 
 export default function RitualFinder() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -78,6 +79,14 @@ export default function RitualFinder() {
       imageUrl: detail.heroImage,
     });
   };
+
+  useEffect(() => {
+    if (!complete) return;
+    if (primaryBundle) {
+      recordView(primaryBundle.id, "bundle");
+    }
+    secondaryBundles.forEach((bundle) => recordView(bundle.id, "bundle"));
+  }, [complete, primaryBundle, secondaryBundles]);
 
   return (
     <div className="ritual-finder-page">
