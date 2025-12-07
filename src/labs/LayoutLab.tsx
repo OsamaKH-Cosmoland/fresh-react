@@ -14,6 +14,7 @@ import type { Product } from "../types/product";
 import { BundleCard } from "../components/bundles/BundleCard";
 import { ritualBundles } from "../content/bundles";
 import { useBundleActions } from "../cart/cartBundles";
+import { getBundleHeroImage } from "../content/bundleHeroImages";
 
 const ANNOUNCEMENTS = [
   { id: 0, text: "Because your body deserves natural luxury", className: "announcement-message--secondary" },
@@ -244,15 +245,16 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                 align="center"
                 className="landing-bundles__title"
               />
-              <div className="bundle-grid">
-                {featuredBundles.map((bundle) => (
-                  <BundleCard
-                    key={bundle.id}
-                    bundle={bundle}
-                    onAddBundle={addBundleToCart}
-                  />
-                ))}
-              </div>
+            <div className="bundle-grid">
+              {featuredBundles.map((bundle) => (
+                <BundleCard
+                  key={bundle.id}
+                  bundle={bundle}
+                  onAddBundle={addBundleToCart}
+                  heroImage={getBundleHeroImage(bundle.id)}
+                />
+              ))}
+            </div>
             </section>
           )}
         </div>
