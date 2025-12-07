@@ -6,6 +6,7 @@ import { registerServiceWorker } from "./pwa/registerServiceWorker";
 import { CartProvider } from "./cart/cartStore";
 import { initParallaxHero } from "./utils/parallaxHero";
 import { initScrollAnimations } from "./utils/scrollAnimations";
+import { FavoritesProvider } from "./favorites/favoritesStore";
 
 const rootEl = document.getElementById("root");
 
@@ -13,7 +14,9 @@ if (rootEl) {
   createRoot(rootEl).render(
     <StrictMode>
       <CartProvider>
-        <App />
+        <FavoritesProvider>
+          <App />
+        </FavoritesProvider>
       </CartProvider>
     </StrictMode>
   );

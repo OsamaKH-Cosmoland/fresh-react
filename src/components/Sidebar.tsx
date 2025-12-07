@@ -17,6 +17,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
          x
        </button>
        <a href="#home" onClick={onClose}>Home</a>
+       <a href="/shop" onClick={onClose}>Shop</a>
+       <a href="/favorites" onClick={onClose}>Favourites</a>
        <a href="#grid" onClick={onClose}>Card Grid</a>
        <a href="#about" onClick={onClose}>About</a>
        <a href="/stories" onClick={onClose}>Stories</a>

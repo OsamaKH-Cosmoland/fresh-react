@@ -12,6 +12,9 @@ import RitualStoryDetailPage from "./pages/RitualStoryDetailPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 import type { Product } from "./types/product";
+import ShopPage from "./pages/ShopPage";
+import SearchPage from "./pages/SearchPage";
+import FavoritesPage from "./pages/FavoritesPage";
 
 const SHOW_LAB = true;
 
@@ -191,6 +194,9 @@ export default function App() {
   if (view === "orders" || path === "/orders") return <OrdersAdmin />;
   if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;
   if (view === "ritualfinder" || path === "/ritual-finder") return <RitualFinder />;
+  if (view === "search" || path === "/search") return <SearchPage />;
+  if (view === "favorites" || path === "/favorites") return <FavoritesPage />;
+  if (view === "shop" || path === "/shop") return <ShopPage />;
   if (path.startsWith("/products/")) {
     const slug = path.replace("/products/", "");
     return <ProductDetailPage slug={slug} />;

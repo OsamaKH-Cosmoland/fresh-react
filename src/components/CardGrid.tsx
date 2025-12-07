@@ -6,6 +6,7 @@ import type { Product } from "../types/product";
 import { Button, Card } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
 import { PRODUCT_DETAIL_SLUGS_BY_TITLE } from "@/content/productDetails";
+import { FavoriteToggle } from "@/components/FavoriteToggle";
 
 interface CardGridProps {
   onAddToCart?: (product: Product) => void;
@@ -166,14 +167,15 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
           const delayStyle = { "--motion-delay": `${index * 80}ms` } as CSSProperties;
           const detailSlug = PRODUCT_DETAIL_SLUGS_BY_TITLE[c.title];
           return (
-            <Card
-              key={c.id}
-              className={`card hover-lift ${isFav ? "is-fav" : ""}`}
-              data-animate="fade-up"
-              style={delayStyle}
-              tabIndex={0}
-            >
-              {c.image && (
+              <Card
+                key={c.id}
+                className={`card hover-lift ${isFav ? "is-fav" : ""}`}
+                data-animate="fade-up"
+                style={delayStyle}
+                tabIndex={0}
+              >
+                <FavoriteToggle id={String(c.id)} type="product" className="favorite-toggle favorite-toggle--grid" />
+                {c.image && (
                 <img
                   src={c.image}
                   alt={c.title}

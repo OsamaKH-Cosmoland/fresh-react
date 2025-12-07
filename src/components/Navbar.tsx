@@ -1,7 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
+import { useGlobalSearch } from "@/hooks/useGlobalSearch";
+
+const buildAppUrl = (pathname: string) => {
+  const base = import.meta.env.BASE_URL ?? "/";
+  const normalized = base.endsWith("/") ? base.slice(0, -1) : base;
+  const normalizedPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  return `${normalized}${normalizedPath}`;
+};
 
 interface NavbarProps {
   onMenuToggle: () => void;
@@ -9,6 +17,7 @@ interface NavbarProps {
   brand?: string;
   cartCount?: number;
   showSectionLinks?: boolean;
+  compactSearch?: boolean;
   onCartOpen?: () => void;
 }
 
@@ -18,10 +27,14 @@ export default function Navbar({
   brand = "NaturaGloss",
   cartCount = 0,
   showSectionLinks = true,
+  compactSearch = false,
   onCartOpen,
 }: NavbarProps) {
   const [elevated, setElevated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchActive, setSearchActive] = useState(false);
+  const searchRef = useRef<HTMLDivElement | null>(null);
   const { totalQuantity } = useCart();
   const displayCount = totalQuantity ?? cartCount;
   const itemLabel = displayCount === 1 ? "item" : "items";
@@ -43,6 +56,22 @@ export default function Navbar({
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [sticky]);
+
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setSearchActive(false);
+      }
+    };
+    if (typeof document !== "undefined") {
+      document.addEventListener("mousedown", handler);
+    }
+    return () => {
+      if (typeof document !== "undefined") {
+        document.removeEventListener("mousedown", handler);
+      }
+    };
+  }, []);
 
   const navActions = (
     <div className="nav-actions">
@@ -87,6 +116,80 @@ export default function Navbar({
     </div>
   );
 
+  const dropdownResults = useGlobalSearch(searchQuery, 5);
+  const showDropdown = searchActive && searchQuery.trim().length > 0;
+
+  const handleResultClick = (url: string) => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    window.location.href = url;
+  };
+
+  const handleSearchSubmit = () => {
+    if (!searchQuery.trim()) return;
+    if (typeof window === "undefined") return;
+    window.location.href = `${buildAppUrl("/search")}?q=${encodeURIComponent(
+      searchQuery.trim()
+    )}`;
+  };
+
+  const searchField = (
+    <div
+      ref={searchRef}
+      className={`nav-search${compactSearch ? " nav-search--compact" : ""}`}
+    >
+      <input
+        type="search"
+        placeholder="Quick find rituals, products, Finder..."
+        value={searchQuery}
+        onFocus={() => setSearchActive(true)}
+        onChange={(event) => setSearchQuery(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            handleSearchSubmit();
+          }
+        }}
+        aria-label="Search site"
+      />
+      {showDropdown && (
+        <div className="nav-search__dropdown">
+          {dropdownResults.length > 0 ? (
+            <>
+              {dropdownResults.map((entry) => (
+                <button
+                  type="button"
+                  key={entry.id}
+                  className="nav-search__result"
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => handleResultClick(entry.url)}
+                >
+                  <div>
+                    <p className="nav-search__result-title">{entry.label}</p>
+                    <p className="nav-search__result-copy">{entry.tagline}</p>
+                  </div>
+                  <span className="nav-search__result-type">{entry.kind}</span>
+                </button>
+              ))}
+              <button
+                type="button"
+                className="nav-search__view-all"
+                onClick={handleSearchSubmit}
+              >
+                See all results
+              </button>
+            </>
+          ) : (
+            <p className="nav-search__empty">
+              No results yet. Try another term or press enter to browse everything.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <header
       className={`navbar rise-once ${sticky ? "sticky" : ""} ${elevated ? "elevated" : ""} ${
@@ -99,13 +202,19 @@ export default function Navbar({
             {brand}
           </a>
         </FadeIn>
-        {showSectionLinks ? (
-          <FadeIn>
-            <div className="nav-main">
+        <FadeIn>
+          <div className="nav-main">
+            {showSectionLinks && (
               <div className="nav-links-row">
                 <nav className="nav-links">
                   <a className="nav-pill" href={buildSectionHref("grid")}>
                     Collection
+                  </a>
+                  <a className="nav-pill" href="/shop">
+                    Shop
+                  </a>
+                  <a className="nav-pill" href="/favorites">
+                    Favourites
                   </a>
                   <a className="nav-pill" href="?view=ritualfinder">
                     Find My Product
@@ -115,13 +224,12 @@ export default function Navbar({
                   </a>
                 </nav>
               </div>
-              {navActions}
-            </div>
-          </FadeIn>
-        ) : (
-          navActions
-        )}
-      </div>
-    </header>
+            )}
+            {searchField}
+            {navActions}
+          </div>
+        </FadeIn>
+    </div>
+  </header>
   );
 }
