@@ -855,9 +855,11 @@ button:hover {
   background: rgba(249, 228, 168, 0.08);
 }
 
-.nav-compare:focus-visible { 
+.nav-compare:focus,
+.nav-compare:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px rgba(249, 228, 168, 0.45);
+  border-color: #f9e4a8;
 }
 
 .shop-product-card__link:hover,
