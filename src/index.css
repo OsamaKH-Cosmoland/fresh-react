@@ -846,7 +846,6 @@ button:hover {
 
 .nav-compare.is-empty {
   opacity: 0.5;
-  pointer-events: none;
 }
 
 .nav-compare:not(.is-empty):hover,
