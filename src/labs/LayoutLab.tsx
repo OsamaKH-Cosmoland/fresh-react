@@ -11,6 +11,9 @@ import iconRight from "../assets/NaturaGloss_shiny_gold_icon_right.webp";
 import { PRODUCT_INDEX } from "../data/products";
 import { addCartItem, readCart, subscribeToCart, writeCart, type CartItem } from "../utils/cartStorage";
 import type { Product } from "../types/product";
+import { BundleCard } from "../components/bundles/BundleCard";
+import { ritualBundles } from "../content/bundles";
+import { useBundleActions } from "../cart/cartBundles";
 
 const ANNOUNCEMENTS = [
   { id: 0, text: "Because your body deserves natural luxury", className: "announcement-message--secondary" },
@@ -66,6 +69,8 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
     setCartItems((previous) => addCartItem(previous, item));
   }, []);
 
+  const { addBundleToCart } = useBundleActions();
+
   const handleAddToCart = useCallback(
     (item: Product) => {
       addItemToCart(item);
@@ -101,6 +106,8 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, [addProductById]);
+
+  const featuredBundles = ritualBundles.filter((bundle) => bundle.featured);
 
   return (
     <div className="landing-page">
@@ -150,6 +157,15 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             align="center"
             className="landing-hero__title"
           />
+          <div className="landing-hero__actions">
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => (window.location.href = "/ritual-finder")}
+            >
+              Find your ritual
+            </Button>
+          </div>
         </div>
         <figure className="landing-hero__media" data-animate="fade-in" data-parallax="hero">
           <img src={collectionImage} alt="NaturaGloss collection of botanical care" />
@@ -220,6 +236,25 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           <CardGrid
             onAddToCart={handleAddToCart}
           />
+          {featuredBundles.length > 0 && (
+            <section className="landing-bundles" data-animate="fade-up">
+              <SectionTitle
+                title="Ritual bundles"
+                subtitle="Curated sets that weave products together for one elevated moment."
+                align="center"
+                className="landing-bundles__title"
+              />
+              <div className="bundle-grid">
+                {featuredBundles.map((bundle) => (
+                  <BundleCard
+                    key={bundle.id}
+                    bundle={bundle}
+                    onAddBundle={addBundleToCart}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
 

@@ -9,6 +9,7 @@ import AdminAnalyticsPage from "./pages/AdminAnalyticsPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import RitualStoriesListPage from "./pages/RitualStoriesListPage";
 import RitualStoryDetailPage from "./pages/RitualStoryDetailPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 import type { Product } from "./types/product";
 
@@ -190,6 +191,10 @@ export default function App() {
   if (view === "orders" || path === "/orders") return <OrdersAdmin />;
   if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;
   if (view === "ritualfinder" || path === "/ritual-finder") return <RitualFinder />;
+  if (path.startsWith("/products/")) {
+    const slug = path.replace("/products/", "");
+    return <ProductDetailPage slug={slug} />;
+  }
 
   return (
     <>

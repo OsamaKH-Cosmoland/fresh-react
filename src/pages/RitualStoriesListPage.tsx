@@ -4,12 +4,12 @@ import { Button, Card, SectionTitle } from "@/components/ui";
 
 export default function RitualStoriesListPage() {
   return (
-    <main className="ritual-stories-page stories-page" style={{ padding: "32px", minHeight: "100vh" }}>
+    <main className="ritual-stories-page stories-page">
       <SectionTitle
         title="Our Journal"
         subtitle="Slow, sensory routines to weave NaturaGloss into your daily life."
         align="left"
-        className="mb-4 stories-page__title"
+        className="stories-page__title"
       />
       <p className="stories-page__intro" data-animate="fade-up">
         Each ritual is captured in a story field filled with warmth, scent, and steady breath so you

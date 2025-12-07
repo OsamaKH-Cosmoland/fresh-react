@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type React from "react";
 import type { CSSProperties } from "react";
 import { PRODUCTS } from "../data/products";
 import type { Product } from "../types/product";
 import { Button, Card } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
+import { PRODUCT_DETAIL_SLUGS_BY_TITLE } from "@/content/productDetails";
 
 interface CardGridProps {
   onAddToCart?: (product: Product) => void;
@@ -97,6 +98,13 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
     }
   };
 
+  const navigateToProduct = useCallback((slug: string) => {
+    const base = import.meta.env.BASE_URL ?? "/";
+    const destination = new URL(base, window.location.origin);
+    destination.pathname = `/products/${slug}`;
+    window.location.href = destination.toString();
+  }, []);
+
   useEffect(() => {
     return clearToastTimer;
   }, []);
@@ -156,6 +164,7 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
         {initial.map((c: Product, index: number) => {
           const isFav = favs.has(c.id);
           const delayStyle = { "--motion-delay": `${index * 80}ms` } as CSSProperties;
+          const detailSlug = PRODUCT_DETAIL_SLUGS_BY_TITLE[c.title];
           return (
             <Card
               key={c.id}
@@ -185,14 +194,25 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
               </header>
               <p className="card-desc">{c.desc}</p>
               <p className="card-price">{c.price}</p>
-              <Button
-                className="card-add"
-                variant="primary"
-                type="button"
-                onClick={() => handleAdd(c)}
-              >
-                Add to cart
-              </Button>
+              <div className="card-actions">
+                <Button
+                  className="card-add"
+                  variant="primary"
+                  type="button"
+                  onClick={() => handleAdd(c)}
+                >
+                  Add to cart
+                </Button>
+                {detailSlug && (
+                  <button
+                    type="button"
+                    className="card-detail-link"
+                    onClick={() => navigateToProduct(detailSlug)}
+                  >
+                    Learn more
+                  </button>
+                )}
+              </div>
             </Card>
           );
         })}

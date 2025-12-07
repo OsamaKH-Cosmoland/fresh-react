@@ -18,14 +18,17 @@ export function SectionTitle({
   className = "",
   ...props
 }: SectionTitleProps) {
-  const alignClass = align === "center" ? "text-center" : "text-left";
+  const baseClass = ["section-title", align === "center" ? "section-title--center" : "", className]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <header className={className} data-animate={animate} {...props}>
-      <h2 className={["text-3xl font-bold tracking-tight text-emerald-900", alignClass].join(" ")}>
-        {title}
-      </h2>
+    <header className={baseClass} data-animate={animate} {...props}>
+      <h2 className="section-title__heading">{title}</h2>
       {subtitle && (
-        <p className={["mt-2 text-sm text-gray-600 max-w-xl", align === "center" ? "mx-auto" : ""].join(" ")}>
+        <p className={["section-title__subtitle", align === "center" ? "section-title__subtitle--center" : ""]
+          .filter(Boolean)
+          .join(" ")}>
           {subtitle}
         </p>
       )}

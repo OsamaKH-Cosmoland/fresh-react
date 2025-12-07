@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
@@ -9,7 +9,29 @@ interface CartDrawerProps {
 }
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
-  const { cartItems, subtotal, totalQuantity, updateQuantity, removeItem } = useCart();
+  const {
+    cartItems,
+    subtotal,
+    totalQuantity,
+    updateQuantity,
+    removeItem,
+    savedCarts,
+    activeSavedCartId,
+    saveCurrentCart,
+    loadSavedCart,
+    deleteSavedCart,
+  } = useCart();
+  const [saveName, setSaveName] = useState("");
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+
+  const savedSummary = useMemo(
+    () =>
+      savedCarts.map((saved) => ({
+        ...saved,
+        itemCount: saved.items.reduce((sum, item) => sum + item.quantity, 0),
+      })),
+    [savedCarts]
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -43,6 +65,20 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
       return;
     }
     updateQuantity(itemId, current - 1);
+  };
+
+  const handleSaveCart = () => {
+    if (!saveName.trim()) {
+      setSaveMessage("Please provide a name for the ritual.");
+      return;
+    }
+    const success = saveCurrentCart(saveName);
+    if (success) {
+      setSaveMessage("Saved. Load it anytime.");
+      setSaveName("");
+    } else {
+      setSaveMessage("Add products before saving.");
+    }
   };
 
   return (
@@ -95,6 +131,55 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               </ul>
             )}
           </div>
+
+          <section className="cart-drawer__saved" data-animate="fade-in">
+            <div className="cart-drawer__saved-header">
+              <h3>Saved rituals</h3>
+              <p>Preserve your current bag to revisit later.</p>
+            </div>
+            <div className="cart-drawer__saved-input">
+              <input
+                type="text"
+                placeholder="Name this ritual"
+                value={saveName}
+                onChange={(event) => setSaveName(event.target.value)}
+              />
+              <Button variant="ghost" size="md" onClick={handleSaveCart}>
+                Save
+              </Button>
+            </div>
+            {saveMessage && <p className="cart-drawer__saved-message">{saveMessage}</p>}
+            {savedSummary.length > 0 ? (
+              <ul className="cart-drawer__saved-list">
+                {savedSummary.map((saved) => (
+                  <li key={saved.id} className="cart-drawer__saved-item">
+                    <div>
+                      <p className="cart-drawer__saved-title">{saved.name}</p>
+                      <p className="cart-drawer__saved-meta">
+                        {saved.itemCount} item{saved.itemCount === 1 ? "" : "s"} ·{" "}
+                        {new Date(saved.updatedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="cart-drawer__saved-actions">
+                      <Button
+                        variant={saved.id === activeSavedCartId ? "ghost" : "secondary"}
+                        size="sm"
+                        onClick={() => loadSavedCart(saved.id)}
+                        disabled={saved.id === activeSavedCartId}
+                      >
+                        {saved.id === activeSavedCartId ? "Loaded" : "Load"}
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => deleteSavedCart(saved.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="cart-drawer__saved-empty">You have no saved rituals yet.</p>
+            )}
+          </section>
 
           <footer className="cart-drawer__footer" data-animate="fade-in">
             <div className="cart-drawer__subtotal">
