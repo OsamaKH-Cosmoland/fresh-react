@@ -90,6 +90,10 @@ body {
   will-change: opacity, transform;
 }
 
+:not(.anim-js-enabled) [data-animate] {
+  opacity: 1 !important;
+  transform: none !important;
+}
 [data-animate].is-visible {
   animation-delay: var(--motion-delay, 0s);
 }

@@ -73,6 +73,7 @@ export function initScrollAnimations() {
     return;
   }
   (window as Record<string, boolean>)[globalKey] = true;
+  document.documentElement.classList.add("anim-js-enabled");
 
   const prefersReduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (prefersReduce) {
