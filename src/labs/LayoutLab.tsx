@@ -30,11 +30,6 @@ function formatSavedDate(value: string) {
   return new Date(parsed).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-const ANNOUNCEMENTS = [
-  { id: 0, text: "Because your body deserves natural luxury", className: "announcement-message--secondary" },
-  { id: 1, text: "Inspired by European cosmetic standards, handcrafted in Egypt", className: "announcement-message--primary" },
-];
-
 interface LayoutLabProps {
   onCartOpen?: () => void;
 }
@@ -42,9 +37,6 @@ interface LayoutLabProps {
 export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>(() => readCart());
-  const [activeAnnouncement, setActiveAnnouncement] = useState(1);
-  const rotationRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const announcementCount = ANNOUNCEMENTS.length || 1;
   const { t } = useTranslation();
   const quickHeroActions = [
     { navId: "collection", labelKey: "cta.shopCollection", variant: "primary" as const },
@@ -56,22 +48,6 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
     window.location.href = normalizeHref(href);
   }, []);
 
-  const restartRotation = useCallback(() => {
-    if (rotationRef.current) {
-      clearInterval(rotationRef.current);
-    }
-    rotationRef.current = setInterval(() => {
-      setActiveAnnouncement((prev) => (prev + 1) % announcementCount);
-    }, 5000);
-  }, [announcementCount]);
-
-  useEffect(() => {
-    restartRotation();
-    return () => {
-      if (rotationRef.current) clearInterval(rotationRef.current);
-    };
-  }, [restartRotation]);
-
   useEffect(() => {
     writeCart(cartItems);
   }, [cartItems]);
@@ -79,16 +55,6 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
   useEffect(() => {
     return subscribeToCart(setCartItems);
   }, []);
-
-  const showPrevAnnouncement = () => {
-    setActiveAnnouncement((prev) => (prev - 1 + announcementCount) % announcementCount);
-    restartRotation();
-  };
-
-  const showNextAnnouncement = () => {
-    setActiveAnnouncement((prev) => (prev + 1) % announcementCount);
-    restartRotation();
-  };
 
   const addItemToCart = useCallback((item: Product) => {
     setCartItems((previous) => addCartItem(previous, item));
@@ -208,36 +174,6 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
 
   return (
     <div className="landing-page">
-      <div className="legacy-announcement">
-        <div className="announcement-bar" role="status" aria-live="polite">
-          <button
-            type="button"
-            className="announcement-nav announcement-nav--prev"
-            aria-label="Previous announcement"
-            onClick={showPrevAnnouncement}
-          >
-            <span aria-hidden="true">‹</span>
-          </button>
-          <div className="announcement-track">
-            {ANNOUNCEMENTS.map((announcement, index) => (
-              <span
-                key={announcement.id}
-                className={`announcement-message ${announcement.className ?? ""} ${index === activeAnnouncement ? "is-active" : ""}`}
-              >
-                {announcement.text}
-              </span>
-            ))}
-          </div>
-          <button
-            type="button"
-            className="announcement-nav announcement-nav--next"
-            aria-label="Next announcement"
-            onClick={showNextAnnouncement}
-          >
-            <span aria-hidden="true">›</span>
-          </button>
-        </div>
-      </div>
       <Navbar
         sticky
         onMenuToggle={() => setDrawerOpen(true)}
