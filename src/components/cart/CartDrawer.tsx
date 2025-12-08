@@ -4,6 +4,7 @@ import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
+import { formatVariantMeta } from "@/utils/variantDisplay";
 
 interface CartDrawerProps {
   open: boolean;
@@ -48,6 +49,16 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   const canCheckout = totalQuantity > 0;
   const { t } = useTranslation();
+
+  const renderVariantMeta = (
+    label?: string,
+    attributes?: Record<string, string>,
+    className = "cart-drawer__variant"
+  ) => {
+    const variantMeta = formatVariantMeta(label, attributes);
+    if (!variantMeta) return null;
+    return <p className={className}>{variantMeta}</p>;
+  };
 
   const goToCheckout = () => {
     if (!canCheckout) return;
@@ -109,14 +120,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   <li key={item.id} className="cart-drawer__item">
                     <div>
                       <p className="cart-drawer__title">{item.name}</p>
-                      {item.variantLabel && (
-                        <p className="cart-drawer__variant">
-                          {item.variantLabel}
-                          {item.variantAttributes
-                            ? ` · ${Object.values(item.variantAttributes).join(" · ")}`
-                            : ""}
-                        </p>
-                      )}
+                      {renderVariantMeta(item.variantLabel, item.variantAttributes)}
                       <p className="cart-drawer__meta">{formatCurrency(item.price)}</p>
                       {item.bundleId && (
                         <div className="cart-drawer__bundle-meta">
@@ -135,7 +139,14 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             <ul className="cart-drawer__bundle-items">
                               {item.bundleItems.map((bundleItem) => (
                                 <li key={`${item.bundleId}-${bundleItem.productId}`}>
-                                  {bundleItem.name} × {bundleItem.quantity}
+                                  <span>
+                                    {bundleItem.name} × {bundleItem.quantity}
+                                  </span>
+                                  {renderVariantMeta(
+                                    bundleItem.variantLabel,
+                                    bundleItem.variantAttributes,
+                                    "cart-drawer__sub-variant"
+                                  )}
                                 </li>
                               ))}
                             </ul>
@@ -157,7 +168,12 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                             <ul className="cart-drawer__gift-items">
                               {item.giftBox.items.map((giftItem) => (
                                 <li key={`${item.id}-${giftItem.productId}`}>
-                                  {giftItem.name}
+                                  <span>{giftItem.name}</span>
+                                  {renderVariantMeta(
+                                    giftItem.variantLabel,
+                                    giftItem.variantAttributes,
+                                    "cart-drawer__sub-variant"
+                                  )}
                                 </li>
                               ))}
                             </ul>

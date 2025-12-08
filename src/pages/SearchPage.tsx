@@ -13,8 +13,10 @@ import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
 import { shopFocusLookup } from "@/content/shopCatalog";
 import { ritualGuides } from "@/content/ritualGuides";
+import { getVariantSummary } from "@/content/productDetails";
 import { getReviewStats } from "@/utils/reviewStorage";
 import { RatingBadge } from "@/components/reviews/RatingBadge";
+import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { useTranslation } from "@/localization/locale";
 
 const getQueryFromLocation = () => {
@@ -38,6 +40,9 @@ export default function SearchPage() {
   const { addBundleToCart } = useBundleActions();
   const query = getQueryFromLocation();
   const { t } = useTranslation();
+  const handleAddProduct = (detail: ProductDetailContent) => {
+    addItem(buildProductCartPayload(detail));
+  };
 
   const searchResults = useMemo(
     () => filterSearchEntries(query, { allowEmpty: true }),
@@ -78,16 +83,6 @@ export default function SearchPage() {
   const focusLabels = (focusIds: string[]) =>
     focusIds.map((id) => shopFocusLookup[id]).filter(Boolean);
 
-  const handleAddProduct = (detail: ProductDetailContent) => {
-    addItem({
-      productId: detail.productId,
-      id: detail.productId,
-      name: detail.productName,
-      price: detail.priceNumber,
-      imageUrl: detail.heroImage,
-    });
-  };
-
   return (
     <div className="shop-page search-page">
       <Navbar sticky showSectionLinks={false} onMenuToggle={() => setSidebarOpen(true)} />
@@ -114,6 +109,10 @@ export default function SearchPage() {
               <div className="shop-product-grid">
                 {products.map(({ entry, detail }) => {
                   const focusChips = focusLabels(entry.focus);
+                  const variantSummary = getVariantSummary(detail.productId);
+                  const variantLabels = variantSummary?.labels.slice(0, 3) ?? [];
+                  const hasMoreVariants =
+                    Boolean(variantSummary) && variantSummary.count > variantLabels.length;
                   const ratingStats = getReviewStats(detail.productId, "product");
                   return (
                     <Card
@@ -134,6 +133,19 @@ export default function SearchPage() {
                           <p className="shop-product-card__price">{detail.priceLabel}</p>
                         </div>
                         <p className="shop-product-card__tagline">{detail.shortTagline}</p>
+                        {variantSummary && variantSummary.count > 1 && (
+                          <>
+                            <p className="shop-product-card__variant-summary">
+                              {t("variants.summary.available", {
+                                count: variantSummary.count,
+                              })}
+                            </p>
+                            <p className="shop-product-card__variant-list">
+                              {variantLabels.join(" · ")}
+                              {hasMoreVariants ? " …" : ""}
+                            </p>
+                          </>
+                        )}
                         {ratingStats.count > 0 && (
                           <div className="shop-product-card__rating">
                             <RatingBadge average={ratingStats.average} count={ratingStats.count} />
@@ -241,10 +253,12 @@ export default function SearchPage() {
                         </span>
                       ))}
                     </div>
-                    <BundleCard
-                      bundle={bundle}
-                      onAddBundle={() => addBundleToCart(bundle)}
-                    />
+                      <BundleCard
+                        bundle={bundle}
+                        onAddBundle={(bundleItem, variantSelection) =>
+                          addBundleToCart(bundleItem, variantSelection)
+                        }
+                      />
                   </div>
                 ))}
               </div>

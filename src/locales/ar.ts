@@ -69,6 +69,11 @@ export const ar = {
       },
     },
   },
+  variants: {
+    summary: {
+      available: "متوفر بـ {count} نغمات",
+    },
+  },
   cta: {
     addToBag: "أضف إلى السلة",
     addRitualToBag: "أضف الطقس إلى السلة",

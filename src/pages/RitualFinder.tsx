@@ -15,6 +15,8 @@ import {
   type TimePreference,
   useUserPreferences,
 } from "@/hooks/useUserPreferences";
+import { chooseVariantForPreferences } from "@/content/productDetails";
+import { buildProductCartPayload } from "@/utils/productVariantUtils";
 
 export default function RitualFinder() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -42,9 +44,24 @@ export default function RitualFinder() {
   const productSuggestions = useMemo(
     () =>
       recommendations.productSuggestions
-        .map((productId) => PRODUCT_DETAIL_MAP[productId])
-        .filter(Boolean),
-    [recommendations.productSuggestions]
+        .map((productId) => {
+          const detail = PRODUCT_DETAIL_MAP[productId];
+          if (!detail) return null;
+          const variant = chooseVariantForPreferences(
+            detail.productId,
+            preferences?.scentPreference ?? null
+          );
+          return { detail, variant };
+        })
+        .filter(
+          (
+            item
+          ): item is {
+            detail: ProductDetailContent;
+            variant?: ReturnType<typeof chooseVariantForPreferences>;
+          } => Boolean(item)
+        ),
+    [recommendations.productSuggestions, preferences?.scentPreference]
   );
 
   useEffect(() => {
@@ -124,16 +141,10 @@ export default function RitualFinder() {
     window.location.href = destination.toString();
   };
 
-  const addProductToBag = (productId: string) => {
+  const addProductToBag = (productId: string, variantId?: string) => {
     const detail = PRODUCT_DETAIL_MAP[productId];
     if (!detail) return;
-    addItem({
-      productId: detail.productId,
-      id: detail.productId,
-      name: detail.productName,
-      price: detail.priceNumber,
-      imageUrl: detail.heroImage,
-    });
+    addItem(buildProductCartPayload(detail, variantId));
   };
 
   useEffect(() => {
@@ -217,14 +228,25 @@ export default function RitualFinder() {
                 align="left"
               />
               <div className="bundle-grid ng-grid-mobile-2">
-                <BundleCard bundle={primaryBundle} onAddBundle={addBundleToCart} />
+                <BundleCard
+                  bundle={primaryBundle}
+                  onAddBundle={(bundleItem, variantSelection) =>
+                    addBundleToCart(bundleItem, variantSelection)
+                  }
+                />
               </div>
               {secondaryBundles.length > 0 && (
                 <div className="ritual-finder-also">
                   <p>Also consider</p>
                   <div className="bundle-grid ng-grid-mobile-2">
                     {secondaryBundles.map((bundle) => (
-                      <BundleCard key={bundle.id} bundle={bundle} onAddBundle={addBundleToCart} />
+                    <BundleCard
+                      key={bundle.id}
+                      bundle={bundle}
+                      onAddBundle={(bundleItem, variantSelection) =>
+                        addBundleToCart(bundleItem, variantSelection)
+                      }
+                    />
                     ))}
                   </div>
                 </div>
@@ -233,14 +255,22 @@ export default function RitualFinder() {
                 <div className="ritual-finder-extras">
                   <SectionTitle title="Also consider" subtitle="Single additions to pair beautifully." align="left" />
                   <div className="ritual-finder-extras__grid ng-grid-mobile-2">
-                    {productSuggestions.map((product) => (
-                      <Card key={product.productId} className="ritual-finder-product">
-                        <p className="ritual-finder-product__name">{product.productName}</p>
-                        <p className="ritual-finder-product__desc">{product.subtitle ?? product.productName}</p>
+                    {productSuggestions.map(({ detail, variant }) => (
+                      <Card
+                        key={`${detail.productId}-${variant?.variantId ?? "default"}`}
+                        className="ritual-finder-product"
+                      >
+                        <p className="ritual-finder-product__name">{detail.productName}</p>
+                        <p className="ritual-finder-product__desc">
+                          {detail.shortTagline}
+                        </p>
+                        {variant?.label && (
+                          <p className="ritual-finder-product__variant">{variant.label}</p>
+                        )}
                         <Button
                           variant="secondary"
                           size="md"
-                          onClick={() => addProductToBag(product.productId)}
+                          onClick={() => addProductToBag(detail.productId, variant?.variantId)}
                         >
                           {t("cta.addToBag")}
                         </Button>

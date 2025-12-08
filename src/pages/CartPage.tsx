@@ -6,6 +6,7 @@ import { PRODUCT_INDEX } from "../data/products";
 import { ritualBundles } from "@/content/bundles";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
+import { formatVariantMeta } from "@/utils/variantDisplay";
 
 const parsePrice = (price: string | number) => {
   const number = parseFloat(String(price).replace(/[^\d.]/g, ""));
@@ -19,17 +20,9 @@ export default function CartPage() {
   const totalItems = totalQuantity ?? cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const renderVariantDetail = (item: CartItem) => {
-    if (!item.variantLabel) return null;
-    const attributes =
-      item.variantAttributes && Object.values(item.variantAttributes).length > 0
-        ? ` · ${Object.values(item.variantAttributes).join(" · ")}`
-        : "";
-    return (
-      <p className="cart-page__variant">
-        {item.variantLabel}
-        {attributes}
-      </p>
-    );
+    const meta = formatVariantMeta(item.variantLabel, item.variantAttributes);
+    if (!meta) return null;
+    return <p className="cart-page__variant">{meta}</p>;
   };
 
   const goToCollection = () => {
@@ -103,9 +96,20 @@ export default function CartPage() {
                           )}
                           {item.giftBox.items && item.giftBox.items.length > 0 && (
                             <ul className="cart-page-bundle-items">
-                              {item.giftBox.items.map((giftItem) => (
-                                <li key={`${item.id}-${giftItem.productId}`}>{giftItem.name}</li>
-                              ))}
+                              {item.giftBox.items.map((giftItem) => {
+                                const giftVariant = formatVariantMeta(
+                                  giftItem.variantLabel,
+                                  giftItem.variantAttributes
+                                );
+                                return (
+                                  <li key={`${item.id}-${giftItem.productId}`}>
+                                    {giftItem.name}
+                                    {giftVariant && (
+                                      <p className="cart-page__sub-variant">{giftVariant}</p>
+                                    )}
+                                  </li>
+                                );
+                              })}
                             </ul>
                           )}
                         </div>
@@ -148,11 +152,20 @@ export default function CartPage() {
                           )}
                           {item.bundleItems && item.bundleItems.length > 0 && (
                             <ul className="cart-page-bundle-items">
-                              {item.bundleItems.map((bundleItem) => (
-                                <li key={`${item.bundleId}-${bundleItem.productId}`}>
-                                  {bundleItem.name} × {bundleItem.quantity}
-                                </li>
-                              ))}
+                              {item.bundleItems.map((bundleItem) => {
+                                const bundleVariant = formatVariantMeta(
+                                  bundleItem.variantLabel,
+                                  bundleItem.variantAttributes
+                                );
+                                return (
+                                  <li key={`${item.bundleId}-${bundleItem.productId}`}>
+                                    {bundleItem.name} × {bundleItem.quantity}
+                                    {bundleVariant && (
+                                      <p className="cart-page__sub-variant">{bundleVariant}</p>
+                                    )}
+                                  </li>
+                                );
+                              })}
                             </ul>
                           )}
                         </div>

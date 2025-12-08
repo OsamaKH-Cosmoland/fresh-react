@@ -1336,6 +1336,20 @@ button:hover {
   line-height: var(--line-height-relaxed);
 }
 
+.shop-product-card__variant-summary {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-small);
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+
+.shop-product-card__variant-list {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .shop-product-card__rating {
   margin-top: 0.35rem;
 }
@@ -2231,6 +2245,21 @@ button:hover {
 .gift-builder-addon__details p {
   margin: 0;
   color: rgba(255, 255, 255, 0.7);
+}
+
+.gift-builder-product__variant {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.gift-builder-product__variant select {
+  border-radius: 0.75rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
 }
 
 .gift-builder__hint {
@@ -6016,6 +6045,51 @@ button:hover {
   color: #f4d087;
 }
 
+.bundle-card__variant-grid {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-3) 0;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.bundle-card__variant-control {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  align-items: start;
+  direction: ltr;
+}
+
+.bundle-card__variant-control select {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(1, 4, 2, 0.95);
+  color: #fbe7ad;
+  padding: 0.4rem 0.8rem;
+  width: 100%;
+  min-height: 44px;
+  appearance: none;
+  text-align: left;
+}
+
+:root[dir="rtl"] .bundle-card__variant-control {
+  text-align: right;
+  direction: rtl;
+}
+
+:root[dir="rtl"] .bundle-card__variant-control select {
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .bundle-card__variant-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .bundle-card__actions {
   display: flex;
   gap: var(--space-3);
@@ -6200,6 +6274,11 @@ button:hover {
   margin: 0;
   font-size: var(--font-size-small);
   color: rgba(255, 236, 197, 0.75);
+}
+.ritual-finder-product__variant {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 236, 197, 0.65);
 }
 
 .ritual-finder-controls--reset {
@@ -6476,6 +6555,14 @@ button:hover {
   color: #c6b79b;
 }
 
+.cart-drawer__sub-variant,
+.cart-page__sub-variant {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.04em;
+}
+
 @media (max-width: 480px) {
   .nav-links {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -6675,6 +6762,11 @@ button:hover {
   margin: 0;
   color: rgba(255, 255, 255, 0.8);
   font-weight: 600;
+}
+.ritual-coach-product-card__variant {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
 }
 .ritual-coach-product-card--lighter {
   margin: 0 auto;
@@ -6881,6 +6973,25 @@ button:hover {
   margin: 0;
   color: rgba(255, 255, 255, 0.65);
 }
+.checkout-review__sub-items {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.checkout-review__sub-items li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+}
+.checkout-review__sub-meta {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.55);
+}
 .checkout-review__totals {
   display: grid;
   gap: 0.8rem;
@@ -7018,4 +7129,27 @@ button:hover {
   display: flex;
   justify-content: space-between;
   font-size: 0.9rem;
+}
+.orders-history-card__variant {
+  margin: 0.15rem 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.78rem;
+}
+.orders-history-card__sub-items {
+  list-style: none;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.85rem;
+}
+.orders-history-card__sub-items li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.orders-history-card__sub-meta {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
 }

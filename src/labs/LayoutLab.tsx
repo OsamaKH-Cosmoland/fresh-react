@@ -345,7 +345,9 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                     <BundleCard
                       key={bundle.id}
                       bundle={bundle}
-                      onAddBundle={addBundleToCart}
+                      onAddBundle={(bundleItem, variantSelection) =>
+                        addBundleToCart(bundleItem, variantSelection)
+                      }
                       heroImage={getBundleHeroImage(bundle.id)}
                     />
                   ))}
@@ -496,7 +498,9 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                     <BundleCard
                       key={bundle.id}
                       bundle={bundle}
-                      onAddBundle={addBundleToCart}
+                      onAddBundle={(bundleItem, variantSelection) =>
+                        addBundleToCart(bundleItem, variantSelection)
+                      }
                       heroImage={getBundleHeroImage(bundle.id)}
                     />
                   ))}
@@ -558,7 +562,9 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                     <BundleCard
                       key={bundle.id}
                       bundle={bundle}
-                      onAddBundle={addBundleToCart}
+                      onAddBundle={(bundleItem, variantSelection) =>
+                        addBundleToCart(bundleItem, variantSelection)
+                      }
                       heroImage={getBundleHeroImage(bundle.id)}
                     />
                   ))}
@@ -666,7 +672,9 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                 <BundleCard
                   key={bundle.id}
                   bundle={bundle}
-                  onAddBundle={addBundleToCart}
+                  onAddBundle={(bundleItem, variantSelection) =>
+                    addBundleToCart(bundleItem, variantSelection)
+                  }
                   heroImage={getBundleHeroImage(bundle.id)}
                 />
               ))}

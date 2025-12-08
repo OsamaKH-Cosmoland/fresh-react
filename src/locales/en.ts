@@ -69,6 +69,11 @@ export const en = {
       },
     },
   },
+  variants: {
+    summary: {
+      available: "{count} scents available",
+    },
+  },
   cta: {
     addToBag: "Add to bag",
     addRitualToBag: "Add ritual to bag",

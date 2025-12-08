@@ -8,6 +8,8 @@ import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { getCompareProductConfig, getCompareBundleConfig } from "@/content/compareCatalog";
 import { ritualBundles, type RitualBundle } from "@/content/bundles";
 import { useTranslation } from "@/localization/locale";
+import { buildProductCartPayload } from "@/utils/productVariantUtils";
+import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -176,15 +178,20 @@ export default function ComparePage() {
                     <Button
                       variant="primary"
                       size="md"
-                      onClick={() =>
-                      addItem({
-                        productId: column.detail.productId,
-                        id: column.detail.productId,
-                        name: column.detail.productName,
-                        price: column.detail.priceNumber,
-                        imageUrl: column.detail.heroImage,
-                      })
-                      }
+                      onClick={() => {
+                        const detail = PRODUCT_DETAIL_MAP[column.detail!.productId];
+                        if (detail) {
+                          addItem(buildProductCartPayload(detail));
+                          return;
+                        }
+                        addItem({
+                          productId: column.detail!.productId,
+                          id: column.detail!.productId,
+                          name: column.detail!.productName,
+                          price: column.detail!.priceNumber,
+                          imageUrl: column.detail!.heroImage,
+                        });
+                      }}
                     >
                       {t("cta.addToBag")}
                     </Button>

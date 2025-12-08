@@ -12,6 +12,7 @@ import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
 import { shopCatalog, shopFocusLookup, type FocusTagId } from "@/content/shopCatalog";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
+import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { useTranslation } from "@/localization/locale";
 
 const navigateTo = (path: string) => {
@@ -60,13 +61,7 @@ export default function FavoritesPage() {
   const focusLabels = (ids: FocusTagId[]) => ids.map((id) => shopFocusLookup[id]).filter(Boolean);
 
   const handleAddProduct = (detail: typeof favoriteProducts[number]) => {
-    addItem({
-      productId: detail.productId,
-      id: detail.productId,
-      name: detail.productName,
-      price: detail.priceNumber,
-      imageUrl: detail.heroImage,
-    });
+    addItem(buildProductCartPayload(detail));
   };
 
   return (
@@ -171,7 +166,9 @@ export default function FavoritesPage() {
                     <BundleCard
                       bundle={bundle}
                       heroImage={getBundleHeroImage(bundle.id)}
-                      onAddBundle={() => addBundleToCart(bundle)}
+                      onAddBundle={(bundleItem, variantSelection) =>
+                        addBundleToCart(bundleItem, variantSelection)
+                      }
                     />
                   </div>
                 ))}

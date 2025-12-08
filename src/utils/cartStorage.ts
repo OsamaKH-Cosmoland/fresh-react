@@ -10,7 +10,14 @@ export interface CartItem {
   variantAttributes?: Record<string, string>;
   imageUrl?: string;
   bundleId?: string;
-  bundleItems?: { productId: string; name: string; quantity: number }[];
+  bundleItems?: {
+    productId: string;
+    name: string;
+    quantity: number;
+    variantId?: string;
+    variantLabel?: string;
+    variantAttributes?: Record<string, string>;
+  }[];
   bundleCompareAt?: number;
   bundleSavings?: number;
   bundleSavingsPercent?: number;
@@ -19,7 +26,15 @@ export interface CartItem {
     styleName: string;
     note?: string;
     addons?: string[];
-    items: { productId: string; name: string; price: number; quantity: number }[];
+    items: {
+      productId: string;
+      name: string;
+      price: number;
+      quantity: number;
+      variantId?: string;
+      variantLabel?: string;
+      variantAttributes?: Record<string, string>;
+    }[];
     boxPrice: number;
     addonsPrice: number;
   };

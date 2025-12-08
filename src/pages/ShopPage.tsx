@@ -17,6 +17,8 @@ import {
   type FocusTagId,
 } from "@/content/shopCatalog";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
+import { getVariantSummary } from "@/content/productDetails";
+import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { getReviewStats } from "@/utils/reviewStorage";
 import { RatingBadge } from "@/components/reviews/RatingBadge";
 import { useTranslation } from "@/localization/locale";
@@ -82,13 +84,7 @@ export default function ShopPage() {
   };
 
   const handleAddProduct = (product: ShopCatalogProductEntry["item"]) => {
-    addItem({
-      productId: product.productId,
-      id: product.productId,
-      name: product.productName,
-      price: product.priceNumber,
-      imageUrl: product.heroImage,
-    });
+    addItem(buildProductCartPayload(product));
   };
 
   return (
@@ -180,6 +176,10 @@ export default function ShopPage() {
                   const { item, focus, extras } = entry;
                   const focusLabels = focus.map((label) => shopFocusLookup[label]);
                   const extraLabels = extras?.map((label) => shopOptionalLookup[label]) ?? [];
+                  const variantSummary = getVariantSummary(item.productId);
+                  const variantLabels = variantSummary?.labels.slice(0, 3) ?? [];
+                  const hasMoreVariants =
+                    Boolean(variantSummary) && variantSummary.count > variantLabels.length;
                   const ratingStats = getReviewStats(item.productId, "product");
                   return (
                     <Card
@@ -200,6 +200,19 @@ export default function ShopPage() {
                           <p className="shop-product-card__price">{item.priceLabel}</p>
                         </div>
                         <p className="shop-product-card__tagline">{item.shortTagline}</p>
+                        {variantSummary && variantSummary.count > 1 && (
+                          <>
+                            <p className="shop-product-card__variant-summary">
+                              {t("variants.summary.available", {
+                                count: variantSummary.count,
+                              })}
+                            </p>
+                            <p className="shop-product-card__variant-list">
+                              {variantLabels.join(" · ")}
+                              {hasMoreVariants ? " …" : ""}
+                            </p>
+                          </>
+                        )}
                         {ratingStats.count > 0 && (
                           <div className="shop-product-card__rating">
                             <RatingBadge
@@ -292,7 +305,9 @@ export default function ShopPage() {
                       <BundleCard
                         bundle={entry.item}
                         heroImage={heroImage}
-                        onAddBundle={() => addBundleToCart(entry.item)}
+                        onAddBundle={(bundleItem, variantSelection) =>
+                          addBundleToCart(bundleItem, variantSelection)
+                        }
                       />
                     </div>
                   );

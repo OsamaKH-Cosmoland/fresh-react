@@ -12,6 +12,7 @@ import type {
   ProductVariant,
   RitualStep,
 } from "@/components/product/ProductDetailLayout";
+import type { ScentPreference } from "@/hooks/useUserPreferences";
 
 export interface ProductDetailContent extends Omit<ProductDetailLayoutProps, "onAddToBag" | "heroActions"> {
   slug: string;
@@ -510,3 +511,70 @@ export const PRODUCT_DETAIL_SLUGS_BY_TITLE: Record<string, string> = PRODUCT_DET
   acc[config.productName] = config.slug;
   return acc;
 }, {});
+
+const SCENT_PREFERENCE_VARIANT_KEYWORDS: Record<ScentPreference, string[]> = {
+  softFloral: ["Lavender", "Silk", "Blossom", "Floral"],
+  fresh: ["Fresh", "Glow", "Citrus", "Botanical"],
+  warm: ["Amber", "Warm", "Cedar", "Resin"],
+  unscented: ["Unscented", "Pure", "Clean"],
+};
+
+export function getProductVariants(productId: string) {
+  const detail = PRODUCT_DETAIL_MAP[productId];
+  return detail?.variants ?? [];
+}
+
+export function getVariantById(productId: string, variantId?: string) {
+  if (!variantId) return undefined;
+  return getProductVariants(productId).find((variant) => variant.variantId === variantId);
+}
+
+export function getDefaultVariant(productId: string) {
+  const detail = PRODUCT_DETAIL_MAP[productId];
+  if (!detail?.variants || !detail.variants.length) return undefined;
+  if (detail.defaultVariantId) {
+    const preferred = detail.variants.find((variant) => variant.variantId === detail.defaultVariantId);
+    if (preferred) return preferred;
+  }
+  return detail.variants[0];
+}
+
+export interface VariantSummary {
+  count: number;
+  labels: string[];
+  priceRange?: {
+    min: number;
+    max: number;
+  };
+}
+
+export function getVariantSummary(productId: string): VariantSummary | null {
+  const variants = getProductVariants(productId);
+  if (!variants.length) return null;
+  const labels = variants.map((variant) => variant.label);
+  const prices = variants.map((variant) => variant.priceNumber);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  return {
+    count: labels.length,
+    labels,
+    priceRange: prices.length ? { min, max } : undefined,
+  };
+}
+
+export function chooseVariantForScent(productId: string, scentPreference: ScentPreference | null) {
+  if (!scentPreference) return getDefaultVariant(productId);
+  const keywords = SCENT_PREFERENCE_VARIANT_KEYWORDS[scentPreference] ?? [];
+  if (!keywords.length) return getDefaultVariant(productId);
+  const variants = getProductVariants(productId);
+  const normalizedKeywords = keywords.map((keyword) => keyword.toLowerCase());
+  const match = variants.find((variant) => {
+    const haystack = `${variant.label} ${(variant.attributes?.scent ?? "").toLowerCase()}`.toLowerCase();
+    return normalizedKeywords.some((keyword) => haystack.includes(keyword));
+  });
+  return match ?? getDefaultVariant(productId);
+}
+
+export function chooseVariantForPreferences(productId: string, scentPreference: ScentPreference | null) {
+  return chooseVariantForScent(productId, scentPreference);
+}

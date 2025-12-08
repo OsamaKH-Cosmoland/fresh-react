@@ -19,10 +19,15 @@ import {
   type RitualCoachResult,
 } from "@/content/ritualCoachEngine";
 import { FocusTagId } from "@/content/shopCatalog";
-import { PRODUCT_DETAIL_MAP, type ProductDetailContent } from "@/content/productDetails";
+import {
+  PRODUCT_DETAIL_MAP,
+  chooseVariantForPreferences,
+  type ProductDetailContent,
+} from "@/content/productDetails";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { getBundlePricing } from "@/content/bundlePricing";
 import { RitualBundle } from "@/content/bundles";
+import { buildProductCartPayload } from "@/utils/productVariantUtils";
 
 const CONCERN_TO_FOCUS: Record<ConcernOption, FocusTagId> = {
   bodyHydration: "body",
@@ -100,23 +105,6 @@ const createBundleCartItem = (bundle: RitualBundle): CartItem => {
   };
 };
 
-const getDefaultVariant = (detail: ProductDetailContent) =>
-  detail.variants?.find((variant) => variant.variantId === detail.defaultVariantId) ?? detail.variants?.[0];
-
-const createProductCartItem = (detail: ProductDetailContent): CartItem => {
-  const variant = getDefaultVariant(detail);
-  const price = variant?.priceNumber ?? detail.priceNumber;
-  return {
-    id: variant?.variantId ?? detail.productId,
-    name: detail.productName,
-    price,
-    quantity: 1,
-    imageUrl: detail.heroImage,
-    variantId: variant?.variantId,
-    variantLabel: variant?.label,
-    variantAttributes: variant?.attributes,
-  };
-};
 
 export default function RitualCoachPage() {
   const { t } = useTranslation();
@@ -176,6 +164,17 @@ export default function RitualCoachPage() {
   const lighterMatch = coachResult.lighterRitual;
   const treats = coachResult.treats;
 
+  const pickVariantForMatch = (match?: RitualCoachMatch) =>
+    match?.entry.kind === "product"
+      ? chooseVariantForPreferences(
+          match.entry.item.productId,
+          preferences?.scentPreference ?? null
+        )
+      : undefined;
+
+  const mainVariant = pickVariantForMatch(mainMatch);
+  const lighterVariant = pickVariantForMatch(lighterMatch);
+
   const intensityLabel = getIntensityLabel(t, intensity);
 
   const mainFocusLabel =
@@ -209,15 +208,16 @@ export default function RitualCoachPage() {
       return [createBundleCartItem(mainMatch.entry.item)];
     }
     const detail = mainMatch.entry.item;
-    return [createProductCartItem(detail)];
-  }, [mainMatch]);
+    const payload = buildProductCartPayload(detail, mainVariant?.variantId);
+    return [{ ...payload, quantity: 1 }];
+  }, [mainMatch, mainVariant]);
 
   const handleAddMain = () => {
     if (!mainMatch) return;
     if (mainMatch.entry.kind === "bundle") {
       addBundleToCart(mainMatch.entry.item);
     } else {
-      addItem(createProductCartItem(mainMatch.entry.item));
+      addItem(buildProductCartPayload(mainMatch.entry.item, mainVariant?.variantId));
     }
   };
 
@@ -235,8 +235,8 @@ export default function RitualCoachPage() {
     );
   };
 
-  const handleAddProduct = (detail: ProductDetailContent) => {
-    addItem(createProductCartItem(detail));
+  const handleAddProduct = (detail: ProductDetailContent, variantId?: string) => {
+    addItem(buildProductCartPayload(detail, variantId));
   };
 
   const mainExplanation = formatTemplate(
@@ -362,6 +362,9 @@ export default function RitualCoachPage() {
                     <BundleCard
                       bundle={mainMatch.entry.item}
                       heroImage={getBundleHeroImage(mainMatch.entry.item.id)}
+                      onAddBundle={(bundleItem, variantSelection) =>
+                        addBundleToCart(bundleItem, variantSelection)
+                      }
                     />
                   ) : (
                     <Card className="ritual-coach-product-card">
@@ -373,13 +376,18 @@ export default function RitualCoachPage() {
                           />
                         </div>
                       )}
-                      <div className="ritual-coach-product-card__body">
-                        <h4>{mainMatch.entry.item.productName}</h4>
-                        <p>{mainMatch.entry.item.shortTagline}</p>
-                        {mainMatch.entry.item.priceLabel && (
-                          <p className="ritual-coach-product-card__price">
-                            {mainMatch.entry.item.priceLabel}
-                          </p>
+                    <div className="ritual-coach-product-card__body">
+                      <h4>{mainMatch.entry.item.productName}</h4>
+                      <p>{mainMatch.entry.item.shortTagline}</p>
+                      {mainVariant?.label && (
+                        <p className="ritual-coach-product-card__variant">
+                          {mainVariant.label}
+                        </p>
+                      )}
+                      {mainMatch.entry.item.priceLabel && (
+                        <p className="ritual-coach-product-card__price">
+                          {mainMatch.entry.item.priceLabel}
+                        </p>
                         )}
                       </div>
                     </Card>
@@ -418,21 +426,28 @@ export default function RitualCoachPage() {
                       />
                     </div>
                   )}
-                  <div className="ritual-coach-product-card__body">
-                    <h4>{lighterMatch.entry.item.productName}</h4>
-                    <p>{lighterMatch.entry.item.shortTagline}</p>
-                    {lighterMatch.entry.item.priceLabel && (
-                      <p className="ritual-coach-product-card__price">
-                        {lighterMatch.entry.item.priceLabel}
-                      </p>
-                    )}
-                    <Button
-                      variant="secondary"
-                      size="md"
-                      onClick={() => handleAddProduct(lighterMatch.entry.item)}
-                    >
-                      {t("cta.addToBag")}
-                    </Button>
+                    <div className="ritual-coach-product-card__body">
+                      <h4>{lighterMatch.entry.item.productName}</h4>
+                      <p>{lighterMatch.entry.item.shortTagline}</p>
+                      {lighterVariant?.label && (
+                        <p className="ritual-coach-product-card__variant">
+                          {lighterVariant.label}
+                        </p>
+                      )}
+                      {lighterMatch.entry.item.priceLabel && (
+                        <p className="ritual-coach-product-card__price">
+                          {lighterMatch.entry.item.priceLabel}
+                        </p>
+                      )}
+                      <Button
+                        variant="secondary"
+                        size="md"
+                        onClick={() =>
+                          handleAddProduct(lighterMatch.entry.item, lighterVariant?.variantId)
+                        }
+                      >
+                        {t("cta.addToBag")}
+                      </Button>
                   </div>
                 </Card>
               </div>
@@ -450,8 +465,13 @@ export default function RitualCoachPage() {
               <div className="ritual-coach-treats__grid">
                 {treats.map((treat) => {
                   const detail = treat.entry.item;
+                  const variant = chooseVariantForPreferences(
+                    detail.productId,
+                    preferences?.scentPreference ?? null
+                  );
+                  const cardKey = `${detail.productId}-${variant?.variantId ?? "default"}`;
                   return (
-                    <Card key={detail.productId} className="ritual-coach-treat-card">
+                    <Card key={cardKey} className="ritual-coach-treat-card">
                       {detail.heroImage && (
                         <div className="ritual-coach-product-card__media">
                           <img src={detail.heroImage} alt={detail.productName} />
@@ -460,6 +480,9 @@ export default function RitualCoachPage() {
                       <div className="ritual-coach-product-card__body">
                         <h4>{detail.productName}</h4>
                         <p>{detail.shortTagline}</p>
+                        {variant?.label && (
+                          <p className="ritual-coach-product-card__variant">{variant.label}</p>
+                        )}
                         {detail.priceLabel && (
                           <p className="ritual-coach-product-card__price">
                             {detail.priceLabel}
@@ -468,7 +491,7 @@ export default function RitualCoachPage() {
                         <Button
                           variant="secondary"
                           size="md"
-                          onClick={() => handleAddProduct(detail)}
+                          onClick={() => handleAddProduct(detail, variant?.variantId)}
                         >
                           {t("cta.addToBag")}
                         </Button>

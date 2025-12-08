@@ -7,6 +7,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { addOrder } from "@/utils/orderStorage";
 import type { LocalOrder, ShippingMethod } from "@/types/localOrder";
 import { useTranslation, type AppTranslationKey } from "@/localization/locale";
+import { formatVariantMeta } from "@/utils/variantDisplay";
 
 const SHIPPING_OPTIONS = [
   { id: "standard", cost: 45 },
@@ -431,8 +432,52 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                       <div key={item.id} className="checkout-review__item">
                         <div>
                           <strong>{renderItemLabel(item)}</strong>
-                          {item.variantLabel && (
-                            <p className="checkout-review__meta">{item.variantLabel}</p>
+                          {formatVariantMeta(item.variantLabel, item.variantAttributes) && (
+                            <p className="checkout-review__meta">
+                              {formatVariantMeta(item.variantLabel, item.variantAttributes)}
+                            </p>
+                          )}
+                          {item.bundleItems && item.bundleItems.length > 0 && (
+                            <ul className="checkout-review__sub-items">
+                              {item.bundleItems.map((bundleItem) => {
+                                const bundleVariant = formatVariantMeta(
+                                  bundleItem.variantLabel,
+                                  bundleItem.variantAttributes
+                                );
+                                return (
+                                  <li key={`${item.bundleId}-${bundleItem.productId}`}>
+                                    <span>
+                                      {bundleItem.name} × {bundleItem.quantity}
+                                    </span>
+                                    {bundleVariant && (
+                                      <small className="checkout-review__sub-meta">
+                                        {bundleVariant}
+                                      </small>
+                                    )}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          )}
+                          {item.giftBox?.items && item.giftBox.items.length > 0 && (
+                            <ul className="checkout-review__sub-items">
+                              {item.giftBox.items.map((giftItem) => {
+                                const giftVariant = formatVariantMeta(
+                                  giftItem.variantLabel,
+                                  giftItem.variantAttributes
+                                );
+                                return (
+                                  <li key={`${item.id}-${giftItem.productId}`}>
+                                    <span>{giftItem.name}</span>
+                                    {giftVariant && (
+                                      <small className="checkout-review__sub-meta">
+                                        {giftVariant}
+                                      </small>
+                                    )}
+                                  </li>
+                                );
+                              })}
+                            </ul>
                           )}
                         </div>
                         <div>

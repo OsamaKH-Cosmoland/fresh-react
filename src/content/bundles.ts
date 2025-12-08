@@ -23,7 +23,7 @@ export const ritualBundles: RitualBundle[] = [
     highlight: "Includes travel-ready body and hand balms for ritual layering.",
     featured: true,
     products: [
-      { productId: "body-balm" },
+      { productId: "body-balm", variantId: "body-balm-lavender" },
       { productId: "calm-glow-body-soap" },
       { productId: "hand-balm" },
     ],
@@ -37,7 +37,7 @@ export const ritualBundles: RitualBundle[] = [
     tagline: "Polish and seal for luminous skin.",
     description: "Gentle cleansing meets concentrated butter to deliver dew without weight.",
     products: [
-      { productId: "body-balm" },
+      { productId: "body-balm", variantId: "body-balm-silk" },
       { productId: "silk-blossom-body-soap" },
     ],
     bundlePriceNumber: 399.99,
@@ -51,7 +51,7 @@ export const ritualBundles: RitualBundle[] = [
     description: "Stem cells and silk-like oils team up to support resilient, glossy hair.",
     featured: true,
     products: [
-      { productId: "hair-growth-oil" },
+      { productId: "hair-growth-oil", variantId: "hair-growth-strength" },
       { productId: "hair-shine-anti-frizz-oil" },
     ],
     bundlePriceNumber: 389.99,

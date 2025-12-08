@@ -1,16 +1,20 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button, Card } from "@/components/ui";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
 import { RitualBundle } from "@/content/bundles";
-import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
+import {
+  PRODUCT_DETAIL_MAP,
+  getDefaultVariant,
+  getProductVariants,
+} from "@/content/productDetails";
 import { getBundlePricing } from "@/content/bundlePricing";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
 
 export interface BundleCardProps {
   bundle: RitualBundle;
-  onAddBundle?: (bundle: RitualBundle) => void;
+  onAddBundle?: (bundle: RitualBundle, variantSelection?: Record<string, string>) => void;
   onViewDetails?: (bundle: RitualBundle) => void;
   heroImage?: string;
 }
@@ -21,6 +25,29 @@ export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: Bu
   const bundlePriceDisplay = bundle.bundlePriceLabel ?? formatCurrency(pricing.bundlePrice);
   const compareAtDisplay = formatCurrency(pricing.compareAt);
   const savingsDisplay = formatCurrency(pricing.savingsAmount);
+  const initialVariantSelection = () => {
+    const fallback: Record<string, string> = {};
+    bundle.products.forEach((entry) => {
+      const variantId = entry.variantId ?? getDefaultVariant(entry.productId)?.variantId;
+      if (variantId) {
+        fallback[entry.productId] = variantId;
+      }
+    });
+    return fallback;
+  };
+
+  const [variantSelection, setVariantSelection] = useState<Record<string, string>>(
+    initialVariantSelection
+  );
+
+  useEffect(() => {
+    setVariantSelection(initialVariantSelection());
+  }, [bundle.id]);
+
+  const hasVariantProducts = useMemo(
+    () => bundle.products.filter((entry) => getProductVariants(entry.productId).length > 0),
+    [bundle.products]
+  );
   return (
     <Card className="bundle-card hover-lift" data-animate="fade-up">
       <CompareToggle id={bundle.id} type="bundle" />
@@ -43,6 +70,39 @@ export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: Bu
           return <li key={entry.productId}>{name}</li>;
         })}
       </ul>
+      {hasVariantProducts.length > 0 && (
+        <div className="bundle-card__variant-grid">
+          {hasVariantProducts.map((entry) => {
+            const variantOptions = getProductVariants(entry.productId);
+            if (!variantOptions.length) {
+              return null;
+            }
+            const selectedValue =
+              variantSelection[entry.productId] ?? variantOptions[0]?.variantId ?? "";
+            const label = PRODUCT_DETAIL_MAP[entry.productId]?.productName ?? entry.productId;
+            return (
+              <label key={entry.productId} className="bundle-card__variant-control">
+                <span>{label}</span>
+                <select
+                  value={selectedValue}
+                  onChange={(event) =>
+                    setVariantSelection((prev) => ({
+                      ...prev,
+                      [entry.productId]: event.target.value,
+                    }))
+                  }
+                >
+                  {variantOptions.map((variant) => (
+                    <option key={variant.variantId} value={variant.variantId}>
+                      {variant.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            );
+          })}
+        </div>
+      )}
       <div className="bundle-card__pricing">
         <span className="bundle-card__price">{bundlePriceDisplay}</span>
         {pricing.compareAt > pricing.bundlePrice && (
@@ -58,7 +118,11 @@ export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: Bu
 
       <div className="bundle-card__actions">
         {onAddBundle && (
-          <Button variant="primary" size="md" onClick={() => onAddBundle(bundle)}>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => onAddBundle(bundle, variantSelection)}
+          >
             {t("cta.addRitualToBag")}
           </Button>
         )}

@@ -9,7 +9,13 @@ import {
   GIFT_BOX_MAX_PRODUCTS,
   GIFT_BOX_MIN_PRODUCTS,
 } from "@/content/giftBoxes";
-import { PRODUCT_DETAIL_CONFIGS, type ProductDetailContent } from "@/content/productDetails";
+import {
+  PRODUCT_DETAIL_CONFIGS,
+  getDefaultVariant,
+  getProductVariants,
+  getVariantById,
+  type ProductDetailContent,
+} from "@/content/productDetails";
 import { formatCurrency } from "@/utils/formatCurrency";
 
 const steps = [
@@ -25,6 +31,7 @@ export default function GiftBuilderPage() {
   const [selectedStyleId, setSelectedStyleId] = useState<string>(giftBoxStyles[0]?.id ?? "");
   const [selectedProducts, setSelectedProducts] = useState<ProductDetailContent[]>([]);
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
   const [note, setNote] = useState("");
   const [success, setSuccess] = useState<string | null>(null);
   const { addItem } = useCart();
@@ -33,13 +40,23 @@ export default function GiftBuilderPage() {
 
   const toggleProduct = (product: ProductDetailContent) => {
     setSuccess(null);
-    setSelectedProducts((prev) => {
-      const exists = prev.some((entry) => entry.productId === product.productId);
-      if (exists) {
-        return prev.filter((entry) => entry.productId !== product.productId);
-      }
-      if (prev.length >= GIFT_BOX_MAX_PRODUCTS) return prev;
-      return [...prev, product];
+    const exists = selectedProducts.some((entry) => entry.productId === product.productId);
+    if (exists) {
+      setSelectedProducts((prev) => prev.filter((entry) => entry.productId !== product.productId));
+      setSelectedVariants((prev) => {
+        const next = { ...prev };
+        delete next[product.productId];
+        return next;
+      });
+      return;
+    }
+    if (selectedProducts.length >= GIFT_BOX_MAX_PRODUCTS) return;
+    setSelectedProducts((prev) => [...prev, product]);
+    setSelectedVariants((prev) => {
+      if (prev[product.productId]) return prev;
+      const defaultVariantId = getDefaultVariant(product.productId)?.variantId;
+      if (!defaultVariantId) return prev;
+      return { ...prev, [product.productId]: defaultVariantId };
     });
   };
 
@@ -51,8 +68,16 @@ export default function GiftBuilderPage() {
   };
 
   const productTotal = useMemo(
-    () => selectedProducts.reduce((sum, product) => sum + product.priceNumber, 0),
-    [selectedProducts]
+    () =>
+      selectedProducts.reduce((sum, product) => {
+        const variantId = selectedVariants[product.productId];
+        const variant =
+          (variantId && getVariantById(product.productId, variantId)) ??
+          getDefaultVariant(product.productId);
+        const price = variant?.priceNumber ?? product.priceNumber;
+        return sum + price;
+      }, 0),
+    [selectedProducts, selectedVariants]
   );
 
   const addOnTotal = useMemo(
@@ -97,12 +122,22 @@ export default function GiftBuilderPage() {
         addons: selectedAddOns.map(
           (addOnId) => giftAddOns.find((entry) => entry.id === addOnId)?.label ?? ""
         ),
-        items: selectedProducts.map((product) => ({
-          productId: product.productId,
-          name: product.productName,
-          price: product.priceNumber,
-          quantity: 1,
-        })),
+        items: selectedProducts.map((product) => {
+          const variantId = selectedVariants[product.productId];
+          const variant =
+            (variantId && getVariantById(product.productId, variantId)) ??
+            getDefaultVariant(product.productId);
+          const price = variant?.priceNumber ?? product.priceNumber;
+          return {
+            productId: product.productId,
+            name: product.productName,
+            price,
+            quantity: 1,
+            variantId: variant?.variantId,
+            variantLabel: variant?.label,
+            variantAttributes: variant?.attributes,
+          };
+        }),
         boxPrice: currentStyle.price,
         addonsPrice: addOnTotal,
       },
@@ -150,6 +185,9 @@ export default function GiftBuilderPage() {
                 (entry) => entry.productId === product.productId
               );
               const disabled = !selected && selectedProducts.length >= GIFT_BOX_MAX_PRODUCTS;
+              const variantOptions = getProductVariants(product.productId);
+              const defaultVariant =
+                selectedVariants[product.productId] ?? variantOptions[0]?.variantId ?? "";
               return (
                 <Card
                   key={product.productId}
@@ -161,6 +199,26 @@ export default function GiftBuilderPage() {
                     <span>{formatCurrency(product.priceNumber)}</span>
                   </div>
                   <p className="gift-builder-product__tagline">{product.shortTagline}</p>
+                  {variantOptions.length > 0 && (
+                    <label className="gift-builder-product__variant">
+                      <span>Choose a variant</span>
+                      <select
+                        value={defaultVariant}
+                        onChange={(event) =>
+                          setSelectedVariants((prev) => ({
+                            ...prev,
+                            [product.productId]: event.target.value,
+                          }))
+                        }
+                      >
+                        {variantOptions.map((variant) => (
+                          <option key={variant.variantId} value={variant.variantId}>
+                            {variant.label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
                   <Button
                     variant={selected ? "secondary" : "ghost"}
                     size="sm"

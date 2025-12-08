@@ -2,7 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, SectionTitle } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
 import { ProductDetailLayout } from "@/components/product/ProductDetailLayout";
-import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
+import {
+  PRODUCT_DETAIL_MAP,
+  getDefaultVariant,
+  getProductVariants,
+} from "@/content/productDetails";
 import { recordView } from "@/hooks/useRecentlyViewed";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { ritualBundles } from "@/content/bundles";
@@ -12,6 +16,7 @@ import { useTranslation } from "@/localization/locale";
 import { ReviewForm } from "@/components/reviews/ReviewForm";
 import { ReviewList } from "@/components/reviews/ReviewList";
 import { ReviewSummary } from "@/components/reviews/ReviewSummary";
+import { buildProductCartPayload } from "@/utils/productVariantUtils";
 
 export interface ProductDetailPageProps {
   slug: string;
@@ -37,12 +42,8 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
     recordView(detail.productId, "product");
   }, [detail]);
 
-  const variantPool = detail?.variants ?? [];
-  const defaultVariantId = useMemo(() => {
-    if (!detail?.variants || detail.variants.length === 0) return undefined;
-    const preferred = detail.variants.find((variant) => variant.variantId === detail.defaultVariantId);
-    return preferred?.variantId ?? detail.variants[0].variantId;
-  }, [detail?.variants, detail?.defaultVariantId]);
+  const variantPool = useMemo(() => getProductVariants(productId), [productId]);
+  const defaultVariantId = useMemo(() => getDefaultVariant(productId)?.variantId, [productId]);
 
   useEffect(() => {
     setSelectedVariantId(defaultVariantId);
@@ -53,18 +54,8 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
 
   const addToBag = useCallback(() => {
     if (!detail || priceNumber <= 0) return;
-    const variantPrice = selectedVariant?.priceNumber ?? detail.priceNumber;
-    addItem({
-      productId: detail.productId,
-      id: selectedVariant?.variantId ?? detail.productId,
-      name: detail.productName,
-      price: variantPrice,
-      imageUrl: detail.heroImage,
-      variantId: selectedVariant?.variantId,
-      variantLabel: selectedVariant?.label,
-      variantAttributes: selectedVariant?.attributes,
-    });
-  }, [addItem, detail, priceNumber, selectedVariant]);
+    addItem(buildProductCartPayload(detail, selectedVariantId));
+  }, [addItem, detail, priceNumber, selectedVariantId]);
 
   const goToCollection = useCallback(() => {
     const base = import.meta.env.BASE_URL ?? "/";
@@ -131,7 +122,9 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
               <BundleCard
                 key={bundle.id}
                 bundle={bundle}
-                onAddBundle={addBundleToCart}
+                onAddBundle={(bundleItem, variantSelection) =>
+                  addBundleToCart(bundleItem, variantSelection)
+                }
               />
             ))}
           </div>

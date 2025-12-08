@@ -10,6 +10,7 @@ import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { getRitualGuideBySlug } from "@/content/ritualGuides";
 import { shopFocusLookup } from "@/content/shopCatalog";
 import { useTranslation } from "@/localization/locale";
+import { buildProductCartPayload } from "@/utils/productVariantUtils";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -138,18 +139,10 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
                       </div>
                       <p className="shop-product-card__tagline">{detail.shortTagline}</p>
                         <div className="shop-product-card__actions">
-                            <Button
-                              variant="primary"
-                              size="md"
-                              onClick={() =>
-                                addItem({
-                                  productId: detail.productId,
-                                  id: detail.productId,
-                                  name: detail.productName,
-                                  price: detail.priceNumber,
-                                  imageUrl: detail.heroImage,
-                                })
-                            }
+                          <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => addItem(buildProductCartPayload(detail))}
                           >
                             {t("cta.addToBag")}
                           </Button>
@@ -170,12 +163,14 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
             {relatedBundles.length > 0 && (
             <div className="ritual-guide-bundles ng-grid-mobile-2">
                 {relatedBundles.map((bundle) => (
-                  <BundleCard
-                    key={bundle.id}
-                    bundle={bundle}
-                    onAddBundle={addBundleToCart}
-                    heroImage={getBundleHeroImage(bundle.id)}
-                  />
+                    <BundleCard
+                      key={bundle.id}
+                      bundle={bundle}
+                      onAddBundle={(bundleItem, variantSelection) =>
+                        addBundleToCart(bundleItem, variantSelection)
+                      }
+                      heroImage={getBundleHeroImage(bundle.id)}
+                    />
                 ))}
               </div>
             )}

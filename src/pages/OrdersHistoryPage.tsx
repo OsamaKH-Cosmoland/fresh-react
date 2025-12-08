@@ -6,6 +6,7 @@ import { readOrders } from "@/utils/orderStorage";
 import type { LocalOrder } from "@/types/localOrder";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
+import { formatVariantMeta } from "@/utils/variantDisplay";
 
 const navigateToPath = (path: string) => {
   const base = import.meta.env.BASE_URL ?? "/";
@@ -113,16 +114,69 @@ export default function OrdersHistoryPage() {
                       </div>
                       <div>
                         <strong>{t("ordersHistory.detail.items")}</strong>
-                        <ul className="orders-history-card__item-list">
-                          {order.items.map((item) => (
-                            <li key={`${order.id}-${item.id}`}>
-                              <span>{formatItemLabel(item, t)}</span>
-                              <span>
-                                {item.quantity} × {formatCurrency(item.price)}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
+                          <ul className="orders-history-card__item-list">
+                            {order.items.map((item) => {
+                              const itemVariant = formatVariantMeta(
+                                item.variantLabel,
+                                item.variantAttributes
+                              );
+                              return (
+                                <li key={`${order.id}-${item.id}`}>
+                                  <div>
+                                    <span>{formatItemLabel(item, t)}</span>
+                                    {itemVariant && (
+                                      <p className="orders-history-card__variant">{itemVariant}</p>
+                                    )}
+                                    {item.bundleItems && item.bundleItems.length > 0 && (
+                                      <ul className="orders-history-card__sub-items">
+                                        {item.bundleItems.map((bundleItem) => {
+                                          const bundleVariant = formatVariantMeta(
+                                            bundleItem.variantLabel,
+                                            bundleItem.variantAttributes
+                                          );
+                                          return (
+                                            <li key={`${item.bundleId}-${bundleItem.productId}`}>
+                                              <span>
+                                                {bundleItem.name} × {bundleItem.quantity}
+                                              </span>
+                                              {bundleVariant && (
+                                                <small className="orders-history-card__sub-meta">
+                                                  {bundleVariant}
+                                                </small>
+                                              )}
+                                            </li>
+                                          );
+                                        })}
+                                      </ul>
+                                    )}
+                                    {item.giftBox?.items && item.giftBox.items.length > 0 && (
+                                      <ul className="orders-history-card__sub-items">
+                                        {item.giftBox.items.map((giftItem) => {
+                                          const giftVariant = formatVariantMeta(
+                                            giftItem.variantLabel,
+                                            giftItem.variantAttributes
+                                          );
+                                          return (
+                                            <li key={`${item.id}-${giftItem.productId}`}>
+                                              <span>{giftItem.name}</span>
+                                              {giftVariant && (
+                                                <small className="orders-history-card__sub-meta">
+                                                  {giftVariant}
+                                                </small>
+                                              )}
+                                            </li>
+                                          );
+                                        })}
+                                      </ul>
+                                    )}
+                                  </div>
+                                  <span>
+                                    {item.quantity} × {formatCurrency(item.price)}
+                                  </span>
+                                </li>
+                              );
+                            })}
+                          </ul>
                       </div>
                     </div>
                   )}
