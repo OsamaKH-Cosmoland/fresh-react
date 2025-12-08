@@ -1911,6 +1911,9 @@ button:hover {
   border-bottom: 1px solid rgba(245, 220, 168, 0.2);
   color: #f5dca8;
   padding: 0.65rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 60;
 }
 .navbar-scrolled {
   background: rgba(3, 15, 10, 0.8);
