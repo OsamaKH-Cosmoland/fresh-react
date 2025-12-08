@@ -8,19 +8,22 @@ import { initParallaxHero } from "./utils/parallaxHero";
 import { initScrollAnimations } from "./utils/scrollAnimations";
 import { FavoritesProvider } from "./favorites/favoritesStore";
 import { CompareProvider } from "./compare/compareStore";
+import { LocaleProvider } from "@/localization/locale";
 
 const rootEl = document.getElementById("root");
 
 if (rootEl) {
   createRoot(rootEl).render(
     <StrictMode>
-      <CartProvider>
-        <FavoritesProvider>
-          <CompareProvider>
-            <App />
-          </CompareProvider>
-        </FavoritesProvider>
-      </CartProvider>
+        <LocaleProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              <CompareProvider>
+                <App />
+              </CompareProvider>
+            </FavoritesProvider>
+          </CartProvider>
+        </LocaleProvider>
     </StrictMode>
   );
   initScrollAnimations();

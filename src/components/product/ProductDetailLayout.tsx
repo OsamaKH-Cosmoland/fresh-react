@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Card, SectionTitle } from "@/components/ui";
+import { useTranslation } from "@/localization/locale";
 
 export type HeroSummaryBullet = string;
 
@@ -23,12 +24,21 @@ export interface FAQItem {
   answer: string;
 }
 
+export interface ProductVariant {
+  variantId: string;
+  label: string;
+  priceLabel: string;
+  priceNumber: number;
+  attributes: Record<string, string>;
+}
+
 export interface ProductDetailLayoutProps {
   productName: string;
   shortTagline: string;
   heroSummaryBullets: HeroSummaryBullet[];
   heroImage?: string;
   priceLabel?: string;
+  priceNumber: number;
   whatItsMadeFor: string;
   ritualSteps: RitualStep[];
   ingredients: IngredientHighlight[];
@@ -37,6 +47,9 @@ export interface ProductDetailLayoutProps {
   faq?: FAQItem[];
   onAddToBag: () => void;
   heroActions?: React.ReactNode;
+  variants?: ProductVariant[];
+  selectedVariantId?: string;
+  onVariantChange?: (variantId: string) => void;
 }
 
 export function ProductDetailLayout({
@@ -53,15 +66,53 @@ export function ProductDetailLayout({
   faq,
   onAddToBag,
   heroActions,
+  variants,
+  selectedVariantId,
+  onVariantChange,
 }: ProductDetailLayoutProps) {
+  const { t } = useTranslation();
+  const selectedVariant = variants?.find((variant) => variant.variantId === selectedVariantId);
+  const displayPriceLabel = selectedVariant?.priceLabel ?? priceLabel;
+  const variantDescriptor = selectedVariant
+    ? Object.values(selectedVariant.attributes).filter(Boolean).join(" · ")
+    : "";
+  const hasVariants = Boolean(variants && variants.length);
   return (
     <main className="product-detail-page">
-      <section className="product-detail-hero" data-animate="fade-up">
-        <div className="product-detail-hero__copy">
+      <div className="ng-mobile-shell">
+        <section className="product-detail-hero" data-animate="fade-up">
+          <div className="product-detail-hero__copy">
           <p className="product-detail-hero__tagline">{shortTagline}</p>
           <h1 className="product-detail-hero__title">{productName}</h1>
-          {priceLabel && (
-            <p className="product-detail-hero__price">{priceLabel}</p>
+          {displayPriceLabel && (
+            <p className="product-detail-hero__price">{displayPriceLabel}</p>
+          )}
+          {selectedVariant && (
+            <p className="product-detail-hero__variant">
+              {selectedVariant.label}
+              {variantDescriptor ? ` · ${variantDescriptor}` : ""}
+            </p>
+          )}
+          {hasVariants && (
+            <div className="product-detail-variant-selector">
+              {variants?.map((variant) => {
+                const attributesLabel = Object.values(variant.attributes)
+                  .filter(Boolean)
+                  .join(" · ");
+                const isActive = variant.variantId === selectedVariant?.variantId;
+                return (
+                  <button
+                    type="button"
+                    key={variant.variantId}
+                    className={`product-detail-variant-option${isActive ? " is-active" : ""}`}
+                    onClick={() => onVariantChange?.(variant.variantId)}
+                  >
+                    <span>{variant.label}</span>
+                    {attributesLabel && <small>{attributesLabel}</small>}
+                  </button>
+                );
+              })}
+            </div>
           )}
           <ul className="product-detail-hero__bullets">
             {heroSummaryBullets.map((bullet) => (
@@ -73,7 +124,7 @@ export function ProductDetailLayout({
           </ul>
           <div className="product-detail-hero__actions">
             <Button variant="primary" size="lg" onClick={onAddToBag}>
-              Add to bag
+              {t("cta.addToBag")}
             </Button>
             {heroActions}
           </div>
@@ -83,10 +134,10 @@ export function ProductDetailLayout({
             <img src={heroImage} alt={productName} />
           </figure>
         )}
-      </section>
+        </section>
 
-      <section className="product-detail-grid">
-        <div className="product-detail-main">
+        <section className="product-detail-grid">
+          <div className="product-detail-main">
           <article className="product-detail-section" data-animate="fade-up">
             <SectionTitle title="What it’s made for" />
             <p className="product-detail-section__copy">{whatItsMadeFor}</p>
@@ -155,16 +206,19 @@ export function ProductDetailLayout({
           <Card className="product-detail-aside__card">
             <p className="product-detail-aside__label">Order this ritual</p>
             <h3>{productName}</h3>
-            {priceLabel && <p className="product-detail-aside__price">{priceLabel}</p>}
+            {displayPriceLabel && (
+              <p className="product-detail-aside__price">{displayPriceLabel}</p>
+            )}
             <p className="product-detail-aside__hint">
               Crafted for nightly calm and a luminous morning finish.
             </p>
             <Button variant="secondary" size="lg" onClick={onAddToBag}>
-              Add to bag
+              {t("cta.addToBag")}
             </Button>
           </Card>
         </aside>
-      </section>
+        </section>
+      </div>
     </main>
   );
 }

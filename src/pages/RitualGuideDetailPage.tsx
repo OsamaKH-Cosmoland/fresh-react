@@ -9,6 +9,7 @@ import { ritualBundles } from "@/content/bundles";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { getRitualGuideBySlug } from "@/content/ritualGuides";
 import { shopFocusLookup } from "@/content/shopCatalog";
+import { useTranslation } from "@/localization/locale";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -27,6 +28,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
   const guide = useMemo(() => getRitualGuideBySlug(slug), [slug]);
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
+  const { t } = useTranslation();
 
   const relatedProducts = useMemo(
     () =>
@@ -49,7 +51,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
       <div className="ritual-guide-detail-page">
         <Navbar sticky onMenuToggle={() => setSidebarOpen(true)} showSectionLinks={false} />
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="ritual-guide-detail-page__content">
+        <main className="ritual-guide-detail-page__content ng-mobile-shell">
           <SectionTitle title="Guide not found" align="center" />
           <p>The ritual you are seeking has not yet been written.</p>
         </main>
@@ -67,7 +69,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
       <Navbar sticky onMenuToggle={() => setSidebarOpen(true)} showSectionLinks={false} />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="ritual-guide-detail-page__content">
+      <main className="ritual-guide-detail-page__content ng-mobile-shell">
         <section className="ritual-guide-hero" data-animate="fade-up">
           <div className="ritual-guide-hero__copy">
             <div className="ritual-guide-hero__tags">
@@ -116,7 +118,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
             </div>
 
             {relatedProducts.length > 0 && (
-              <div className="ritual-guide-products">
+          <div className="ritual-guide-products ng-grid-mobile-2">
                 {relatedProducts.map((detail) => (
                   <Card
                     key={detail.productId}
@@ -135,27 +137,27 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
                         )}
                       </div>
                       <p className="shop-product-card__tagline">{detail.shortTagline}</p>
-                      <div className="shop-product-card__actions">
-                        <Button
-                          variant="primary"
-                          size="md"
-                          onClick={() =>
-                            addItem({
-                              id: detail.productId,
-                              name: detail.productName,
-                              price: detail.priceNumber,
-                              imageUrl: detail.heroImage,
-                            })
-                          }
-                        >
-                          Add to bag
-                        </Button>
+                        <div className="shop-product-card__actions">
+                          <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() =>
+                              addItem({
+                                id: detail.productId,
+                                name: detail.productName,
+                                price: detail.priceNumber,
+                                imageUrl: detail.heroImage,
+                              })
+                            }
+                          >
+                            {t("cta.addToBag")}
+                          </Button>
                         <button
                           type="button"
                           className="shop-product-card__link"
                           onClick={() => navigateTo(`/products/${detail.slug}`)}
                         >
-                          View ritual
+                          {t("cta.viewRitual")}
                         </button>
                       </div>
                     </div>
@@ -165,7 +167,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
             )}
 
             {relatedBundles.length > 0 && (
-              <div className="ritual-guide-bundles">
+            <div className="ritual-guide-bundles ng-grid-mobile-2">
                 {relatedBundles.map((bundle) => (
                   <BundleCard
                     key={bundle.id}

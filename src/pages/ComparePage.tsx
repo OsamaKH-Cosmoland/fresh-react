@@ -7,6 +7,7 @@ import { useBundleActions } from "@/cart/cartBundles";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { getCompareProductConfig, getCompareBundleConfig } from "@/content/compareCatalog";
 import { ritualBundles, type RitualBundle } from "@/content/bundles";
+import { useTranslation } from "@/localization/locale";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -35,6 +36,7 @@ export default function ComparePage() {
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const entries = listCompared();
+  const { t } = useTranslation();
 
   const columns = useMemo<CompareColumn[]>(
     () =>
@@ -96,7 +98,7 @@ export default function ComparePage() {
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="shop-page__content">
+      <main className="shop-page__content ng-mobile-shell">
         <SectionTitle
           title="Compare rituals & products"
           subtitle="Line up focus, textures, and prices to decide the perfect ritual."
@@ -105,19 +107,19 @@ export default function ComparePage() {
 
         <div className="compare-controls">
           <Button variant="ghost" size="md" onClick={() => clearCompare()} disabled={!hasColumns}>
-            Clear all
+            {t("cta.clearAll")}
           </Button>
           <Button
             variant="secondary"
             size="md"
             onClick={() => navigateTo("/shop")}
           >
-            Back to shop
+            {t("cta.backToShop")}
           </Button>
         </div>
 
         {hasColumns ? (
-          <section className="compare-grid">
+          <section className="compare-grid ng-grid-mobile-2">
             {columns.map((column) => (
               <Card key={`${column.type}-${column.id}`} className="compare-column">
                 {column.heroImage && (
@@ -183,7 +185,7 @@ export default function ComparePage() {
                         })
                       }
                     >
-                      Add to bag
+                      {t("cta.addToBag")}
                     </Button>
                   )}
                   {column.type === "bundle" && column.bundle && (
@@ -192,7 +194,7 @@ export default function ComparePage() {
                       size="md"
                       onClick={() => addBundleToCart(column.bundle)}
                     >
-                      Add ritual to bag
+                      {t("cta.addRitualToBag")}
                     </Button>
                   )}
                   <Button
@@ -204,7 +206,7 @@ export default function ComparePage() {
                       )
                     }
                   >
-                    View details
+                    {t("cta.viewDetails")}
                   </Button>
                 </div>
               </Card>

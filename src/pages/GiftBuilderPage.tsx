@@ -117,7 +117,7 @@ export default function GiftBuilderPage() {
   const stepContent = () => {
     if (currentStep === 1) {
       return (
-        <div className="gift-builder__styles">
+        <div className="gift-builder__styles ng-grid-mobile-2">
           {giftBoxStyles.map((style) => (
             <Card
               key={style.id}
@@ -144,7 +144,7 @@ export default function GiftBuilderPage() {
           <p className="gift-builder__hint">
             Choose {GIFT_BOX_MIN_PRODUCTS}–{GIFT_BOX_MAX_PRODUCTS} products to go inside your box.
           </p>
-          <div className="gift-builder__products">
+          <div className="gift-builder__products ng-grid-mobile-2">
             {PRODUCT_DETAIL_CONFIGS.map((product) => {
               const selected = selectedProducts.some(
                 (entry) => entry.productId === product.productId
@@ -180,7 +180,7 @@ export default function GiftBuilderPage() {
     if (currentStep === 3) {
       return (
         <>
-          <div className="gift-builder-addons">
+          <div className="gift-builder-addons ng-grid-mobile-2">
             {giftAddOns.map((addOn) => {
               const selected = selectedAddOns.includes(addOn.id);
               return (
@@ -273,7 +273,7 @@ export default function GiftBuilderPage() {
       <Navbar sticky onMenuToggle={() => setSidebarOpen(true)} showSectionLinks={false} />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="gift-builder-page__content">
+      <main className="gift-builder-page__content ng-mobile-shell">
         <SectionTitle
           title="Build your gift"
           subtitle="Curate a custom box and let us wrap it with calm intention."

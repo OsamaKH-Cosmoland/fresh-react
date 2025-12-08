@@ -9,6 +9,7 @@ import type {
   IngredientHighlight,
   Pairing,
   ProductDetailLayoutProps,
+  ProductVariant,
   RitualStep,
 } from "@/components/product/ProductDetailLayout";
 
@@ -16,6 +17,8 @@ export interface ProductDetailContent extends Omit<ProductDetailLayoutProps, "on
   slug: string;
   productId: string;
   priceNumber: number;
+  variants?: ProductVariant[];
+  defaultVariantId?: string;
 }
 
 const createPairings = (items: Pairing[]): Pairing[] => items;
@@ -28,6 +31,39 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     shortTagline: "Deep moisture for skin that craves calm.",
     priceLabel: "197.99 EGP",
     priceNumber: 197.99,
+    variants: [
+      {
+        variantId: "body-balm-lavender",
+        label: "Lavender Bloom",
+        priceLabel: "197.99 EGP",
+        priceNumber: 197.99,
+        attributes: {
+          scent: "Lavender",
+          size: "50 ml",
+        },
+      },
+      {
+        variantId: "body-balm-unscented",
+        label: "Unscented Calm",
+        priceLabel: "195.99 EGP",
+        priceNumber: 195.99,
+        attributes: {
+          scent: "Unscented",
+          size: "50 ml",
+        },
+      },
+      {
+        variantId: "body-balm-silk",
+        label: "Silk Blossom Veil",
+        priceLabel: "199.99 EGP",
+        priceNumber: 199.99,
+        attributes: {
+          scent: "Silk Blossom",
+          size: "50 ml",
+        },
+      },
+    ],
+    defaultVariantId: "body-balm-lavender",
     heroSummaryBullets: [
       "Locks in long-lasting hydration without feeling greasy.",
       "Softens rough areas like elbows, knees, and hands.",
@@ -304,6 +340,29 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     shortTagline: "Scalp nourishment for resilient shine.",
     priceLabel: "229.99 EGP",
     priceNumber: 229.99,
+    variants: [
+      {
+        variantId: "hair-growth-strength",
+        label: "Strength Focus",
+        priceLabel: "229.99 EGP",
+        priceNumber: 229.99,
+        attributes: {
+          focus: "Growth",
+          scent: "Rosemary + Cedar",
+        },
+      },
+      {
+        variantId: "hair-growth-glow",
+        label: "Glow & Lift",
+        priceLabel: "234.99 EGP",
+        priceNumber: 234.99,
+        attributes: {
+          focus: "Shine",
+          scent: "Citrus + Neroli",
+        },
+      },
+    ],
+    defaultVariantId: "hair-growth-strength",
     heroSummaryBullets: [
       "Rosemary stem cells and biotin fortify roots.",
       "Lightweight oil that never feels heavy.",

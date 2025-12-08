@@ -9,6 +9,9 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  variantId?: string;
+  variantLabel?: string;
+  variantAttributes?: Record<string, string>;
   imageUrl?: string;
   bundleId?: string;
   bundleItems?: { productId: string; name: string; quantity: number }[];

@@ -4,6 +4,7 @@ import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
 import { useGlobalSearch } from "@/hooks/useGlobalSearch";
 import { useCompare } from "@/compare/compareStore";
+import { useLocale, useTranslation } from "@/localization/locale";
 
 const buildAppUrl = (pathname: string) => {
   const base = import.meta.env.BASE_URL ?? "/";
@@ -39,6 +40,8 @@ export default function Navbar({
   const { totalQuantity } = useCart();
   const displayCount = totalQuantity ?? cartCount;
   const itemLabel = displayCount === 1 ? "item" : "items";
+  const { locale, setLocale } = useLocale();
+  const { t } = useTranslation();
   const buildSectionHref = (hash: string) => {
     const base = import.meta.env.BASE_URL || "/";
     const normalized = base.endsWith("/") ? base : `${base}/`;
@@ -77,6 +80,15 @@ export default function Navbar({
   const navActions = (
     <div className="nav-actions">
       <Button
+        variant="ghost"
+        size="sm"
+        className="nav-language"
+        onClick={() => setLocale(locale === "en" ? "ar" : "en")}
+        aria-label={`Switch to ${locale === "en" ? "AR" : "EN"}`}
+      >
+        {locale.toUpperCase()}
+      </Button>
+      <Button
         variant="secondary"
         className="nav-cart"
         size="md"
@@ -89,7 +101,7 @@ export default function Navbar({
           const location = `${base}?view=cart`;
           window.location.href = location;
         }}
-        aria-label={`View cart (${displayCount} ${itemLabel})`}
+        aria-label={`${t("nav.viewCart")} (${displayCount} ${itemLabel})`}
       >
         <span className="nav-cart__glow" aria-hidden="true" />
         <span className="nav-cart__icon" aria-hidden="true">
@@ -106,7 +118,7 @@ export default function Navbar({
             <circle cx="17" cy="19" r="1.3" />
           </svg>
         </span>
-        <span className="nav-cart__label">Cart</span>
+        <span className="nav-cart__label">{t("nav.cart")}</span>
         <span className="nav-cart__count">{displayCount}</span>
       </Button>
       <button className="hamburger" aria-label="Open menu" onClick={onMenuToggle}>
@@ -142,12 +154,12 @@ export default function Navbar({
       ref={searchRef}
       className={`nav-search${compactSearch ? " nav-search--compact" : ""}`}
     >
-      <input
-        type="search"
-        placeholder="Quick find rituals, products, Finder..."
-        value={searchQuery}
-        onFocus={() => setSearchActive(true)}
-        onChange={(event) => setSearchQuery(event.target.value)}
+        <input
+          type="search"
+          placeholder={t("search.placeholder")}
+          value={searchQuery}
+          onFocus={() => setSearchActive(true)}
+          onChange={(event) => setSearchQuery(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === "Enter") {
             event.preventDefault();
@@ -158,7 +170,7 @@ export default function Navbar({
       />
       {showDropdown && (
         <div className="nav-search__dropdown">
-          {dropdownResults.length > 0 ? (
+              {dropdownResults.length > 0 ? (
             <>
               {dropdownResults.map((entry) => (
                 <button
@@ -175,19 +187,19 @@ export default function Navbar({
                   <span className="nav-search__result-type">{entry.kind}</span>
                 </button>
               ))}
-              <button
-                type="button"
-                className="nav-search__view-all"
-                onClick={handleSearchSubmit}
-              >
-                See all results
-              </button>
-            </>
-          ) : (
-            <p className="nav-search__empty">
-              No results yet. Try another term or press enter to browse everything.
-            </p>
-          )}
+                <button
+                  type="button"
+                  className="nav-search__view-all"
+                  onClick={handleSearchSubmit}
+                >
+                  {t("search.seeAll")}
+                </button>
+              </>
+            ) : (
+              <p className="nav-search__empty">
+                {t("search.noResults")}
+              </p>
+            )}
         </div>
       )}
     </div>
@@ -211,25 +223,28 @@ export default function Navbar({
               <div className="nav-links-row">
                 <nav className="nav-links">
                   <a className="nav-pill" href={buildSectionHref("grid")}>
-                    Collection
+                    {t("nav.collection")}
                   </a>
                   <a className="nav-pill" href="/shop">
-                    Shop
+                    {t("nav.shop")}
                   </a>
                   <a className="nav-pill" href="/favorites">
-                    Favourites
+                    {t("nav.favourites")}
                   </a>
                   <a className="nav-pill" href="?view=ritualfinder">
-                    Find My Product
+                    {t("nav.finder")}
+                  </a>
+                  <a className="nav-pill" href="/onboarding">
+                    {t("nav.ritualProfile")}
                   </a>
                   <a className="nav-pill" href="/stories">
-                    Our Journal
+                    {t("nav.journal")}
                   </a>
                   <a className="nav-pill" href="/ritual-guides">
-                    Ritual Guides
+                    {t("nav.guides")}
                   </a>
                   <a className="nav-pill" href="/gift-builder">
-                    Build a gift
+                    {t("nav.giftBuilder")}
                   </a>
                 </nav>
               </div>
@@ -239,7 +254,8 @@ export default function Navbar({
           className={`nav-compare${compareCount === 0 ? " is-empty" : ""}`}
           href="/compare"
         >
-          Compare{compareCount > 0 ? ` (${compareCount})` : ""}
+          {t("nav.compare")}
+          {compareCount > 0 ? ` (${compareCount})` : ""}
         </a>
         {navActions}
           </div>

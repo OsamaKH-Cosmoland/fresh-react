@@ -1,8 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import LayoutLab from "./labs/LayoutLab";
 import RitualPlanner from "./pages/RitualPlanner";
-import RitualFinder from "./pages/RitualFinder";
-import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersAdmin from "./pages/OrdersAdmin";
 import AdminAnalyticsPage from "./pages/AdminAnalyticsPage";
@@ -10,15 +8,31 @@ import AdminDashboard from "./pages/AdminDashboard";
 import RitualStoriesListPage from "./pages/RitualStoriesListPage";
 import RitualStoryDetailPage from "./pages/RitualStoryDetailPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
-import RitualGuidesPage from "./pages/RitualGuidesPage";
-import RitualGuideDetailPage from "./pages/RitualGuideDetailPage";
-import GiftBuilderPage from "./pages/GiftBuilderPage";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 import type { Product } from "./types/product";
-import ShopPage from "./pages/ShopPage";
-import SearchPage from "./pages/SearchPage";
-import FavoritesPage from "./pages/FavoritesPage";
-import ComparePage from "./pages/ComparePage";
+import { RouteLoadingShell, DetailSkeleton } from "./components/skeletons/Skeletons";
+import { useTranslation } from "@/localization/locale";
+
+const LazyRitualFinder = lazy(() => import("./pages/RitualFinder"));
+const LazyCartPage = lazy(() => import("./pages/CartPage"));
+const LazyShopPage = lazy(() => import("./pages/ShopPage"));
+const LazySearchPage = lazy(() => import("./pages/SearchPage"));
+const LazyFavoritesPage = lazy(() => import("./pages/FavoritesPage"));
+const LazyComparePage = lazy(() => import("./pages/ComparePage"));
+const LazyRitualGuidesPage = lazy(() => import("./pages/RitualGuidesPage"));
+const LazyRitualGuideDetailPage = lazy(() => import("./pages/RitualGuideDetailPage"));
+const LazyGiftBuilderPage = lazy(() => import("./pages/GiftBuilderPage"));
+const LazyOnboardingPage = lazy(() => import("./pages/OnboardingPage"));
+
+const routeFallback = (
+  title: string,
+  message: string,
+  grid = true,
+  columns?: number,
+  rows?: number
+) => (
+  <RouteLoadingShell title={title} message={message} grid={grid} columns={columns} rows={rows} />
+);
 
 const SHOW_LAB = true;
 
@@ -177,6 +191,7 @@ function ProductShop() {
 }
 
 export default function App() {
+  const { t } = useTranslation();
   const view =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("view")
@@ -186,7 +201,13 @@ export default function App() {
       ? window.location.pathname.replace(/\/+$/, "") || "/"
       : "/";
 
-  if (view === "cart" || path === "/cart") return <CartPage />;
+  if (view === "cart" || path === "/cart") {
+    return (
+      <Suspense fallback={routeFallback(t("loader.yourBag"), t("loader.gatheringYourRituals"), false)}>
+        <LazyCartPage />
+      </Suspense>
+    );
+  }
   if (view === "checkout" || path === "/checkout") return <CheckoutPage />;
   if (path === "/stories") return <RitualStoriesListPage />;
   if (path.startsWith("/stories/")) {
@@ -197,17 +218,84 @@ export default function App() {
   if (view === "admin" || path === "/admin") return <AdminDashboard />;
   if (view === "orders" || path === "/orders") return <OrdersAdmin />;
   if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;
-  if (view === "ritualfinder" || path === "/ritual-finder") return <RitualFinder />;
-  if (view === "search" || path === "/search") return <SearchPage />;
-  if (view === "compare" || path === "/compare") return <ComparePage />;
-  if (view === "favorites" || path === "/favorites") return <FavoritesPage />;
-  if (view === "shop" || path === "/shop") return <ShopPage />;
-  if (view === "ritualguides" || path === "/ritual-guides") return <RitualGuidesPage />;
+  if (view === "ritualfinder" || path === "/ritual-finder") {
+    return (
+      <Suspense
+        fallback={routeFallback(t("loader.ritualFinder"), t("loader.craftingYourRitualPath"), false)}
+      >
+        <LazyRitualFinder />
+      </Suspense>
+    );
+  }
+  if (view === "onboarding" || path === "/onboarding") {
+    return (
+      <Suspense fallback={routeFallback(t("sections.ritualProfile"), t("loader.ritualProfile"), false)}>
+        <LazyOnboardingPage />
+      </Suspense>
+    );
+  }
+  if (view === "search" || path === "/search") {
+    return (
+      <Suspense
+        fallback={routeFallback(t("loader.search"), t("loader.aligningEveryRitualNote"), true, 3, 2)}
+      >
+        <LazySearchPage />
+      </Suspense>
+    );
+  }
+  if (view === "compare" || path === "/compare") {
+    return (
+      <Suspense
+        fallback={routeFallback(t("loader.compare"), t("loader.balancingYourRituals"), false)}
+      >
+        <LazyComparePage />
+      </Suspense>
+    );
+  }
+  if (view === "favorites" || path === "/favorites") {
+    return (
+      <Suspense
+        fallback={routeFallback(t("loader.yourFavourites"), t("loader.gatheringYourCalmPicks"))}
+      >
+        <LazyFavoritesPage />
+      </Suspense>
+    );
+  }
+  if (view === "shop" || path === "/shop") {
+    return (
+      <Suspense
+        fallback={routeFallback(t("loader.shop"), t("loader.curatingTheRitualCatalog"), true, 4, 3)}
+      >
+        <LazyShopPage />
+      </Suspense>
+    );
+  }
+  if (view === "ritualguides" || path === "/ritual-guides") {
+    return (
+      <Suspense
+        fallback={routeFallback(t("loader.ritualGuides"), t("loader.sourcingMindfulGuides"))}
+      >
+        <LazyRitualGuidesPage />
+      </Suspense>
+    );
+  }
   if (path.startsWith("/ritual-guides/")) {
     const guideSlug = path.replace("/ritual-guides/", "");
-    return <RitualGuideDetailPage slug={guideSlug} />;
+    return (
+      <Suspense fallback={<DetailSkeleton />}>
+        <LazyRitualGuideDetailPage slug={guideSlug} />
+      </Suspense>
+    );
   }
-  if (view === "giftbuilder" || path === "/gift-builder") return <GiftBuilderPage />;
+  if (view === "giftbuilder" || path === "/gift-builder") {
+    return (
+      <Suspense
+        fallback={routeFallback(t("loader.giftBuilder"), t("loader.assemblingYourCustomBox"), false)}
+      >
+        <LazyGiftBuilderPage />
+      </Suspense>
+    );
+  }
   if (path.startsWith("/products/")) {
     const slug = path.replace("/products/", "");
     return <ProductDetailPage slug={slug} />;

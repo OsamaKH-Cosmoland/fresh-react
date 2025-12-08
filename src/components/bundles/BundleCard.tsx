@@ -6,6 +6,7 @@ import { RitualBundle } from "@/content/bundles";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { getBundlePricing } from "@/content/bundlePricing";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { useTranslation } from "@/localization/locale";
 
 export interface BundleCardProps {
   bundle: RitualBundle;
@@ -15,6 +16,7 @@ export interface BundleCardProps {
 }
 
 export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: BundleCardProps) {
+  const { t } = useTranslation();
   const pricing = getBundlePricing(bundle);
   const bundlePriceDisplay = bundle.bundlePriceLabel ?? formatCurrency(pricing.bundlePrice);
   const compareAtDisplay = formatCurrency(pricing.compareAt);
@@ -57,7 +59,7 @@ export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: Bu
       <div className="bundle-card__actions">
         {onAddBundle && (
           <Button variant="primary" size="md" onClick={() => onAddBundle(bundle)}>
-            Add ritual to bag
+            {t("cta.addRitualToBag")}
           </Button>
         )}
         {onViewDetails && (
@@ -66,7 +68,7 @@ export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: Bu
             className="bundle-card__details"
             onClick={() => onViewDetails(bundle)}
           >
-            View ritual
+            {t("cta.viewRitual")}
           </button>
         )}
       </div>

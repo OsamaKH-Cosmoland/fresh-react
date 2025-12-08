@@ -12,6 +12,7 @@ import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
 import { shopCatalog, shopFocusLookup, type FocusTagId } from "@/content/shopCatalog";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
+import { useTranslation } from "@/localization/locale";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -23,6 +24,7 @@ export default function FavoritesPage() {
   const { favorites } = useFavorites();
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
+  const { t } = useTranslation();
 
   const focusMap = useMemo(() => {
     return shopCatalog.reduce<Record<string, FocusTagId[]>>((acc, entry) => {
@@ -76,7 +78,7 @@ export default function FavoritesPage() {
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="shop-page__content">
+      <main className="shop-page__content ng-mobile-shell">
         <SectionTitle
           title="Saved favourites"
           subtitle="Bookmark rituals and products that feel right now."
@@ -90,7 +92,7 @@ export default function FavoritesPage() {
                 <h3>Products</h3>
                 <p>Individual essentials you saved for the next ritual.</p>
               </div>
-              <div className="shop-product-grid">
+              <div className="shop-product-grid ng-grid-mobile-2">
                 {favoriteProducts.map((detail) => (
                   <Card
                     key={detail.productId}
@@ -121,19 +123,19 @@ export default function FavoritesPage() {
                         ))}
                       </div>
                       <div className="shop-product-card__actions">
-                        <Button
-                          variant="primary"
-                          size="md"
-                          onClick={() => handleAddProduct(detail)}
-                        >
-                          Add to bag
-                        </Button>
-                        <a
-                          href={`/products/${detail.slug}`}
-                          className="shop-product-card__link"
-                        >
-                          View ritual
-                        </a>
+                      <Button
+                        variant="primary"
+                        size="md"
+                        onClick={() => handleAddProduct(detail)}
+                      >
+                        {t("cta.addToBag")}
+                      </Button>
+                      <a
+                        href={`/products/${detail.slug}`}
+                        className="shop-product-card__link"
+                      >
+                        {t("cta.viewRitual")}
+                      </a>
                       </div>
                     </div>
                   </Card>
@@ -148,7 +150,7 @@ export default function FavoritesPage() {
                 <h3>Bundles</h3>
                 <p>Saved rituals ready to be layered.</p>
               </div>
-              <div className="shop-bundle-grid">
+              <div className="shop-bundle-grid ng-grid-mobile-2">
                 {favoriteBundles.map((bundle) => (
                   <div
                     key={bundle.id}
@@ -182,10 +184,10 @@ export default function FavoritesPage() {
               <p>Tap the heart on any product or ritual to save it here for later.</p>
               <div className="shop-product-card__actions">
                 <Button variant="secondary" size="md" onClick={() => navigateTo("/shop")}>
-                  Browse shop
+                  {t("cta.browseShop")}
                 </Button>
                 <Button variant="ghost" size="md" onClick={() => navigateTo("/ritual-finder")}>
-                  Open Ritual Finder
+                  {t("cta.openRitualFinder")}
                 </Button>
               </div>
             </div>

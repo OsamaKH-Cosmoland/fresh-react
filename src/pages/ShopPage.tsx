@@ -17,11 +17,12 @@ import {
   type FocusTagId,
 } from "@/content/shopCatalog";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
+import { useTranslation } from "@/localization/locale";
 
 const TYPE_FILTER_OPTIONS = [
-  { id: "all", label: "All rituals & products" },
-  { id: "product", label: "Products" },
-  { id: "bundle", label: "Ritual bundles" },
+  { id: "all", labelKey: "filters.allRitualsProducts" },
+  { id: "product", labelKey: "filters.products" },
+  { id: "bundle", labelKey: "sections.ritualBundles" },
 ] as const;
 
 type ShopTypeFilter = (typeof TYPE_FILTER_OPTIONS)[number]["id"];
@@ -43,6 +44,7 @@ export default function ShopPage() {
   const [typeFilter, setTypeFilter] = useState<ShopTypeFilter>("all");
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
+  const { t } = useTranslation();
 
   const filteredCatalog = useMemo(() => {
     return shopCatalog.filter((entry) => {
@@ -96,7 +98,7 @@ export default function ShopPage() {
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="shop-page__content">
+      <main className="shop-page__content ng-mobile-shell">
         <SectionTitle
           title="Shop all rituals & products"
           subtitle="Every product and bundle lives here. Filter by focus or type to find the ritual that fits your day."
@@ -126,18 +128,19 @@ export default function ShopPage() {
 
           <div className="shop-filter__group">
             <p className="shop-filter__label">Type</p>
-            <div className="shop-filter__row">
-              {TYPE_FILTER_OPTIONS.map((option) => {
-                const isActive = typeFilter === option.id;
-                return (
-                  <button
-                    type="button"
-                    key={option.id}
+              <div className="shop-filter__row">
+                {TYPE_FILTER_OPTIONS.map((option) => {
+                  const isActive = typeFilter === option.id;
+                  const label = t(option.labelKey);
+                  return (
+                    <button
+                      type="button"
+                      key={option.id}
                     className={`shop-filter-pill${isActive ? " is-active" : ""}`}
                     aria-pressed={isActive}
                     onClick={() => setTypeFilter(option.id)}
-                  >
-                    {option.label}
+                    >
+                      {label}
                   </button>
                 );
               })}
@@ -150,15 +153,15 @@ export default function ShopPage() {
                 ? "Filters applied — refine further or clear to see everything."
                 : "Browse everything or use the filters to focus on a concern."}
             </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="shop-filter-clear"
-              onClick={clearFilters}
-              disabled={!hasActiveFilters}
-            >
-              Clear filters
-            </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="shop-filter-clear"
+            onClick={clearFilters}
+            disabled={!hasActiveFilters}
+          >
+            {t("cta.clearFilters")}
+          </Button>
           </div>
         </div>
 
@@ -169,7 +172,7 @@ export default function ShopPage() {
                 <h3>Products</h3>
                 <p>Individual essentials to mix into your daily ritual.</p>
               </div>
-              <div className="shop-product-grid">
+              <div className="shop-product-grid ng-grid-mobile-2">
                 {productEntries.map((entry) => {
                   const { item, focus, extras } = entry;
                   const focusLabels = focus.map((label) => shopFocusLookup[label]);
@@ -222,7 +225,7 @@ export default function ShopPage() {
                             size="md"
                             onClick={() => handleAddProduct(item)}
                           >
-                            Add to bag
+                            {t("cta.addToBag")}
                           </Button>
                           <button
                             type="button"
@@ -231,7 +234,7 @@ export default function ShopPage() {
                               window.location.href = getProductUrl(item.slug);
                             }}
                           >
-                            View ritual
+                            {t("cta.viewRitual")}
                           </button>
                         </div>
                       </div>
@@ -245,7 +248,7 @@ export default function ShopPage() {
           {bundleEntries.length > 0 && (
             <div className="shop-results__group" data-animate="fade-up">
               <div className="shop-results__header">
-                <h3>Ritual bundles</h3>
+                <h3>{t("sections.ritualBundles")}</h3>
                 <p>Cohesive sets that combine products for deeper rituals.</p>
               </div>
               <div className="shop-bundle-grid">
@@ -298,9 +301,9 @@ export default function ShopPage() {
                 Adjust your filter choices to discover other rituals. We keep every product
                 and bundle here, so clearing filters brings everything back.
               </p>
-              <Button variant="secondary" size="md" onClick={clearFilters}>
-                Reset filters
-              </Button>
+          <Button variant="secondary" size="md" onClick={clearFilters}>
+            {t("cta.resetFilters")}
+          </Button>
             </div>
           )}
         </section>

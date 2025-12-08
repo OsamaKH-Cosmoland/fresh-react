@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
-import { useCart } from "@/cart/cartStore";
+import { type CartItem, useCart } from "@/cart/cartStore";
 import { PRODUCT_INDEX } from "../data/products";
 import { ritualBundles } from "@/content/bundles";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -15,6 +15,20 @@ export default function CartPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { cartItems, totalQuantity, subtotal, updateQuantity, removeItem, clearCart } = useCart();
   const totalItems = totalQuantity ?? cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  const renderVariantDetail = (item: CartItem) => {
+    if (!item.variantLabel) return null;
+    const attributes =
+      item.variantAttributes && Object.values(item.variantAttributes).length > 0
+        ? ` · ${Object.values(item.variantAttributes).join(" · ")}`
+        : "";
+    return (
+      <p className="cart-page__variant">
+        {item.variantLabel}
+        {attributes}
+      </p>
+    );
+  };
 
   const goToCollection = () => {
     const base = import.meta.env.BASE_URL ?? "/";
@@ -50,7 +64,7 @@ export default function CartPage() {
       />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      <main className="cart-shell">
+      <main className="cart-shell ng-mobile-shell">
         <header className="cart-header-block">
           <h1>Your NaturaGloss Bag</h1>
           <p>
@@ -75,6 +89,7 @@ export default function CartPage() {
                       <li key={item.id} className="cart-page-item cart-page-gift">
                         <div className="cart-page-info">
                           <h3>Gift · {item.giftBox.styleName}</h3>
+                          {renderVariantDetail(item)}
                           <span className="cart-page-price">{formatCurrency(item.price)}</span>
                           {item.giftBox.note && (
                             <p className="cart-page-bundle-note">“{item.giftBox.note}”</p>
@@ -121,6 +136,7 @@ export default function CartPage() {
                       <li key={item.id} className="cart-page-item">
                         <div className="cart-page-info">
                           <h3>{bundle.name}</h3>
+                          {renderVariantDetail(item)}
                           <p>{bundle.tagline}</p>
                           <span className="cart-page-price">{formatCurrency(item.price)}</span>
                           {item.bundleSavings && item.bundleSavings > 0 && (
@@ -166,6 +182,7 @@ export default function CartPage() {
                     <li key={item.id} className="cart-page-item">
                       <div className="cart-page-info">
                         <h3>{product.title}</h3>
+                        {renderVariantDetail(item)}
                         <p>{product.desc}</p>
                         <span className="cart-page-price">{product.price}</span>
                       </div>

@@ -86,7 +86,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     <div className={`cart-drawer ${open ? "is-open" : ""}`} aria-hidden={!open}>
       <div className="cart-drawer__backdrop" onClick={onClose} />
       <FadeIn>
-        <aside className="cart-drawer__panel">
+        <aside className="cart-drawer__panel ng-mobile-shell">
           <header className="cart-drawer__header">
             <div>
               <p className="cart-drawer__eyebrow">NaturaGloss</p>
@@ -106,6 +106,14 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   <li key={item.id} className="cart-drawer__item">
                     <div>
                       <p className="cart-drawer__title">{item.name}</p>
+                      {item.variantLabel && (
+                        <p className="cart-drawer__variant">
+                          {item.variantLabel}
+                          {item.variantAttributes
+                            ? ` · ${Object.values(item.variantAttributes).join(" · ")}`
+                            : ""}
+                        </p>
+                      )}
                       <p className="cart-drawer__meta">{formatCurrency(item.price)}</p>
                       {item.bundleId && (
                         <div className="cart-drawer__bundle-meta">

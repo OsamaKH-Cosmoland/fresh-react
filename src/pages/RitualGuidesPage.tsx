@@ -22,13 +22,13 @@ export default function RitualGuidesPage() {
       <Navbar sticky onMenuToggle={() => setSidebarOpen(true)} showSectionLinks={false} />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="ritual-guides-page__content">
+      <main className="ritual-guides-page__content ng-mobile-shell">
         <SectionTitle
           title="Ritual Guides"
           subtitle="Calm essays, rituals, and gentle know-how to guide every layer."
           align="center"
         />
-        <div className="ritual-guides-grid">
+        <div className="ritual-guides-grid ng-grid-mobile-2">
           {guides.map((guide) => (
             <Card key={guide.id} className="ritual-guides-card hover-lift" data-animate="fade-up">
               {guide.heroImage && (

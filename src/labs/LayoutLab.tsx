@@ -20,6 +20,7 @@ import { useCart } from "@/cart/cartStore";
 import { usePersonalizationData } from "@/content/personalization";
 import { ritualGuides } from "@/content/ritualGuides";
 import { shopFocusLookup } from "@/content/shopCatalog";
+import { AppTranslationKey, useTranslation } from "@/localization/locale";
 
 function formatSavedDate(value: string) {
   const parsed = Date.parse(value);
@@ -42,6 +43,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
   const [activeAnnouncement, setActiveAnnouncement] = useState(1);
   const rotationRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const announcementCount = ANNOUNCEMENTS.length || 1;
+  const { t } = useTranslation();
 
   const restartRotation = useCallback(() => {
     if (rotationRef.current) {
@@ -89,6 +91,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
     favoriteBundles,
     recentProducts,
     recentBundles,
+    preferenceHighlights,
   } = usePersonalizationData();
 
   const hasSavedRituals = savedRituals.length > 0;
@@ -174,6 +177,24 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
 
   const featuredBundles = ritualBundles.filter((bundle) => bundle.featured);
 
+  const highlightFocusLabel = preferenceHighlights?.focus
+    ? t(`onboarding.options.concerns.${preferenceHighlights.focus}.label` as AppTranslationKey)
+    : undefined;
+  const highlightTimeLabel = preferenceHighlights?.time
+    ? t(`onboarding.options.time.${preferenceHighlights.time}.label` as AppTranslationKey)
+    : undefined;
+  const highlightScentLabel = preferenceHighlights?.scent
+    ? t(`onboarding.options.scent.${preferenceHighlights.scent}.label` as AppTranslationKey)
+    : undefined;
+  const hasPreferenceHighlights =
+    Boolean(preferenceHighlights) &&
+    (preferenceHighlights?.bundles.length > 0 || preferenceHighlights?.products.length > 0);
+  const highlightBundles = preferenceHighlights?.bundles ?? [];
+  const highlightProducts = preferenceHighlights?.products ?? [];
+  const highlightSummary = [highlightFocusLabel, highlightTimeLabel, highlightScentLabel]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
     <div className="landing-page">
       <div className="legacy-announcement">
@@ -214,7 +235,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
       />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      <main className="landing-hero">
+      <main className="landing-hero ng-mobile-shell" data-animate="fade-up">
         <div className="landing-hero__copy">
           <SectionTitle
             title="Luxury Inspired by Nature’s Essence"
@@ -228,7 +249,10 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
               size="lg"
               onClick={() => (window.location.href = "/ritual-finder")}
             >
-              Find your ritual
+              {t("cta.findYourRitual")}
+            </Button>
+            <Button variant="ghost" size="lg" onClick={() => navigateToPath("/onboarding")}>
+              {t("cta.createRitualProfile")}
             </Button>
           </div>
         </div>
@@ -237,9 +261,9 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
         </figure>
       </main>
       {teaserGuides.length > 0 && (
-        <section className="landing-guides-teaser" data-animate="fade-up">
+        <section className="landing-guides-teaser ng-mobile-shell" data-animate="fade-up">
           <div className="landing-guides-teaser__header">
-            <p className="landing-guides-teaser__eyebrow">Ritual guides</p>
+            <p className="landing-guides-teaser__eyebrow">{t("sections.ritualGuides")}</p>
             <SectionTitle
               title="Editorial rituals & notes"
               subtitle="Gentle essays and deep dives for every layer of care."
@@ -248,11 +272,11 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             />
             <div className="landing-guides-teaser__actions">
               <Button variant="ghost" size="md" onClick={() => navigateToPath("/ritual-guides")}>
-                View all guides
+                {t("cta.viewAllGuides")}
               </Button>
             </div>
           </div>
-          <div className="landing-guides-teaser__grid">
+          <div className="landing-guides-teaser__grid ng-grid-mobile-4">
             {teaserGuides.map((guide) => {
               const tags = [
                 ...(guide.tags ?? []),
@@ -277,13 +301,13 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                     </div>
                   </div>
                   <div className="landing-guides-card__actions">
-                    <Button
-                      variant="secondary"
-                      size="md"
-                      onClick={() => navigateToPath(`/ritual-guides/${guide.slug}`)}
-                    >
-                      Read guide
-                    </Button>
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    onClick={() => navigateToPath(`/ritual-guides/${guide.slug}`)}
+                  >
+                    {t("cta.readGuide")}
+                  </Button>
                   </div>
                 </Card>
               );
@@ -292,21 +316,94 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
         </section>
       )}
       {showPersonalizationSection && (
-        <section className="landing-personalization" data-animate="fade-up">
+        <section className="landing-personalization ng-mobile-shell" data-animate="fade-up">
           <div className="landing-personalization__intro">
-            <p className="landing-personalization__eyebrow">Your rituals</p>
+            <p className="landing-personalization__eyebrow">{t("sections.yourRituals")}</p>
             <SectionTitle
-              title="Your rituals"
+              title={t("sections.yourRituals")}
               subtitle="Saved, loved, or simply recently admired—this space remembers each pause."
               align="center"
               className="landing-personalization__title"
             />
           </div>
 
+          {hasPreferenceHighlights && (
+            <article
+              className="landing-personalization__group landing-personalization__group--focus"
+              data-animate="fade-up"
+            >
+              <div className="landing-personalization__group-title">
+                <h3>{t("onboarding.personalization.title")}</h3>
+                <p>{t("onboarding.personalization.description")}</p>
+                {highlightSummary && (
+                  <p className="landing-personalization__focus-meta">{highlightSummary}</p>
+                )}
+              </div>
+              {highlightBundles.length > 0 && (
+                <div className="landing-personalization__bundle-grid ng-grid-mobile-2">
+                  {highlightBundles.map((bundle) => (
+                    <BundleCard
+                      key={bundle.id}
+                      bundle={bundle}
+                      onAddBundle={addBundleToCart}
+                      heroImage={getBundleHeroImage(bundle.id)}
+                    />
+                  ))}
+                </div>
+              )}
+              {highlightProducts.length > 0 && (
+                <div className="landing-personalization__product-grid ng-grid-mobile-2">
+                  {highlightProducts.map((detail) => (
+                    <Card
+                      key={detail.productId}
+                      className="shop-product-card landing-personalization__product-card"
+                    >
+                      {detail.heroImage && (
+                        <div className="shop-product-card__media">
+                          <img src={detail.heroImage} alt={detail.productName} />
+                        </div>
+                      )}
+                      <div className="shop-product-card__body">
+                        <div className="shop-product-card__heading">
+                          <h3>{detail.productName}</h3>
+                          {detail.priceLabel && (
+                            <p className="shop-product-card__price">{detail.priceLabel}</p>
+                          )}
+                        </div>
+                        <p className="shop-product-card__tagline">{detail.shortTagline}</p>
+                        <div className="shop-product-card__actions landing-personalization__product-actions">
+                          <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => handleAddPersonalizedProduct(detail)}
+                          >
+                            {t("cta.addToBag")}
+                          </Button>
+                          <button
+                            type="button"
+                            className="shop-product-card__link"
+                            onClick={() => goToProductDetail(detail.slug)}
+                          >
+                            {t("cta.viewRitual")}
+                          </button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+              <div className="landing-personalization__focus-actions">
+                <Button variant="ghost" size="md" onClick={() => navigateToPath("/onboarding")}>
+                  {t("onboarding.personalization.updateLink")}
+                </Button>
+              </div>
+            </article>
+          )}
+
           {hasSavedRituals && (
             <article className="landing-personalization__group" data-animate="fade-up">
               <div className="landing-personalization__group-title">
-                <h3>Your saved rituals</h3>
+                <h3>{t("sections.yourSavedRituals")}</h3>
                 <p>Pick up the bundles you kept for a rainy night or a luminous morning.</p>
               </div>
               <div className="landing-personalization__saved-grid">
@@ -334,7 +431,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                     </div>
                     <div className="landing-personalization__saved-actions">
                       <Button variant="secondary" size="md" onClick={() => handleLoadSavedRitual(ritual.id)}>
-                        Resume ritual
+                        {t("cta.resumeRitual")}
                       </Button>
                     </div>
                   </Card>
@@ -346,7 +443,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           {hasFavoriteItems && (
             <article className="landing-personalization__group" data-animate="fade-up">
               <div className="landing-personalization__group-title">
-                <h3>Your favourites</h3>
+                <h3>{t("sections.yourFavourites")}</h3>
                 <p>Products and rituals you marked to revisit.</p>
               </div>
               {favoriteProducts.length > 0 && (
@@ -375,14 +472,14 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                             size="md"
                             onClick={() => handleAddPersonalizedProduct(detail)}
                           >
-                            Add to bag
+                            {t("cta.addToBag")}
                           </Button>
                           <button
                             type="button"
                             className="shop-product-card__link"
                             onClick={() => goToProductDetail(detail.slug)}
                           >
-                            View ritual
+                            {t("cta.viewRitual")}
                           </button>
                         </div>
                       </div>
@@ -408,7 +505,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           {hasRecentItems && (
             <article className="landing-personalization__group" data-animate="fade-up">
               <div className="landing-personalization__group-title">
-                <h3>Recently viewed</h3>
+                <h3>{t("sections.recentlyViewed")}</h3>
                 <p>Gentle reminders of what caught your eye recently.</p>
               </div>
               {recentProducts.length > 0 && (
@@ -437,14 +534,14 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                             size="md"
                             onClick={() => handleAddPersonalizedProduct(detail)}
                           >
-                            Add to bag
+                            {t("cta.addToBag")}
                           </Button>
                           <button
                             type="button"
                             className="shop-product-card__link"
                             onClick={() => goToProductDetail(detail.slug)}
                           >
-                            View ritual
+                            {t("cta.viewRitual")}
                           </button>
                         </div>
                       </div>
@@ -468,7 +565,9 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           )}
           {showPersonalizationGuidance && (
             <div className="landing-personalization__guidance" data-animate="fade-up">
-              <p className="landing-personalization__guidance-eyebrow">New here?</p>
+              <p className="landing-personalization__guidance-eyebrow">
+                {t("sections.newHere")}
+              </p>
               <h3>Begin your ritual story</h3>
               <p>
                 Explore the Ritual Finder for a curated path, or browse the shop for every ingredient that
@@ -476,10 +575,10 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
               </p>
               <div className="landing-personalization__guidance-actions">
                 <Button variant="secondary" size="lg" onClick={() => navigateToPath("/ritual-finder")}>
-                  Help me choose a ritual
+                  {t("cta.helpChooseRitual")}
                 </Button>
                 <Button variant="ghost" size="lg" onClick={() => navigateToPath("/shop")}>
-                  Browse rituals & products
+                  {t("cta.browseRitualsProducts")}
                 </Button>
               </div>
             </div>
@@ -487,12 +586,12 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
         </section>
       )}
       <section
-        className="landing-stories"
+        className="landing-stories ng-mobile-shell"
         aria-labelledby="landing-stories-title"
         data-animate="fade-up"
       >
-        <div className="landing-stories__content">
-          <p className="landing-stories__eyebrow">The Ritual Journal</p>
+          <div className="landing-stories__content">
+          <p className="landing-stories__eyebrow">{t("sections.theRitualJournal")}</p>
           <SectionTitle
             title="Our Journal"
             subtitle="Slow, sensory routines captured in words—read how botanicals, breath, and intention guide each evening, morning, and pause."
@@ -505,13 +604,13 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
               size="lg"
               onClick={() => (window.location.href = "/stories")}
             >
-              Our Journal
+              {t("nav.journal")}
             </Button>
           </div>
         </div>
       </section>
 
-      <section className="landing-values">
+      <section className="landing-values ng-mobile-shell">
         <h2 data-animate="fade-up">Why Choose NaturaGloss</h2>
         <div className="landing-values__grid">
           <article data-animate="fade-in">
@@ -539,7 +638,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
       </section>
 
       <div className="legacy-section">
-        <div className="container legacy-content">
+        <div className="container legacy-content ng-mobile-shell">
           <section className="hero legacy-hero-intro" id="about">
             <h1 data-animate="fade-up">NaturaGloss</h1>
             <p data-animate="fade-up">
@@ -554,12 +653,12 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           {featuredBundles.length > 0 && (
             <section className="landing-bundles" data-animate="fade-up">
               <SectionTitle
-                title="Ritual bundles"
+                title={t("sections.ritualBundles")}
                 subtitle="Curated sets that weave products together for one elevated moment."
                 align="center"
                 className="landing-bundles__title"
               />
-            <div className="bundle-grid">
+            <div className="bundle-grid ng-grid-mobile-2">
               {featuredBundles.map((bundle) => (
                 <BundleCard
                   key={bundle.id}

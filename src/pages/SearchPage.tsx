@@ -13,6 +13,7 @@ import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
 import { shopFocusLookup } from "@/content/shopCatalog";
 import { ritualGuides } from "@/content/ritualGuides";
+import { useTranslation } from "@/localization/locale";
 
 const getQueryFromLocation = () => {
   if (typeof window === "undefined") {
@@ -34,6 +35,7 @@ export default function SearchPage() {
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const query = getQueryFromLocation();
+  const { t } = useTranslation();
 
   const searchResults = useMemo(
     () => filterSearchEntries(query, { allowEmpty: true }),
@@ -88,7 +90,7 @@ export default function SearchPage() {
       <Navbar sticky showSectionLinks={false} onMenuToggle={() => setSidebarOpen(true)} />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="shop-page__content">
+      <main className="shop-page__content ng-mobile-shell">
         <SectionTitle
           title="Search rituals, products, or experiences"
           subtitle={
@@ -138,19 +140,19 @@ export default function SearchPage() {
                             </span>
                           ))}
                         </div>
-                        <div className="shop-product-card__actions">
-                          <Button
-                            variant="primary"
-                            size="md"
-                            onClick={() => handleAddProduct(detail)}
-                          >
-                            Add to bag
-                          </Button>
+                          <div className="shop-product-card__actions">
+                            <Button
+                              variant="primary"
+                              size="md"
+                              onClick={() => handleAddProduct(detail)}
+                            >
+                              {t("cta.addToBag")}
+                            </Button>
                           <a
                             href={`/products/${detail.slug}`}
                             className="shop-product-card__link"
                           >
-                            View ritual
+                            {t("cta.viewRitual")}
                           </a>
                         </div>
                       </div>
@@ -191,14 +193,14 @@ export default function SearchPage() {
                           <h3>{guide.title}</h3>
                         </div>
                         <p className="shop-product-card__tagline">{guide.subtitle}</p>
-                        <div className="shop-product-card__actions">
-                          <Button
-                            variant="secondary"
-                            size="md"
-                            onClick={() => navigateTo(`/ritual-guides/${guide.slug}`)}
-                          >
-                            Read guide
-                          </Button>
+                      <div className="shop-product-card__actions">
+                        <Button
+                          variant="secondary"
+                          size="md"
+                          onClick={() => navigateTo(`/ritual-guides/${guide.slug}`)}
+                        >
+                          {t("cta.readGuide")}
+                        </Button>
                         </div>
                       </div>
                     </Card>
@@ -263,7 +265,7 @@ export default function SearchPage() {
                         size="md"
                         onClick={() => navigateTo(entry.url)}
                       >
-                        Open
+                        {t("cta.open")}
                       </Button>
                     </div>
                   </Card>
@@ -280,10 +282,10 @@ export default function SearchPage() {
               </p>
               <div className="shop-product-card__actions">
                 <Button variant="secondary" size="md" onClick={() => navigateTo("/shop")}>
-                  Go to shop
+                  {t("cta.goToShop")}
                 </Button>
                 <Button variant="ghost" size="md" onClick={() => navigateTo("/ritual-finder")}>
-                  Open Ritual Finder
+                  {t("cta.openRitualFinder")}
                 </Button>
               </div>
             </div>
