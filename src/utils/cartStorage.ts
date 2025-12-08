@@ -1,6 +1,17 @@
 import type { Product } from "../types/product";
 
-export type CartItem = Product & { quantity: number };
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  imageUrl?: string;
+  bundleId?: string;
+  bundleItems?: { productId: string; name: string; quantity: number }[];
+  bundleCompareAt?: number;
+  bundleSavings?: number;
+  bundleSavingsPercent?: number;
+}
 
 const STORAGE_KEY = "naturagloss-cart";
 

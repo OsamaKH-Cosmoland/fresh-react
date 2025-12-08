@@ -4,6 +4,8 @@ import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
 import { RitualBundle } from "@/content/bundles";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
+import { getBundlePricing } from "@/content/bundlePricing";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 export interface BundleCardProps {
   bundle: RitualBundle;
@@ -13,6 +15,10 @@ export interface BundleCardProps {
 }
 
 export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: BundleCardProps) {
+  const pricing = getBundlePricing(bundle);
+  const bundlePriceDisplay = bundle.bundlePriceLabel ?? formatCurrency(pricing.bundlePrice);
+  const compareAtDisplay = formatCurrency(pricing.compareAt);
+  const savingsDisplay = formatCurrency(pricing.savingsAmount);
   return (
     <Card className="bundle-card hover-lift" data-animate="fade-up">
       <CompareToggle id={bundle.id} type="bundle" />
@@ -35,6 +41,18 @@ export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: Bu
           return <li key={entry.productId}>{name}</li>;
         })}
       </ul>
+      <div className="bundle-card__pricing">
+        <span className="bundle-card__price">{bundlePriceDisplay}</span>
+        {pricing.compareAt > pricing.bundlePrice && (
+          <span className="bundle-card__compare">Regular {compareAtDisplay}</span>
+        )}
+        {pricing.savingsAmount > 0 && (
+          <span className="bundle-card__savings">
+            You save {savingsDisplay}
+            {pricing.savingsPercent > 0 && ` (${pricing.savingsPercent}%)`}
+          </span>
+        )}
+      </div>
 
       <div className="bundle-card__actions">
         {onAddBundle && (

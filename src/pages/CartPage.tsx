@@ -3,6 +3,8 @@ import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { useCart } from "@/cart/cartStore";
 import { PRODUCT_INDEX } from "../data/products";
+import { ritualBundles } from "@/content/bundles";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 const parsePrice = (price: string | number) => {
   const number = parseFloat(String(price).replace(/[^\d.]/g, ""));
@@ -68,6 +70,52 @@ export default function CartPage() {
             <div className="cart-items-panel" aria-live="polite">
               <ul className="cart-page-list">
                 {cartItems.map((item) => {
+                  if (item.bundleId) {
+                    const bundle = ritualBundles.find((entry) => entry.id === item.bundleId);
+                    if (!bundle) return null;
+                    return (
+                      <li key={item.id} className="cart-page-item">
+                        <div className="cart-page-info">
+                          <h3>{bundle.name}</h3>
+                          <p>{bundle.tagline}</p>
+                          <span className="cart-page-price">{formatCurrency(item.price)}</span>
+                          {item.bundleSavings && item.bundleSavings > 0 && (
+                            <p className="cart-page-bundle-note">
+                              You save {formatCurrency(item.bundleSavings)}
+                            </p>
+                          )}
+                          {item.bundleItems && item.bundleItems.length > 0 && (
+                            <ul className="cart-page-bundle-items">
+                              {item.bundleItems.map((bundleItem) => (
+                                <li key={`${item.bundleId}-${bundleItem.productId}`}>
+                                  {bundleItem.name} × {bundleItem.quantity}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                        <div className="cart-page-actions">
+                          <div className="cart-qty-controls" aria-label={`Quantity of ${bundle.name}`}>
+                            <button type="button" onClick={() => decrementItem(item.id)} aria-label={`Remove one ${bundle.name}`}>
+                              −
+                            </button>
+                            <span>{item.quantity}</span>
+                            <button type="button" onClick={() => incrementItem(item.id)} aria-label={`Add one ${bundle.name}`}>
+                              +
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            className="ghost-btn"
+                            onClick={() => removeItem(item.id)}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </li>
+                    );
+                  }
+
                   const product = PRODUCT_INDEX[item.id];
                   if (!product) return null;
                   return (

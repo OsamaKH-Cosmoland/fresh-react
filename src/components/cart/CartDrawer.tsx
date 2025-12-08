@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 interface CartDrawerProps {
   open: boolean;
@@ -105,7 +106,31 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   <li key={item.id} className="cart-drawer__item">
                     <div>
                       <p className="cart-drawer__title">{item.name}</p>
-                      <p className="cart-drawer__meta">{item.price.toFixed(2)} EGP</p>
+                      <p className="cart-drawer__meta">{formatCurrency(item.price)}</p>
+                      {item.bundleId && (
+                        <div className="cart-drawer__bundle-meta">
+                          {item.bundleCompareAt && item.bundleCompareAt > item.price && (
+                            <p className="cart-drawer__bundle-compare">
+                              Regular {formatCurrency(item.bundleCompareAt)}
+                            </p>
+                          )}
+                          {item.bundleSavings && item.bundleSavings > 0 && (
+                            <p className="cart-drawer__bundle-savings">
+                              You save {formatCurrency(item.bundleSavings)}
+                              {item.bundleSavingsPercent ? ` (${item.bundleSavingsPercent}%)` : ""}
+                            </p>
+                          )}
+                          {item.bundleItems && item.bundleItems.length > 0 && (
+                            <ul className="cart-drawer__bundle-items">
+                              {item.bundleItems.map((bundleItem) => (
+                                <li key={`${item.bundleId}-${bundleItem.productId}`}>
+                                  {bundleItem.name} × {bundleItem.quantity}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="cart-drawer__controls">
                       <div className="cart-drawer__quantity">

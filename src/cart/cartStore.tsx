@@ -10,6 +10,11 @@ export interface CartItem {
   price: number;
   quantity: number;
   imageUrl?: string;
+  bundleId?: string;
+  bundleItems?: { productId: string; name: string; quantity: number }[];
+  bundleCompareAt?: number;
+  bundleSavings?: number;
+  bundleSavingsPercent?: number;
 }
 
 export interface SavedCart {

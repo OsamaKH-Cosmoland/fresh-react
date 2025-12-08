@@ -1,3 +1,5 @@
+import type { ProductDetailContent } from "@/content/productDetails";
+
 export type RitualBundle = {
   id: string;
   slug: string;
@@ -5,7 +7,9 @@ export type RitualBundle = {
   tagline: string;
   description: string;
   highlight?: string;
-  products: { productId: string; quantity?: number }[];
+  products: { productId: ProductDetailContent["productId"]; quantity?: number }[];
+  bundlePriceNumber: number;
+  bundlePriceLabel?: string;
   featured?: boolean;
 };
 
@@ -23,6 +27,8 @@ export const ritualBundles: RitualBundle[] = [
       { productId: "calm-glow-body-soap" },
       { productId: "hand-balm" },
     ],
+    bundlePriceNumber: 569.99,
+    bundlePriceLabel: "569.99 EGP",
   },
   {
     id: "glow-hydrate-duo",
@@ -34,6 +40,8 @@ export const ritualBundles: RitualBundle[] = [
       { productId: "body-balm" },
       { productId: "silk-blossom-body-soap" },
     ],
+    bundlePriceNumber: 399.99,
+    bundlePriceLabel: "399.99 EGP",
   },
   {
     id: "hair-strength-ritual",
@@ -46,6 +54,8 @@ export const ritualBundles: RitualBundle[] = [
       { productId: "hair-growth-oil" },
       { productId: "hair-shine-anti-frizz-oil" },
     ],
+    bundlePriceNumber: 389.99,
+    bundlePriceLabel: "389.99 EGP",
   },
   {
     id: "hands-lips-care-set",
@@ -57,5 +67,7 @@ export const ritualBundles: RitualBundle[] = [
       { productId: "hand-balm" },
       { productId: "lip-balm" },
     ],
+    bundlePriceNumber: 299.99,
+    bundlePriceLabel: "299.99 EGP",
   },
 ];
