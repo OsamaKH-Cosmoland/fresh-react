@@ -21,6 +21,8 @@ import { usePersonalizationData } from "@/content/personalization";
 import { ritualGuides } from "@/content/ritualGuides";
 import { shopFocusLookup } from "@/content/shopCatalog";
 import { AppTranslationKey, useTranslation } from "@/localization/locale";
+import { primaryNav } from "@/config/navigation";
+import { normalizeHref } from "@/utils/navigation";
 
 function formatSavedDate(value: string) {
   const parsed = Date.parse(value);
@@ -44,6 +46,15 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
   const rotationRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const announcementCount = ANNOUNCEMENTS.length || 1;
   const { t } = useTranslation();
+  const quickHeroActions = [
+    { navId: "collection", labelKey: "cta.shopCollection", variant: "primary" as const },
+    { navId: "finder", labelKey: "cta.findMyProduct", variant: "ghost" as const },
+    { navId: "gift-builder", labelKey: "cta.buildAGift", variant: "ghost" as const },
+  ];
+  const handleQuickAction = useCallback((href: string) => {
+    if (typeof window === "undefined") return;
+    window.location.href = normalizeHref(href);
+  }, []);
 
   const restartRotation = useCallback(() => {
     if (rotationRef.current) {
@@ -254,6 +265,22 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             <Button variant="ghost" size="lg" onClick={() => navigateToPath("/onboarding")}>
               {t("cta.createRitualProfile")}
             </Button>
+          </div>
+          <div className="landing-hero__quick-actions">
+            {quickHeroActions.map((action) => {
+              const navItem = primaryNav.find((entry) => entry.id === action.navId);
+              if (!navItem) return null;
+              return (
+                <Button
+                  key={action.navId}
+                  variant={action.variant}
+                  size="lg"
+                  onClick={() => handleQuickAction(navItem.href)}
+                >
+                  {t(action.labelKey as AppTranslationKey)}
+                </Button>
+              );
+            })}
           </div>
         </div>
         <figure className="landing-hero__media" data-animate="fade-in" data-parallax="hero">

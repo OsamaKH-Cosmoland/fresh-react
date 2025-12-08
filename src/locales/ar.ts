@@ -12,8 +12,16 @@ export const ar = {
     viewCart: "عرض السلة",
     orders: "الطلبات",
     account: "الحساب",
+    explore: "استكشف",
     ritualProfile: "ملف روتينك",
     ritualCoach: "مدرب الروتين",
+    mobile: {
+      sections: {
+        shop: "المتجر",
+        personalize: "تخصيص",
+        utility: "أدوات",
+      },
+    },
   },
   sections: {
     ritualGuides: "دلائل الروتين",
@@ -90,6 +98,9 @@ export const ar = {
     openRitualFinder: "افتح موجه الروتين",
     goToShop: "انتقل إلى المتجر",
     open: "افتح",
+    shopCollection: "تسوق المجموعة",
+    findMyProduct: "ابحث عن منتجك",
+    buildAGift: "كوّن هدية",
     clearAll: "مسح الكل",
     backToShop: "عودة إلى المتجر",
     clearFilters: "مسح الفلاتر",
@@ -467,6 +478,13 @@ export const ar = {
       heading: "تقييماتي",
       empty: "لم تشارك بعد تجربة روتينية.",
       verifiedLabel: "روتين موثق",
+    },
+  },
+  mobile: {
+    sections: {
+      shop: "المتجر",
+      personalize: "شخصي",
+      utility: "الأدوات",
     },
   },
 } as const;

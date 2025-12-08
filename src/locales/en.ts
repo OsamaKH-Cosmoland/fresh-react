@@ -12,8 +12,16 @@ export const en = {
     viewCart: "View cart",
     orders: "Orders",
     account: "Account",
+    explore: "Explore",
     ritualProfile: "Your routine profile",
     ritualCoach: "Routine Coach",
+    mobile: {
+      sections: {
+        shop: "Shop",
+        personalize: "Personalize",
+        utility: "Utility",
+      },
+    },
   },
   sections: {
     ritualGuides: "Routine guides",
@@ -90,6 +98,9 @@ export const en = {
     openRitualFinder: "Open Routine Finder",
     goToShop: "Go to shop",
     open: "Open",
+    shopCollection: "Shop collection",
+    findMyProduct: "Find my product",
+    buildAGift: "Build a gift",
     clearAll: "Clear all",
     backToShop: "Back to shop",
     clearFilters: "Clear filters",
@@ -468,6 +479,13 @@ export const en = {
       heading: "My reviews",
       empty: "You haven't shared a routine yet.",
       verifiedLabel: "Verified routine",
+    },
+  },
+  mobile: {
+    sections: {
+      shop: "Shop",
+      personalize: "Personalize",
+      utility: "Utility",
     },
   },
 } as const;
