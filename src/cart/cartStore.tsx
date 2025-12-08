@@ -15,6 +15,15 @@ export interface CartItem {
   bundleCompareAt?: number;
   bundleSavings?: number;
   bundleSavingsPercent?: number;
+  giftBoxId?: string;
+  giftBox?: {
+    styleName: string;
+    note?: string;
+    addons?: string[];
+    items: { productId: string; name: string; price: number; quantity: number }[];
+    boxPrice: number;
+    addonsPrice: number;
+  };
 }
 
 export interface SavedCart {

@@ -228,6 +228,9 @@ export default function Navbar({
                   <a className="nav-pill" href="/ritual-guides">
                     Ritual Guides
                   </a>
+                  <a className="nav-pill" href="/gift-builder">
+                    Build a gift
+                  </a>
                 </nav>
               </div>
             )}

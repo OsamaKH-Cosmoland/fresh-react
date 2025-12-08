@@ -131,6 +131,28 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                           )}
                         </div>
                       )}
+                      {item.giftBox && (
+                        <div className="cart-drawer__gift-meta">
+                          <p className="cart-drawer__gift-label">Gift box · {item.giftBox.styleName}</p>
+                          {item.giftBox.addons && item.giftBox.addons.length > 0 && (
+                            <p className="cart-drawer__gift-addons">
+                              Includes {item.giftBox.addons.join(", ")}
+                            </p>
+                          )}
+                          {item.giftBox.note && (
+                            <p className="cart-drawer__gift-note">“{item.giftBox.note}”</p>
+                          )}
+                          {item.giftBox.items && item.giftBox.items.length > 0 && (
+                            <ul className="cart-drawer__gift-items">
+                              {item.giftBox.items.map((giftItem) => (
+                                <li key={`${item.id}-${giftItem.productId}`}>
+                                  {giftItem.name}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="cart-drawer__controls">
                       <div className="cart-drawer__quantity">

@@ -12,6 +12,7 @@ import RitualStoryDetailPage from "./pages/RitualStoryDetailPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import RitualGuidesPage from "./pages/RitualGuidesPage";
 import RitualGuideDetailPage from "./pages/RitualGuideDetailPage";
+import GiftBuilderPage from "./pages/GiftBuilderPage";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 import type { Product } from "./types/product";
 import ShopPage from "./pages/ShopPage";
@@ -206,6 +207,7 @@ export default function App() {
     const guideSlug = path.replace("/ritual-guides/", "");
     return <RitualGuideDetailPage slug={guideSlug} />;
   }
+  if (view === "giftbuilder" || path === "/gift-builder") return <GiftBuilderPage />;
   if (path.startsWith("/products/")) {
     const slug = path.replace("/products/", "");
     return <ProductDetailPage slug={slug} />;

@@ -70,6 +70,50 @@ export default function CartPage() {
             <div className="cart-items-panel" aria-live="polite">
               <ul className="cart-page-list">
                 {cartItems.map((item) => {
+                  if (item.giftBox) {
+                    return (
+                      <li key={item.id} className="cart-page-item cart-page-gift">
+                        <div className="cart-page-info">
+                          <h3>Gift · {item.giftBox.styleName}</h3>
+                          <span className="cart-page-price">{formatCurrency(item.price)}</span>
+                          {item.giftBox.note && (
+                            <p className="cart-page-bundle-note">“{item.giftBox.note}”</p>
+                          )}
+                          {item.giftBox.addons && item.giftBox.addons.length > 0 && (
+                            <p className="cart-page-bundle-note">
+                              Extras: {item.giftBox.addons.join(", ")}
+                            </p>
+                          )}
+                          {item.giftBox.items && item.giftBox.items.length > 0 && (
+                            <ul className="cart-page-bundle-items">
+                              {item.giftBox.items.map((giftItem) => (
+                                <li key={`${item.id}-${giftItem.productId}`}>{giftItem.name}</li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                        <div className="cart-page-actions">
+                          <div className="cart-qty-controls" aria-label={`Quantity of gift ${item.giftBox.styleName}`}>
+                            <button type="button" onClick={() => decrementItem(item.id)} aria-label="Remove one gift">
+                              −
+                            </button>
+                            <span>{item.quantity}</span>
+                            <button type="button" onClick={() => incrementItem(item.id)} aria-label="Add one gift">
+                              +
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            className="ghost-btn"
+                            onClick={() => removeItem(item.id)}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </li>
+                    );
+                  }
+
                   if (item.bundleId) {
                     const bundle = ritualBundles.find((entry) => entry.id === item.bundleId);
                     if (!bundle) return null;

@@ -23,6 +23,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
        <a href="#about" onClick={onClose}>About</a>
        <a href="/stories" onClick={onClose}>Stories</a>
        <a href="/ritual-guides" onClick={onClose}>Ritual Guides</a>
+       <a href="/gift-builder" onClick={onClose}>Build a gift</a>
        <a href="?view=cart" onClick={onClose}>Cart</a>
       </aside>
     </div>
