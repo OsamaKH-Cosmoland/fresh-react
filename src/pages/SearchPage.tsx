@@ -12,6 +12,7 @@ import type { ProductDetailContent } from "@/content/productDetails";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
 import { shopFocusLookup } from "@/content/shopCatalog";
+import { ritualGuides } from "@/content/ritualGuides";
 
 const getQueryFromLocation = () => {
   if (typeof window === "undefined") {
@@ -42,6 +43,7 @@ export default function SearchPage() {
   const productResults = searchResults.filter((entry) => entry.kind === "product");
   const bundleResults = searchResults.filter((entry) => entry.kind === "bundle");
   const experienceResults = searchResults.filter((entry) => entry.kind === "experience");
+  const guideResults = searchResults.filter((entry) => entry.kind === "guide");
 
   const products = productResults
     .map((entry) => {
@@ -155,6 +157,52 @@ export default function SearchPage() {
                     </Card>
                   );
                 })}
+              </div>
+            </div>
+          )}
+
+          {guideResults.length > 0 && (
+            <div className="shop-results__group">
+              <div className="shop-results__header">
+                <h3>Guides</h3>
+                <p>Editorial rituals and essays for mindful care.</p>
+              </div>
+              <div className="shop-product-grid search-guides-grid">
+                {guideResults
+                  .map((entry) => {
+                    const guide = ritualGuides.find((item) => item.slug === entry.slug);
+                    if (!guide) return null;
+                    return { entry, guide };
+                  })
+                  .filter((item): item is { entry: (typeof guideResults)[number]; guide: typeof ritualGuides[number] } => Boolean(item))
+                  .map(({ guide }) => (
+                    <Card
+                      key={guide.id}
+                      className="shop-product-card search-guide-card hover-lift"
+                      data-animate="fade-up"
+                    >
+                      {guide.heroImage && (
+                        <div className="shop-product-card__media">
+                          <img src={guide.heroImage} alt={guide.title} />
+                        </div>
+                      )}
+                      <div className="shop-product-card__body">
+                        <div className="shop-product-card__heading">
+                          <h3>{guide.title}</h3>
+                        </div>
+                        <p className="shop-product-card__tagline">{guide.subtitle}</p>
+                        <div className="shop-product-card__actions">
+                          <Button
+                            variant="secondary"
+                            size="md"
+                            onClick={() => navigateTo(`/ritual-guides/${guide.slug}`)}
+                          >
+                            Read guide
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
               </div>
             </div>
           )}

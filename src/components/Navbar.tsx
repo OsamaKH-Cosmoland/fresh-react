@@ -225,6 +225,9 @@ export default function Navbar({
                   <a className="nav-pill" href="/stories">
                     Our Journal
                   </a>
+                  <a className="nav-pill" href="/ritual-guides">
+                    Ritual Guides
+                  </a>
                 </nav>
               </div>
             )}

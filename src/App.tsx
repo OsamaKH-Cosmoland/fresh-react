@@ -10,6 +10,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import RitualStoriesListPage from "./pages/RitualStoriesListPage";
 import RitualStoryDetailPage from "./pages/RitualStoryDetailPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import RitualGuidesPage from "./pages/RitualGuidesPage";
+import RitualGuideDetailPage from "./pages/RitualGuideDetailPage";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 import type { Product } from "./types/product";
 import ShopPage from "./pages/ShopPage";
@@ -199,6 +201,11 @@ export default function App() {
   if (view === "compare" || path === "/compare") return <ComparePage />;
   if (view === "favorites" || path === "/favorites") return <FavoritesPage />;
   if (view === "shop" || path === "/shop") return <ShopPage />;
+  if (view === "ritualguides" || path === "/ritual-guides") return <RitualGuidesPage />;
+  if (path.startsWith("/ritual-guides/")) {
+    const guideSlug = path.replace("/ritual-guides/", "");
+    return <RitualGuideDetailPage slug={guideSlug} />;
+  }
   if (path.startsWith("/products/")) {
     const slug = path.replace("/products/", "");
     return <ProductDetailPage slug={slug} />;

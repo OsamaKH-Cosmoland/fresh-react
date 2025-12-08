@@ -1,5 +1,6 @@
 import type { FocusTagId } from "@/content/shopCatalog";
 import { shopCatalog } from "@/content/shopCatalog";
+import { ritualGuides } from "@/content/ritualGuides";
 
 type BaseSearchEntry = {
   id: string;
@@ -12,7 +13,8 @@ type BaseSearchEntry = {
 export type SearchEntry =
   | (BaseSearchEntry & { kind: "product"; slug: string })
   | (BaseSearchEntry & { kind: "bundle"; bundleId: string })
-  | (BaseSearchEntry & { kind: "experience"; experienceId: string });
+  | (BaseSearchEntry & { kind: "experience"; experienceId: string })
+  | (BaseSearchEntry & { kind: "guide"; slug: string });
 
 const EXPERIENCES: Array<SearchEntry & { kind: "experience" }> = [
   {
@@ -59,4 +61,13 @@ export const searchEntries: SearchEntry[] = [
     };
   }),
   ...EXPERIENCES,
+  ...ritualGuides.map((guide) => ({
+    kind: "guide" as const,
+    id: `guide-${guide.id}`,
+    slug: guide.slug,
+    label: guide.title,
+    tagline: guide.subtitle,
+    focus: guide.focusTags ?? [],
+    url: `/ritual-guides/${guide.slug}`,
+  })),
 ];

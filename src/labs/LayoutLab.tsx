@@ -18,6 +18,8 @@ import { useBundleActions } from "../cart/cartBundles";
 import { getBundleHeroImage } from "../content/bundleHeroImages";
 import { useCart } from "@/cart/cartStore";
 import { usePersonalizationData } from "@/content/personalization";
+import { ritualGuides } from "@/content/ritualGuides";
+import { shopFocusLookup } from "@/content/shopCatalog";
 
 function formatSavedDate(value: string) {
   const parsed = Date.parse(value);
@@ -131,6 +133,9 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
     window.location.href = destination.toString();
   }, []);
 
+  const featuredGuides = ritualGuides.filter((guide) => guide.featured);
+  const teaserGuides = featuredGuides.length > 0 ? featuredGuides.slice(0, 2) : ritualGuides.slice(0, 2);
+
   const handleAddToCart = useCallback(
     (item: Product) => {
       addItemToCart(item);
@@ -231,6 +236,61 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           <img src={collectionImage} alt="NaturaGloss collection of botanical care" />
         </figure>
       </main>
+      {teaserGuides.length > 0 && (
+        <section className="landing-guides-teaser" data-animate="fade-up">
+          <div className="landing-guides-teaser__header">
+            <p className="landing-guides-teaser__eyebrow">Ritual guides</p>
+            <SectionTitle
+              title="Editorial rituals & notes"
+              subtitle="Gentle essays and deep dives for every layer of care."
+              align="center"
+              className="landing-guides-teaser__title"
+            />
+            <div className="landing-guides-teaser__actions">
+              <Button variant="ghost" size="md" onClick={() => navigateToPath("/ritual-guides")}>
+                View all guides
+              </Button>
+            </div>
+          </div>
+          <div className="landing-guides-teaser__grid">
+            {teaserGuides.map((guide) => {
+              const tags = [
+                ...(guide.tags ?? []),
+                ...(guide.focusTags ?? []).map((id) => shopFocusLookup[id]).filter(Boolean),
+              ];
+              return (
+                <Card key={guide.id} className="landing-guides-card hover-lift" data-animate="fade-up">
+                  {guide.heroImage && (
+                    <div className="landing-guides-card__media">
+                      <img src={guide.heroImage} alt={guide.title} />
+                    </div>
+                  )}
+                  <div className="landing-guides-card__body">
+                    <p className="landing-guides-card__subtitle">{guide.subtitle}</p>
+                    <h3>{guide.title}</h3>
+                    <div className="landing-guides-card__tags">
+                      {tags.map((tag) => (
+                        <span key={`${guide.id}-${tag}`} className="landing-guides-card__tag">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="landing-guides-card__actions">
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      onClick={() => navigateToPath(`/ritual-guides/${guide.slug}`)}
+                    >
+                      Read guide
+                    </Button>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
+      )}
       {showPersonalizationSection && (
         <section className="landing-personalization" data-animate="fade-up">
           <div className="landing-personalization__intro">
