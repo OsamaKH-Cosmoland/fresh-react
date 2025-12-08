@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
@@ -7,6 +7,7 @@ import { useCompare } from "@/compare/compareStore";
 import { useLocale, useTranslation, type AppTranslationKey } from "@/localization/locale";
 import { primaryNav, exploreNav } from "@/config/navigation";
 import { buildAppUrl, normalizeHref } from "@/utils/navigation";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 
 interface NavbarProps {
   onMenuToggle: () => void;
@@ -31,7 +32,7 @@ export default function Navbar({
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchActive, setSearchActive] = useState(false);
-  const searchRef = useRef<HTMLDivElement | null>(null);
+  const searchContainerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [exploreOpen, setExploreOpen] = useState(false);
   const exploreRef = useRef<HTMLDivElement | null>(null);
@@ -42,6 +43,7 @@ export default function Navbar({
   const itemLabel = displayCount === 1 ? "item" : "items";
   const { locale, setLocale } = useLocale();
   const { t } = useTranslation();
+  const { isOnline } = useNetworkStatus();
 
   useEffect(() => {
     if (!sticky) return;
@@ -57,7 +59,10 @@ export default function Navbar({
 
   useEffect(() => {
     const handler = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target as Node)
+      ) {
         setSearchActive(false);
       }
     };
@@ -97,35 +102,29 @@ export default function Navbar({
     window.location.href = normalizeHref("?view=cart");
   };
 
-  const handleSearchToggle = () => {
-    setSearchActive((prev) => !prev);
+  const handleSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleSearchSubmit();
+    }
   };
 
-  useEffect(() => {
-    if (searchActive && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [searchActive]);
-
   const renderSearchField = () => (
-    <div
-      ref={searchRef}
-      className="nav-search nav-search--overlay"
-      role="dialog"
-      aria-modal="true"
-    >
+    <div ref={searchContainerRef} className="nav-search nav-search--inline">
+      <span className="nav-search__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" strokeWidth="1.6" />
+          <path d="M15 15l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      </span>
       <input
         ref={inputRef}
         type="search"
         placeholder={t("search.placeholder")}
         value={searchQuery}
         onChange={(event) => setSearchQuery(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-            event.preventDefault();
-            handleSearchSubmit();
-          }
-        }}
+        onFocus={() => setSearchActive(true)}
+        onKeyDown={handleSearchKeyDown}
         aria-label="Search site"
       />
       {showDropdown && (
@@ -232,33 +231,23 @@ export default function Navbar({
               </div>
             )}
             <div className="nav-bar__actions">
-              <div className="nav-search-trigger">
-                <button
-                  type="button"
-                  className="nav-search-button"
-                  onClick={handleSearchToggle}
-                  aria-label={t("search.placeholder")}
-                >
-                  <span aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false">
-                      <circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" strokeWidth="1.6" />
-                      <path d="M15 15l5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                </button>
-                {searchActive && renderSearchField()}
-              </div>
-              <div className="nav-utility-links">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="nav-language"
-                  onClick={() => setLocale(locale === "en" ? "ar" : "en")}
-                  aria-label={`Switch to ${locale === "en" ? "AR" : "EN"}`}
-                >
-                  {locale.toUpperCase()}
-                </Button>
-              </div>
+            {renderSearchField()}
+            <div className="nav-utility-links">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="nav-language"
+                onClick={() => setLocale(locale === "en" ? "ar" : "en")}
+                aria-label={`Switch to ${locale === "en" ? "AR" : "EN"}`}
+              >
+                {locale.toUpperCase()}
+              </Button>
+              {!isOnline && (
+                <span className="nav-offline-indicator" aria-live="polite">
+                  {t("offline.status")}
+                </span>
+              )}
+            </div>
               <Button
                 variant="secondary"
                 className="nav-cart nav-cart--desktop"

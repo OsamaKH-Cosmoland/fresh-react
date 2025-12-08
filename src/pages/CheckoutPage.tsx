@@ -13,6 +13,7 @@ import {
   notifyOrderCreated,
 } from "@/utils/orderNotifications";
 import { submitOrderToApi } from "@/utils/orderApi";
+import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 
 const SHIPPING_OPTIONS = [
   { id: "standard", cost: 45 },
@@ -58,6 +59,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "cod">("card");
   const [cardData, setCardData] = useState({ number: "", expiry: "", cvc: "" });
   const [orderPlaced, setOrderPlaced] = useState<LocalOrder | null>(null);
+  const { isOnline } = useNetworkStatus();
 
   const hasCartItems = cartItems.length > 0;
   const shippingMethod = useMemo<ShippingMethod>(() => {
@@ -142,6 +144,9 @@ export default function CheckoutPage() {
   };
 
   const placeOrder = () => {
+    if (!isOnline) {
+      return;
+    }
     if (!hasCartItems || !shippingMethod) return;
     const orderId = generateOrderId();
     const order: LocalOrder = {
@@ -244,6 +249,11 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
             align="center"
           />
           <p className="checkout-hero__meta">{t("checkout.hero.meta")}</p>
+          {!isOnline && (
+            <p className="checkout-offline" role="status">
+              {t("offline.checkoutWarning")}
+            </p>
+          )}
         </header>
 
         {!hasCartItems && !orderPlaced ? (
@@ -554,7 +564,7 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                 </Button>
               )}
               {currentStep === STEPS.length - 1 && (
-                <Button variant="primary" size="md" onClick={placeOrder}>
+                <Button variant="primary" size="md" onClick={placeOrder} disabled={!isOnline}>
                   {t("checkout.actions.placeOrder")}
                 </Button>
               )}

@@ -1,10 +1,17 @@
-const CACHE_VERSION = "natura-gloss-v1";
+const CACHE_VERSION = "ng-static-v1";
 const OFFLINE_URL = "/offline.html";
-const CORE_ASSETS = ["/", OFFLINE_URL, "/manifest.webmanifest", "/stories", "/admin"];
+const PRECACHE_URLS = [
+  "/",
+  "/index.html",
+  "/manifest.webmanifest",
+  "/offline.html",
+  "/icons/icon-192.png",
+  "/icons/icon-512.png",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(CORE_ASSETS))
+    caches.open(CACHE_VERSION).then((cache) => cache.addAll(PRECACHE_URLS))
   );
   self.skipWaiting();
 });
@@ -25,22 +32,7 @@ self.addEventListener("activate", (event) => {
 const isNavigationRequest = (request) =>
   request.mode === "navigate" || (request.method === "GET" && request.headers.get("accept")?.includes("text/html"));
 
-self.addEventListener("fetch", (event) => {
-  if (isNavigationRequest(event.request)) {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          const copy = response.clone();
-          event.waitUntil(
-            caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, copy))
-          );
-          return response;
-        })
-        .catch(() => caches.match(OFFLINE_URL))
-    );
-    return;
-  }
-
+const cacheFirst = (event) => {
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) {
@@ -54,7 +46,41 @@ self.addEventListener("fetch", (event) => {
           );
           return response;
         })
-        .catch(() => cached);
+        .catch(() => caches.match(OFFLINE_URL));
     })
+  );
+};
+
+const networkFirst = (event) => {
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        event.waitUntil(
+          caches.open(CACHE_VERSION).then((cache) => cache.put(event.request, copy))
+        );
+        return response;
+      })
+      .catch(() =>
+        caches.match(event.request).then((cached) => cached || caches.match("/index.html") || caches.match(OFFLINE_URL))
+      )
+  );
+};
+
+self.addEventListener("fetch", (event) => {
+  if (isNavigationRequest(event.request)) {
+    networkFirst(event);
+    return;
+  }
+
+  const destination = event.request.destination;
+  if (["script", "style", "image", "font"].includes(destination)) {
+    cacheFirst(event);
+    return;
+  }
+
+  event.respondWith(
+    fetch(event.request)
+      .catch(() => caches.match(event.request).then((cached) => cached || caches.match(OFFLINE_URL)))
   );
 });

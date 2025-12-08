@@ -1,11 +1,11 @@
 {
-  "name": "NaturaGloss",
+  "name": "NaturaGloss Rituals",
   "short_name": "NaturaGloss",
-  "description": "Calm, luxurious body and hair routines made with natural ingredients.",
+  "description": "A calm, luxurious ritual companion for your body and hair care.",
   "display": "standalone",
   "start_url": "/",
   "background_color": "#ffffff",
-  "theme_color": "#f5efe4",
+  "theme_color": "#f7f5f2",
   "icons": [
     {
       "src": "/icons/icon-192.png",

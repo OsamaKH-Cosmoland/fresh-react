@@ -23,6 +23,13 @@ export const en = {
       },
     },
   },
+  offline: {
+    status: "Offline",
+    message: "You appear to be offline. Saved rituals, guides, and your bag are still available.",
+    checkoutWarning:
+      "You're offline. You can review your bag, but checkout requires a connection.",
+    installPrompt: "Install the app",
+  },
   sections: {
     ritualGuides: "Routine guides",
     yourRituals: "Your routines",

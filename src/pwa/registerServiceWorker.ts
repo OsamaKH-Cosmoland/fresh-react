@@ -3,6 +3,10 @@ export function registerServiceWorker() {
     return;
   }
 
+  if (import.meta.env.MODE !== "production") {
+    return;
+  }
+
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register("/service-worker.js")

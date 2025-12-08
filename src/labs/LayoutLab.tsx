@@ -1,6 +1,7 @@
 import { Button, Card, SectionTitle } from "../components/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
+import OfflineNotice from "@/components/OfflineNotice";
 import Sidebar from "../components/Sidebar";
 import CardGrid from "../components/CardGrid";
 import ReviewsSection from "../components/ReviewsSection";
@@ -181,6 +182,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
         onCartOpen={onCartOpen}
       />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <OfflineNotice />
 
       <main className="landing-hero ng-mobile-shell" data-animate="fade-up">
         <div className="landing-hero__copy">
