@@ -46,6 +46,10 @@ body {
   color: #f7ecd4;
 }
 
+#main-content {
+  padding-top: var(--navbar-height);
+}
+
 .skip-link {
   position: absolute;
   top: -44px;
@@ -1911,9 +1915,13 @@ button:hover {
   border-bottom: 1px solid rgba(245, 220, 168, 0.2);
   color: #f5dca8;
   padding: 0.65rem 0;
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 60;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 90;
+  height: var(--navbar-height);
 }
 .navbar-scrolled {
   background: rgba(3, 15, 10, 0.8);
@@ -1956,10 +1964,21 @@ button:hover {
 }
 .nav-primary {
   display: grid;
-  grid-template-columns: repeat(2, minmax(120px, 200px));
-  gap: 0.85rem 3rem;
+  grid-template-columns: repeat(3, minmax(120px, 220px));
+  gap: 1rem 2rem;
   justify-content: center;
   align-items: center;
+  row-gap: 1.25rem;
+}
+.nav-primary .nav-pill:nth-child(1),
+.nav-primary .nav-pill:nth-child(4) {
+  transform: translateX(-8px);
+}
+.nav-primary .nav-pill:nth-child(3) {
+  transform: translateX(10px);
+}
+.nav-explore {
+  transform: translateX(10px);
 }
 
 .offline-notice {
