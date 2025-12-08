@@ -25,8 +25,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
        <a href="#grid" onClick={onClose}>Card Grid</a>
        <a href="#about" onClick={onClose}>About</a>
        <a href="/stories" onClick={onClose}>Stories</a>
-      <a href="/ritual-guides" onClick={onClose}>Routine Guides</a>
+       <a href="/ritual-guides" onClick={onClose}>Routine Guides</a>
        <a href="/orders-history" onClick={onClose}>{t("nav.orders")}</a>
+       <a href="/account" onClick={onClose}>{t("nav.account")}</a>
        <a href="/ritual-coach" onClick={onClose}>{t("nav.ritualCoach")}</a>
        <a href="/gift-builder" onClick={onClose}>Build a gift</a>
        <a href="?view=cart" onClick={onClose}>Cart</a>

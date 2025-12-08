@@ -11,6 +11,7 @@ export const en = {
     cart: "Cart",
     viewCart: "View cart",
     orders: "Orders",
+    account: "Account",
     ritualProfile: "Your routine profile",
     ritualCoach: "Routine Coach",
   },
@@ -424,6 +425,49 @@ export const en = {
       askAgain: "Ask the coach again",
       askCoach: "Ask the Routine Coach",
       refineWithCoach: "Refine with the Routine Coach",
+    },
+  },
+  account: {
+    hero: {
+      title: "My routine space",
+      subtitle:
+        "A calm, private place for your preferences, orders, saved rituals, favourites, and reviews.",
+    },
+    tabs: {
+      profile: "Profile",
+      orders: "Orders",
+      saved: "Saved rituals",
+      favorites: "Favourites",
+      reviews: "Reviews",
+    },
+    profile: {
+      focusLabel: "Focus",
+      timeLabel: "Preferred time",
+      scentLabel: "Scent preference",
+      budgetLabel: "Budget comfort",
+      emptyValue: "Not set yet",
+      hint: "These preferences help the Routine Finder, Routine Coach, and personalized highlights stay aligned with you.",
+      edit: "Edit routine profile",
+    },
+    orders: {
+      emptyTitle: "No orders yet",
+      emptyBody: "When you place a routine order, it will appear here with delivery details.",
+    },
+    saved: {
+      empty: "Save a ritual to revisit it whenever you need it.",
+      load: "Load ritual into bag",
+      delete: "Delete ritual",
+    },
+    favorites: {
+      empty: "Tap the heart on any routine or product to call it up here.",
+      remove: "Remove from favourites",
+      products: "Products",
+      bundles: "Bundles",
+    },
+    reviews: {
+      heading: "My reviews",
+      empty: "You haven't shared a routine yet.",
+      verifiedLabel: "Verified routine",
     },
   },
 } as const;

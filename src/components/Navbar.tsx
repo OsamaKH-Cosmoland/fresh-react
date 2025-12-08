@@ -96,6 +96,14 @@ export default function Navbar({
       >
         {t("nav.orders")}
       </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        className="nav-account"
+        onClick={() => (window.location.href = buildAppUrl("/account"))}
+      >
+        {t("nav.account")}
+      </Button>
       <Button variant="ghost" size="sm" className="nav-coach" onClick={() => (window.location.href = buildAppUrl("/ritual-coach"))}>
         {t("nav.ritualCoach")}
       </Button>

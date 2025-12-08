@@ -78,3 +78,5 @@ export function getReviewStats(targetId: string, type: ReviewTargetType) {
     count: reviews.length,
   };
 }
+
+export const REVIEW_STORAGE_KEY = STORAGE_KEY;

@@ -11,6 +11,7 @@ export const ar = {
     cart: "السلة",
     viewCart: "عرض السلة",
     orders: "الطلبات",
+    account: "الحساب",
     ritualProfile: "ملف طقوسك",
     ritualCoach: "مدرب الطقوس",
   },
@@ -424,6 +425,48 @@ export const ar = {
       askAgain: "اسأل المدرب مجدداً",
       askCoach: "اسأل مدرب الطقوس",
       refineWithCoach: "نقّح بالتعاون مع مدرب الطقوس",
+    },
+  },
+  account: {
+    hero: {
+      title: "مساحة الروتين الخاصة بي",
+      subtitle: "مكان هادئ لتفضيلاتك، طلباتك، الطقوس المحفوظة، مفضلاتك، وتقييماتك.",
+    },
+    tabs: {
+      profile: "الملف",
+      orders: "الطلبات",
+      saved: "طقوس محفوظة",
+      favorites: "المفضلات",
+      reviews: "التقييمات",
+    },
+    profile: {
+      focusLabel: "التركيز",
+      timeLabel: "الوقت المفضل",
+      scentLabel: "الرائحة",
+      budgetLabel: "راحة الميزانية",
+      emptyValue: "لم يتم التحديد بعد",
+      hint: "توجه هذه التفضيلات موجه البنية والروتين ومدرب الروتين لتبقى على نفس النغمة.",
+      edit: "تعديل ملف الروتين",
+    },
+    orders: {
+      emptyTitle: "لا توجد طلبات بعد",
+      emptyBody: "عند إتمام طلب ستجده هنا مع تفاصيل التوصيل.",
+    },
+    saved: {
+      empty: "احفظ روتينًا لتعود إليه متى شئت.",
+      load: "تحميل الروتين في السلة",
+      delete: "حذف الروتين",
+    },
+    favorites: {
+      empty: "اضغط على القلب لأي روتين أو منتج لتثبيته هنا.",
+      remove: "إزالة من المفضلات",
+      products: "منتجات",
+      bundles: "مجموعات",
+    },
+    reviews: {
+      heading: "تقييماتي",
+      empty: "لم تشارك بعد تجربة روتينية.",
+      verifiedLabel: "روتين موثق",
     },
   },
 } as const;

@@ -25,6 +25,7 @@ const LazyGiftBuilderPage = lazy(() => import("./pages/GiftBuilderPage"));
 const LazyOnboardingPage = lazy(() => import("./pages/OnboardingPage"));
 const LazyOrdersHistoryPage = lazy(() => import("./pages/OrdersHistoryPage"));
 const LazyRitualCoachPage = lazy(() => import("./pages/RitualCoachPage"));
+const LazyAccountPage = lazy(() => import("./pages/AccountPage"));
 
 const routeFallback = (
   title: string,
@@ -326,6 +327,16 @@ export default function App() {
         )}
       >
         <LazyRitualCoachPage />
+      </Suspense>
+    );
+  }
+
+  if (view === "account" || path === "/account") {
+    return (
+      <Suspense
+        fallback={routeFallback(t("account.hero.title"), t("account.hero.subtitle"), false)}
+      >
+        <LazyAccountPage />
       </Suspense>
     );
   }
