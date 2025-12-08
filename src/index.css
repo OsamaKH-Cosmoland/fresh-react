@@ -1965,7 +1965,7 @@ button:hover {
 .nav-primary {
   display: grid;
   grid-template-columns: repeat(3, minmax(120px, 220px));
-  gap: 1rem 2rem;
+  gap: 1rem 2.5rem;
   justify-content: center;
   align-items: center;
   row-gap: 1.25rem;
@@ -1975,10 +1975,10 @@ button:hover {
   transform: translateX(-8px);
 }
 .nav-primary .nav-pill:nth-child(3) {
-  transform: translateX(10px);
+  transform: translateX(8px);
 }
 .nav-explore {
-  transform: translateX(10px);
+  transform: translateX(16px);
 }
 
 .offline-notice {
