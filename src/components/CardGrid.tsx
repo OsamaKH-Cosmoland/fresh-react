@@ -5,7 +5,10 @@ import { PRODUCTS } from "../data/products";
 import type { Product } from "../types/product";
 import { Button, Card } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
-import { PRODUCT_DETAIL_SLUGS_BY_TITLE } from "@/content/productDetails";
+import {
+  PRODUCT_DETAIL_MAP,
+  PRODUCT_DETAIL_SLUGS_BY_TITLE,
+} from "@/content/productDetails";
 import { CompareToggle } from "@/components/CompareToggle";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 
@@ -167,6 +170,8 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
           const isFav = favs.has(c.id);
           const delayStyle = { "--motion-delay": `${index * 80}ms` } as CSSProperties;
           const detailSlug = PRODUCT_DETAIL_SLUGS_BY_TITLE[c.title];
+          const detail = detailSlug ? PRODUCT_DETAIL_MAP[detailSlug] : undefined;
+          const compareId = detail?.productId ?? detailSlug ?? String(c.id);
           return (
               <Card
                 key={c.id}
@@ -175,8 +180,16 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                 style={delayStyle}
                 tabIndex={0}
               >
-                <CompareToggle id={String(c.id)} type="product" className="compare-toggle compare-toggle--grid" />
-                <FavoriteToggle id={String(c.id)} type="product" className="favorite-toggle favorite-toggle--grid" />
+                <CompareToggle
+                  id={compareId}
+                  type="product"
+                  className="compare-toggle compare-toggle--grid"
+                />
+                <FavoriteToggle
+                  id={String(c.id)}
+                  type="product"
+                  className="favorite-toggle favorite-toggle--grid"
+                />
                 {c.image && (
                 <img
                   src={c.image}
