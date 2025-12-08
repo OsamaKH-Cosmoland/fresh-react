@@ -12,6 +12,7 @@ import {
   buildNotificationItems,
   notifyOrderCreated,
 } from "@/utils/orderNotifications";
+import { submitOrderToApi } from "@/utils/orderApi";
 
 const SHIPPING_OPTIONS = [
   { id: "standard", cost: 45 },
@@ -178,6 +179,7 @@ export default function CheckoutPage() {
     clearCart();
     setOrderPlaced(order);
     setCurrentStep(STEPS.length - 1);
+    void submitOrderToApi(order);
     if (order.customer.email) {
       void notifyOrderCreated({
         orderId: order.id,
