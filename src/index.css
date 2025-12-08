@@ -2005,6 +2005,8 @@ button:hover {
   background: linear-gradient(135deg, rgba(8, 46, 32, .85), rgba(5, 28, 20, .88));
   text-decoration: none;
   overflow: hidden;
+  white-space: nowrap;
+  line-height: 1;
   transition: transform .18s ease, box-shadow .22s ease, border-color .2s ease, color .2s ease;
 }
 .nav-pill::before {
