@@ -2241,6 +2241,9 @@ button:hover {
   .nav-mobile-actions {
     display: flex;
   }
+  .nav-cart--desktop {
+    display: none;
+  }
   .nav-bar {
     justify-content: space-between;
   }
