@@ -103,8 +103,8 @@ export default function ComparePage() {
 
       <main className="shop-page__content ng-mobile-shell">
         <SectionTitle
-          title="Compare rituals & products"
-          subtitle="Line up focus, textures, and prices to decide the perfect ritual."
+          title="Compare routines & products"
+          subtitle="Line up focus, textures, and prices to decide the perfect routine."
           align="center"
         />
 
@@ -162,7 +162,7 @@ export default function ComparePage() {
                   <div className="compare-column__row">
                     <p className="compare-column__row-label">Usage</p>
                     <p className="compare-column__row-value">
-                      {column.usage.length > 0 ? column.usage.join(" • ") : "Any ritual"}
+                      {column.usage.length > 0 ? column.usage.join(" • ") : "Any routine"}
                     </p>
                   </div>
                   <div className="compare-column__row">

@@ -12,7 +12,7 @@ export default function RitualStoriesListPage() {
         className="stories-page__title"
       />
       <p className="stories-page__intro" data-animate="fade-up">
-        Each ritual is captured in a story field filled with warmth, scent, and steady breath so you
+        Each routine is captured in a story field filled with warmth, scent, and steady breath so you
         can step into your care practice with intention.
       </p>
       <div className="stories-grid">

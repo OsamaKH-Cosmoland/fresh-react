@@ -84,7 +84,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   const handleSaveCart = () => {
     if (!saveName.trim()) {
-      setSaveMessage("Please provide a name for the ritual.");
+      setSaveMessage("Please provide a name for the routine.");
       return;
     }
     const success = saveCurrentCart(saveName);
@@ -208,13 +208,13 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
           <section className="cart-drawer__saved" data-animate="fade-in">
             <div className="cart-drawer__saved-header">
-              <h3>Saved rituals</h3>
+          <h3>Saved routines</h3>
               <p>Preserve your current bag to revisit later.</p>
             </div>
             <div className="cart-drawer__saved-input">
               <input
                 type="text"
-                placeholder="Name this ritual"
+                placeholder="Name this routine"
                 value={saveName}
                 onChange={(event) => setSaveName(event.target.value)}
               />
@@ -251,7 +251,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 ))}
               </ul>
             ) : (
-              <p className="cart-drawer__saved-empty">You have no saved rituals yet.</p>
+              <p className="cart-drawer__saved-empty">You have no saved routines yet.</p>
             )}
           </section>
 

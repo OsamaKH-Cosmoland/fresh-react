@@ -265,7 +265,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           <div className="landing-guides-teaser__header">
             <p className="landing-guides-teaser__eyebrow">{t("sections.ritualGuides")}</p>
             <SectionTitle
-              title="Editorial rituals & notes"
+              title="Editorial routines & notes"
               subtitle="Gentle essays and deep dives for every layer of care."
               align="center"
               className="landing-guides-teaser__title"
@@ -577,9 +577,9 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
               <p className="landing-personalization__guidance-eyebrow">
                 {t("sections.newHere")}
               </p>
-              <h3>Begin your ritual story</h3>
+              <h3>Begin your routine story</h3>
               <p>
-                Explore the Ritual Finder for a curated path, or browse the shop for every ingredient that
+                Explore the Routine Finder for a curated path, or browse the shop for every ingredient that
                 sparks calm.
               </p>
               <div className="landing-personalization__guidance-actions">

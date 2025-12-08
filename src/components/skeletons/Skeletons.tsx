@@ -67,7 +67,7 @@ export function RouteLoadingShell({
   return (
     <section className="route-loading-shell">
       {title && <p className="route-loading-title">{title}</p>}
-      <MicroLoadingIndicator label={message || "Calming your ritual"} />
+      <MicroLoadingIndicator label={message || "Calming your routine"} />
       {grid ? (
         <ProductGridSkeleton columns={columns} rows={rows} />
       ) : (

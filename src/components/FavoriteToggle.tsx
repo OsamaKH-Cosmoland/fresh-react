@@ -14,10 +14,10 @@ export function FavoriteToggle({ id, type, className = "" }: FavoriteToggleProps
     active && type === "product"
       ? "Remove product from favourites"
       : active
-      ? "Remove ritual from favourites"
+      ? "Remove routine from favourites"
       : type === "product"
       ? "Save product to favourites"
-      : "Save ritual to favourites";
+      : "Save routine to favourites";
 
   return (
     <button

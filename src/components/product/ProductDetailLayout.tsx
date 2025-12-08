@@ -144,7 +144,7 @@ export function ProductDetailLayout({
           </article>
 
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="Ritual" subtitle="A slow, sensory sequence" />
+            <SectionTitle title="Routine" subtitle="A slow, sensory sequence" />
             <ol className="product-detail-steps">
               {ritualSteps.map((step) => (
                 <li key={step.title}>
@@ -177,7 +177,7 @@ export function ProductDetailLayout({
           </article>
 
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="Pairs well with" subtitle="Complete the ritual" />
+            <SectionTitle title="Pairs well with" subtitle="Complete the routine" />
             <div className="product-detail-pairings">
               {pairsWellWith.map((item) => (
                 <a key={item.name} href={item.slug} className="product-detail-pairing">
@@ -204,7 +204,7 @@ export function ProductDetailLayout({
 
         <aside className="product-detail-aside" data-animate="fade-up">
           <Card className="product-detail-aside__card">
-            <p className="product-detail-aside__label">Order this ritual</p>
+            <p className="product-detail-aside__label">Order this routine</p>
             <h3>{productName}</h3>
             {displayPriceLabel && (
               <p className="product-detail-aside__price">{displayPriceLabel}</p>

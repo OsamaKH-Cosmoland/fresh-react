@@ -43,9 +43,9 @@ export default function RitualPlanner() {
         { type: "ADD_RITUAL_TO_CART", payload: { productIds } },
         window.location.origin
       );
-      notify("success", "Your ritual was added to the NaturaGloss bag.");
+      notify("success", "Your routine was added to the NaturaGloss bag.");
     } else {
-      notify("info", "Keep the NaturaGloss collection tab open to sync your ritual bag.");
+      notify("info", "Keep the NaturaGloss collection tab open to sync your routine bag.");
     }
   };
 
@@ -83,15 +83,15 @@ export default function RitualPlanner() {
         </svg>
       </button>
       <header className="ritual-hero">
-        <h1>Design your signature body ritual</h1>
+        <h1>Design your signature body routine</h1>
         <p className="ritual-hero-copy">
           Begin with an intention, preview sensorial steps, then send your curated kit back to the
           NaturaGloss collection whenever you are ready.
         </p>
         <div className="ritual-hero-actions">
-          <button type="button" className="cta-btn" onClick={handleAddKit}>
-            Send current ritual to bag
-          </button>
+            <button type="button" className="cta-btn" onClick={handleAddKit}>
+              Send current routine to bag
+            </button>
         </div>
       </header>
 
@@ -114,7 +114,7 @@ export default function RitualPlanner() {
           <section className="ritual-services" aria-label="Member services">
             <h2>Signature services</h2>
             <ul>
-              <li>15-minute ritual fitting with NaturaGloss atelier guides.</li>
+              <li>15-minute routine fitting with NaturaGloss atelier guides.</li>
               <li>Refill cadence reminders that match your lifestyle rhythm.</li>
               <li>Seasonal Nile Delta botanicals reserved for members.</li>
             </ul>
@@ -122,7 +122,7 @@ export default function RitualPlanner() {
         </aside>
 
         <section className="ritual-content" aria-live="polite">
-          <p className="ritual-step-label">Step 2: Explore your ritual blueprint</p>
+          <p className="ritual-step-label">Step 2: Explore your routine blueprint</p>
           <h2 className="ritual-heading">{activeRitual.title}</h2>
           <p className="ritual-description">{activeRitual.description}</p>
 
@@ -140,7 +140,7 @@ export default function RitualPlanner() {
 
           <div className="ritual-kit">
             <header>
-              <h3>Ritual companions</h3>
+              <h3>Routine companions</h3>
               <span className="ritual-kit-count">
                 {ritualProducts.length} item{ritualProducts.length === 1 ? "" : "s"} | {ritualTotal}
               </span>
@@ -166,9 +166,9 @@ export default function RitualPlanner() {
             </p>
           </div>
 
-          <div className="ritual-actions">
+            <div className="ritual-actions">
             <button type="button" className="cta-btn ritual-add-btn" onClick={handleAddKit}>
-              Add entire ritual to bag
+              Add entire routine to bag
             </button>
             <button type="button" className="ghost-btn ritual-secondary-btn" onClick={handleBackHome}>
               Browse full apothecary

@@ -162,11 +162,11 @@ export default function RitualFinder() {
 
       <main className="ritual-finder-shell ng-mobile-shell">
         <header className="ritual-finder-hero" data-animate="fade-up">
-          <SectionTitle
-            title="Ritual Finder"
-            subtitle="Answer a calm handful of questions and we will curate the ritual that matches tonight."
-            align="center"
-          />
+        <SectionTitle
+          title="Routine Finder"
+          subtitle="Answer a calm handful of questions and we will curate the routine that matches tonight."
+          align="center"
+        />
           <p>
             We listen to your focus, time, and scent preferences to recommend the precise balance of
             cleanse, treat, and finish—packaged as our curated bundles.
@@ -214,7 +214,7 @@ export default function RitualFinder() {
                   Back
                 </Button>
                 <Button variant="primary" onClick={handleNext}>
-                  {isLastStep ? "Reveal my ritual" : "Continue"}
+                  {isLastStep ? "Reveal my routine" : "Continue"}
                 </Button>
               </div>
             </article>
@@ -223,7 +223,7 @@ export default function RitualFinder() {
           {complete && primaryBundle && (
             <article className="ritual-finder-results">
               <SectionTitle
-                title="We curated this ritual for you"
+                title="We curated this routine for you"
                 subtitle="Add the bundle that best matches your answers."
                 align="left"
               />
@@ -281,7 +281,7 @@ export default function RitualFinder() {
               )}
               <div className="ritual-finder-controls ritual-finder-controls--reset">
               <Button variant="ghost" onClick={handleReset}>
-                Retake the Ritual Finder
+                Retake the Routine Finder
               </Button>
               <Button variant="secondary" onClick={navigateToCoach}>
                 {t("ritualCoach.cta.refineWithCoach")}

@@ -34,7 +34,7 @@ export const ritualGuides: RitualGuide[] = [
   {
     id: "guide-evening-calm",
     slug: "evening-calm-ritual-guide",
-    title: "Evening Calm Ritual",
+    title: "Evening Calm Routine",
     subtitle: "Slow lights, chamomile foam, and butter-soft layering for a grounded night.",
     heroImage: BodyHandBalmCalmGlow,
     heroCaption: "Settle into each intentional stroke.",
@@ -49,7 +49,7 @@ export const ritualGuides: RitualGuide[] = [
       },
       {
         type: "list",
-        title: "Ritual steps",
+        title: "Routine steps",
         items: [
           "Start with the facial nod to the day (inhale, exhale) before the first rinse.",
           "Use circular motions with the soap until skin feels plush, then rinse with cool water to close the pores.",
@@ -62,20 +62,20 @@ export const ritualGuides: RitualGuide[] = [
         title: "Finish with intention",
         paragraphs: [
           "Let the balm settle for a full minute before slipping into linens—carry the calm into your dreams.",
-          "This ritual pairs beautifully with a cup of chamomile tea or a short journaling pause before bed.",
+          "This routine pairs beautifully with a cup of chamomile tea or a short journaling pause before bed.",
         ],
       },
     ],
     relatedProducts: ["calm-glow-body-soap", "body-balm", "hand-balm"],
     relatedBundles: ["evening-calm-ritual"],
     focusTags: ["body"],
-    tags: ["Evening ritual", "Slow care"],
+    tags: ["Evening routine", "Slow care"],
     featured: true,
   },
   {
     id: "guide-glow-hydrate",
     slug: "glow-and-hydrate-guide",
-    title: "Glow & Hydrate Ritual",
+    title: "Glow & Hydrate Routine",
     subtitle: "Polish the skin, capture dew, and wear luminosity all day.",
     heroImage: SilkBlossomBodyBalm,
     heroCaption: "Layers that reflect candlelight.",
@@ -101,7 +101,7 @@ export const ritualGuides: RitualGuide[] = [
         type: "section",
         title: "Carry the radiance",
         paragraphs: [
-          "This ritual lets the skin glow without glitter—just a hint of mica and lush hydration.",
+          "This routine lets the skin glow without glitter—just a hint of mica and lush hydration.",
           "Pair with a silk robe or linen wrap to keep the moisture sealed and the moment ceremonial.",
         ],
       },
@@ -109,16 +109,16 @@ export const ritualGuides: RitualGuide[] = [
     relatedProducts: ["silk-blossom-body-soap", "body-balm"],
     relatedBundles: ["glow-hydrate-duo"],
     focusTags: ["body"],
-    tags: ["Morning ritual", "Glow"],
+    tags: ["Morning routine", "Glow"],
     featured: true,
   },
   {
     id: "guide-hair-strength",
     slug: "strengthening-hair-ritual",
-    title: "Strengthening Hair Ritual",
+    title: "Strengthening Hair Routine",
     subtitle: "Root-to-tip fortification with rosemary stem cells and silk-like oils.",
     heroImage: HairGrowthEnhanced,
-    heroCaption: "The ritual for resilient, luminous strands.",
+    heroCaption: "The routine for resilient, luminous strands.",
     body: [
       {
         type: "section",
@@ -139,7 +139,7 @@ export const ritualGuides: RitualGuide[] = [
       },
       {
         type: "section",
-        title: "The ritual effect",
+        title: "The routine effect",
         paragraphs: [
           "The blend of rosemary, biotin, and silk proteins keeps strands strong yet soft.",
           "Complete the moment with a soft cloth wrap or gentle head massage.",
@@ -149,7 +149,7 @@ export const ritualGuides: RitualGuide[] = [
     relatedProducts: ["hair-growth-oil", "hair-shine-anti-frizz-oil"],
     relatedBundles: ["hair-strength-ritual"],
     focusTags: ["hair"],
-    tags: ["Hair ritual", "Strength"],
+    tags: ["Hair routine", "Strength"],
   },
 ];
 

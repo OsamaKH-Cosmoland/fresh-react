@@ -83,7 +83,7 @@ export default function ReviewsSection() {
       const saved = await response.json();
       setReviews((prev) => [saved, ...prev]);
       setForm({ name: "", rating: 5, message: "" });
-      setStatus({ type: "success", message: "Thank you for sharing your ritual!" });
+      setStatus({ type: "success", message: "Thank you for sharing your routine!" });
     } catch (err) {
       console.error("Failed to submit review:", err);
       const message = (err as Error)?.message ?? "Unable to submit review.";
@@ -101,7 +101,7 @@ export default function ReviewsSection() {
             <p className="reviews-eyebrow">Our community&apos;s experiences</p>
             <SectionTitle
               title="Customer Reviews"
-              subtitle="Discover how NaturaGloss rituals have elevated everyday routines."
+              subtitle="Discover how NaturaGloss routines have elevated everyday moments."
             />
             <p className="reviews-average">
               <span className="reviews-stars" aria-hidden="true">
@@ -134,7 +134,7 @@ export default function ReviewsSection() {
 
         <form className="reviews-form" onSubmit={handleSubmit}>
           <Card className="reviews-form-card">
-            <SectionTitle title="Share your ritual" subtitle="Tell us about your NaturaGloss moment." />
+            <SectionTitle title="Share your routine" subtitle="Tell us about your NaturaGloss moment." />
             <div className="reviews-form__grid">
               <InputField
                 label="Your name"
@@ -158,7 +158,7 @@ export default function ReviewsSection() {
               <TextareaField
                 label="Your experience"
                 name="message"
-                placeholder="Tell us about your ritual..."
+                placeholder="Tell us about your routine..."
                 rows={4}
                 value={form.message}
                 onChange={handleChange}
@@ -189,7 +189,7 @@ export default function ReviewsSection() {
         ) : error ? (
           <p className="reviews-status reviews-status--error">{error}</p>
         ) : reviews.length === 0 ? (
-          <p className="reviews-empty">No stories yet — be the first to share your ritual.</p>
+          <p className="reviews-empty">No stories yet — be the first to share your routine.</p>
         ) : (
           reviews.map((review, index) => (
             <Card

@@ -23,7 +23,7 @@ export const ritualStories: RitualStory[] = [
     title: "The Silk Blossom Moment",
     date: "2025-01-18",
     summary:
-      "A tender, feminine ritual with the Silk Blossom Body Soap — capturing softness, elegance, and a feeling of quiet beauty.",
+      "A tender, feminine routine with the Silk Blossom Body Soap — capturing softness, elegance, and a feeling of quiet beauty.",
     body: `
 In the shower’s warmth, she reaches for the Silk Blossom Body Soap —  
 a scent that feels like early spring and soft petals.
@@ -69,7 +69,7 @@ A fresh beginning carried through the rest of the day.
 
   {
     slug: "the-evening-body-balm-ritual",
-    title: "The Evening Body Balm Ritual",
+    title: "The Evening Body Balm Routine",
     date: "2025-01-05",
     summary:
       "A slow evening moment that softens the skin and settles the mind — captured through the warmth of the Body Balm.",
@@ -81,7 +81,7 @@ She warms a small amount between her hands and breathes slowly.
 With each movement across her skin, the day loosens its grip.  
 Tension melts. The breath deepens. The body feels held.  
 
-This ritual isn’t about rushing toward glow —  
+This routine isn’t about rushing toward glow —  
 it’s about allowing the body to return to itself.
 
 A soft sheen appears, but what stays longer is the serenity.  
@@ -89,7 +89,7 @@ For a moment, everything feels warm, nourished, and beautifully still.
     `,
     image: bodyBalmImage,
     readTimeMinutes: 2,
-    tags: ["body-care", "ritual", "relaxation"]
+    tags: ["body-care", "routine", "relaxation"]
   },
 
   {
@@ -97,7 +97,7 @@ For a moment, everything feels warm, nourished, and beautifully still.
     title: "The Hands That Do So Much",
     date: "2025-01-22",
     summary:
-      "A restoring ritual with the Hand Balm — honoring the hands that carry responsibility, warmth, and everyday strength.",
+      "A restoring routine with the Hand Balm — honoring the hands that carry responsibility, warmth, and everyday strength.",
     body: `
 Her hands carry stories —  
 work, care, responsibility, quiet acts of love.
@@ -114,12 +114,12 @@ it's recognition.
 A moment of gratitude for the hands that do so much,  
 and ask for so little in return.
 
-She finishes the ritual with a deep breath,  
+She finishes the routine with a deep breath,  
 feeling restored, present, and gently renewed.
     `,
     image: handBalmImage,
     readTimeMinutes: 2,
-    tags: ["hand-care", "restoration", "ritual"]
+    tags: ["hand-care", "restoration", "routine"]
   },
 
   {
@@ -129,7 +129,7 @@ feeling restored, present, and gently renewed.
     summary:
       "A tiny moment of nourishment — using the Lip Balm as a reminder to slow down and breathe throughout the day.",
     body: `
-Not every ritual is grand.  
+Not every routine is grand.  
 Some are small enough to fit in the palm of the hand.
 
 She uncaps the Lip Balm,  
@@ -138,12 +138,12 @@ and for a quiet second, the day pauses.
 A soft glide across her lips —  
 hydration, comfort, a gentle return to softness.  
 
-It becomes a mindful ritual:  
+It becomes a mindful routine:  
 every application a reminder to slow down,  
 breathe, recalibrate, and continue with ease.
 
 The world moves fast.  
-Her ritual doesn’t need to.
+Her routine doesn’t need to.
     `,
     image: lipBalmImage,
     readTimeMinutes: 1,
@@ -155,7 +155,7 @@ Her ritual doesn’t need to.
     title: "The Hair Growth Journey",
     date: "2025-01-08",
     summary:
-      "A quiet self-care commitment — discovering strength, patience, and confidence through the Hair Growth Oil ritual.",
+      "A quiet self-care commitment — discovering strength, patience, and confidence through the Hair Growth Oil routine.",
     body: `
 Growth is rarely loud.  
 More often, it happens in small, quiet moments —  
@@ -165,7 +165,7 @@ She massages her scalp slowly, following her breath.
 The herb-rich aroma rises softly, grounding her senses.  
 With every gentle circular motion, she invites circulation, warmth, and renewal.  
 
-It becomes more than a hair ritual.  
+It becomes more than a hair routine.  
 It's a promise to herself — to stay consistent, to nurture, to trust the process.  
 
 Weeks pass, confidence returns, and the mirror begins to show the story:  
@@ -173,12 +173,12 @@ stronger strands… healthier roots… a softness that feels earned.
     `,
     image: hairGrowthImage,
     readTimeMinutes: 3,
-    tags: ["hair-care", "growth", "ritual"]
+    tags: ["hair-care", "growth", "routine"]
   },
 
   {
     slug: "the-shine-and-confidence-ritual",
-    title: "The Shine & Confidence Ritual",
+    title: "The Shine & Confidence Routine",
     date: "2025-01-12",
     summary:
       "A moment of softness and control — using the Hair Shine & Anti-Frizz Oil to reveal natural, effortless confidence.",

@@ -20,7 +20,7 @@ export const giftBoxStyles: GiftBoxStyle[] = [
   {
     id: "classic-kraft",
     name: "Classic Kraft Box",
-    description: "Earthy kraft with gold foil, ideal for timeless rituals.",
+    description: "Earthy kraft with gold foil, ideal for timeless routines.",
     price: 120,
     color: "#A4752B",
   },

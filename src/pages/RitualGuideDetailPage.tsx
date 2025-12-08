@@ -54,7 +54,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main className="ritual-guide-detail-page__content ng-mobile-shell">
           <SectionTitle title="Guide not found" align="center" />
-          <p>The ritual you are seeking has not yet been written.</p>
+          <p>The routine you are seeking has not yet been written.</p>
         </main>
       </div>
     );
@@ -112,7 +112,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
           <section className="ritual-guide-related" data-animate="fade-up">
             <div className="ritual-guide-related__header">
               <SectionTitle
-                title="Layer these rituals"
+                title="Layer these routines"
                 subtitle="Pair the guide with products and bundles that bring it to life."
                 align="left"
               />

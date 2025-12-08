@@ -90,11 +90,11 @@ export default function SearchPage() {
 
       <main className="shop-page__content ng-mobile-shell">
         <SectionTitle
-          title="Search rituals, products, or experiences"
+          title="Search routines, products, or experiences"
           subtitle={
             query
               ? `Showing “${query}”. Refine the words or clear the field to see everything.`
-              : "Browse every ritual. Use keywords, focus tags, or the Ritual Finder to guide you."
+              : "Browse every routine. Use keywords, focus tags, or the Routine Finder to guide you."
           }
           align="center"
         />
@@ -104,7 +104,7 @@ export default function SearchPage() {
             <div className="shop-results__group">
               <div className="shop-results__header">
                 <h3>Products</h3>
-                <p>Singles to slot into your daily care ritual.</p>
+                <p>Singles to slot into your daily care routine.</p>
               </div>
               <div className="shop-product-grid">
                 {products.map(({ entry, detail }) => {
@@ -188,7 +188,7 @@ export default function SearchPage() {
             <div className="shop-results__group">
               <div className="shop-results__header">
                 <h3>Guides</h3>
-                <p>Editorial rituals and essays for mindful care.</p>
+                <p>Editorial routines and essays for mindful care.</p>
               </div>
               <div className="shop-product-grid search-guides-grid">
                 {guideResults
@@ -234,7 +234,7 @@ export default function SearchPage() {
             <div className="shop-results__group">
               <div className="shop-results__header">
                 <h3>Bundles</h3>
-                <p>Cohesive rituals that combine your favorite items.</p>
+                <p>Cohesive routines that combine your favorite items.</p>
               </div>
               <div className="shop-bundle-grid">
                 {bundles.map(({ entry, bundle }) => (
@@ -269,7 +269,7 @@ export default function SearchPage() {
             <div className="shop-results__group">
               <div className="shop-results__header">
                 <h3>Experiences</h3>
-                <p>Guidance and rituals to inspire each moment.</p>
+                <p>Guidance and routines to inspire each moment.</p>
               </div>
               <div className="shop-bundle-grid">
                 {experienceResults.map((entry) => (

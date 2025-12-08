@@ -68,7 +68,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     heroSummaryBullets: [
       "Locks in long-lasting hydration without feeling greasy.",
       "Softens rough areas like elbows, knees, and hands.",
-      "Wraps your body in a quiet, comforting ritual at the end of the day.",
+      "Wraps your body in a quiet, comforting routine at the end of the day.",
     ],
     heroImage: bodyBalmImage,
     whatItsMadeFor:
@@ -85,7 +85,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       },
       {
         title: "Repeat where needed",
-        description: "Boost the ritual on heels, hands, and shoulders before bed for extra calm.",
+        description: "Boost the routine on heels, hands, and shoulders before bed for extra calm.",
       },
     ],
     ingredients: [
@@ -133,7 +133,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     heroSummaryBullets: [
       "Creamy chamomile lather comforts skin while polishing the surface.",
       "Removes impurities without stripping natural oils.",
-      "Builds a gentle glow so skin feels settled before ritual steps.",
+      "Builds a gentle glow so skin feels settled before routine steps.",
     ],
     heroImage: bodySoapOne,
     whatItsMadeFor:
@@ -149,7 +149,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       },
       {
         title: "Glow",
-        description: "Rinse, pat lightly, and follow with the Body Balm ritual to seal in calm.",
+        description: "Rinse, pat lightly, and follow with the Body Balm routine to seal in calm.",
       },
     ],
     ingredients: [
@@ -262,7 +262,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       },
       {
         question: "Is it safe for daily use?",
-        answer: "Yes—the formula is balanced for everyday bathing rituals.",
+        answer: "Yes—the formula is balanced for everyday bathing routines.",
       },
     ],
   },
@@ -371,7 +371,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     ],
     heroImage: hairGrowthImage,
     whatItsMadeFor:
-      "For those growing their ritual—this elixir nourishes the scalp, encourages resilience, and leaves hair whisper-soft.",
+      "For those growing their routine—this elixir nourishes the scalp, encourages resilience, and leaves hair whisper-soft.",
     ritualSteps: [
       { title: "Section", description: "Part hair into sections to apply evenly on the scalp." },
       {

@@ -77,7 +77,7 @@ export default function FavoritesPage() {
       <main className="shop-page__content ng-mobile-shell">
         <SectionTitle
           title="Saved favourites"
-          subtitle="Bookmark rituals and products that feel right now."
+        subtitle="Bookmark routines and products that feel right now."
           align="center"
         />
 
@@ -86,7 +86,7 @@ export default function FavoritesPage() {
             <div className="shop-results__group" data-animate="fade-up">
               <div className="shop-results__header">
                 <h3>Products</h3>
-                <p>Individual essentials you saved for the next ritual.</p>
+                <p>Individual essentials you saved for the next routine.</p>
               </div>
               <div className="shop-product-grid ng-grid-mobile-2">
                 {favoriteProducts.map((detail) => (
@@ -144,7 +144,7 @@ export default function FavoritesPage() {
             <div className="shop-results__group" data-animate="fade-up">
               <div className="shop-results__header">
                 <h3>Bundles</h3>
-                <p>Saved rituals ready to be layered.</p>
+                <p>Saved routines ready to be layered.</p>
               </div>
               <div className="shop-bundle-grid ng-grid-mobile-2">
                 {favoriteBundles.map((bundle) => (
@@ -179,7 +179,7 @@ export default function FavoritesPage() {
           {!hasFavorites && (
             <div className="shop-empty-state">
               <h3>No favourites yet</h3>
-              <p>Tap the heart on any product or ritual to save it here for later.</p>
+              <p>Tap the heart on any product or routine to save it here for later.</p>
               <div className="shop-product-card__actions">
                 <Button variant="secondary" size="md" onClick={() => navigateTo("/shop")}>
                   {t("cta.browseShop")}

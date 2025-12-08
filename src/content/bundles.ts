@@ -17,10 +17,10 @@ export const ritualBundles: RitualBundle[] = [
   {
     id: "evening-calm-ritual",
     slug: "evening-calm-ritual",
-    name: "Evening Calm Ritual",
+    name: "Evening Calm Routine",
     tagline: "Wind down with buttery hydration and chamomile serenity.",
-    description: "A ritual for settling in—cleanse, soften, and cocoon your skin before bedtime.",
-    highlight: "Includes travel-ready body and hand balms for ritual layering.",
+    description: "A routine for settling in—cleanse, soften, and cocoon your skin before bedtime.",
+    highlight: "Includes travel-ready body and hand balms for routine layering.",
     featured: true,
     products: [
       { productId: "body-balm", variantId: "body-balm-lavender" },
@@ -46,7 +46,7 @@ export const ritualBundles: RitualBundle[] = [
   {
     id: "hair-strength-ritual",
     slug: "hair-strength-ritual",
-    name: "Hair Strength Ritual",
+    name: "Hair Strength Routine",
     tagline: "Fortify roots, smooth strands, glow from scalp to ends.",
     description: "Stem cells and silk-like oils team up to support resilient, glossy hair.",
     featured: true,
@@ -62,7 +62,7 @@ export const ritualBundles: RitualBundle[] = [
     slug: "hands-lips-care-set",
     name: "Hands & Lips Care Set",
     tagline: "Focus on the details.",
-    description: "The quick duo for palms and pout, perfect for on-the-go rituals.",
+    description: "The quick duo for palms and pout, perfect for on-the-go routines.",
     products: [
       { productId: "hand-balm" },
       { productId: "lip-balm" },

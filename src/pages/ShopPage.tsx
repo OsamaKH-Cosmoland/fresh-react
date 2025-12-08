@@ -99,8 +99,8 @@ export default function ShopPage() {
 
       <main className="shop-page__content ng-mobile-shell">
         <SectionTitle
-          title="Shop all rituals & products"
-          subtitle="Every product and bundle lives here. Filter by focus or type to find the ritual that fits your day."
+          title="Shop all routines & products"
+          subtitle="Every product and bundle lives here. Filter by focus or type to find the routine that fits your day."
           align="center"
         />
 

@@ -24,8 +24,8 @@ export default function RitualGuidesPage() {
 
       <main className="ritual-guides-page__content ng-mobile-shell">
         <SectionTitle
-          title="Ritual Guides"
-          subtitle="Calm essays, rituals, and gentle know-how to guide every layer."
+          title="Routine Guides"
+          subtitle="Calm essays, routines, and gentle know-how to guide every layer."
           align="center"
         />
         <div className="ritual-guides-grid ng-grid-mobile-2">

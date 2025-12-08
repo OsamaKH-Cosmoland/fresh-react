@@ -112,11 +112,11 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
       </section>
       {relatedBundles.length > 0 && (
         <section className="product-detail-bundles ng-mobile-shell" data-animate="fade-up">
-          <SectionTitle
-            title="Complete your ritual"
-            subtitle="These curated bundles pair naturally with this beauty."
-            align="left"
-          />
+        <SectionTitle
+          title="Complete your routine"
+          subtitle="These curated bundles pair naturally with this beauty."
+          align="left"
+        />
           <div className="bundle-grid ng-grid-mobile-2">
             {relatedBundles.map((bundle) => (
               <BundleCard

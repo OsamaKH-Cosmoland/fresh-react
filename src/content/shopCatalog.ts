@@ -13,9 +13,9 @@ export const SHOP_FOCUS_TAGS = [
 export type FocusTagId = (typeof SHOP_FOCUS_TAGS)[number]["id"];
 
 export const SHOP_OPTIONAL_TAGS = [
-  { id: "morning", label: "Morning ritual" },
-  { id: "evening", label: "Evening ritual" },
-  { id: "express", label: "Express ritual" },
+  { id: "morning", label: "Morning routine" },
+  { id: "evening", label: "Evening routine" },
+  { id: "express", label: "Express routine" },
 ] as const;
 
 export type OptionalTagId = (typeof SHOP_OPTIONAL_TAGS)[number]["id"];

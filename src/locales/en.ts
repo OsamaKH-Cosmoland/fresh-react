@@ -5,26 +5,26 @@ export const en = {
     favourites: "Favourites",
     finder: "Find My Product",
     journal: "Our Journal",
-    guides: "Ritual Guides",
+    guides: "Routine Guides",
     giftBuilder: "Build a gift",
     compare: "Compare",
     cart: "Cart",
     viewCart: "View cart",
     orders: "Orders",
-    ritualProfile: "Your ritual profile",
-    ritualCoach: "Ritual Coach",
+    ritualProfile: "Your routine profile",
+    ritualCoach: "Routine Coach",
   },
   sections: {
-    ritualGuides: "Ritual guides",
-    yourRituals: "Your rituals",
-    savedRituals: "Saved rituals",
-    yourSavedRituals: "Your saved rituals",
+    ritualGuides: "Routine guides",
+    yourRituals: "Your routines",
+    savedRituals: "Saved routines",
+    yourSavedRituals: "Your saved routines",
     yourFavourites: "Your favourites",
     recentlyViewed: "Recently viewed",
-    ritualBundles: "Ritual bundles",
+    ritualBundles: "Routine bundles",
     newHere: "New here?",
-    theRitualJournal: "The Ritual Journal",
-    ritualProfile: "Your ritual profile",
+    theRitualJournal: "The Routine Journal",
+    ritualProfile: "Your routine profile",
   },
   reviews: {
     sectionTitle: "Customer reviews",
@@ -47,11 +47,11 @@ export const en = {
       verifiedBadge: "Verified purchase",
       anonymous: "Anonymous",
       photoAlt: "Customer photo",
-      empty: "No reviews yet — be the first to share your ritual.",
+      empty: "No reviews yet — be the first to share your routine.",
     },
     form: {
-      heading: "Share your ritual",
-      subtitle: "Tell us how this ritual made you feel.",
+      heading: "Share your routine",
+      subtitle: "Tell us how this routine made you feel.",
       labels: {
         rating: "Rating",
         title: "Headline (optional)",
@@ -64,7 +64,7 @@ export const en = {
       submit: "Submit review",
       success: "Your review is live — thank you.",
       errors: {
-        body: "Share a few words describing this ritual.",
+        body: "Share a few words describing this routine.",
         generic: "Something went wrong — please try again.",
       },
     },
@@ -76,17 +76,17 @@ export const en = {
   },
   cta: {
     addToBag: "Add to bag",
-    addRitualToBag: "Add ritual to bag",
+    addRitualToBag: "Add routine to bag",
     viewDetails: "View details",
-    findYourRitual: "Find your ritual",
+    findYourRitual: "Find your routine",
     viewAllGuides: "View all guides",
     readGuide: "Read guide",
-    resumeRitual: "Resume ritual",
-    viewRitual: "View ritual",
-    helpChooseRitual: "Help me choose a ritual",
-    browseRitualsProducts: "Browse rituals & products",
+    resumeRitual: "Resume routine",
+    viewRitual: "View routine",
+    helpChooseRitual: "Help me choose a routine",
+    browseRitualsProducts: "Browse routines & products",
     browseShop: "Browse shop",
-    openRitualFinder: "Open Ritual Finder",
+    openRitualFinder: "Open Routine Finder",
     goToShop: "Go to shop",
     open: "Open",
     clearAll: "Clear all",
@@ -97,50 +97,50 @@ export const en = {
     clearBag: "Clear bag",
     proceedToCheckout: "Proceed to checkout",
     viewBag: "View bag",
-    createRitualProfile: "Create your ritual profile",
+    createRitualProfile: "Create your routine profile",
   },
   loader: {
     yourBag: "Your Bag",
-    gatheringYourRituals: "Gathering your rituals",
-    ritualFinder: "Ritual Finder",
-    craftingYourRitualPath: "Crafting your ritual path",
+    gatheringYourRituals: "Gathering your routines",
+    ritualFinder: "Routine Finder",
+    craftingYourRitualPath: "Crafting your routine path",
     search: "Search",
-    aligningEveryRitualNote: "Aligning every ritual note",
+    aligningEveryRitualNote: "Aligning every routine note",
     compare: "Compare",
-    balancingYourRituals: "Balancing your rituals",
+    balancingYourRituals: "Balancing your routines",
     yourFavourites: "Your Favourites",
     gatheringYourCalmPicks: "Gathering your calm picks",
     shop: "Shop",
-    curatingTheRitualCatalog: "Curating the ritual catalog",
-    ritualGuides: "Ritual Guides",
+    curatingTheRitualCatalog: "Curating the routine catalog",
+    ritualGuides: "Routine Guides",
     sourcingMindfulGuides: "Sourcing mindful guides",
     giftBuilder: "Gift Builder",
     assemblingYourCustomBox: "Assembling your custom box",
-    ritualProfile: "Designing your ritual profile",
+    ritualProfile: "Designing your routine profile",
     ordersHistory: "Order history",
   },
   search: {
-    placeholder: "Quick find rituals, products, Finder...",
+    placeholder: "Quick find routines, products, Finder...",
     noResults: "No results yet. Try another term or press enter to browse everything.",
     seeAll: "See all results",
   },
   filters: {
-    allRitualsProducts: "All rituals & products",
+    allRitualsProducts: "All routines & products",
     products: "Products",
   },
   onboarding: {
     hero: {
-      title: "Create your ritual profile",
+      title: "Create your routine profile",
       subtitle:
-        "Share a few gentle preferences so NaturaGloss can tailor each landing moment and Ritual Finder curation to your calm.",
+        "Share a few gentle preferences so NaturaGloss can tailor each landing moment and Routine Finder curation to your calm.",
     },
     steps: {
       concerns: {
         title: "Where your attention lands",
-        description: "Choose the rituals or rituals areas you most want to nourish.",
+        description: "Choose the routines or routine areas you most want to nourish.",
       },
       time: {
-        title: "Ideal ritual timing",
+        title: "Ideal routine timing",
         description: "When do you most welcome restorative moments?",
       },
       scent: {
@@ -149,7 +149,7 @@ export const en = {
       },
       budget: {
         title: "Budget comfort",
-        description: "Share how you typically lean into ritual purchases.",
+        description: "Share how you typically lean into routine purchases.",
       },
     },
     options: {
@@ -164,13 +164,13 @@ export const en = {
         },
         handsLips: {
           label: "Hands & lips care",
-          helper: "Target palms and pout with quick-touch rituals.",
+          helper: "Target palms and pout with quick-touch routines.",
         },
       },
       time: {
         morning: {
           label: "Morning ease",
-          helper: "Quick rituals that wake your skin with calm.",
+          helper: "Quick routines that wake your skin with calm.",
         },
         evening: {
           label: "Evening unwind",
@@ -178,7 +178,7 @@ export const en = {
         },
         both: {
           label: "Morning + evening",
-          helper: "Repeatable rituals whenever you crave softness.",
+          helper: "Repeatable routines whenever you crave softness.",
         },
         express: {
           label: "Express resets",
@@ -206,10 +206,10 @@ export const en = {
       budget: {
         valueFocused: {
           label: "Value-focused",
-          helper: "Ritual sets that feel generous and grounded.",
+          helper: "Routine sets that feel generous and grounded.",
         },
         premium: {
-          label: "Premium ritual",
+          label: "Premium routine",
           helper: "Layered, small-batch experiences with luxe finishes.",
         },
       },
@@ -220,24 +220,24 @@ export const en = {
       skipStep: "Skip this step",
       continue: "Continue",
       finish: "Save preferences",
-      edit: "Update my ritual profile",
+      edit: "Update my routine profile",
     },
     completion: {
       title: "You're all set",
       subtitle:
-        "Your ritual profile is stored locally and helps guide the landing page and Ritual Finder.",
+        "Your routine profile is stored locally and helps guide the landing page and Routine Finder.",
       body: "Return anytime to fine-tune what you care about.",
       ctas: {
         landing: "Return to landing",
-        finder: "Open Ritual Finder",
+        finder: "Open Routine Finder",
       },
     },
     personalization: {
-      title: "Your ritual profile",
-      description: "We highlight rituals that match your focus and rituals timing.",
+      title: "Your routine profile",
+      description: "We highlight routines that match your focus and routines timing.",
       updateLink: "Edit profile",
     },
-    hint: "Based on your ritual profile, we already favor these gentle rituals.",
+    hint: "Based on your routine profile, we already favor these gentle routines.",
     progress: {
       step: "Step {current} of {total}",
     },
@@ -248,7 +248,7 @@ export const en = {
   checkout: {
     hero: {
       title: "Guide your checkout",
-      subtitle: "Four gentle steps to review your ritual stack and confirm delivery.",
+      subtitle: "Four gentle steps to review your routine stack and confirm delivery.",
       meta: "No surprises, just calm curation.",
     },
     steps: {
@@ -259,9 +259,9 @@ export const en = {
     },
     sections: {
       contact: "Contact & shipping details",
-      contactHelp: "Share how NaturaGloss can reach you to deliver your ritual.",
+      contactHelp: "Share how NaturaGloss can reach you to deliver your routine.",
       shipping: "Choose a shipping method",
-      shippingHelp: "Select the delivery pace that fits your ritual timing.",
+      shippingHelp: "Select the delivery pace that fits your routine timing.",
       payment: "Pick a payment way",
       paymentHelp: "We simulate card entry so you can see the flow before it is live.",
       review: "Review & confirm",
@@ -334,11 +334,11 @@ export const en = {
     },
     empty: {
       title: "Your bag feels light.",
-      body: "Add a ritual before we can walk you through checkout.",
+      body: "Add a routine before we can walk you through checkout.",
     },
     confirmation: {
       title: "Thank you",
-      subtitle: "Your ritual is on its way with a whispered note.",
+      subtitle: "Your routine is on its way with a whispered note.",
       summary: "You placed {itemCount} items totaling {total}.",
       viewOrders: "View your orders",
     },
@@ -348,7 +348,7 @@ export const en = {
   },
   ordersHistory: {
     title: "Order history",
-    subtitle: "Revisit every ritual you've gathered.",
+    subtitle: "Revisit every routine you've gathered.",
     empty: "You have no orders yet. Build a bag to save the first one.",
     labels: {
       orderId: "Order",
@@ -368,21 +368,21 @@ export const en = {
   },
   ritualCoach: {
     loader: {
-      title: "Ritual Coach",
-      subtitle: "Curating gentle rituals that match your preferences.",
+      title: "Routine Coach",
+      subtitle: "Curating gentle routines that match your preferences.",
     },
     hero: {
-      title: "Ask the Ritual Coach",
-      subtitle: "A rules-based companion to guide your next ritual—clear, grounded, and always in tune with what you care about.",
+      title: "Ask the Routine Coach",
+      subtitle: "A rules-based companion to guide your next routine—clear, grounded, and always in tune with what you care about.",
     },
     profileRecap: {
       template:
-        "You said you care about {focus} rituals, lean into {time} timing, favor {scent} notes, and keep a {budget} budget.",
-      empty: "Create a ritual profile so the coach can tune into what matters to you.",
+        "You said you care about {focus} routines, lean into {time} timing, favor {scent} notes, and keep a {budget} budget.",
+      empty: "Create a routine profile so the coach can tune into what matters to you.",
     },
     controls: {
       intensity: {
-        label: "How intense do you want your ritual?",
+        label: "How intense do you want your routine?",
         helper: "Choose the energy level that fits tonight—minimal, balanced, or indulgent.",
         options: {
           minimal: "Minimal",
@@ -397,7 +397,7 @@ export const en = {
       },
     },
     sections: {
-      main: "Your main ritual",
+      main: "Your main routine",
       lighter: "A lighter option",
       treats: "Treat yourself add-ons",
     },
@@ -406,24 +406,24 @@ export const en = {
       lighter: "A softer {intensity} pulse that still honors your {focus} focus and {time} timing.",
       treats: "Layer these {scent} touches when you crave a {mood} finish.",
     },
-    emptyState: "The coach needs a ritual profile to craft a match.",
+    emptyState: "The coach needs a routine profile to craft a match.",
     treats: {
       empty: "Return after setting a focus to see gentle add-ons.",
     },
     savedCartName: {
-      base: "Coach ritual",
+      base: "Coach routine",
     },
     savedCartMessage: {
-      success: "Saved your coach ritual.",
+      success: "Saved your coach routine.",
       empty: "Add something before saving.",
     },
     cta: {
-      createProfile: "Create my ritual profile",
-      addFullRitual: "Add full ritual to bag",
-      saveRitual: "Save this ritual",
+      createProfile: "Create my routine profile",
+      addFullRitual: "Add full routine to bag",
+      saveRitual: "Save this routine",
       askAgain: "Ask the coach again",
-      askCoach: "Ask the Ritual Coach",
-      refineWithCoach: "Refine with the Ritual Coach",
+      askCoach: "Ask the Routine Coach",
+      refineWithCoach: "Refine with the Routine Coach",
     },
   },
 } as const;

@@ -23,7 +23,7 @@ export interface QuizQuestion {
 export const RITUAL_QUESTIONS: QuizQuestion[] = [
   {
     id: "focus",
-    title: "Which ritual focus feels right tonight?",
+    title: "Which routine focus feels right tonight?",
     description: "Select the mood that matches your skin + scalp story.",
     options: [
       {
@@ -36,7 +36,7 @@ export const RITUAL_QUESTIONS: QuizQuestion[] = [
       {
         value: "hands",
         label: "Hands & lips care",
-        helper: "Focus on palms and pout with targeted rituals.",
+        helper: "Focus on palms and pout with targeted routines.",
         bundleScores: { "hands-lips-care-set": 3 },
         products: ["hand-balm", "lip-balm"],
       },
@@ -52,18 +52,18 @@ export const RITUAL_QUESTIONS: QuizQuestion[] = [
   {
     id: "time",
     title: "How much time feels available?",
-    description: "Every ritual can be brief or luxuriant—choose the cadence you want.",
+    description: "Every routine can be brief or luxuriant—choose the cadence you want.",
     options: [
       {
         value: "express",
         label: "Express (under 5 minutes)",
-        helper: "Lean into power rituals that can still feel indulgent.",
+        helper: "Lean into power routines that can still feel indulgent.",
         bundleScores: { "hair-strength-ritual": 2 },
       },
       {
         value: "unwind",
         label: "Unwind (10–15 minutes)",
-        helper: "A gentle, slowing-down ritual for evening softness.",
+        helper: "A gentle, slowing-down routine for evening softness.",
         bundleScores: { "evening-calm-ritual": 2, "glow-hydrate-duo": 1 },
         products: ["body-balm"],
       },
@@ -78,7 +78,7 @@ export const RITUAL_QUESTIONS: QuizQuestion[] = [
   {
     id: "scent",
     title: "What kind of aromatic finish do you crave?",
-    description: "Pick the fragrance family that supports your slow rituals.",
+    description: "Pick the fragrance family that supports your slow routines.",
     options: [
       {
         value: "botanical",

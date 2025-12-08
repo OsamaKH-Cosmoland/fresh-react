@@ -25,7 +25,7 @@ export const customerReviews: CustomerReview[] = [
     rating: 5,
     quote: "It melts in and leaves my arms feeling like silk—no greasiness, just a calm glow.",
     author: "Maya, Cairo",
-    detail: "Completely replaced my heavy night creams. I use it nightly after the Calm & Glow ritual and wake up with smoother skin.",
+    detail: "Completely replaced my heavy night creams. I use it nightly after the Calm & Glow routine and wake up with smoother skin.",
   },
   {
     id: "review-body-balm-2",
@@ -52,7 +52,7 @@ export const customerReviews: CustomerReview[] = [
     id: "review-hair-bundle",
     bundleId: "hair-strength-ritual",
     rating: 5,
-    quote: "I was skeptical about bundles, but this ritual feels like a ceremony. The salon shine stays longer.",
+    quote: "I was skeptical about bundles, but this routine feels like a ceremony. The salon shine stays longer.",
     author: "Sara, Maadi",
   },
 ];

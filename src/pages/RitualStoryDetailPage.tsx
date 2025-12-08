@@ -13,7 +13,7 @@ export default function RitualStoryDetailPage({ slug }: RitualStoryDetailPagePro
     return (
       <main className="ritual-story-detail">
         <SlideUp>
-          <SectionTitle title="Story not found" subtitle="Return to the Ritual Stories library." />
+          <SectionTitle title="Story not found" subtitle="Return to the Routine Stories library." />
         </SlideUp>
         <FadeIn delay={0.1}>
           <div className="ritual-story-detail__cta">
