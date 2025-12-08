@@ -5,27 +5,27 @@ export const ar = {
     favourites: "المفضلات",
     finder: "ابحث عن منتج",
     journal: "مدونتنا",
-    guides: "دلائل الطقوس",
+    guides: "دلائل الروتين",
     giftBuilder: "كوّن هدية",
     compare: "قارن",
     cart: "السلة",
     viewCart: "عرض السلة",
     orders: "الطلبات",
     account: "الحساب",
-    ritualProfile: "ملف طقوسك",
-    ritualCoach: "مدرب الطقوس",
+    ritualProfile: "ملف روتينك",
+    ritualCoach: "مدرب الروتين",
   },
   sections: {
-    ritualGuides: "دلائل الطقوس",
-    yourRituals: "طقوسك",
-    savedRituals: "طقوس محفوظة",
-    yourSavedRituals: "طقوسك المحفوظة",
+    ritualGuides: "دلائل الروتين",
+    yourRituals: "روتينك",
+    savedRituals: "روتين محفوظ",
+    yourSavedRituals: "روتينك المحفوظ",
     yourFavourites: "المفضلات",
     recentlyViewed: "شوهد مؤخراً",
-    ritualBundles: "مجموعات الطقوس",
+    ritualBundles: "مجموعات الروتين",
     newHere: "جديد هنا؟",
-    theRitualJournal: "سجل الطقوس",
-    ritualProfile: "ملف طقوسك",
+    theRitualJournal: "سجل الروتين",
+    ritualProfile: "ملف روتينك",
   },
   reviews: {
     sectionTitle: "تقييمات العملاء",
@@ -51,7 +51,7 @@ export const ar = {
       empty: "لا توجد مراجعات بعد – كن أول من يشارك تجربته.",
     },
     form: {
-      heading: "شارك طقسك",
+      heading: "شارك روتينك",
       subtitle: "أخبرنا كيف جعلتك هذه التجربة تشعر.",
       labels: {
         rating: "التقييم",
@@ -65,7 +65,7 @@ export const ar = {
       submit: "إرسال التقييم",
       success: "تم نشر تقييمك – شكراً لك.",
       errors: {
-        body: "شاركنا ببضع كلمات عن هذه الطقوس.",
+        body: "شاركنا ببضع كلمات عن هذا الروتين.",
         generic: "حدث خطأ، نرجو المحاولة لاحقاً.",
       },
     },
@@ -77,17 +77,17 @@ export const ar = {
   },
   cta: {
     addToBag: "أضف إلى السلة",
-    addRitualToBag: "أضف الطقس إلى السلة",
+    addRitualToBag: "أضف الروتين إلى السلة",
     viewDetails: "عرض التفاصيل",
-    findYourRitual: "اختر طقسك",
+    findYourRitual: "اختر روتينك",
     viewAllGuides: "عرض كل الأدلة",
     readGuide: "اقرأ الدليل",
-    resumeRitual: "استكمال الطقس",
-    viewRitual: "عرض الطقس",
-    helpChooseRitual: "ساعدني في اختيار طقس",
-    browseRitualsProducts: "تصفح الطقوس والمنتجات",
+    resumeRitual: "استكمال الروتين",
+    viewRitual: "عرض الروتين",
+    helpChooseRitual: "ساعدني في اختيار روتين",
+    browseRitualsProducts: "تصفح الروتينات والمنتجات",
     browseShop: "تصفح المتجر",
-    openRitualFinder: "افتح موجه الطقوس",
+    openRitualFinder: "افتح موجه الروتين",
     goToShop: "انتقل إلى المتجر",
     open: "افتح",
     clearAll: "مسح الكل",
@@ -98,59 +98,59 @@ export const ar = {
     clearBag: "إفراغ السلة",
     proceedToCheckout: "المتابعة إلى الدفع",
     viewBag: "عرض السلة",
-    createRitualProfile: "أنشئ ملف طقوسك",
+    createRitualProfile: "أنشئ ملف روتينك",
   },
   loader: {
     yourBag: "سلتك",
-    gatheringYourRituals: "نجمع طقوسك",
-    ritualFinder: "موجه الطقوس",
-    craftingYourRitualPath: "ننسج مسار طقسك",
+    gatheringYourRituals: "نجمع روتيناتك",
+    ritualFinder: "موجه الروتين",
+    craftingYourRitualPath: "ننسج مسار روتينك",
     search: "بحث",
-    aligningEveryRitualNote: "ننسق كل نغمة طقسية",
+    aligningEveryRitualNote: "ننسق كل نغمة روتينية",
     compare: "مقارنة",
-    balancingYourRituals: "مواءمة طقوسك",
+    balancingYourRituals: "مواءمة روتيناتك",
     yourFavourites: "مفضلاتك",
     gatheringYourCalmPicks: "نجمع اختيارات الهدوء",
     shop: "المتجر",
-    curatingTheRitualCatalog: "نرتب كتالوج الطقوس",
-    ritualGuides: "دلائل الطقوس",
+    curatingTheRitualCatalog: "نرتب كتالوج الروتين",
+    ritualGuides: "دلائل الروتين",
     sourcingMindfulGuides: "نستقصي دلائل مدروسة",
     giftBuilder: "مصمم الهدايا",
     assemblingYourCustomBox: "نركب صندوقك المخصص",
-    ritualProfile: "نصوغ ملف طقوسك",
+    ritualProfile: "نصوغ ملف روتينك",
     ordersHistory: "سجل الطلبات",
   },
   search: {
-    placeholder: "ابحث سريعاً عن الطقوس والمنتجات وموجه الطقوس...",
+    placeholder: "ابحث سريعاً عن الروتينات والمنتجات وموجه الروتين...",
     noResults: "لا توجد نتائج بعد. جرّب مصطلحاً آخر أو اضغط إدخال لرؤية الكل.",
     seeAll: "عرض كل النتائج",
   },
   filters: {
-    allRitualsProducts: "جميع الطقوس والمنتجات",
+    allRitualsProducts: "جميع الروتينات والمنتجات",
     products: "منتجات",
   },
   onboarding: {
     hero: {
-      title: "أنشئ ملف طقوسك",
+      title: "أنشئ ملف روتينك",
       subtitle:
-        "شارك تفضيلات هادئة حتى يكيّف NaturaGloss كل لحظة هبوط ومسار موجه الطقوس لطريقة هدوءك.",
+        "شارك تفضيلات هادئة حتى يكيّف NaturaGloss كل لحظة هبوط ومسار موجه الروتين لطريقة هدوءك.",
     },
     steps: {
-      concerns: {
+        concerns: {
         title: "أين يتركز اهتمامك",
-        description: "اختر الطقوس أو المناطق التي ترغب في تنعيمها.",
+        description: "اختر الروتين أو المناطق التي ترغب في تنعيمها.",
       },
       time: {
-        title: "متى تفضل طقوسك",
+        title: "متى تفضل روتينك",
         description: "متى ترغب في اللحظات الاسترخائية؟",
       },
       scent: {
         title: "نغمة الرائحة",
         description: "اختر العائلة العطرية التي تشعرك بالهدوء.",
       },
-      budget: {
+        budget: {
         title: "راحة الميزانية",
-        description: "شارك كيف تميل عند اقتناء الطقوس.",
+        description: "شارك كيف تميل عند اقتناء الروتينات.",
       },
     },
     options: {
@@ -168,10 +168,10 @@ export const ar = {
           helper: "لمسات سريعة للراحة على الكفين والشفاه.",
         },
       },
-      time: {
+        time: {
         morning: {
           label: "صباح مريح",
-          helper: "طقوس سريعة تجهّز البشرة لليوم.",
+          helper: "روتين سريع يجهّز البشرة لليوم.",
         },
         evening: {
           label: "سهرات المساء",
@@ -179,7 +179,7 @@ export const ar = {
         },
         both: {
           label: "صباحاً ومساءً",
-          helper: "طقوس يمكن تكرارها عند الشروق والغسق.",
+          helper: "روتينات يمكن تكرارها عند الشروق والغسق.",
         },
         express: {
           label: "إعادة سريعة",
@@ -204,16 +204,16 @@ export const ar = {
           helper: "ملمس نقي دون إضافات عطرية.",
         },
       },
-      budget: {
-        valueFocused: {
-          label: "قيمة مدروسة",
-          helper: "مجموعات سخية ضمن متناول اليد.",
+        budget: {
+          valueFocused: {
+            label: "قيمة مدروسة",
+            helper: "مجموعات سخية ضمن متناول اليد.",
+          },
+          premium: {
+            label: "روتين فاخر",
+            helper: "تجارب بطبعات صغيرة ولمسات فاخرة.",
+          },
         },
-        premium: {
-          label: "طقس فاخر",
-          helper: "تجارب بطبعات صغيرة ولمسات فاخرة.",
-        },
-      },
     },
     actions: {
       back: "عودة",
@@ -221,24 +221,24 @@ export const ar = {
       skipStep: "تخطي هذا السؤال",
       continue: "متابعة",
       finish: "حفظ التفضيلات",
-      edit: "تحديث ملف طقوسك",
+      edit: "تحديث ملف روتينك",
     },
     completion: {
       title: "الآن أنت جاهز",
       subtitle:
-        "يُخزن ملف طقوسك محلياً ويُوجه ما تراه في الصفحة وموجه الطقوس.",
+        "يُخزن ملف روتينك محلياً ويُوجه ما تراه في الصفحة وموجه الروتين.",
       body: "عد في أي وقت لتنعيم ما تهتم به.",
       ctas: {
         landing: "العودة للصفحة الرئيسية",
-        finder: "افتح موجه الطقوس",
+        finder: "افتح موجه الروتين",
       },
     },
     personalization: {
-      title: "ملف طقوسك",
-      description: "نبرز الطقوس التي تتوافق مع تركيزك وتوقيتك.",
+      title: "ملف روتينك",
+      description: "نبرز الروتينات التي تتوافق مع تركيزك وتوقيتك.",
       updateLink: "تعديل الملف",
     },
-    hint: "استناداً لملف طقوسك، نميل لهذه الطقوس الهادئة.",
+    hint: "استناداً لملف روتينك، نميل لهذه الروتينات الهادئة.",
     progress: {
       step: "الخطوة {current} من {total}",
     },
@@ -249,7 +249,7 @@ export const ar = {
   checkout: {
     hero: {
       title: "إرشاد الدفع",
-      subtitle: "أربع خطوات ناعمة لمراجعة طقوسك وتأكيد توصيلها.",
+      subtitle: "أربع خطوات ناعمة لمراجعة روتينك وتأكيد توصيله.",
       meta: "لا مفاجآت، فقط عناية مدروسة.",
     },
     steps: {
@@ -260,9 +260,9 @@ export const ar = {
     },
     sections: {
       contact: "تفاصيل الاتصال والعنوان",
-      contactHelp: "أخبرنا كيف نصل إليك لنصل طقوسك برفق.",
+      contactHelp: "أخبرنا كيف نصل إليك لنصل روتينك برفق.",
       shipping: "اختر طريقة شحن",
-      shippingHelp: "عيّن وتيرة التوصيل التي تناسب توقيتك الطقسي.",
+      shippingHelp: "عيّن وتيرة التوصيل التي تناسب توقيتك الروتيني.",
       payment: "اختر وسيلة دفع",
       paymentHelp: "نحاكي إدخال البطاقة لتعرف ما قد يأتي لاحقاً.",
       review: "راجع الطلب",
@@ -335,11 +335,11 @@ export const ar = {
     },
     empty: {
       title: "سلتك خفيفة.",
-      body: "أضف طقساً لنكمل عملية الدفع.",
+      body: "أضف روتيناً لنكمل عملية الدفع.",
     },
     confirmation: {
       title: "شكراً لك",
-      subtitle: "طقسك في الطريق مع لمسة حانية.",
+      subtitle: "روتينك في الطريق مع لمسة حانية.",
       summary: "أضفت {itemCount} عناصر بإجمالي {total}.",
       viewOrders: "عرض طلباتي",
     },
@@ -349,8 +349,8 @@ export const ar = {
   },
   ordersHistory: {
     title: "سجل الطلبات",
-    subtitle: "راجع كل طقوسك التي تأكدت منها.",
-    empty: "لم تطلب أي طقوس بعد.",
+    subtitle: "راجع كل روتينك التي تأكدت منها.",
+    empty: "لم تطلب أي روتين بعد.",
     labels: {
       orderId: "طلب",
       itemCount: "{count} عناصر",
@@ -369,21 +369,21 @@ export const ar = {
   },
   ritualCoach: {
     loader: {
-      title: "مدرب الطقوس",
-      subtitle: "يختار طقوساً هادئة تتناغم مع تفضيلاتك.",
+      title: "مدرب الروتين",
+      subtitle: "يختار روتينات هادئة تتناغم مع تفضيلاتك.",
     },
     hero: {
-      title: "اسأل مدرب الطقوس",
-      subtitle: "رفيق قواعدي يرشد طقسك القادم بلطف وتركيز بما يتوافق مع ما تهتم به.",
+      title: "اسأل مدرب الروتين",
+      subtitle: "رفيق قواعدي يرشد روتينك القادم بلطف وتركيز بما يتوافق مع ما تهتم به.",
     },
     profileRecap: {
       template:
-        "ذكرتَ أنك تهتم بطقوس {focus}، تفضل توقيت {time}، تعشق نغمات {scent}، وتتحمل ميزانية {budget}.",
-      empty: "أنشئ ملف طقوس حتى ينسجم المدرب مع ما يهمك.",
+        "ذكرتَ أنك تهتم بروتين {focus}، تفضل توقيت {time}، تعشق نغمات {scent}، وتتحمل ميزانية {budget}.",
+      empty: "أنشئ ملف روتين حتى ينسجم المدرب مع ما يهمك.",
     },
     controls: {
       intensity: {
-        label: "ما حدة الطقس التي تسعى إليها؟",
+        label: "ما حدة الروتين التي تسعى إليها؟",
         helper: "اختر ما بين بسيطة، متوازنة، أو متكاملة حسب مزاجك.",
         options: {
           minimal: "بسيطة",
@@ -398,44 +398,44 @@ export const ar = {
       },
     },
     sections: {
-      main: "طقسك الرئيسي",
+      main: "روتينك الرئيسي",
       lighter: "نسخة أخف",
       treats: "لمسات تدليل",
     },
     explanations: {
       main: "يتماشى مع توقيت {time} وتركيز {focus} ليمنحك لمسة {intensity}.",
-      lighter: "نسخة أخف من طقس {intensity} تحافظ على {focus} وتوقيت {time}.",
+      lighter: "نسخة أخف من روتين {intensity} تحافظ على {focus} وتوقيت {time}.",
       treats: "أضف لمسات {scent} عند اشتياقك لنهاية {mood}.",
     },
-    emptyState: "يحتاج المدرب إلى ملف طقوس لتجهيز تطابق.",
+    emptyState: "يحتاج المدرب إلى ملف روتين لتجهيز تطابق.",
     treats: {
       empty: "عد بعد تحديد تركيز لتظهر اقتراحات التدليل.",
     },
     savedCartName: {
-      base: "طقس المدرب",
+      base: "روتين المدرب",
     },
     savedCartMessage: {
-      success: "تم حفظ طقس المدرب.",
-      empty: "أضف طقساً قبل الحفظ.",
+      success: "تم حفظ روتين المدرب.",
+      empty: "أضف روتيناً قبل الحفظ.",
     },
     cta: {
-      createProfile: "أنشئ ملف الطقوس",
-      addFullRitual: "أضف الطقس الكامل للسلة",
-      saveRitual: "احفظ هذا الطقس",
+      createProfile: "أنشئ ملف الروتين",
+      addFullRitual: "أضف الروتين الكامل للسلة",
+      saveRitual: "احفظ هذا الروتين",
       askAgain: "اسأل المدرب مجدداً",
-      askCoach: "اسأل مدرب الطقوس",
-      refineWithCoach: "نقّح بالتعاون مع مدرب الطقوس",
+      askCoach: "اسأل مدرب الروتين",
+      refineWithCoach: "نقّح بالتعاون مع مدرب الروتين",
     },
   },
   account: {
     hero: {
       title: "مساحة الروتين الخاصة بي",
-      subtitle: "مكان هادئ لتفضيلاتك، طلباتك، الطقوس المحفوظة، مفضلاتك، وتقييماتك.",
+      subtitle: "مكان هادئ لتفضيلاتك، طلباتك، الروتينات المحفوظة، مفضلاتك، وتقييماتك.",
     },
     tabs: {
       profile: "الملف",
       orders: "الطلبات",
-      saved: "طقوس محفوظة",
+      saved: "روتين محفوظ",
       favorites: "المفضلات",
       reviews: "التقييمات",
     },

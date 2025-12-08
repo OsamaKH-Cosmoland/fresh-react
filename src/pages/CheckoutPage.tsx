@@ -8,6 +8,10 @@ import { addOrder } from "@/utils/orderStorage";
 import type { LocalOrder, ShippingMethod } from "@/types/localOrder";
 import { useTranslation, type AppTranslationKey } from "@/localization/locale";
 import { formatVariantMeta } from "@/utils/variantDisplay";
+import {
+  buildNotificationItems,
+  notifyOrderCreated,
+} from "@/utils/orderNotifications";
 
 const SHIPPING_OPTIONS = [
   { id: "standard", cost: 45 },
@@ -174,6 +178,20 @@ export default function CheckoutPage() {
     clearCart();
     setOrderPlaced(order);
     setCurrentStep(STEPS.length - 1);
+    if (order.customer.email) {
+      void notifyOrderCreated({
+        orderId: order.id,
+        orderNumber: order.id,
+        email: order.customer.email,
+        total: order.totals.total,
+        currency: order.totals.currency,
+        items: buildNotificationItems(order.items),
+        customerName: order.customer.name,
+        phone: order.customer.phone,
+        shippingMethod: order.shippingMethod.label,
+        shippingAddress: `${order.shippingAddress.street}, ${order.shippingAddress.city}`,
+      });
+    }
   };
 
   const navigateToAppPath = (path: string) => {
