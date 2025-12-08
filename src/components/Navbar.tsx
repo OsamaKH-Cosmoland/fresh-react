@@ -7,6 +7,7 @@ import { useCompare } from "@/compare/compareStore";
 import { useLocale, useTranslation, type AppTranslationKey } from "@/localization/locale";
 import { primaryNav, exploreNav } from "@/config/navigation";
 import { buildAppUrl, normalizeHref } from "@/utils/navigation";
+import { prefetchRoute, PREFETCH_ROUTE_ALIASES } from "@/utils/prefetchRoutes";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 
 interface NavbarProps {
@@ -170,6 +171,13 @@ export default function Navbar({
     typeof window !== "undefined"
       ? `${window.location.pathname}${window.location.search}${window.location.hash}`
       : "";
+
+  const triggerPrefetch = (href: string) => {
+    const routeKey = PREFETCH_ROUTE_ALIASES[href];
+    if (routeKey) {
+      prefetchRoute(routeKey);
+    }
+  };
 
   const handleResultClick = (url: string) => {
     if (typeof window === "undefined") return;
@@ -360,6 +368,8 @@ export default function Navbar({
                         className="nav-pill"
                         href={href}
                         aria-current={isActive ? "page" : undefined}
+                        onMouseEnter={() => triggerPrefetch(item.href)}
+                        onFocus={() => triggerPrefetch(item.href)}
                       >
                         {t(item.labelKey as AppTranslationKey)}
                       </a>
@@ -401,12 +411,14 @@ export default function Navbar({
                             className="nav-explore__link"
                             href={normalizeHref(item.href)}
                             role="menuitem"
-                            tabIndex={-1}
-                            aria-selected={highlightedExploreIndex === index}
-                            onClick={() => {
-                              setExploreOpen(false);
-                              setHighlightedExploreIndex(-1);
-                            }}
+                          tabIndex={-1}
+                          aria-selected={highlightedExploreIndex === index}
+                          onClick={() => {
+                            setExploreOpen(false);
+                            setHighlightedExploreIndex(-1);
+                          }}
+                          onMouseEnter={() => triggerPrefetch(item.href)}
+                          onFocus={() => triggerPrefetch(item.href)}
                             ref={(element) => {
                               exploreItemRefs.current[index] = element;
                             }}

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useTranslation } from "@/localization/locale";
 
 const buildStars = (rating: number) => {
@@ -11,7 +12,7 @@ export interface RatingBadgeProps {
   className?: string;
 }
 
-export function RatingBadge({ average, count, className = "" }: RatingBadgeProps) {
+function RatingBadgeBase({ average, count, className = "" }: RatingBadgeProps) {
   const { t } = useTranslation();
   if (!count) return null;
   const displayRating = average != null ? average.toFixed(1) : t("reviews.summary.noRating");
@@ -37,3 +38,5 @@ export function RatingBadge({ average, count, className = "" }: RatingBadgeProps
     </div>
   );
 }
+
+export const RatingBadge = memo(RatingBadgeBase);

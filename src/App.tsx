@@ -1,5 +1,4 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
-import LayoutLab from "./labs/LayoutLab";
 import RitualPlanner from "./pages/RitualPlanner";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrdersAdmin from "./pages/OrdersAdmin";
@@ -14,20 +13,23 @@ import { RouteLoadingShell, DetailSkeleton } from "./components/skeletons/Skelet
 import { SkipToContent } from "@/components/accessibility/SkipToContent";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation, type AppTranslationKey } from "@/localization/locale";
+import {
+  LazyAccountPage,
+  LazyCartPage,
+  LazyComparePage,
+  LazyFavoritesPage,
+  LazyGiftBuilderPage,
+  LazyOrdersHistoryPage,
+  LazyRitualCoachPage,
+  LazyRitualFinderPage,
+  LazyRitualGuideDetailPage,
+  LazyRitualGuidesPage,
+  LazySearchPage,
+  LazyShopPage,
+  LazyOnboardingPage,
+} from "@/routes/lazyRoutes";
 
-const LazyRitualFinder = lazy(() => import("./pages/RitualFinder"));
-const LazyCartPage = lazy(() => import("./pages/CartPage"));
-const LazyShopPage = lazy(() => import("./pages/ShopPage"));
-const LazySearchPage = lazy(() => import("./pages/SearchPage"));
-const LazyFavoritesPage = lazy(() => import("./pages/FavoritesPage"));
-const LazyComparePage = lazy(() => import("./pages/ComparePage"));
-const LazyRitualGuidesPage = lazy(() => import("./pages/RitualGuidesPage"));
-const LazyRitualGuideDetailPage = lazy(() => import("./pages/RitualGuideDetailPage"));
-const LazyGiftBuilderPage = lazy(() => import("./pages/GiftBuilderPage"));
-const LazyOnboardingPage = lazy(() => import("./pages/OnboardingPage"));
-const LazyOrdersHistoryPage = lazy(() => import("./pages/OrdersHistoryPage"));
-const LazyRitualCoachPage = lazy(() => import("./pages/RitualCoachPage"));
-const LazyAccountPage = lazy(() => import("./pages/AccountPage"));
+const LazyLayoutLab = lazy(() => import("./labs/LayoutLab"));
 
 const routeFallback = (
   title: string,
@@ -282,6 +284,13 @@ function ProductShop() {
 
 export default function App() {
   const { t } = useTranslation();
+  const homeFallback = routeFallback(
+    t("loader.shop"),
+    t("loader.curatingTheRitualCatalog"),
+    true,
+    4,
+    3
+  );
   const view =
     typeof window !== "undefined"
       ? new URLSearchParams(window.location.search).get("view")
@@ -323,7 +332,7 @@ export default function App() {
       <Suspense
         fallback={routeFallback(t("loader.ritualFinder"), t("loader.craftingYourRitualPath"), false)}
       >
-        <LazyRitualFinder />
+        <LazyRitualFinderPage />
       </Suspense>
     );
   } else if (view === "onboarding" || path === "/onboarding") {
@@ -423,7 +432,15 @@ export default function App() {
       </Suspense>
     );
   } else {
-    routeContent = SHOW_LAB ? <LayoutLab /> : <ProductShop />;
+    routeContent = SHOW_LAB ? (
+      <Suspense fallback={homeFallback}>
+        <LazyLayoutLab />
+      </Suspense>
+    ) : (
+      <Suspense fallback={homeFallback}>
+        <ProductShop />
+      </Suspense>
+    );
   }
 
   return (

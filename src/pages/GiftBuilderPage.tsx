@@ -17,6 +17,11 @@ import {
   type ProductDetailContent,
 } from "@/content/productDetails";
 import { formatCurrency } from "@/utils/formatCurrency";
+import {
+  calculateAddOnTotal,
+  calculateGiftTotal,
+  calculateProductTotal,
+} from "@/utils/giftPricing";
 import { useTranslation } from "@/localization/locale";
 
 const steps = [
@@ -70,28 +75,16 @@ export default function GiftBuilderPage() {
   };
 
   const productTotal = useMemo(
-    () =>
-      selectedProducts.reduce((sum, product) => {
-        const variantId = selectedVariants[product.productId];
-        const variant =
-          (variantId && getVariantById(product.productId, variantId)) ??
-          getDefaultVariant(product.productId);
-        const price = variant?.priceNumber ?? product.priceNumber;
-        return sum + price;
-      }, 0),
+    () => calculateProductTotal(selectedProducts, selectedVariants),
     [selectedProducts, selectedVariants]
   );
 
   const addOnTotal = useMemo(
-    () =>
-      selectedAddOns.reduce((sum, addOnId) => {
-        const addOn = giftAddOns.find((entry) => entry.id === addOnId);
-        return sum + (addOn?.price ?? 0);
-      }, 0),
+    () => calculateAddOnTotal(selectedAddOns),
     [selectedAddOns]
   );
 
-  const totalPrice = (currentStyle?.price ?? 0) + productTotal + addOnTotal;
+  const totalPrice = calculateGiftTotal(currentStyle?.price ?? 0, productTotal, addOnTotal);
 
   const canNextStep = () => {
     if (currentStep === 1) return Boolean(currentStyle);

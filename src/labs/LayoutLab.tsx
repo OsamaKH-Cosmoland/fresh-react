@@ -5,6 +5,7 @@ import OfflineNotice from "@/components/OfflineNotice";
 import Sidebar from "../components/Sidebar";
 import CardGrid from "../components/CardGrid";
 import ReviewsSection from "../components/ReviewsSection";
+import { prefetchRoute } from "@/utils/prefetchRoutes";
 import collectionImage from "../assets/collection.png";
 import iconLeft from "../assets/NaturaGloss_shiny_gold_icon_left.webp";
 import iconMiddle from "../assets/NaturaGloss_shiny_gold_icon_middle.webp";
@@ -48,6 +49,14 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
     if (typeof window === "undefined") return;
     window.location.href = normalizeHref(href);
   }, []);
+
+  const handleHeroPrefetch = (navId: string) => {
+    if (navId === "finder") {
+      prefetchRoute("/ritual-finder");
+    } else if (navId === "gift-builder") {
+      prefetchRoute("/gift-builder");
+    }
+  };
 
   useEffect(() => {
     writeCart(cartItems);
@@ -196,6 +205,8 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             <Button
               variant="primary"
               size="lg"
+              onMouseEnter={() => prefetchRoute("/ritual-finder")}
+              onFocus={() => prefetchRoute("/ritual-finder")}
               onClick={() => (window.location.href = "/ritual-finder")}
             >
               {t("cta.findYourRitual")}
@@ -213,6 +224,8 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                   key={action.navId}
                   variant={action.variant}
                   size="lg"
+                  onMouseEnter={() => handleHeroPrefetch(action.navId)}
+                  onFocus={() => handleHeroPrefetch(action.navId)}
                   onClick={() => handleQuickAction(navItem.href)}
                 >
                   {t(action.labelKey as AppTranslationKey)}
@@ -222,7 +235,14 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           </div>
         </div>
         <figure className="landing-hero__media" data-animate="fade-in" data-parallax="hero">
-          <img src={collectionImage} alt="NaturaGloss collection of botanical care" />
+          <img
+            src={collectionImage}
+            alt="NaturaGloss collection of botanical care"
+            width="720"
+            height="480"
+            loading="eager"
+            decoding="async"
+          />
         </figure>
       </main>
       {teaserGuides.length > 0 && (

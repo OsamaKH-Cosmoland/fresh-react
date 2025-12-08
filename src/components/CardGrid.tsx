@@ -197,6 +197,8 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                   src={c.image}
                   alt={c.title}
                   className="card-img"
+                  loading="lazy"
+                  decoding="async"
                 />
               )}
               <header className="card-head">

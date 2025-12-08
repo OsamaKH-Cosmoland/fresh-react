@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { Button, Card } from "@/components/ui";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
@@ -19,7 +19,7 @@ export interface BundleCardProps {
   heroImage?: string;
 }
 
-export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: BundleCardProps) {
+function BundleCardBase({ bundle, onAddBundle, onViewDetails, heroImage }: BundleCardProps) {
   const { t } = useTranslation();
   const pricing = getBundlePricing(bundle);
   const bundlePriceDisplay = bundle.bundlePriceLabel ?? formatCurrency(pricing.bundlePrice);
@@ -54,7 +54,14 @@ export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: Bu
       <FavoriteToggle id={bundle.id} type="bundle" itemLabel={bundle.name} />
       {heroImage && (
         <div className="bundle-card__hero">
-          <img src={heroImage} alt={bundle.name} />
+          <img
+            src={heroImage}
+            alt={bundle.name}
+            width="480"
+            height="360"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       )}
       <header className="bundle-card__header">
@@ -139,3 +146,5 @@ export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: Bu
     </Card>
   );
 }
+
+export const BundleCard = memo(BundleCardBase);

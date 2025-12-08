@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { BundleCard } from "@/components/bundles/BundleCard";
@@ -65,38 +65,61 @@ export default function SearchPage() {
     [query]
   );
 
-  const productResults = searchResults.filter((entry) => entry.kind === "product");
-  const bundleResults = searchResults.filter((entry) => entry.kind === "bundle");
-  const experienceResults = searchResults.filter((entry) => entry.kind === "experience");
-  const guideResults = searchResults.filter((entry) => entry.kind === "guide");
+  const productResults = useMemo(
+    () => searchResults.filter((entry) => entry.kind === "product"),
+    [searchResults]
+  );
+  const bundleResults = useMemo(
+    () => searchResults.filter((entry) => entry.kind === "bundle"),
+    [searchResults]
+  );
+  const experienceResults = useMemo(
+    () => searchResults.filter((entry) => entry.kind === "experience"),
+    [searchResults]
+  );
+  const guideResults = useMemo(
+    () => searchResults.filter((entry) => entry.kind === "guide"),
+    [searchResults]
+  );
 
-  const products = productResults
-    .map((entry) => {
-      const detail = PRODUCT_DETAIL_MAP[entry.slug];
-      if (!detail) return null;
-      return { entry, detail };
-    })
-    .filter(
-      (
-        item
-      ): item is { entry: (typeof productResults)[number]; detail: ProductDetailContent } =>
-        Boolean(item)
-    );
+  const products = useMemo(
+    () =>
+      productResults
+        .map((entry) => {
+          const detail = PRODUCT_DETAIL_MAP[entry.slug];
+          if (!detail) return null;
+          return { entry, detail };
+        })
+        .filter(
+          (
+            item
+          ): item is { entry: (typeof productResults)[number]; detail: ProductDetailContent } =>
+            Boolean(item)
+        ),
+    [productResults]
+  );
 
-  const bundles = bundleResults
-    .map((entry) => {
-      const bundle = ritualBundles.find((item) => item.id === entry.bundleId);
-      if (!bundle) return null;
-      return { entry, bundle };
-    })
-    .filter(
-      (
-        item
-      ): item is { entry: (typeof bundleResults)[number]; bundle: (typeof ritualBundles)[number] } =>
-        Boolean(item)
-    );
+  const bundles = useMemo(
+    () =>
+      bundleResults
+        .map((entry) => {
+          const bundle = ritualBundles.find((item) => item.id === entry.bundleId);
+          if (!bundle) return null;
+          return { entry, bundle };
+        })
+        .filter(
+          (
+            item
+          ): item is { entry: (typeof bundleResults)[number]; bundle: (typeof ritualBundles)[number] } =>
+            Boolean(item)
+        ),
+    [bundleResults]
+  );
 
-  const buildSearchEntryKey = (kind: "product" | "bundle", id: string) => `${kind}:${id}`;
+  const buildSearchEntryKey = useCallback(
+    (kind: "product" | "bundle", id: string) => `${kind}:${id}`,
+    []
+  );
 
   const candidateEntries = useMemo<ShopCatalogEntry[]>(() => {
     const entries: ShopCatalogEntry[] = [];
@@ -145,32 +168,41 @@ export default function SearchPage() {
     return map;
   }, [candidateEntries, favorites, orders, preferences, recentEntries, reviews]);
 
-  const sortSearchEntries = <T extends { entry: { kind: "product" | "bundle" } }>(
-    list: T[],
-    kind: "product" | "bundle"
-  ) => {
-    if (!searchRankingMap) return list;
-    const defaultIndexMap = new Map<string, number>();
-    list.forEach((item, index) => {
-      const id = kind === "product" ? item.detail.productId : item.bundle.id;
-      defaultIndexMap.set(`${kind}:${id}`, index);
-    });
-    return [...list].sort((a, b) => {
-      const idA = kind === "product" ? a.detail.productId : a.bundle.id;
-      const idB = kind === "product" ? b.detail.productId : b.bundle.id;
-      const keyA = `${kind}:${idA}`;
-      const keyB = `${kind}:${idB}`;
-      const metaA = searchRankingMap.get(keyA);
-      const metaB = searchRankingMap.get(keyB);
-      if (metaA && metaB) return metaA.rank - metaB.rank;
-      if (metaA) return -1;
-      if (metaB) return 1;
-      return (defaultIndexMap.get(keyA) ?? 0) - (defaultIndexMap.get(keyB) ?? 0);
-    });
-  };
+  const sortSearchEntries = useCallback(
+    <T extends { entry: { kind: "product" | "bundle" } }>(
+      list: T[],
+      kind: "product" | "bundle"
+    ) => {
+      if (!searchRankingMap) return list;
+      const defaultIndexMap = new Map<string, number>();
+      list.forEach((item, index) => {
+        const id = kind === "product" ? item.detail.productId : item.bundle.id;
+        defaultIndexMap.set(`${kind}:${id}`, index);
+      });
+      return [...list].sort((a, b) => {
+        const idA = kind === "product" ? a.detail.productId : a.bundle.id;
+        const idB = kind === "product" ? b.detail.productId : b.bundle.id;
+        const keyA = `${kind}:${idA}`;
+        const keyB = `${kind}:${idB}`;
+        const metaA = searchRankingMap.get(keyA);
+        const metaB = searchRankingMap.get(keyB);
+        if (metaA && metaB) return metaA.rank - metaB.rank;
+        if (metaA) return -1;
+        if (metaB) return 1;
+        return (defaultIndexMap.get(keyA) ?? 0) - (defaultIndexMap.get(keyB) ?? 0);
+      });
+    },
+    [searchRankingMap]
+  );
 
-  const sortedProducts = sortSearchEntries(products, "product");
-  const sortedBundles = sortSearchEntries(bundles, "bundle");
+  const sortedProducts = useMemo(
+    () => sortSearchEntries(products, "product"),
+    [products, sortSearchEntries]
+  );
+  const sortedBundles = useMemo(
+    () => sortSearchEntries(bundles, "bundle"),
+    [bundles, sortSearchEntries]
+  );
   const getSearchReasonText = (
     kind: "product" | "bundle",
     id: string

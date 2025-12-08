@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { BundleCard } from "@/components/bundles/BundleCard";
@@ -75,23 +75,6 @@ export default function ShopPage() {
     });
   }, [focusFilter, typeFilter]);
 
-  const productEntries = filteredCatalog.filter(
-    (entry): entry is ShopCatalogProductEntry => entry.kind === "product"
-  );
-  const bundleEntries = filteredCatalog.filter(
-    (entry): entry is ShopCatalogBundleEntry => entry.kind === "bundle"
-  );
-  const sortedProductEntries = sortByRecommended(productEntries);
-  const sortedBundleEntries = sortByRecommended(bundleEntries);
-
-  const hasActiveFilters =
-    focusFilter.length > 0 || typeFilter !== "all";
-
-  const entryKey = (entry: ShopCatalogEntry) =>
-    entry.kind === "product"
-      ? `product:${entry.item.productId}`
-      : `bundle:${entry.item.id}`;
-
   const rankingMap = useMemo(() => {
     if (sortMode !== "recommended" || filteredCatalog.length === 0) {
       return null;
@@ -132,31 +115,60 @@ export default function ShopPage() {
     sortMode,
   ]);
 
+  const entryKey = useCallback(
+    (entry: ShopCatalogEntry) =>
+      entry.kind === "product"
+        ? `product:${entry.item.productId}`
+        : `bundle:${entry.item.id}`,
+    []
+  );
+
   const defaultIndexMap = useMemo(() => {
     const map = new Map<string, number>();
     filteredCatalog.forEach((entry, index) => {
       map.set(entryKey(entry), index);
     });
     return map;
-  }, [filteredCatalog]);
+  }, [entryKey, filteredCatalog]);
 
-  const sortByRecommended = <T extends ShopCatalogEntry>(entries: T[]) => {
-    if (!rankingMap) return entries;
-    return [...entries].sort((a, b) => {
-      const keyA = entryKey(a);
-      const keyB = entryKey(b);
-      const rankA = rankingMap.get(keyA);
-      const rankB = rankingMap.get(keyB);
-      if (rankA !== undefined && rankB !== undefined) {
-        return rankA - rankB;
-      }
-      if (rankA !== undefined) return -1;
-      if (rankB !== undefined) return 1;
-      const defaultA = defaultIndexMap.get(keyA) ?? 0;
-      const defaultB = defaultIndexMap.get(keyB) ?? 0;
-      return defaultA - defaultB;
-    });
-  };
+  const sortByRecommended = useCallback(
+    <T extends ShopCatalogEntry>(entries: T[]) => {
+      if (!rankingMap) return entries;
+      return [...entries].sort((a, b) => {
+        const keyA = entryKey(a);
+        const keyB = entryKey(b);
+        const rankA = rankingMap.get(keyA);
+        const rankB = rankingMap.get(keyB);
+        if (rankA !== undefined && rankB !== undefined) {
+          return rankA - rankB;
+        }
+        if (rankA !== undefined) return -1;
+        if (rankB !== undefined) return 1;
+        const defaultA = defaultIndexMap.get(keyA) ?? 0;
+        const defaultB = defaultIndexMap.get(keyB) ?? 0;
+        return defaultA - defaultB;
+      });
+    },
+    [defaultIndexMap, entryKey, rankingMap]
+  );
+
+  const productEntries = filteredCatalog.filter(
+    (entry): entry is ShopCatalogProductEntry => entry.kind === "product"
+  );
+  const bundleEntries = filteredCatalog.filter(
+    (entry): entry is ShopCatalogBundleEntry => entry.kind === "bundle"
+  );
+
+  const sortedProductEntries = useMemo(
+    () => sortByRecommended(productEntries),
+    [productEntries, sortByRecommended]
+  );
+  const sortedBundleEntries = useMemo(
+    () => sortByRecommended(bundleEntries),
+    [bundleEntries, sortByRecommended]
+  );
+
+  const hasActiveFilters = focusFilter.length > 0 || typeFilter !== "all";
 
   const toggleFocus = (id: FocusTagId) => {
     setFocusFilter((prev) =>
