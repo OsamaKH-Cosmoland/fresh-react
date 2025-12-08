@@ -49,6 +49,10 @@ export default function Navbar({
   const { locale, setLocale } = useLocale();
   const { t } = useTranslation();
   const { isOnline } = useNetworkStatus();
+  const dropdownResults = useGlobalSearch(searchQuery, 5);
+  const showDropdown = searchActive && searchQuery.trim().length > 0;
+  const [searchHighlightIndex, setSearchHighlightIndex] = useState(-1);
+  const searchResultRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
     if (!sticky) return;
@@ -162,10 +166,6 @@ export default function Navbar({
     return () => document.removeEventListener("keydown", handleKey);
   }, [exploreOpen]);
 
-  const dropdownResults = useGlobalSearch(searchQuery, 5);
-  const showDropdown = searchActive && searchQuery.trim().length > 0;
-  const [searchHighlightIndex, setSearchHighlightIndex] = useState(-1);
-  const searchResultRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const currentPath =
     typeof window !== "undefined"
       ? `${window.location.pathname}${window.location.search}${window.location.hash}`
