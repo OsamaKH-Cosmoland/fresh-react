@@ -140,6 +140,11 @@ export const ar = {
     allRitualsProducts: "جميع الروتينات والمنتجات",
     products: "منتجات",
   },
+  sort: {
+    label: "ترتيب",
+    default: "الترتيب الافتراضي",
+    recommended: "مقترح لك",
+  },
   onboarding: {
     hero: {
       title: "أنشئ ملف روتينك",
@@ -248,6 +253,20 @@ export const ar = {
       title: "ملف روتينك",
       description: "نبرز الروتينات التي تتوافق مع تركيزك وتوقيتك.",
       updateLink: "تعديل الملف",
+      reasons: {
+        matchesConcern: "يتماشى مع تركيزك الحالي",
+        matchesTime: "يناسب توقيت روتينك المفضل",
+        matchesScent: "يتوافق مع نغمة عطرك المختارة",
+        withinBudget: "يتناسب مع ميزانيتك",
+        premiumBudget: "خيار فاخر ضمن راحتك",
+        inFavorites: "أضفته للمفضلات",
+        recentlyViewed: "اطّلعت عليه مؤخراً",
+        purchasedBefore: "سبق أن اشتريته",
+        reviewedByYou: "كتبت عنه مراجعة",
+        highGlobalRating: "محبوب من الجميع",
+        matchesContextFocus: "متماشي مع تركيزك الحالي",
+      },
+      recommendedLabel: "موصى به لك",
     },
     hint: "استناداً لملف روتينك، نميل لهذه الروتينات الهادئة.",
     progress: {

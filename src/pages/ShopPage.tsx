@@ -13,6 +13,7 @@ import {
   shopFocusLookup,
   shopOptionalLookup,
   type ShopCatalogBundleEntry,
+  type ShopCatalogEntry,
   type ShopCatalogProductEntry,
   type FocusTagId,
 } from "@/content/shopCatalog";
@@ -22,6 +23,12 @@ import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { getReviewStats } from "@/utils/reviewStorage";
 import { RatingBadge } from "@/components/reviews/RatingBadge";
 import { useTranslation } from "@/localization/locale";
+import { useFavorites } from "@/favorites/favoritesStore";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { readOrders } from "@/utils/orderStorage";
+import { listReviews } from "@/utils/reviewStorage";
+import { scoreItemsForUser } from "@/personalization/personalizationEngine";
 
 const TYPE_FILTER_OPTIONS = [
   { id: "all", labelKey: "filters.allRitualsProducts" },
@@ -46,9 +53,15 @@ export default function ShopPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [focusFilter, setFocusFilter] = useState<FocusTagId[]>([]);
   const [typeFilter, setTypeFilter] = useState<ShopTypeFilter>("all");
+  const [sortMode, setSortMode] = useState<"default" | "recommended">("default");
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const { t } = useTranslation();
+  const { preferences } = useUserPreferences();
+  const { favorites } = useFavorites();
+  const recentEntries = useRecentlyViewed();
+  const orders = useMemo(() => readOrders(), []);
+  const reviews = useMemo(() => listReviews(), []);
 
   const filteredCatalog = useMemo(() => {
     return shopCatalog.filter((entry) => {
@@ -68,9 +81,82 @@ export default function ShopPage() {
   const bundleEntries = filteredCatalog.filter(
     (entry): entry is ShopCatalogBundleEntry => entry.kind === "bundle"
   );
+  const sortedProductEntries = sortByRecommended(productEntries);
+  const sortedBundleEntries = sortByRecommended(bundleEntries);
 
   const hasActiveFilters =
     focusFilter.length > 0 || typeFilter !== "all";
+
+  const entryKey = (entry: ShopCatalogEntry) =>
+    entry.kind === "product"
+      ? `product:${entry.item.productId}`
+      : `bundle:${entry.item.id}`;
+
+  const rankingMap = useMemo(() => {
+    if (sortMode !== "recommended" || filteredCatalog.length === 0) {
+      return null;
+    }
+    const focusContext: FocusTagId | "all" =
+      focusFilter.length > 0 ? focusFilter[0] : "all";
+    const scored = scoreItemsForUser({
+      candidates: filteredCatalog,
+      preferences,
+      favorites,
+      recentEntries,
+      orders,
+      reviews,
+      context: {
+        intent: "shop",
+        focus: focusContext,
+        candidateIds: filteredCatalog.map((entry) => ({
+          id: entry.kind === "product" ? entry.item.productId : entry.item.id,
+          type: entry.kind,
+        })),
+      },
+    });
+    const hasSignal = scored.some((score) => score.score !== 0 || score.reasons.length > 0);
+    if (!hasSignal) return null;
+    const map = new Map<string, number>();
+    scored.forEach((score, index) => {
+      map.set(`${score.type}:${score.id}`, index);
+    });
+    return map;
+  }, [
+    focusFilter,
+    favorites,
+    filteredCatalog,
+    orders,
+    preferences,
+    recentEntries,
+    reviews,
+    sortMode,
+  ]);
+
+  const defaultIndexMap = useMemo(() => {
+    const map = new Map<string, number>();
+    filteredCatalog.forEach((entry, index) => {
+      map.set(entryKey(entry), index);
+    });
+    return map;
+  }, [filteredCatalog]);
+
+  const sortByRecommended = <T extends ShopCatalogEntry>(entries: T[]) => {
+    if (!rankingMap) return entries;
+    return [...entries].sort((a, b) => {
+      const keyA = entryKey(a);
+      const keyB = entryKey(b);
+      const rankA = rankingMap.get(keyA);
+      const rankB = rankingMap.get(keyB);
+      if (rankA !== undefined && rankB !== undefined) {
+        return rankA - rankB;
+      }
+      if (rankA !== undefined) return -1;
+      if (rankB !== undefined) return 1;
+      const defaultA = defaultIndexMap.get(keyA) ?? 0;
+      const defaultB = defaultIndexMap.get(keyB) ?? 0;
+      return defaultA - defaultB;
+    });
+  };
 
   const toggleFocus = (id: FocusTagId) => {
     setFocusFilter((prev) =>
@@ -162,17 +248,36 @@ export default function ShopPage() {
             {t("cta.clearFilters")}
           </Button>
           </div>
+          <div className="shop-filter__sort">
+            <p className="shop-filter__label">{t("sort.label")}</p>
+            <div className="shop-sort-pills">
+              <button
+                type="button"
+                className={`shop-sort-pill${sortMode === "default" ? " is-active" : ""}`}
+                onClick={() => setSortMode("default")}
+              >
+                {t("sort.default")}
+              </button>
+              <button
+                type="button"
+                className={`shop-sort-pill${sortMode === "recommended" ? " is-active" : ""}`}
+                onClick={() => setSortMode("recommended")}
+              >
+                {t("sort.recommended")}
+              </button>
+            </div>
+          </div>
         </div>
 
         <section className="shop-results">
-          {productEntries.length > 0 && (
+          {sortedProductEntries.length > 0 && (
             <div className="shop-results__group" data-animate="fade-up">
               <div className="shop-results__header">
                 <h3>Products</h3>
                 <p>Individual essentials to mix into your daily ritual.</p>
               </div>
               <div className="shop-product-grid ng-grid-mobile-2">
-                {productEntries.map((entry) => {
+                {sortedProductEntries.map((entry) => {
                   const { item, focus, extras } = entry;
                   const focusLabels = focus.map((label) => shopFocusLookup[label]);
                   const extraLabels = extras?.map((label) => shopOptionalLookup[label]) ?? [];
@@ -265,14 +370,14 @@ export default function ShopPage() {
             </div>
           )}
 
-          {bundleEntries.length > 0 && (
+          {sortedBundleEntries.length > 0 && (
             <div className="shop-results__group" data-animate="fade-up">
               <div className="shop-results__header">
                 <h3>{t("sections.ritualBundles")}</h3>
                 <p>Cohesive sets that combine products for deeper rituals.</p>
               </div>
               <div className="shop-bundle-grid">
-                {bundleEntries.map((entry) => {
+                {sortedBundleEntries.map((entry) => {
                   const focusLabels = entry.focus.map((label) => shopFocusLookup[label]);
                   const extraLabels =
                     entry.extras?.map((label) => shopOptionalLookup[label]) ?? [];

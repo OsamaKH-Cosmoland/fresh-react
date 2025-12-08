@@ -140,6 +140,11 @@ export const en = {
     allRitualsProducts: "All routines & products",
     products: "Products",
   },
+  sort: {
+    label: "Sort",
+    default: "Default order",
+    recommended: "Recommended",
+  },
   onboarding: {
     hero: {
       title: "Create your routine profile",
@@ -248,6 +253,20 @@ export const en = {
       title: "Your routine profile",
       description: "We highlight routines that match your focus and routines timing.",
       updateLink: "Edit profile",
+      reasons: {
+        matchesConcern: "Matches your current focus",
+        matchesTime: "Fits your favorite ritual timing",
+        matchesScent: "Aligned with your scent vibe",
+        withinBudget: "Comfortable for your budget",
+        premiumBudget: "A luxe pick within your comfort",
+        inFavorites: "Saved in your favourites",
+        recentlyViewed: "You explored this recently",
+        purchasedBefore: "You’ve bought this",
+        reviewedByYou: "You reviewed it",
+        highGlobalRating: "Loved by our community",
+        matchesContextFocus: "Ties into your current focus",
+      },
+      recommendedLabel: "Recommended for you",
     },
     hint: "Based on your routine profile, we already favor these gentle routines.",
     progress: {

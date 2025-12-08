@@ -18,6 +18,17 @@ import { getReviewStats } from "@/utils/reviewStorage";
 import { RatingBadge } from "@/components/reviews/RatingBadge";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { useTranslation } from "@/localization/locale";
+import { useFavorites } from "@/favorites/favoritesStore";
+import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { readOrders } from "@/utils/orderStorage";
+import { listReviews } from "@/utils/reviewStorage";
+import {
+  scoreItemsForUser,
+  PersonalizationReasonKey,
+  getPersonalizationReasonsText,
+} from "@/personalization/personalizationEngine";
+import { ShopCatalogEntry } from "@/content/shopCatalog";
 
 const getQueryFromLocation = () => {
   if (typeof window === "undefined") {
@@ -40,6 +51,11 @@ export default function SearchPage() {
   const { addBundleToCart } = useBundleActions();
   const query = getQueryFromLocation();
   const { t } = useTranslation();
+  const { preferences } = useUserPreferences();
+  const { favorites } = useFavorites();
+  const recentEntries = useRecentlyViewed();
+  const orders = useMemo(() => readOrders(), []);
+  const reviews = useMemo(() => listReviews(), []);
   const handleAddProduct = (detail: ProductDetailContent) => {
     addItem(buildProductCartPayload(detail));
   };
@@ -80,6 +96,94 @@ export default function SearchPage() {
         Boolean(item)
     );
 
+  const buildSearchEntryKey = (kind: "product" | "bundle", id: string) => `${kind}:${id}`;
+
+  const candidateEntries = useMemo<ShopCatalogEntry[]>(() => {
+    const entries: ShopCatalogEntry[] = [];
+    products.forEach(({ entry, detail }) => {
+      entries.push({
+        kind: "product",
+        item: detail,
+        focus: entry.focus,
+        extras: entry.extras,
+      });
+    });
+    bundles.forEach(({ entry, bundle }) => {
+      entries.push({
+        kind: "bundle",
+        item: bundle,
+        focus: entry.focus,
+        extras: entry.extras,
+      });
+    });
+    return entries;
+  }, [products, bundles]);
+
+  const searchRankingMap = useMemo(() => {
+    if (candidateEntries.length === 0) return null;
+    const scored = scoreItemsForUser({
+      candidates: candidateEntries,
+      preferences,
+      favorites,
+      recentEntries,
+      orders,
+      reviews,
+      context: {
+        intent: "search",
+        candidateIds: candidateEntries.map((entry) => ({
+          id: entry.kind === "product" ? entry.item.productId : entry.item.id,
+          type: entry.kind,
+        })),
+      },
+    });
+    const hasSignal = scored.some((score) => score.score !== 0 || score.reasons.length > 0);
+    if (!hasSignal) return null;
+    const map = new Map<string, { rank: number; reasons: PersonalizationReasonKey[] }>();
+    scored.forEach((score, index) => {
+      map.set(`${score.type}:${score.id}`, { rank: index, reasons: score.reasons });
+    });
+    return map;
+  }, [candidateEntries, favorites, orders, preferences, recentEntries, reviews]);
+
+  const sortSearchEntries = <T extends { entry: { kind: "product" | "bundle" } }>(
+    list: T[],
+    kind: "product" | "bundle"
+  ) => {
+    if (!searchRankingMap) return list;
+    const defaultIndexMap = new Map<string, number>();
+    list.forEach((item, index) => {
+      const id = kind === "product" ? item.detail.productId : item.bundle.id;
+      defaultIndexMap.set(`${kind}:${id}`, index);
+    });
+    return [...list].sort((a, b) => {
+      const idA = kind === "product" ? a.detail.productId : a.bundle.id;
+      const idB = kind === "product" ? b.detail.productId : b.bundle.id;
+      const keyA = `${kind}:${idA}`;
+      const keyB = `${kind}:${idB}`;
+      const metaA = searchRankingMap.get(keyA);
+      const metaB = searchRankingMap.get(keyB);
+      if (metaA && metaB) return metaA.rank - metaB.rank;
+      if (metaA) return -1;
+      if (metaB) return 1;
+      return (defaultIndexMap.get(keyA) ?? 0) - (defaultIndexMap.get(keyB) ?? 0);
+    });
+  };
+
+  const sortedProducts = sortSearchEntries(products, "product");
+  const sortedBundles = sortSearchEntries(bundles, "bundle");
+  const getSearchReasonText = (
+    kind: "product" | "bundle",
+    id: string
+  ): string | null => {
+    const key = `${kind}:${id}`;
+    const meta = searchRankingMap?.get(key);
+    if (!meta || meta.reasons.length === 0) {
+      return null;
+    }
+    const reasonText = getPersonalizationReasonsText(meta.reasons, t)[0];
+    return reasonText ?? null;
+  };
+
   const focusLabels = (focusIds: string[]) =>
     focusIds.map((id) => shopFocusLookup[id]).filter(Boolean);
 
@@ -100,20 +204,21 @@ export default function SearchPage() {
         />
 
         <section className="shop-results">
-          {products.length > 0 && (
+          {sortedProducts.length > 0 && (
             <div className="shop-results__group">
               <div className="shop-results__header">
                 <h3>Products</h3>
                 <p>Singles to slot into your daily care routine.</p>
               </div>
               <div className="shop-product-grid">
-                {products.map(({ entry, detail }) => {
+                {sortedProducts.map(({ entry, detail }, index) => {
                   const focusChips = focusLabels(entry.focus);
                   const variantSummary = getVariantSummary(detail.productId);
                   const variantLabels = variantSummary?.labels.slice(0, 3) ?? [];
                   const hasMoreVariants =
                     Boolean(variantSummary) && variantSummary.count > variantLabels.length;
                   const ratingStats = getReviewStats(detail.productId, "product");
+                  const reasonText = getSearchReasonText("product", detail.productId);
                   return (
                     <Card
                       key={detail.productId}
@@ -161,14 +266,17 @@ export default function SearchPage() {
                             </span>
                           ))}
                         </div>
-                          <div className="shop-product-card__actions">
-                            <Button
-                              variant="primary"
-                              size="md"
-                              onClick={() => handleAddProduct(detail)}
-                            >
-                              {t("cta.addToBag")}
-                            </Button>
+                        {reasonText && index < 3 && (
+                          <p className="search-product-card__reason">{reasonText}</p>
+                        )}
+                        <div className="shop-product-card__actions">
+                          <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => handleAddProduct(detail)}
+                          >
+                            {t("cta.addToBag")}
+                          </Button>
                           <a
                             href={`/products/${detail.slug}`}
                             className="shop-product-card__link"
@@ -230,37 +338,43 @@ export default function SearchPage() {
             </div>
           )}
 
-          {bundles.length > 0 && (
+          {sortedBundles.length > 0 && (
             <div className="shop-results__group">
               <div className="shop-results__header">
                 <h3>Bundles</h3>
                 <p>Cohesive routines that combine your favorite items.</p>
               </div>
               <div className="shop-bundle-grid">
-                {bundles.map(({ entry, bundle }) => (
-                  <div
-                    key={bundle.id}
-                    className="shop-bundle-card"
-                    data-animate="fade-up"
-                  >
-                    <div className="shop-bundle-card__chips">
-                      {focusLabels(entry.focus).map((label) => (
-                        <span
-                          key={`focus-${bundle.id}-${label}`}
-                          className="shop-bundle-card__chip shop-bundle-card__chip--focus"
-                        >
-                          {label}
-                        </span>
-                      ))}
-                    </div>
+                {sortedBundles.map(({ entry, bundle }, index) => {
+                  const reasonText = getSearchReasonText("bundle", bundle.id);
+                  return (
+                    <div
+                      key={bundle.id}
+                      className="shop-bundle-card"
+                      data-animate="fade-up"
+                    >
+                      <div className="shop-bundle-card__chips">
+                        {focusLabels(entry.focus).map((label) => (
+                          <span
+                            key={`focus-${bundle.id}-${label}`}
+                            className="shop-bundle-card__chip shop-bundle-card__chip--focus"
+                          >
+                            {label}
+                          </span>
+                        ))}
+                      </div>
+                      {reasonText && index < 2 && (
+                        <p className="search-bundle-card__reason">{reasonText}</p>
+                      )}
                       <BundleCard
                         bundle={bundle}
                         onAddBundle={(bundleItem, variantSelection) =>
                           addBundleToCart(bundleItem, variantSelection)
                         }
                       />
-                  </div>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
