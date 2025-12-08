@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
@@ -38,17 +38,54 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   useEffect(() => {
     if (!open) return;
-    const handleKey = (event: KeyboardEvent) => {
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const focusableSelector =
+      "a[href], button, input, select, textarea, [tabindex]:not([tabindex='-1'])";
+    const focusFirstItem = () => {
+      if (closeButtonRef.current) {
+        closeButtonRef.current.focus();
+        return;
+      }
+      const focusables =
+        panelRef.current?.querySelectorAll<HTMLElement>(focusableSelector) ?? [];
+      focusables[0]?.focus();
+    };
+    focusFirstItem();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
+        event.preventDefault();
         onClose();
+        return;
+      }
+      if (event.key === "Tab" && panelRef.current) {
+        const elements =
+          panelRef.current.querySelectorAll<HTMLElement>(focusableSelector) ?? [];
+        const first = elements[0];
+        const last = elements[elements.length - 1];
+        if (!first || !last) return;
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      previousFocusRef.current?.focus();
+    };
   }, [open, onClose]);
 
   const canCheckout = totalQuantity > 0;
   const { t } = useTranslation();
+  const panelRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   const renderVariantMeta = (
     label?: string,
@@ -98,15 +135,27 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   return (
     <div className={`cart-drawer ${open ? "is-open" : ""}`} aria-hidden={!open}>
-      <div className="cart-drawer__backdrop" onClick={onClose} />
+      <div className="cart-drawer__backdrop" onClick={onClose} aria-hidden="true" />
       <FadeIn>
-        <aside className="cart-drawer__panel ng-mobile-shell">
+        <aside
+          className="cart-drawer__panel ng-mobile-shell"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cart-title"
+          ref={panelRef}
+        >
           <header className="cart-drawer__header">
             <div>
               <p className="cart-drawer__eyebrow">NaturaGloss</p>
-              <h2>Your bag</h2>
+              <h2 id="cart-title">Your bag</h2>
             </div>
-            <button type="button" className="cart-drawer__close" aria-label="Close cart" onClick={onClose}>
+            <button
+              type="button"
+              className="cart-drawer__close"
+              aria-label={t("accessibility.cart.close")}
+              onClick={onClose}
+              ref={closeButtonRef}
+            >
               ×
             </button>
           </header>
@@ -181,13 +230,21 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         </div>
                       )}
                     </div>
-                    <div className="cart-drawer__controls">
-                      <div className="cart-drawer__quantity">
-                        <button type="button" onClick={() => decrement(item.id, item.quantity)} aria-label="Decrease quantity">
+                      <div className="cart-drawer__controls">
+                        <div className="cart-drawer__quantity">
+                        <button
+                          type="button"
+                          onClick={() => decrement(item.id, item.quantity)}
+                          aria-label={t("accessibility.cart.decreaseQuantity", { item: item.name })}
+                        >
                           –
                         </button>
                         <span>{item.quantity}</span>
-                        <button type="button" onClick={() => increment(item.id, item.quantity)} aria-label="Increase quantity">
+                        <button
+                          type="button"
+                          onClick={() => increment(item.id, item.quantity)}
+                          aria-label={t("accessibility.cart.increaseQuantity", { item: item.name })}
+                        >
                           +
                         </button>
                       </div>
@@ -195,6 +252,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         variant="ghost"
                         size="sm"
                         className="cart-drawer__remove"
+                        aria-label={t("accessibility.cart.removeItem", { item: item.name })}
                         onClick={() => removeItem(item.id)}
                       >
                         Remove
@@ -222,7 +280,15 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 Save
               </Button>
             </div>
-            {saveMessage && <p className="cart-drawer__saved-message">{saveMessage}</p>}
+            {saveMessage && (
+              <p
+                className="cart-drawer__saved-message"
+                role="status"
+                aria-live="polite"
+              >
+                {saveMessage}
+              </p>
+            )}
             {savedSummary.length > 0 ? (
               <ul className="cart-drawer__saved-list">
                 {savedSummary.map((saved) => (

@@ -94,7 +94,11 @@ export function ProductDetailLayout({
             </p>
           )}
           {hasVariants && (
-            <div className="product-detail-variant-selector">
+            <div
+              className="product-detail-variant-selector"
+              role="radiogroup"
+              aria-label={t("accessibility.variantSelector")}
+            >
               {variants?.map((variant) => {
                 const attributesLabel = Object.values(variant.attributes)
                   .filter(Boolean)
@@ -106,6 +110,15 @@ export function ProductDetailLayout({
                     key={variant.variantId}
                     className={`product-detail-variant-option${isActive ? " is-active" : ""}`}
                     onClick={() => onVariantChange?.(variant.variantId)}
+                    role="radio"
+                    aria-checked={isActive}
+                    tabIndex={isActive ? 0 : -1}
+                    onKeyDown={(event) => {
+                      if (event.key === " " || event.key === "Enter") {
+                        event.preventDefault();
+                        onVariantChange?.(variant.variantId);
+                      }
+                    }}
                   >
                     <span>{variant.label}</span>
                     {attributesLabel && <small>{attributesLabel}</small>}

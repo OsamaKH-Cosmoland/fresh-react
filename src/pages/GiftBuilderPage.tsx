@@ -17,6 +17,7 @@ import {
   type ProductDetailContent,
 } from "@/content/productDetails";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { useTranslation } from "@/localization/locale";
 
 const steps = [
   "Choose your box",
@@ -35,6 +36,7 @@ export default function GiftBuilderPage() {
   const [note, setNote] = useState("");
   const [success, setSuccess] = useState<string | null>(null);
   const { addItem } = useCart();
+  const { t } = useTranslation();
 
   const currentStyle = giftBoxStyles.find((style) => style.id === selectedStyleId);
 
@@ -152,23 +154,39 @@ export default function GiftBuilderPage() {
   const stepContent = () => {
     if (currentStep === 1) {
       return (
-        <div className="gift-builder__styles ng-grid-mobile-2">
-          {giftBoxStyles.map((style) => (
-            <Card
-              key={style.id}
-              className={`gift-builder-card ${selectedStyleId === style.id ? "is-selected" : ""}`}
-              onClick={() => setSelectedStyleId(style.id)}
-            >
-              <div
-                className="gift-builder-card__swatch"
-                style={{ backgroundColor: style.color }}
-                aria-hidden="true"
-              />
-              <h3>{style.name}</h3>
-              <p>{style.description}</p>
-              <p className="gift-builder-card__price">{formatCurrency(style.price)}</p>
-            </Card>
-          ))}
+        <div
+          className="gift-builder__styles ng-grid-mobile-2"
+          role="radiogroup"
+          aria-label={t("giftBuilder.boxSelectorLabel")}
+        >
+          {giftBoxStyles.map((style) => {
+            const isSelected = selectedStyleId === style.id;
+            return (
+              <Card
+                key={style.id}
+                className={`gift-builder-card${isSelected ? " is-selected" : ""}`}
+                role="radio"
+                aria-checked={isSelected}
+                tabIndex={0}
+                onClick={() => setSelectedStyleId(style.id)}
+                onKeyDown={(event) => {
+                  if (event.key === " " || event.key === "Enter") {
+                    event.preventDefault();
+                    setSelectedStyleId(style.id);
+                  }
+                }}
+              >
+                <div
+                  className="gift-builder-card__swatch"
+                  style={{ backgroundColor: style.color }}
+                  aria-hidden="true"
+                />
+                <h3>{style.name}</h3>
+                <p>{style.description}</p>
+                <p className="gift-builder-card__price">{formatCurrency(style.price)}</p>
+              </Card>
+            );
+          })}
         </div>
       );
     }
@@ -224,6 +242,12 @@ export default function GiftBuilderPage() {
                     size="sm"
                     onClick={() => toggleProduct(product)}
                     disabled={disabled && !selected}
+                    aria-pressed={selected}
+                    aria-label={
+                      selected
+                        ? t("giftBuilder.actions.removeProduct", { name: product.productName })
+                        : t("giftBuilder.actions.addProduct", { name: product.productName })
+                    }
                   >
                     {selected ? "Selected" : "Add"}
                   </Button>
@@ -253,6 +277,12 @@ export default function GiftBuilderPage() {
                       variant={selected ? "secondary" : "ghost"}
                       size="sm"
                       onClick={() => toggleAddOn(addOn.id)}
+                      aria-pressed={selected}
+                      aria-label={
+                        selected
+                          ? t("giftBuilder.actions.removeAddOn", { name: addOn.label })
+                          : t("giftBuilder.actions.addAddOn", { name: addOn.label })
+                      }
                     >
                       {selected ? "Remove" : "Add"}
                     </Button>
@@ -341,15 +371,24 @@ export default function GiftBuilderPage() {
           <p className="gift-builder-steps__count">
             Step {currentStep} of {steps.length}
           </p>
-          <div className="gift-builder-steps__list">
-            {steps.map((label, index) => (
-              <span
-                key={label}
-                className={`gift-builder-step ${currentStep === index + 1 ? "is-active" : ""}`}
-              >
-                {label}
-              </span>
-            ))}
+          <div
+            className="gift-builder-steps__list"
+            role="list"
+            aria-label={t("giftBuilder.stepperLabel")}
+          >
+            {steps.map((label, index) => {
+              const isActive = currentStep === index + 1;
+              return (
+                <span
+                  key={label}
+                  className={`gift-builder-step${isActive ? " is-active" : ""}`}
+                  role="listitem"
+                  aria-current={isActive ? "step" : undefined}
+                >
+                  {label}
+                </span>
+              );
+            })}
           </div>
         </div>
 

@@ -71,16 +71,26 @@ export function ReviewForm({ addReview }: ReviewFormProps) {
       <h3>{t("reviews.form.heading")}</h3>
       <p className="review-form-card__subtitle">{t("reviews.form.subtitle")}</p>
       <form className="review-form-card__form" onSubmit={handleSubmit}>
-        <label className="review-form-card__field">
-          {t("reviews.form.labels.rating")}
-          <select name="rating" value={form.rating} onChange={handleChange}>
-            {RATING_OPTIONS.map((value) => (
-              <option key={value} value={value}>
-                {value} {value === 1 ? t("reviews.form.labels.star") : t("reviews.form.labels.stars")}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div
+          className="review-form-card__rating"
+          role="radiogroup"
+          aria-label={t("reviews.form.labels.rating")}
+        >
+          {RATING_OPTIONS.map((value) => (
+            <button
+              key={value}
+              type="button"
+              className={`review-form-card__rating-option${
+                form.rating === value ? " is-selected" : ""
+              }`}
+              onClick={() => setForm((prev) => ({ ...prev, rating: value }))}
+              role="radio"
+              aria-checked={form.rating === value}
+            >
+              {value} {value === 1 ? t("reviews.form.labels.star") : t("reviews.form.labels.stars")}
+            </button>
+          ))}
+        </div>
         <InputField
           label={t("reviews.form.labels.title")}
           name="title"
@@ -114,7 +124,11 @@ export function ReviewForm({ addReview }: ReviewFormProps) {
           {t("reviews.form.submit")}
         </Button>
         {status && (
-          <p className={`review-form-card__status review-form-card__status--${status.type}`}>
+          <p
+            className={`review-form-card__status review-form-card__status--${status.type}`}
+            role="status"
+            aria-live="polite"
+          >
             {status.message}
           </p>
         )}

@@ -23,6 +23,69 @@ export const en = {
       },
     },
   },
+  meta: {
+    titles: {
+      home: "Home",
+      shop: "Shop",
+      search: "Search",
+      favorites: "Favourites",
+      compare: "Compare",
+      account: "My account",
+      checkout: "Checkout",
+      orders: "Orders",
+      cart: "Cart",
+      giftBuilder: "Gift Builder",
+      ritualFinder: "Ritual Finder",
+      ritualCoach: "Routine Coach",
+      ritualGuides: "Routine Guides",
+      ritualPlanner: "Ritual Planner",
+      onboarding: "Create a routine profile",
+      stories: "Stories",
+      storyDetail: "Story",
+      product: "Product",
+    },
+  },
+  accessibility: {
+    skipToContent: "Skip to main content",
+    mainNavigation: "Main",
+    menu: {
+      open: "Open menu",
+      close: "Close menu",
+      title: "Navigation menu",
+    },
+    search: {
+      suggestions: "Search suggestions",
+    },
+    live: {
+      addedToBag: "Added {item} to bag.",
+    },
+    favorite: {
+      product: {
+        add: "Add {item} to favourites",
+        remove: "Remove {item} from favourites",
+      },
+      bundle: {
+        add: "Add {item} to favourites",
+        remove: "Remove {item} from favourites",
+      },
+      genericItem: "item",
+    },
+    compare: {
+      add: "Add {item} to compare",
+      remove: "Remove {item} from compare",
+      genericItem: "item",
+    },
+    tabs: {
+      account: "Account tabs",
+    },
+    cart: {
+      close: "Close cart panel",
+      decreaseQuantity: "Decrease quantity of {item}",
+      increaseQuantity: "Increase quantity of {item}",
+      removeItem: "Remove {item} from cart",
+    },
+    variantSelector: "Choose a variant",
+  },
   offline: {
     status: "Offline",
     message: "You appear to be offline. Saved rituals, guides, and your bag are still available.",
@@ -50,6 +113,7 @@ export const en = {
       noReviews: "No reviews yet",
       noRating: "No rating yet",
       verifiedHint: "Verified purchases only",
+      ratingAriaLabel: "Rated {rating} out of 5 from {count} {reviewLabel}",
     },
     list: {
       filterLabel: "Filter by rating",
@@ -137,6 +201,16 @@ export const en = {
     assemblingYourCustomBox: "Assembling your custom box",
     ritualProfile: "Designing your routine profile",
     ordersHistory: "Order history",
+  },
+  giftBuilder: {
+    stepperLabel: "Gift builder steps",
+    boxSelectorLabel: "Choose a box style",
+    actions: {
+      addProduct: "Add {name} to your box",
+      removeProduct: "Remove {name} from your box",
+      addAddOn: "Add {name} to your box",
+      removeAddOn: "Remove {name} from your box",
+    },
   },
   search: {
     placeholder: "Quick find routines, products, Finder...",
@@ -355,6 +429,7 @@ export const en = {
       back: "Back",
       placeOrder: "Place order",
     },
+    stepperLabel: "Checkout steps",
     review: {
       labels: {
         gift: "Gift",

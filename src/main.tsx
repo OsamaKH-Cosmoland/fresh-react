@@ -9,21 +9,24 @@ import { initScrollAnimations } from "./utils/scrollAnimations";
 import { FavoritesProvider } from "./favorites/favoritesStore";
 import { CompareProvider } from "./compare/compareStore";
 import { LocaleProvider } from "@/localization/locale";
+import { LiveAnnouncerProvider } from "@/components/accessibility/LiveAnnouncer";
 
 const rootEl = document.getElementById("root");
 
 if (rootEl) {
   createRoot(rootEl).render(
     <StrictMode>
-        <LocaleProvider>
-          <CartProvider>
-            <FavoritesProvider>
-              <CompareProvider>
-                <App />
-              </CompareProvider>
-            </FavoritesProvider>
-          </CartProvider>
-        </LocaleProvider>
+    <LocaleProvider>
+      <LiveAnnouncerProvider>
+        <CartProvider>
+          <FavoritesProvider>
+            <CompareProvider>
+              <App />
+            </CompareProvider>
+          </FavoritesProvider>
+        </CartProvider>
+      </LiveAnnouncerProvider>
+    </LocaleProvider>
     </StrictMode>
   );
   initScrollAnimations();

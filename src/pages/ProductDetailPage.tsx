@@ -11,6 +11,7 @@ import { recordView } from "@/hooks/useRecentlyViewed";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { ritualBundles } from "@/content/bundles";
 import { useBundleActions } from "@/cart/cartBundles";
+import { useLiveAnnouncer } from "@/components/accessibility/LiveAnnouncer";
 import { useReviews } from "@/hooks/useReviews";
 import { useTranslation } from "@/localization/locale";
 import { ReviewForm } from "@/components/reviews/ReviewForm";
@@ -26,6 +27,7 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   const detail = PRODUCT_DETAIL_MAP[slug];
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
+  const { announce } = useLiveAnnouncer();
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(undefined);
   const { t } = useTranslation();
 
@@ -55,7 +57,12 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   const addToBag = useCallback(() => {
     if (!detail || priceNumber <= 0) return;
     addItem(buildProductCartPayload(detail, selectedVariantId));
-  }, [addItem, detail, priceNumber, selectedVariantId]);
+    announce(
+      t("accessibility.live.addedToBag", {
+        item: detail.productName,
+      })
+    );
+  }, [addItem, announce, detail, priceNumber, selectedVariantId, t]);
 
   const goToCollection = useCallback(() => {
     const base = import.meta.env.BASE_URL ?? "/";

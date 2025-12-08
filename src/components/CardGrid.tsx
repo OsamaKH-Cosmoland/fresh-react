@@ -184,11 +184,13 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                   id={compareId}
                   type="product"
                   className="compare-toggle compare-toggle--grid"
+                  itemLabel={c.title}
                 />
                 <FavoriteToggle
                   id={String(c.id)}
                   type="product"
                   className="favorite-toggle favorite-toggle--grid"
+                  itemLabel={c.title}
                 />
                 {c.image && (
                 <img

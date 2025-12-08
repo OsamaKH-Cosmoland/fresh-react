@@ -11,7 +11,9 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 import type { Product } from "./types/product";
 import { RouteLoadingShell, DetailSkeleton } from "./components/skeletons/Skeletons";
-import { useTranslation } from "@/localization/locale";
+import { SkipToContent } from "@/components/accessibility/SkipToContent";
+import { usePageTitle } from "@/hooks/usePageTitle";
+import { useTranslation, type AppTranslationKey } from "@/localization/locale";
 
 const LazyRitualFinder = lazy(() => import("./pages/RitualFinder"));
 const LazyCartPage = lazy(() => import("./pages/CartPage"));
@@ -46,6 +48,91 @@ const PRESET_PRODUCTS = [
   { name: "Silk Toner", price: 22 },
   { name: "Botanical Mist", price: 18 },
 ];
+
+type RouteTitleMatcher = {
+  key: AppTranslationKey;
+  match: (path: string, view: string | null) => boolean;
+};
+
+const ROUTE_TITLE_MATCHERS: RouteTitleMatcher[] = [
+  {
+    key: "meta.titles.cart",
+    match: (path, view) => view === "cart" || path === "/cart",
+  },
+  {
+    key: "meta.titles.checkout",
+    match: (path, view) => view === "checkout" || path === "/checkout",
+  },
+  {
+    key: "meta.titles.orders",
+    match: (path, view) => view === "orders-history" || path === "/orders-history",
+  },
+  {
+    key: "meta.titles.favorites",
+    match: (path) => path === "/favorites",
+  },
+  {
+    key: "meta.titles.compare",
+    match: (path) => path === "/compare",
+  },
+  {
+    key: "meta.titles.shop",
+    match: (path, view) => view === "shop" || path === "/shop",
+  },
+  {
+    key: "meta.titles.ritualFinder",
+    match: (path, view) => view === "ritualfinder" || path === "/ritual-finder",
+  },
+  {
+    key: "meta.titles.giftBuilder",
+    match: (path, view) => view === "giftbuilder" || path === "/gift-builder",
+  },
+  {
+    key: "meta.titles.ritualCoach",
+    match: (path, view) => view === "ritualcoach" || path === "/ritual-coach",
+  },
+  {
+    key: "meta.titles.ritualGuides",
+    match: (path) => path === "/ritual-guides",
+  },
+  {
+    key: "meta.titles.ritualPlanner",
+    match: (path, view) => view === "ritualplanner" || path === "/rituals",
+  },
+  {
+    key: "meta.titles.onboarding",
+    match: (path, view) => view === "onboarding" || path === "/onboarding",
+  },
+  {
+    key: "meta.titles.stories",
+    match: (path) => path === "/stories",
+  },
+  {
+    key: "meta.titles.storyDetail",
+    match: (path) => path.startsWith("/stories/"),
+  },
+  {
+    key: "meta.titles.account",
+    match: (path, view) => view === "account" || path === "/account",
+  },
+  {
+    key: "meta.titles.search",
+    match: (path, view) => view === "search" || path === "/search",
+  },
+  {
+    key: "meta.titles.product",
+    match: (path) => path.startsWith("/products/"),
+  },
+];
+
+const getTitleKey = (path: string, view: string | null) => {
+  for (const matcher of ROUTE_TITLE_MATCHERS) {
+    if (matcher.match(path, view)) {
+      return matcher.key;
+    }
+  }
+  return "meta.titles.home";
+};
 
 function ProductShop() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -204,41 +291,49 @@ export default function App() {
       ? window.location.pathname.replace(/\/+$/, "") || "/"
       : "/";
 
+  const titleKey =
+    useMemo(() => getTitleKey(path, view), [path, view]);
+  usePageTitle(titleKey);
+
+  let routeContent: React.ReactNode = null;
+
   if (view === "cart" || path === "/cart") {
-    return (
+    routeContent = (
       <Suspense fallback={routeFallback(t("loader.yourBag"), t("loader.gatheringYourRituals"), false)}>
         <LazyCartPage />
       </Suspense>
     );
-  }
-  if (view === "checkout" || path === "/checkout") return <CheckoutPage />;
-  if (path === "/stories") return <RitualStoriesListPage />;
-  if (path.startsWith("/stories/")) {
+  } else if (view === "checkout" || path === "/checkout") {
+    routeContent = <CheckoutPage />;
+  } else if (path === "/stories") {
+    routeContent = <RitualStoriesListPage />;
+  } else if (path.startsWith("/stories/")) {
     const slug = path.replace("/stories/", "");
-    return <RitualStoryDetailPage slug={slug} />;
-  }
-  if (view === "adminanalytics" || path === "/admin/analytics") return <AdminAnalyticsPage />;
-  if (view === "admin" || path === "/admin") return <AdminDashboard />;
-  if (view === "orders" || path === "/orders") return <OrdersAdmin />;
-  if (view === "ritualplanner" || path === "/rituals") return <RitualPlanner />;
-  if (view === "ritualfinder" || path === "/ritual-finder") {
-    return (
+    routeContent = <RitualStoryDetailPage slug={slug} />;
+  } else if (view === "adminanalytics" || path === "/admin/analytics") {
+    routeContent = <AdminAnalyticsPage />;
+  } else if (view === "admin" || path === "/admin") {
+    routeContent = <AdminDashboard />;
+  } else if (view === "orders" || path === "/orders") {
+    routeContent = <OrdersAdmin />;
+  } else if (view === "ritualplanner" || path === "/rituals") {
+    routeContent = <RitualPlanner />;
+  } else if (view === "ritualfinder" || path === "/ritual-finder") {
+    routeContent = (
       <Suspense
         fallback={routeFallback(t("loader.ritualFinder"), t("loader.craftingYourRitualPath"), false)}
       >
         <LazyRitualFinder />
       </Suspense>
     );
-  }
-  if (view === "onboarding" || path === "/onboarding") {
-    return (
+  } else if (view === "onboarding" || path === "/onboarding") {
+    routeContent = (
       <Suspense fallback={routeFallback(t("sections.ritualProfile"), t("loader.ritualProfile"), false)}>
         <LazyOnboardingPage />
       </Suspense>
     );
-  }
-  if (view === "orders-history" || path === "/orders-history") {
-    return (
+  } else if (view === "orders-history" || path === "/orders-history") {
+    routeContent = (
       <Suspense
         fallback={routeFallback(
           t("loader.ordersHistory"),
@@ -249,76 +344,66 @@ export default function App() {
         <LazyOrdersHistoryPage />
       </Suspense>
     );
-  }
-  if (view === "search" || path === "/search") {
-    return (
+  } else if (view === "search" || path === "/search") {
+    routeContent = (
       <Suspense
         fallback={routeFallback(t("loader.search"), t("loader.aligningEveryRitualNote"), true, 3, 2)}
       >
         <LazySearchPage />
       </Suspense>
     );
-  }
-  if (view === "compare" || path === "/compare") {
-    return (
+  } else if (view === "compare" || path === "/compare") {
+    routeContent = (
       <Suspense
         fallback={routeFallback(t("loader.compare"), t("loader.balancingYourRituals"), false)}
       >
         <LazyComparePage />
       </Suspense>
     );
-  }
-  if (view === "favorites" || path === "/favorites") {
-    return (
+  } else if (view === "favorites" || path === "/favorites") {
+    routeContent = (
       <Suspense
         fallback={routeFallback(t("loader.yourFavourites"), t("loader.gatheringYourCalmPicks"))}
       >
         <LazyFavoritesPage />
       </Suspense>
     );
-  }
-  if (view === "shop" || path === "/shop") {
-    return (
+  } else if (view === "shop" || path === "/shop") {
+    routeContent = (
       <Suspense
         fallback={routeFallback(t("loader.shop"), t("loader.curatingTheRitualCatalog"), true, 4, 3)}
       >
         <LazyShopPage />
       </Suspense>
     );
-  }
-  if (view === "ritualguides" || path === "/ritual-guides") {
-    return (
+  } else if (view === "ritualguides" || path === "/ritual-guides") {
+    routeContent = (
       <Suspense
         fallback={routeFallback(t("loader.ritualGuides"), t("loader.sourcingMindfulGuides"))}
       >
         <LazyRitualGuidesPage />
       </Suspense>
     );
-  }
-  if (path.startsWith("/ritual-guides/")) {
+  } else if (path.startsWith("/ritual-guides/")) {
     const guideSlug = path.replace("/ritual-guides/", "");
-    return (
+    routeContent = (
       <Suspense fallback={<DetailSkeleton />}>
         <LazyRitualGuideDetailPage slug={guideSlug} />
       </Suspense>
     );
-  }
-  if (view === "giftbuilder" || path === "/gift-builder") {
-    return (
+  } else if (view === "giftbuilder" || path === "/gift-builder") {
+    routeContent = (
       <Suspense
         fallback={routeFallback(t("loader.giftBuilder"), t("loader.assemblingYourCustomBox"), false)}
       >
         <LazyGiftBuilderPage />
       </Suspense>
     );
-  }
-  if (path.startsWith("/products/")) {
+  } else if (path.startsWith("/products/")) {
     const slug = path.replace("/products/", "");
-    return <ProductDetailPage slug={slug} />;
-  }
-
-  if (view === "ritualcoach" || path === "/ritual-coach") {
-    return (
+    routeContent = <ProductDetailPage slug={slug} />;
+  } else if (view === "ritualcoach" || path === "/ritual-coach") {
+    routeContent = (
       <Suspense
         fallback={routeFallback(
           t("ritualCoach.loader.title"),
@@ -329,25 +414,24 @@ export default function App() {
         <LazyRitualCoachPage />
       </Suspense>
     );
-  }
-
-  if (view === "account" || path === "/account") {
-    return (
+  } else if (view === "account" || path === "/account") {
+    routeContent = (
       <Suspense
         fallback={routeFallback(t("account.hero.title"), t("account.hero.subtitle"), false)}
       >
         <LazyAccountPage />
       </Suspense>
     );
+  } else {
+    routeContent = SHOW_LAB ? <LayoutLab /> : <ProductShop />;
   }
 
   return (
     <>
-      {SHOW_LAB ? (
-        <LayoutLab />
-      ) : (
-        <ProductShop />
-      )}
+      <SkipToContent />
+      <div id="main-content" role="main" tabIndex={-1}>
+        {routeContent}
+      </div>
     </>
   );
 }

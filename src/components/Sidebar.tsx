@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useCart } from "@/cart/cartStore";
 import { useCompare } from "@/compare/compareStore";
 import { useGlobalSearch } from "@/hooks/useGlobalSearch";
@@ -22,6 +22,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchActive, setSearchActive] = useState(false);
   const searchRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   const dropdownResults = useGlobalSearch(searchQuery, 5);
   const showDropdown = searchActive && searchQuery.trim().length > 0;
 
@@ -35,23 +37,84 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    previousFocusRef.current = document.activeElement as HTMLElement | null;
+    const focusableSelector =
+      "a[href], button, input, select, textarea, [tabindex]:not([tabindex='-1'])";
+
+    const focusFirstItem = () => {
+      const elements =
+        panelRef.current?.querySelectorAll<HTMLElement>(focusableSelector) ?? [];
+      elements[0]?.focus();
+    };
+
+    focusFirstItem();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const elements =
+        panelRef.current?.querySelectorAll<HTMLElement>(focusableSelector) ?? [];
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key === "Tab" && elements.length > 0) {
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      previousFocusRef.current?.focus();
+    };
+  }, [open, onClose]);
+
   const handleSearchSubmit = () => {
     if (!searchQuery.trim()) return;
     if (typeof window === "undefined") return;
+    setSearchActive(false);
     window.location.href = `${buildAppUrl("/search")}?q=${encodeURIComponent(searchQuery.trim())}`;
   };
 
   const handleResultClick = (url: string) => {
     if (typeof window === "undefined") return;
+    setSearchActive(false);
     window.location.href = url;
   };
 
   return (
     <>
-      <div className={`drawer ${open ? "open" : ""}`}>
-        <aside className="drawer-panel" dir={locale === "ar" ? "rtl" : "ltr"}>
+      <div className={`drawer ${open ? "open" : ""}`} aria-hidden={!open}>
+        <aside
+          className="drawer-panel"
+          dir={locale === "ar" ? "rtl" : "ltr"}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="drawer-title"
+          ref={panelRef}
+          aria-hidden={!open}
+        >
           <div className="drawer-header">
-            <button className="drawer-close" onClick={onClose} aria-label="Close menu">
+            <h2 id="drawer-title" className="drawer-header__title">
+              {t("accessibility.menu.title")}
+            </h2>
+            <button
+              className="drawer-close"
+              onClick={onClose}
+              aria-label={t("accessibility.menu.close")}
+            >
               ×
             </button>
           </div>
@@ -70,10 +133,22 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                   event.preventDefault();
                   handleSearchSubmit();
                 }
+                if (event.key === "Escape") {
+                  event.preventDefault();
+                  setSearchActive(false);
+                }
               }}
+              aria-label={t("search.placeholder")}
+              aria-controls="drawer-search-results"
+              aria-expanded={showDropdown}
             />
             {showDropdown && (
-              <div className="drawer-search__dropdown">
+              <div
+                className="drawer-search__dropdown"
+                role="listbox"
+                id="drawer-search-results"
+                aria-label={t("accessibility.search.suggestions")}
+              >
                 {dropdownResults.length > 0 ? (
                   <>
                     {dropdownResults.map((entry) => (
@@ -83,6 +158,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                         className="drawer-search__result"
                         onMouseDown={(event) => event.preventDefault()}
                         onClick={() => handleResultClick(entry.url)}
+                        role="option"
+                        aria-selected="false"
+                        tabIndex={0}
                       >
                         <div>
                           <p className="drawer-search__result-title">{entry.label}</p>
@@ -94,7 +172,10 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                     <button
                       type="button"
                       className="drawer-search__view-all"
-                      onClick={handleSearchSubmit}
+                      onClick={() => {
+                        setSearchActive(false);
+                        handleSearchSubmit();
+                      }}
                     >
                       {t("search.seeAll")}
                     </button>

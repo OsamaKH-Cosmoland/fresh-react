@@ -292,8 +292,16 @@ export default function ShopPage() {
                       className="shop-product-card hover-lift"
                       data-animate="fade-up"
                     >
-                      <CompareToggle id={item.productId} type="product" />
-                      <FavoriteToggle id={item.productId} type="product" />
+                      <CompareToggle
+                        id={item.productId}
+                        type="product"
+                        itemLabel={item.productName}
+                      />
+                      <FavoriteToggle
+                        id={item.productId}
+                        type="product"
+                        itemLabel={item.productName}
+                      />
                       {item.heroImage && (
                         <div className="shop-product-card__media">
                           <img src={item.heroImage} alt={item.productName} />

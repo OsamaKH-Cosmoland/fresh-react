@@ -15,8 +15,19 @@ export function RatingBadge({ average, count, className = "" }: RatingBadgeProps
   const { t } = useTranslation();
   if (!count) return null;
   const displayRating = average != null ? average.toFixed(1) : t("reviews.summary.noRating");
+  const ariaLabel =
+    average != null
+      ? t("reviews.summary.ratingAriaLabel", {
+          rating: displayRating,
+          count,
+          reviewLabel: t("reviews.summary.reviewLabel"),
+        })
+      : t("reviews.summary.noRating");
   return (
-    <div className={["rating-badge", className].filter(Boolean).join(" ")}>
+    <div
+      className={["rating-badge", className].filter(Boolean).join(" ")}
+      aria-label={ariaLabel}
+    >
       <span className="rating-badge__stars" aria-hidden="true">
         {buildStars(average ?? 0)}
       </span>

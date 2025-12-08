@@ -23,6 +23,69 @@ export const ar = {
       },
     },
   },
+  meta: {
+    titles: {
+      home: "الرئيسية",
+      shop: "المتجر",
+      search: "البحث",
+      favorites: "المفضلات",
+      compare: "المقارنة",
+      account: "حسابي",
+      checkout: "الدفع",
+      orders: "الطلبات",
+      cart: "السلة",
+      giftBuilder: "مصمم الهدايا",
+      ritualFinder: "موجه الروتين",
+      ritualCoach: "مدرب الروتين",
+      ritualGuides: "دلائل الروتين",
+      ritualPlanner: "منظم الروتين",
+      onboarding: "إعداد ملف روتينك",
+      stories: "قصص الروتين",
+      storyDetail: "قصة الروتين",
+      product: "المنتج",
+    },
+  },
+  accessibility: {
+    skipToContent: "انتقل إلى المحتوى الرئيسي",
+    mainNavigation: "رئيسية",
+    menu: {
+      open: "افتح القائمة",
+      close: "أغلق القائمة",
+      title: "قائمة التنقل",
+    },
+    search: {
+      suggestions: "اقتراحات البحث",
+    },
+    live: {
+      addedToBag: "تمت إضافة {item} إلى السلة.",
+    },
+    favorite: {
+      product: {
+        add: "أضف {item} إلى المفضلات",
+        remove: "أزل {item} من المفضلات",
+      },
+      bundle: {
+        add: "أضف {item} إلى المفضلات",
+        remove: "أزل {item} من المفضلات",
+      },
+      genericItem: "عنصر",
+    },
+    compare: {
+      add: "أضف {item} إلى المقارنة",
+      remove: "أزل {item} من المقارنة",
+      genericItem: "عنصر",
+    },
+    tabs: {
+      account: "علامات تبويب الحساب",
+    },
+    cart: {
+      close: "أغلق نافذة السلة",
+      decreaseQuantity: "قلل كمية {item}",
+      increaseQuantity: "زد كمية {item}",
+      removeItem: "أزل {item} من السلة",
+    },
+    variantSelector: "اختر نسخة",
+  },
   offline: {
     status: "غير متصل",
     message:
@@ -51,6 +114,7 @@ export const ar = {
       noReviews: "لا توجد تقييمات بعد",
       noRating: "لم يتم تقييمه بعد",
       verifiedHint: "مشتريات معتمدة فقط",
+      ratingAriaLabel: "تم التقييم بـ {rating} من 5 من {count} {reviewLabel}",
     },
     list: {
       filterLabel: "فلترة حسب التقييم",
@@ -138,6 +202,16 @@ export const ar = {
     assemblingYourCustomBox: "نركب صندوقك المخصص",
     ritualProfile: "نصوغ ملف روتينك",
     ordersHistory: "سجل الطلبات",
+  },
+  giftBuilder: {
+    stepperLabel: "خطوات مصمم الهدايا",
+    boxSelectorLabel: "اختر تصميم الصندوق",
+    actions: {
+      addProduct: "أضف {name} إلى صندوقك",
+      removeProduct: "أزل {name} من صندوقك",
+      addAddOn: "أضف {name} إلى إضافاتك",
+      removeAddOn: "أزل {name} من إضافاتك",
+    },
   },
   search: {
     placeholder: "ابحث سريعاً عن الروتينات والمنتجات وموجه الروتين...",
@@ -356,6 +430,7 @@ export const ar = {
       back: "رجوع",
       placeOrder: "قدم الطلب",
     },
+    stepperLabel: "خطوات الدفع",
     review: {
       labels: {
         gift: "هدية",

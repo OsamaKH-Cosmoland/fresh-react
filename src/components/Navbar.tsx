@@ -36,6 +36,11 @@ export default function Navbar({
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [exploreOpen, setExploreOpen] = useState(false);
   const exploreRef = useRef<HTMLDivElement | null>(null);
+  const exploreTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const exploreMenuRef = useRef<HTMLDivElement | null>(null);
+  const exploreItemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const [highlightedExploreIndex, setHighlightedExploreIndex] = useState(-1);
+  const highlightedExploreIndexRef = useRef(-1);
   const { totalQuantity } = useCart();
   const compare = useCompare();
   const compareCount = compare.listCompared().length;
@@ -71,6 +76,26 @@ export default function Navbar({
   }, []);
 
   useEffect(() => {
+    if (!showDropdown) {
+      setSearchHighlightIndex(-1);
+    }
+  }, [showDropdown]);
+
+  useEffect(() => {
+    if (searchHighlightIndex >= 0) {
+      searchResultRefs.current[searchHighlightIndex]?.focus();
+    }
+  }, [searchHighlightIndex]);
+
+  useEffect(() => {
+    if (dropdownResults.length === 0) {
+      setSearchHighlightIndex(-1);
+    } else if (searchHighlightIndex >= dropdownResults.length) {
+      setSearchHighlightIndex(0);
+    }
+  }, [dropdownResults.length, searchHighlightIndex]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (exploreRef.current && !exploreRef.current.contains(event.target as Node)) {
         setExploreOpen(false);
@@ -80,17 +105,84 @@ export default function Navbar({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const focusExploreItem = (index: number) => {
+    const count = exploreNav.length;
+    if (!count) return;
+    const normalized = (index + count) % count;
+    setHighlightedExploreIndex(normalized);
+  };
+
+  useEffect(() => {
+    if (!exploreOpen) {
+      setHighlightedExploreIndex(-1);
+      return;
+    }
+    setHighlightedExploreIndex(0);
+    const frame = requestAnimationFrame(() => {
+      exploreItemRefs.current[0]?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [exploreOpen]);
+
+  useEffect(() => {
+    highlightedExploreIndexRef.current = highlightedExploreIndex;
+  }, [highlightedExploreIndex]);
+
+  useEffect(() => {
+    if (!exploreOpen) return;
+    const handleKey = (event: KeyboardEvent) => {
+      if (!exploreMenuRef.current?.contains(document.activeElement)) {
+        return;
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setExploreOpen(false);
+        exploreTriggerRef.current?.focus();
+        return;
+      }
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        focusExploreItem(
+          highlightedExploreIndexRef.current >= 0
+            ? highlightedExploreIndexRef.current + 1
+            : 0
+        );
+        return;
+      }
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        focusExploreItem(
+          highlightedExploreIndexRef.current >= 0
+            ? highlightedExploreIndexRef.current - 1
+            : -1
+        );
+      }
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [exploreOpen]);
+
   const dropdownResults = useGlobalSearch(searchQuery, 5);
   const showDropdown = searchActive && searchQuery.trim().length > 0;
+  const [searchHighlightIndex, setSearchHighlightIndex] = useState(-1);
+  const searchResultRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const currentPath =
+    typeof window !== "undefined"
+      ? `${window.location.pathname}${window.location.search}${window.location.hash}`
+      : "";
 
   const handleResultClick = (url: string) => {
     if (typeof window === "undefined") return;
+    setSearchActive(false);
+    setSearchHighlightIndex(-1);
     window.location.href = url;
   };
 
   const handleSearchSubmit = () => {
     if (!searchQuery.trim()) return;
     if (typeof window === "undefined") return;
+    setSearchHighlightIndex(-1);
+    setSearchActive(false);
     window.location.href = `${buildAppUrl("/search")}?q=${encodeURIComponent(searchQuery.trim())}`;
   };
 
@@ -102,10 +194,66 @@ export default function Navbar({
     window.location.href = normalizeHref("?view=cart");
   };
 
+  const moveSearchHighlight = (delta: number) => {
+    if (dropdownResults.length === 0) {
+      return;
+    }
+    setSearchHighlightIndex((previous) => {
+      if (previous === -1) {
+        return delta > 0 ? 0 : dropdownResults.length - 1;
+      }
+      const next = (previous + delta + dropdownResults.length) % dropdownResults.length;
+      return next;
+    });
+  };
+
   const handleSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      moveSearchHighlight(1);
+      return;
+    }
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      moveSearchHighlight(-1);
+      return;
+    }
+    if (event.key === "Escape") {
+      setSearchActive(false);
+      setSearchHighlightIndex(-1);
+      return;
+    }
     if (event.key === "Enter") {
+      if (searchHighlightIndex >= 0) {
+        event.preventDefault();
+        const highlighted = dropdownResults[searchHighlightIndex];
+        if (highlighted) {
+          handleResultClick(highlighted.url);
+        }
+        setSearchHighlightIndex(-1);
+        setSearchActive(false);
+        return;
+      }
       event.preventDefault();
       handleSearchSubmit();
+    }
+  };
+
+  const handleExploreTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === " " || event.key === "Enter") {
+      event.preventDefault();
+      setExploreOpen((prev) => !prev);
+      return;
+    }
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      if (!exploreOpen) {
+        setExploreOpen(true);
+        return;
+      }
+      focusExploreItem(
+        highlightedExploreIndexRef.current >= 0 ? highlightedExploreIndexRef.current + 1 : 0
+      );
     }
   };
 
@@ -125,35 +273,53 @@ export default function Navbar({
         onChange={(event) => setSearchQuery(event.target.value)}
         onFocus={() => setSearchActive(true)}
         onKeyDown={handleSearchKeyDown}
-        aria-label="Search site"
+        aria-label={t("search.placeholder")}
+        aria-controls="nav-search-results"
+        aria-expanded={showDropdown}
+        aria-activedescendant={
+          searchHighlightIndex >= 0 ? `nav-search-result-${searchHighlightIndex}` : undefined
+        }
       />
       {showDropdown && (
-        <div className="nav-search__dropdown">
+        <div
+          className="nav-search__dropdown"
+          role="listbox"
+          id="nav-search-results"
+          aria-label={t("accessibility.search.suggestions")}
+        >
           {dropdownResults.length > 0 ? (
             <>
-              {dropdownResults.map((entry) => (
-                <button
-                  type="button"
-                  key={entry.id}
-                  className="nav-search__result"
-                  onMouseDown={(event) => event.preventDefault()}
-                  onClick={() => {
-                    setSearchActive(false);
-                    handleResultClick(entry.url);
-                  }}
-                >
-                  <div>
-                    <p className="nav-search__result-title">{entry.label}</p>
-                    <p className="nav-search__result-copy">{entry.tagline}</p>
-                  </div>
-                  <span className="nav-search__result-type">{entry.kind}</span>
-                </button>
-              ))}
+              {dropdownResults.map((entry, index) => {
+                const isActive = searchHighlightIndex === index;
+                return (
+                  <button
+                    type="button"
+                    key={entry.id}
+                    id={`nav-search-result-${index}`}
+                    role="option"
+                    aria-selected={isActive}
+                    tabIndex={-1}
+                    className={`nav-search__result${isActive ? " is-active" : ""}`}
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => handleResultClick(entry.url)}
+                    ref={(element) => {
+                      searchResultRefs.current[index] = element;
+                    }}
+                  >
+                    <div>
+                      <p className="nav-search__result-title">{entry.label}</p>
+                      <p className="nav-search__result-copy">{entry.tagline}</p>
+                    </div>
+                    <span className="nav-search__result-type">{entry.kind}</span>
+                  </button>
+                );
+              })}
               <button
                 type="button"
                 className="nav-search__view-all"
                 onClick={() => {
                   setSearchActive(false);
+                  setSearchHighlightIndex(-1);
                   handleSearchSubmit();
                 }}
               >
@@ -184,26 +350,36 @@ export default function Navbar({
             </div>
             {showSectionLinks && (
               <div className="nav-bar__primary">
-                <nav className="nav-primary" aria-label={t("nav.explore")}>
-                  {primaryNav.map((item) => (
-                    <a
-                      key={item.id}
-                      className="nav-pill"
-                      href={normalizeHref(item.href)}
-                    >
-                      {t(item.labelKey as AppTranslationKey)}
-                    </a>
-                  ))}
+                <nav className="nav-primary" aria-label={t("accessibility.mainNavigation")}>
+                  {primaryNav.map((item) => {
+                    const href = normalizeHref(item.href);
+                    const isActive = href === currentPath;
+                    return (
+                      <a
+                        key={item.id}
+                        className="nav-pill"
+                        href={href}
+                        aria-current={isActive ? "page" : undefined}
+                      >
+                        {t(item.labelKey as AppTranslationKey)}
+                      </a>
+                    );
+                  })}
                   <div
                     className={`nav-explore ${exploreOpen ? "is-open" : ""}`}
                     ref={exploreRef}
+                    aria-hidden={!exploreOpen}
                   >
                     <button
                       type="button"
                       className="nav-pill nav-explore__trigger"
+                      ref={exploreTriggerRef}
                       onClick={() => setExploreOpen((prev) => !prev)}
+                      onKeyDown={handleExploreTriggerKeyDown}
                       aria-expanded={exploreOpen}
                       aria-haspopup="menu"
+                      aria-controls="explore-menu"
+                      aria-label={t("nav.explore")}
                     >
                       {t("nav.explore")}
                       <span className="nav-explore__chevron" aria-hidden="true">
@@ -211,12 +387,29 @@ export default function Navbar({
                       </span>
                     </button>
                     {exploreOpen && (
-                      <div className="nav-explore__menu">
-                        {exploreNav.map((item) => (
+                      <div
+                        className="nav-explore__menu"
+                        ref={exploreMenuRef}
+                        role="menu"
+                        id="explore-menu"
+                        aria-label={t("nav.explore")}
+                        aria-hidden={!exploreOpen}
+                      >
+                        {exploreNav.map((item, index) => (
                           <a
                             key={item.id}
                             className="nav-explore__link"
                             href={normalizeHref(item.href)}
+                            role="menuitem"
+                            tabIndex={-1}
+                            aria-selected={highlightedExploreIndex === index}
+                            onClick={() => {
+                              setExploreOpen(false);
+                              setHighlightedExploreIndex(-1);
+                            }}
+                            ref={(element) => {
+                              exploreItemRefs.current[index] = element;
+                            }}
                           >
                             {t(item.labelKey as AppTranslationKey)}
                             {item.id === "compare" && compareCount > 0
@@ -299,11 +492,11 @@ export default function Navbar({
                 </span>
                 <span className="nav-cart__count">{displayCount}</span>
               </Button>
-              <button
-                className="nav-mobile-actions__menu"
-                aria-label="Open menu"
-                onClick={onMenuToggle}
-              >
+            <button
+              className="nav-mobile-actions__menu"
+              aria-label={t("accessibility.menu.open")}
+              onClick={onMenuToggle}
+            >
                 <span />
                 <span />
                 <span />

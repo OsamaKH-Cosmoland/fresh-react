@@ -95,8 +95,16 @@ export default function FavoritesPage() {
                     className="shop-product-card hover-lift"
                     data-animate="fade-up"
                   >
-                    <CompareToggle id={detail.productId} type="product" />
-                    <FavoriteToggle id={detail.productId} type="product" />
+                    <CompareToggle
+                      id={detail.productId}
+                      type="product"
+                      itemLabel={detail.productName}
+                    />
+                    <FavoriteToggle
+                      id={detail.productId}
+                      type="product"
+                      itemLabel={detail.productName}
+                    />
                     {detail.heroImage && (
                       <div className="shop-product-card__media">
                         <img src={detail.heroImage} alt={detail.productName} />

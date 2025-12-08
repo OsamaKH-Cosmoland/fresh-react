@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { Button, SectionTitle } from "@/components/ui";
@@ -143,6 +143,21 @@ export default function CheckoutPage() {
     });
   };
 
+  const handleShippingKeyDown = (event: KeyboardEvent<HTMLButtonElement>, optionId: string) => {
+    const currentIndex = SHIPPING_OPTIONS.findIndex((option) => option.id === optionId);
+    if (currentIndex === -1) return;
+    if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+      event.preventDefault();
+      const nextIndex = (currentIndex + 1) % SHIPPING_OPTIONS.length;
+      setSelectedShippingId(SHIPPING_OPTIONS[nextIndex].id);
+    }
+    if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+      event.preventDefault();
+      const prevIndex = (currentIndex - 1 + SHIPPING_OPTIONS.length) % SHIPPING_OPTIONS.length;
+      setSelectedShippingId(SHIPPING_OPTIONS[prevIndex].id);
+    }
+  };
+
   const placeOrder = () => {
     if (!isOnline) {
       return;
@@ -210,22 +225,31 @@ export default function CheckoutPage() {
     window.location.href = destination.toString();
   };
 
-const renderContactField = (name: keyof typeof contactInfo, labelKey: AppTranslationKey, required = false) => (
-  <div className="checkout-field">
-    <label htmlFor={name}>
-      {t(labelKey)}
-      {required && <span className="checkout-required"> *</span>}
-    </label>
-    <input
-      id={name}
-      name={name}
-      value={contactInfo[name]}
-      onChange={(event) => handleContactChange(name, event.target.value)}
-      className="checkout-input"
-    />
-    {errors[name] && <p className="checkout-error">{errors[name]}</p>}
-  </div>
-);
+const renderContactField = (name: keyof typeof contactInfo, labelKey: AppTranslationKey, required = false) => {
+  const errorId = `${name}-error`;
+  return (
+    <div className="checkout-field">
+      <label htmlFor={name}>
+        {t(labelKey)}
+        {required && <span className="checkout-required"> *</span>}
+      </label>
+      <input
+        id={name}
+        name={name}
+        value={contactInfo[name]}
+        onChange={(event) => handleContactChange(name, event.target.value)}
+        className="checkout-input"
+        aria-invalid={errors[name] ? "true" : undefined}
+        aria-describedby={errors[name] ? errorId : undefined}
+      />
+      {errors[name] && (
+        <p id={errorId} className="checkout-error">
+          {errors[name]}
+        </p>
+      )}
+    </div>
+  );
+};
 
 const renderItemLabel = (item: typeof cartItems[number]) => {
   if (item.giftBox) {
@@ -310,18 +334,28 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
           </section>
         ) : (
           <>
-            <div className="checkout-stepper" data-animate="fade-up">
-              {STEPS.map((step, index) => (
-                <div
-                  key={step}
-                  className={`checkout-stepper__segment ${
-                    index === currentStep ? "is-current" : index < currentStep ? "is-done" : ""
-                  }`}
-                >
-                  <span>{index + 1}</span>
-                  <p>{t(step)}</p>
-                </div>
-              ))}
+            <div
+              className="checkout-stepper"
+              data-animate="fade-up"
+              role="list"
+              aria-label={t("checkout.stepperLabel")}
+            >
+              {STEPS.map((step, index) => {
+                const isCurrent = index === currentStep;
+                return (
+                  <div
+                    key={step}
+                    role="listitem"
+                    aria-current={isCurrent ? "step" : undefined}
+                    className={`checkout-stepper__segment ${
+                      isCurrent ? "is-current" : index < currentStep ? "is-done" : ""
+                    }`}
+                  >
+                    <span>{index + 1}</span>
+                    <p>{t(step)}</p>
+                  </div>
+                );
+              })}
             </div>
 
             {currentStep === 0 && (
@@ -353,7 +387,11 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                       {contactInfo.city} · {contactInfo.country || t("checkout.defaults.country")}
                     </p>
                   </div>
-                  <div className="checkout-shipping-options">
+                  <div
+                    className="checkout-shipping-options"
+                    role="radiogroup"
+                    aria-label={t("checkout.sections.shipping")}
+                  >
                     {SHIPPING_OPTIONS.map((option) => (
                       <button
                         key={option.id}
@@ -361,6 +399,10 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                         className={`checkout-shipping-option ${
                           selectedShippingId === option.id ? "is-selected" : ""
                         }`}
+                        role="radio"
+                        aria-checked={selectedShippingId === option.id}
+                        tabIndex={selectedShippingId === option.id ? 0 : -1}
+                        onKeyDown={(event) => handleShippingKeyDown(event, option.id)}
                         onClick={() => setSelectedShippingId(option.id)}
                       >
                         <div>
@@ -422,8 +464,14 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                         onChange={(e) => handleCardInput("number", e.target.value)}
                         className="checkout-input"
                         placeholder="0000 0000 0000 0000"
+                        aria-invalid={errors.number ? "true" : undefined}
+                        aria-describedby={errors.number ? "cardNumber-error" : undefined}
                       />
-                      {errors.number && <p className="checkout-error">{errors.number}</p>}
+                      {errors.number && (
+                        <p id="cardNumber-error" className="checkout-error">
+                          {errors.number}
+                        </p>
+                      )}
                     </div>
                     <div className="checkout-field">
                       <label htmlFor="cardExpiry">{t("checkout.fields.cardExpiry")}</label>
@@ -433,8 +481,14 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                         onChange={(e) => handleCardInput("expiry", e.target.value)}
                         className="checkout-input"
                         placeholder="MM/YY"
+                        aria-invalid={errors.expiry ? "true" : undefined}
+                        aria-describedby={errors.expiry ? "cardExpiry-error" : undefined}
                       />
-                      {errors.expiry && <p className="checkout-error">{errors.expiry}</p>}
+                      {errors.expiry && (
+                        <p id="cardExpiry-error" className="checkout-error">
+                          {errors.expiry}
+                        </p>
+                      )}
                     </div>
                     <div className="checkout-field">
                       <label htmlFor="cardCvc">{t("checkout.fields.cardCvc")}</label>
@@ -444,8 +498,14 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                         onChange={(e) => handleCardInput("cvc", e.target.value)}
                         className="checkout-input"
                         placeholder="CVC"
+                        aria-invalid={errors.cvc ? "true" : undefined}
+                        aria-describedby={errors.cvc ? "cardCvc-error" : undefined}
                       />
-                      {errors.cvc && <p className="checkout-error">{errors.cvc}</p>}
+                      {errors.cvc && (
+                        <p id="cardCvc-error" className="checkout-error">
+                          {errors.cvc}
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}

@@ -50,8 +50,8 @@ export function BundleCard({ bundle, onAddBundle, onViewDetails, heroImage }: Bu
   );
   return (
     <Card className="bundle-card hover-lift" data-animate="fade-up">
-      <CompareToggle id={bundle.id} type="bundle" />
-      <FavoriteToggle id={bundle.id} type="bundle" />
+      <CompareToggle id={bundle.id} type="bundle" itemLabel={bundle.name} />
+      <FavoriteToggle id={bundle.id} type="bundle" itemLabel={bundle.name} />
       {heroImage && (
         <div className="bundle-card__hero">
           <img src={heroImage} alt={bundle.name} />

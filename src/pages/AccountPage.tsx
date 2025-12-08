@@ -637,7 +637,14 @@ export default function AccountPage() {
         </header>
         <AccountTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-        <section className="account-panel">{tabContent}</section>
+        <section
+          className="account-panel"
+          role="tabpanel"
+          id={`account-panel-${activeTab}`}
+          aria-labelledby={`account-tab-${activeTab}`}
+        >
+          {tabContent}
+        </section>
       </main>
     </div>
   );
