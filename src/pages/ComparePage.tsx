@@ -8,6 +8,7 @@ import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { getCompareProductConfig, getCompareBundleConfig } from "@/content/compareCatalog";
 import { ritualBundles, type RitualBundle } from "@/content/bundles";
 import { useTranslation } from "@/localization/locale";
+import { useCompare } from "@/compare/compareStore";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 
