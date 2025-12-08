@@ -13,6 +13,7 @@ export interface CartItem {
   variantLabel?: string;
   variantAttributes?: Record<string, string>;
   imageUrl?: string;
+  productId?: string;
   bundleId?: string;
   bundleItems?: { productId: string; name: string; quantity: number }[];
   bundleCompareAt?: number;

@@ -177,12 +177,13 @@ export default function ComparePage() {
                       variant="primary"
                       size="md"
                       onClick={() =>
-                        addItem({
-                          id: column.detail.productId,
-                          name: column.detail.productName,
-                          price: column.detail.priceNumber,
-                          imageUrl: column.detail.heroImage,
-                        })
+                      addItem({
+                        productId: column.detail.productId,
+                        id: column.detail.productId,
+                        name: column.detail.productName,
+                        price: column.detail.priceNumber,
+                        imageUrl: column.detail.heroImage,
+                      })
                       }
                     >
                       {t("cta.addToBag")}

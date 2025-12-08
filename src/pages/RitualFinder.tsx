@@ -128,6 +128,7 @@ export default function RitualFinder() {
     const detail = PRODUCT_DETAIL_MAP[productId];
     if (!detail) return;
     addItem({
+      productId: detail.productId,
       id: detail.productId,
       name: detail.productName,
       price: detail.priceNumber,

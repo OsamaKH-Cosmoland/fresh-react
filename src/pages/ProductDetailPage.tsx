@@ -7,8 +7,11 @@ import { recordView } from "@/hooks/useRecentlyViewed";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { ritualBundles } from "@/content/bundles";
 import { useBundleActions } from "@/cart/cartBundles";
-import { customerReviews, type CustomerReview } from "@/content/reviews";
-import { ReviewCard } from "@/components/reviews/ReviewCard";
+import { useReviews } from "@/hooks/useReviews";
+import { useTranslation } from "@/localization/locale";
+import { ReviewForm } from "@/components/reviews/ReviewForm";
+import { ReviewList } from "@/components/reviews/ReviewList";
+import { ReviewSummary } from "@/components/reviews/ReviewSummary";
 
 export interface ProductDetailPageProps {
   slug: string;
@@ -19,6 +22,13 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(undefined);
+  const { t } = useTranslation();
+
+  const productId = detail?.productId ?? "";
+  const { reviews, averageRating, reviewsCount, isVerifiedAvailable, addReview } = useReviews(
+    productId,
+    "product"
+  );
 
   const priceNumber = detail?.priceNumber ?? 0;
 
@@ -45,6 +55,7 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
     if (!detail || priceNumber <= 0) return;
     const variantPrice = selectedVariant?.priceNumber ?? detail.priceNumber;
     addItem({
+      productId: detail.productId,
       id: selectedVariant?.variantId ?? detail.productId,
       name: detail.productName,
       price: variantPrice,
@@ -74,14 +85,6 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
     [detail]
   );
 
-  const productReviews = useMemo<CustomerReview[]>(
-    () =>
-      customerReviews
-        .filter((review) => review.productId === detail?.productId)
-        .slice(0, 3),
-    [detail]
-  );
-
   return (
     <>
       <ProductDetailLayout
@@ -96,19 +99,26 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
         }
         onAddToBag={addToBag}
       />
-      {productReviews.length > 0 && (
-        <section className="product-detail-reviews ng-mobile-shell" data-animate="fade-up">
-          <SectionTitle
-            title="What people are saying"
-            subtitle="Gentle love letters from customers on these rituals."
-          />
-          <div className="review-grid ng-grid-mobile-2">
-            {productReviews.map((review) => (
-              <ReviewCard key={review.id} review={review} />
-            ))}
+      <section className="product-review-section ng-mobile-shell" data-animate="fade-up">
+        <SectionTitle
+          title={t("reviews.sectionTitle")}
+          subtitle={t("reviews.sectionSubtitle")}
+          align="left"
+        />
+        <div className="product-review-section__grid">
+          <div className="product-review-section__summary">
+            <ReviewSummary
+              averageRating={averageRating}
+              reviewsCount={reviewsCount}
+              isVerifiedAvailable={isVerifiedAvailable}
+            />
           </div>
-        </section>
-      )}
+          <div className="product-review-section__details">
+            <ReviewList reviews={reviews} isVerified={isVerifiedAvailable} />
+            <ReviewForm addReview={addReview} />
+          </div>
+        </div>
+      </section>
       {relatedBundles.length > 0 && (
         <section className="product-detail-bundles ng-mobile-shell" data-animate="fade-up">
           <SectionTitle

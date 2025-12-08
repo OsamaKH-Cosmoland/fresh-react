@@ -17,6 +17,8 @@ import {
   type FocusTagId,
 } from "@/content/shopCatalog";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
+import { getReviewStats } from "@/utils/reviewStorage";
+import { RatingBadge } from "@/components/reviews/RatingBadge";
 import { useTranslation } from "@/localization/locale";
 
 const TYPE_FILTER_OPTIONS = [
@@ -81,6 +83,7 @@ export default function ShopPage() {
 
   const handleAddProduct = (product: ShopCatalogProductEntry["item"]) => {
     addItem({
+      productId: product.productId,
       id: product.productId,
       name: product.productName,
       price: product.priceNumber,
@@ -177,20 +180,18 @@ export default function ShopPage() {
                   const { item, focus, extras } = entry;
                   const focusLabels = focus.map((label) => shopFocusLookup[label]);
                   const extraLabels = extras?.map((label) => shopOptionalLookup[label]) ?? [];
+                  const ratingStats = getReviewStats(item.productId, "product");
                   return (
-                <Card
-                  key={item.productId}
-                  className="shop-product-card hover-lift"
-                  data-animate="fade-up"
-                >
-                  <CompareToggle id={item.productId} type="product" />
-                  <FavoriteToggle id={item.productId} type="product" />
-                {item.heroImage && (
+                    <Card
+                      key={item.productId}
+                      className="shop-product-card hover-lift"
+                      data-animate="fade-up"
+                    >
+                      <CompareToggle id={item.productId} type="product" />
+                      <FavoriteToggle id={item.productId} type="product" />
+                      {item.heroImage && (
                         <div className="shop-product-card__media">
-                          <img
-                            src={item.heroImage}
-                            alt={item.productName}
-                          />
+                          <img src={item.heroImage} alt={item.productName} />
                         </div>
                       )}
                       <div className="shop-product-card__body">
@@ -199,7 +200,14 @@ export default function ShopPage() {
                           <p className="shop-product-card__price">{item.priceLabel}</p>
                         </div>
                         <p className="shop-product-card__tagline">{item.shortTagline}</p>
-
+                        {ratingStats.count > 0 && (
+                          <div className="shop-product-card__rating">
+                            <RatingBadge
+                              average={ratingStats.average}
+                              count={ratingStats.count}
+                            />
+                          </div>
+                        )}
                         <div className="shop-product-card__chips">
                           {focusLabels.map((label) => (
                             <span
@@ -218,7 +226,6 @@ export default function ShopPage() {
                             </span>
                           ))}
                         </div>
-
                         <div className="shop-product-card__actions">
                           <Button
                             variant="primary"

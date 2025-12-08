@@ -138,16 +138,17 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
                       </div>
                       <p className="shop-product-card__tagline">{detail.shortTagline}</p>
                         <div className="shop-product-card__actions">
-                          <Button
-                            variant="primary"
-                            size="md"
-                            onClick={() =>
-                              addItem({
-                                id: detail.productId,
-                                name: detail.productName,
-                                price: detail.priceNumber,
-                                imageUrl: detail.heroImage,
-                              })
+                            <Button
+                              variant="primary"
+                              size="md"
+                              onClick={() =>
+                                addItem({
+                                  productId: detail.productId,
+                                  id: detail.productId,
+                                  name: detail.productName,
+                                  price: detail.priceNumber,
+                                  imageUrl: detail.heroImage,
+                                })
                             }
                           >
                             {t("cta.addToBag")}

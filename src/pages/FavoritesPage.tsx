@@ -61,6 +61,7 @@ export default function FavoritesPage() {
 
   const handleAddProduct = (detail: typeof favoriteProducts[number]) => {
     addItem({
+      productId: detail.productId,
       id: detail.productId,
       name: detail.productName,
       price: detail.priceNumber,

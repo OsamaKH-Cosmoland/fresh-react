@@ -13,6 +13,8 @@ import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
 import { shopFocusLookup } from "@/content/shopCatalog";
 import { ritualGuides } from "@/content/ritualGuides";
+import { getReviewStats } from "@/utils/reviewStorage";
+import { RatingBadge } from "@/components/reviews/RatingBadge";
 import { useTranslation } from "@/localization/locale";
 
 const getQueryFromLocation = () => {
@@ -78,6 +80,7 @@ export default function SearchPage() {
 
   const handleAddProduct = (detail: ProductDetailContent) => {
     addItem({
+      productId: detail.productId,
       id: detail.productId,
       name: detail.productName,
       price: detail.priceNumber,
@@ -111,6 +114,7 @@ export default function SearchPage() {
               <div className="shop-product-grid">
                 {products.map(({ entry, detail }) => {
                   const focusChips = focusLabels(entry.focus);
+                  const ratingStats = getReviewStats(detail.productId, "product");
                   return (
                     <Card
                       key={detail.productId}
@@ -130,6 +134,11 @@ export default function SearchPage() {
                           <p className="shop-product-card__price">{detail.priceLabel}</p>
                         </div>
                         <p className="shop-product-card__tagline">{detail.shortTagline}</p>
+                        {ratingStats.count > 0 && (
+                          <div className="shop-product-card__rating">
+                            <RatingBadge average={ratingStats.average} count={ratingStats.count} />
+                          </div>
+                        )}
                         <div className="shop-product-card__chips">
                           {focusChips.map((label) => (
                             <span
