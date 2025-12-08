@@ -298,6 +298,9 @@ export default function OnboardingPage() {
                 >
                   {t("onboarding.completion.ctas.finder")}
                 </Button>
+                <Button variant="ghost" size="lg" onClick={() => navigateToPath("/ritual-coach")}>
+                  {t("ritualCoach.cta.askCoach")}
+                </Button>
               </div>
               <Button variant="ghost" size="md" onClick={handleRevisit}>
                 {t("onboarding.actions.edit")}

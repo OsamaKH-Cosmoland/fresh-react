@@ -1,8 +1,11 @@
-import type { Order } from "../types/order";
+import type { LocalOrder } from "@/types/localOrder";
 
-const STORAGE_KEY = "naturagloss.orders.v1";
+const STORAGE_KEY = "naturagloss_orders";
 
-const safeParse = (value: string | null) => {
+const canUseStorage = () =>
+  typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+
+const safelyParse = (value: string | null) => {
   if (value == null) return null;
   try {
     return JSON.parse(value);
@@ -12,18 +15,15 @@ const safeParse = (value: string | null) => {
   }
 };
 
-const canUseStorage = () =>
-  typeof window !== "undefined" && typeof window.localStorage !== "undefined";
-
-export function readOrders(): Order[] {
+export function readOrders(): LocalOrder[] {
   if (!canUseStorage()) return [];
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) return [];
-  const parsed = safeParse(raw);
-  return Array.isArray(parsed) ? (parsed as Order[]) : [];
+  const parsed = safelyParse(raw);
+  return Array.isArray(parsed) ? (parsed as LocalOrder[]) : [];
 }
 
-export function writeOrders(orders: Order[]): void {
+export function writeOrders(orders: LocalOrder[]): void {
   if (!canUseStorage()) return;
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
@@ -32,7 +32,7 @@ export function writeOrders(orders: Order[]): void {
   }
 }
 
-export function addOrder(order: Order): Order {
+export function addOrder(order: LocalOrder): LocalOrder {
   const existing = readOrders();
   const next = [order, ...existing];
   writeOrders(next);

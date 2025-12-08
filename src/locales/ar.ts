@@ -10,7 +10,9 @@ export const ar = {
     compare: "قارن",
     cart: "السلة",
     viewCart: "عرض السلة",
+    orders: "الطلبات",
     ritualProfile: "ملف طقوسك",
+    ritualCoach: "مدرب الطقوس",
   },
   sections: {
     ritualGuides: "دلائل الطقوس",
@@ -67,6 +69,7 @@ export const ar = {
     giftBuilder: "مصمم الهدايا",
     assemblingYourCustomBox: "نركب صندوقك المخصص",
     ritualProfile: "نصوغ ملف طقوسك",
+    ordersHistory: "سجل الطلبات",
   },
   search: {
     placeholder: "ابحث سريعاً عن الطقوس والمنتجات وموجه الطقوس...",
@@ -192,6 +195,187 @@ export const ar = {
     },
     errors: {
       selectConcern: "اختر تركيزاً واحداً على الأقل أو تخطّ هذه الخطوة.",
+    },
+  },
+  checkout: {
+    hero: {
+      title: "إرشاد الدفع",
+      subtitle: "أربع خطوات ناعمة لمراجعة طقوسك وتأكيد توصيلها.",
+      meta: "لا مفاجآت، فقط عناية مدروسة.",
+    },
+    steps: {
+      contact: "الاتصال والعنوان",
+      shipping: "الشحن",
+      payment: "الدفع",
+      review: "المراجعة والطلب",
+    },
+    sections: {
+      contact: "تفاصيل الاتصال والعنوان",
+      contactHelp: "أخبرنا كيف نصل إليك لنصل طقوسك برفق.",
+      shipping: "اختر طريقة شحن",
+      shippingHelp: "عيّن وتيرة التوصيل التي تناسب توقيتك الطقسي.",
+      payment: "اختر وسيلة دفع",
+      paymentHelp: "نحاكي إدخال البطاقة لتعرف ما قد يأتي لاحقاً.",
+      review: "راجع الطلب",
+      reviewHelp: "تأكد من المجموعات، الرسوم والعنوان قبل الحجز.",
+    },
+    fields: {
+      fullName: "الاسم الكامل",
+      email: "البريد الإلكتروني",
+      phone: "رقم الهاتف (اختياري)",
+      country: "الدولة",
+      city: "المدينة",
+      street: "الشارع والرقم",
+      postalCode: "الرمز البريدي (اختياري)",
+      cardNumber: "رقم البطاقة",
+      cardExpiry: "تاريخ الانتهاء (MM/YY)",
+      cardCvc: "رمز الأمان",
+    },
+    shipping: {
+      addressTitle: "عنوان التوصيل",
+    },
+    shippingOptions: {
+      standard: {
+        label: "توصيل عادي",
+        description: "٣-٥ أيام مع متابعة الكونسييرج.",
+        eta: "٣-٥ أيام",
+      },
+      express: {
+        label: "توصيل سريع",
+        description: "١-٢ يوم بترتيب فائق.",
+        eta: "١-٢ يوم",
+      },
+      local: {
+        label: "استلام محلي",
+        description: "استلم من الاستوديو في نطاق محدود.",
+        eta: "نفس اليوم",
+      },
+    },
+    payment: {
+      methods: {
+        card: "بطاقة",
+        cod: "الدفع عند الاستلام",
+      },
+    },
+    validation: {
+      required: "هذا الحقل مطلوب.",
+      emailInvalid: "أدخل بريداً إلكترونياً صحيحاً.",
+      cardNumber: "رقم البطاقة يجب أن يكون ١٦ رقماً.",
+      cardExpiry: "استخدم الصيغة MM/YY.",
+      cardCvc: "أدخل ٣ أو ٤ أرقام.",
+    },
+    actions: {
+      next: "الخطوة التالية",
+      back: "رجوع",
+      placeOrder: "قدم الطلب",
+    },
+    review: {
+      labels: {
+        gift: "هدية",
+        bundle: "مجموعة",
+        subtotal: "المجموع الفرعي",
+        shipping: "الشحن",
+        total: "الإجمالي",
+        shippingMethod: "طريقة الشحن",
+        payment: "طريقة الدفع",
+        address: "عنوان التوصيل",
+      },
+    },
+    defaults: {
+      country: "مصر",
+    },
+    empty: {
+      title: "سلتك خفيفة.",
+      body: "أضف طقساً لنكمل عملية الدفع.",
+    },
+    confirmation: {
+      title: "شكراً لك",
+      subtitle: "طقسك في الطريق مع لمسة حانية.",
+      summary: "أضفت {itemCount} عناصر بإجمالي {total}.",
+      viewOrders: "عرض طلباتي",
+    },
+    cta: {
+      start: "ابدأ الدفع",
+    },
+  },
+  ordersHistory: {
+    title: "سجل الطلبات",
+    subtitle: "راجع كل طقوسك التي تأكدت منها.",
+    empty: "لم تطلب أي طقوس بعد.",
+    labels: {
+      orderId: "طلب",
+      itemCount: "{count} عناصر",
+      view: "عرض التفاصيل",
+      hide: "إخفاء التفاصيل",
+      gift: "هدية",
+      bundle: "مجموعة",
+    },
+    detail: {
+      shippingMethod: "طريقة الشحن",
+      address: "عنوان التسليم",
+      payment: "ملخص الدفع",
+      last4: "بطاقة تنتهي بـ {last4}",
+      items: "عناصر الطلب",
+    },
+  },
+  ritualCoach: {
+    loader: {
+      title: "مدرب الطقوس",
+      subtitle: "يختار طقوساً هادئة تتناغم مع تفضيلاتك.",
+    },
+    hero: {
+      title: "اسأل مدرب الطقوس",
+      subtitle: "رفيق قواعدي يرشد طقسك القادم بلطف وتركيز بما يتوافق مع ما تهتم به.",
+    },
+    profileRecap: {
+      template:
+        "ذكرتَ أنك تهتم بطقوس {focus}، تفضل توقيت {time}، تعشق نغمات {scent}، وتتحمل ميزانية {budget}.",
+      empty: "أنشئ ملف طقوس حتى ينسجم المدرب مع ما يهمك.",
+    },
+    controls: {
+      intensity: {
+        label: "ما حدة الطقس التي تسعى إليها؟",
+        helper: "اختر ما بين بسيطة، متوازنة، أو متكاملة حسب مزاجك.",
+        options: {
+          minimal: "بسيطة",
+          balanced: "متوازنة",
+          indulgent: "متكاملة",
+        },
+      },
+      focus: {
+        label: "هل ترغب في تركيز الشعر أم الجسم الآن؟",
+        helper: "حدد المنطقة التي تريد أن يسلط عليها المدرب الضوء.",
+        clear: "إزالة التركيز",
+      },
+    },
+    sections: {
+      main: "طقسك الرئيسي",
+      lighter: "نسخة أخف",
+      treats: "لمسات تدليل",
+    },
+    explanations: {
+      main: "يتماشى مع توقيت {time} وتركيز {focus} ليمنحك لمسة {intensity}.",
+      lighter: "نسخة أخف من طقس {intensity} تحافظ على {focus} وتوقيت {time}.",
+      treats: "أضف لمسات {scent} عند اشتياقك لنهاية {mood}.",
+    },
+    emptyState: "يحتاج المدرب إلى ملف طقوس لتجهيز تطابق.",
+    treats: {
+      empty: "عد بعد تحديد تركيز لتظهر اقتراحات التدليل.",
+    },
+    savedCartName: {
+      base: "طقس المدرب",
+    },
+    savedCartMessage: {
+      success: "تم حفظ طقس المدرب.",
+      empty: "أضف طقساً قبل الحفظ.",
+    },
+    cta: {
+      createProfile: "أنشئ ملف الطقوس",
+      addFullRitual: "أضف الطقس الكامل للسلة",
+      saveRitual: "احفظ هذا الطقس",
+      askAgain: "اسأل المدرب مجدداً",
+      askCoach: "اسأل مدرب الطقوس",
+      refineWithCoach: "نقّح بالتعاون مع مدرب الطقوس",
     },
   },
 } as const;

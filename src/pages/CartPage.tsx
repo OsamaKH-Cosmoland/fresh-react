@@ -5,6 +5,7 @@ import { type CartItem, useCart } from "@/cart/cartStore";
 import { PRODUCT_INDEX } from "../data/products";
 import { ritualBundles } from "@/content/bundles";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { useTranslation } from "@/localization/locale";
 
 const parsePrice = (price: string | number) => {
   const number = parseFloat(String(price).replace(/[^\d.]/g, ""));
@@ -14,6 +15,7 @@ const parsePrice = (price: string | number) => {
 export default function CartPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { cartItems, totalQuantity, subtotal, updateQuantity, removeItem, clearCart } = useCart();
+  const { t } = useTranslation();
   const totalItems = totalQuantity ?? cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const renderVariantDetail = (item: CartItem) => {
@@ -209,12 +211,12 @@ export default function CartPage() {
                 })}
               </ul>
               <div className="cart-controls">
-                <button type="button" className="ghost-btn" onClick={goToCollection}>
-                  Continue shopping
-                </button>
-                <button type="button" className="ghost-btn" onClick={clearCart}>
-                  Clear bag
-                </button>
+              <button type="button" className="ghost-btn" onClick={goToCollection}>
+                {t("cta.backToShop")}
+              </button>
+              <button type="button" className="ghost-btn" onClick={clearCart}>
+                {t("cta.clearBag")}
+              </button>
               </div>
             </div>
 
@@ -234,7 +236,7 @@ export default function CartPage() {
                 Shipping and taxes are calculated at checkout. NaturaGloss offers complimentary ritual fitting on orders over 750 EGP.
               </p>
               <button type="button" className="cta-btn" onClick={goToCheckout}>
-                Proceed to checkout
+                {t("cta.proceedToCheckout")}
               </button>
             </aside>
           </section>

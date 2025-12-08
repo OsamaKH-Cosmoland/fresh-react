@@ -392,13 +392,16 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                   ))}
                 </div>
               )}
-              <div className="landing-personalization__focus-actions">
-                <Button variant="ghost" size="md" onClick={() => navigateToPath("/onboarding")}>
-                  {t("onboarding.personalization.updateLink")}
-                </Button>
-              </div>
-            </article>
-          )}
+            <div className="landing-personalization__focus-actions">
+              <Button variant="ghost" size="md" onClick={() => navigateToPath("/onboarding")}>
+                {t("onboarding.personalization.updateLink")}
+              </Button>
+              <Button variant="secondary" size="md" onClick={() => navigateToPath("/ritual-coach")}>
+                {t("ritualCoach.cta.askCoach")}
+              </Button>
+            </div>
+          </article>
+        )}
 
           {hasSavedRituals && (
             <article className="landing-personalization__group" data-animate="fade-up">

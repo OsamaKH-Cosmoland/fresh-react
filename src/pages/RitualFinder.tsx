@@ -117,6 +117,13 @@ export default function RitualFinder() {
     setError(null);
   };
 
+  const navigateToCoach = () => {
+    const base = import.meta.env.BASE_URL ?? "/";
+    const destination = new URL(base, window.location.origin);
+    destination.pathname = "/ritual-coach";
+    window.location.href = destination.toString();
+  };
+
   const addProductToBag = (productId: string) => {
     const detail = PRODUCT_DETAIL_MAP[productId];
     if (!detail) return;
@@ -242,10 +249,13 @@ export default function RitualFinder() {
                 </div>
               )}
               <div className="ritual-finder-controls ritual-finder-controls--reset">
-                <Button variant="ghost" onClick={handleReset}>
-                  Retake the Ritual Finder
-                </Button>
-              </div>
+              <Button variant="ghost" onClick={handleReset}>
+                Retake the Ritual Finder
+              </Button>
+              <Button variant="secondary" onClick={navigateToCoach}>
+                {t("ritualCoach.cta.refineWithCoach")}
+              </Button>
+            </div>
             </article>
           )}
         </section>

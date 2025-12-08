@@ -144,6 +144,7 @@ interface CartContextValue {
   setCart: (items: CartItem[]) => void;
   loadSavedCart: (id: string) => boolean;
   saveCurrentCart: (name: string) => boolean;
+  saveCustomCart: (name: string, items: CartItem[]) => boolean;
   deleteSavedCart: (id: string) => boolean;
   renameSavedCart: (id: string, newName: string) => boolean;
 }
@@ -274,6 +275,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return true;
   };
 
+  const saveCustomCart = (name: string, items: CartItem[]) => {
+    const title = name.trim();
+    if (!title || items.length === 0) return false;
+    const timestamp = new Date().toISOString();
+    const newCart: SavedCart = {
+      id: createCartId(),
+      name: title,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      items: items.map((item) => ({ ...item })),
+    };
+    const next = [newCart, ...state.savedCarts];
+    dispatch({ type: "set-saved", payload: next });
+    return true;
+  };
+
   const loadSavedCart = (id: string) => {
     const saved = state.savedCarts.find((entry) => entry.id === id);
     if (!saved) return false;
@@ -324,6 +341,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCart,
     loadSavedCart,
     saveCurrentCart,
+    saveCustomCart,
     deleteSavedCart,
     renameSavedCart,
   };

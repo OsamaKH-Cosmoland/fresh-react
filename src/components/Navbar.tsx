@@ -89,6 +89,17 @@ export default function Navbar({
         {locale.toUpperCase()}
       </Button>
       <Button
+        variant="ghost"
+        size="sm"
+        className="nav-orders"
+        onClick={() => (window.location.href = buildAppUrl("/orders-history"))}
+      >
+        {t("nav.orders")}
+      </Button>
+      <Button variant="ghost" size="sm" className="nav-coach" onClick={() => (window.location.href = buildAppUrl("/ritual-coach"))}>
+        {t("nav.ritualCoach")}
+      </Button>
+      <Button
         variant="secondary"
         className="nav-cart"
         size="md"

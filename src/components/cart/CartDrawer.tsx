@@ -3,6 +3,7 @@ import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { useTranslation } from "@/localization/locale";
 
 interface CartDrawerProps {
   open: boolean;
@@ -46,6 +47,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   }, [open, onClose]);
 
   const canCheckout = totalQuantity > 0;
+  const { t } = useTranslation();
+
   const goToCheckout = () => {
     if (!canCheckout) return;
     onClose();
@@ -241,8 +244,14 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
               <span>Subtotal</span>
               <strong>{subtotal.toFixed(2)} EGP</strong>
             </div>
-            <Button variant="primary" size="lg" className="cart-drawer__checkout" onClick={goToCheckout} disabled={!canCheckout}>
-              Go to checkout
+            <Button
+              variant="primary"
+              size="lg"
+              className="cart-drawer__checkout"
+              onClick={goToCheckout}
+              disabled={!canCheckout}
+            >
+              {t("cta.proceedToCheckout")}
             </Button>
           </footer>
         </aside>

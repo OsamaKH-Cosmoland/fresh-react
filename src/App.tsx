@@ -23,6 +23,8 @@ const LazyRitualGuidesPage = lazy(() => import("./pages/RitualGuidesPage"));
 const LazyRitualGuideDetailPage = lazy(() => import("./pages/RitualGuideDetailPage"));
 const LazyGiftBuilderPage = lazy(() => import("./pages/GiftBuilderPage"));
 const LazyOnboardingPage = lazy(() => import("./pages/OnboardingPage"));
+const LazyOrdersHistoryPage = lazy(() => import("./pages/OrdersHistoryPage"));
+const LazyRitualCoachPage = lazy(() => import("./pages/RitualCoachPage"));
 
 const routeFallback = (
   title: string,
@@ -234,6 +236,19 @@ export default function App() {
       </Suspense>
     );
   }
+  if (view === "orders-history" || path === "/orders-history") {
+    return (
+      <Suspense
+        fallback={routeFallback(
+          t("loader.ordersHistory"),
+          t("loader.gatheringYourRituals"),
+          false
+        )}
+      >
+        <LazyOrdersHistoryPage />
+      </Suspense>
+    );
+  }
   if (view === "search" || path === "/search") {
     return (
       <Suspense
@@ -299,6 +314,20 @@ export default function App() {
   if (path.startsWith("/products/")) {
     const slug = path.replace("/products/", "");
     return <ProductDetailPage slug={slug} />;
+  }
+
+  if (view === "ritualcoach" || path === "/ritual-coach") {
+    return (
+      <Suspense
+        fallback={routeFallback(
+          t("ritualCoach.loader.title"),
+          t("ritualCoach.loader.subtitle"),
+          false
+        )}
+      >
+        <LazyRitualCoachPage />
+      </Suspense>
+    );
   }
 
   return (
