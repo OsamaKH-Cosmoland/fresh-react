@@ -24,6 +24,9 @@ export const ar = {
       },
     },
   },
+  currency: {
+    label: "عملة العرض: {currency}",
+  },
   meta: {
     titles: {
       home: "الرئيسية",
@@ -511,6 +514,10 @@ export const ar = {
       title: "شكراً لك",
       subtitle: "روتينك في الطريق مع لمسة حانية.",
       summary: "أضفت {itemCount} عناصر بإجمالي {total}.",
+      loyaltyEarned: "لقد كسبت {points} نقطة طقسية مع هذا الطلب.",
+      loyaltyStatus: "حالتك: {tier}.",
+      loyaltyTotal: "لديك الآن {points} نقطة طقسية.",
+      loyaltyProgress: "احصل على {points} نقطة أخرى للوصول إلى {nextTier}.",
       viewOrders: "عرض طلباتي",
     },
     cta: {
@@ -537,6 +544,13 @@ export const ar = {
       promoCode: "رمز التوفير",
       last4: "بطاقة تنتهي بـ {last4}",
       items: "عناصر الطلب",
+    },
+    loyalty: {
+      label: "الولاء",
+      status: "المستوى الحالي: {tier}",
+      points: "عدد النقاط: {points}",
+      nextTier: "احصل على {points} نقطة لتصل إلى {tier}.",
+      maxTier: "أنت في أعلى مستوى من الولاء.",
     },
   },
   ritualCoach: {
@@ -619,6 +633,35 @@ export const ar = {
       emptyValue: "لم يتم التحديد بعد",
       hint: "توجه هذه التفضيلات موجه البنية والروتين ومدرب الروتين لتبقى على نفس النغمة.",
       edit: "تعديل ملف الروتين",
+    },
+    region: {
+      title: "المنطقة والعملات",
+      description: "اختر العملة التي تود رؤية الأسعار بها؛ السعر الإجمالي يبقى بالعملة الأساسية.",
+    },
+    loyalty: {
+      title: "الولاء",
+      totalPoints: "مجموع النقاط الروتينية",
+      lastOrder: "آخر طلب",
+      nextTier: "احصل على {points} نقطة إضافية لتصل إلى {tier}.",
+      maxTier: "أنت في أعلى مستوى من الولاء.",
+      tiers: {
+        bronze: {
+          label: "رتبة البرونز",
+          perks: "ترحيب لطيف يفتح باب عالم NaturaGloss الروتيني.",
+        },
+        silver: {
+          label: "رتبة الفضة",
+          perks: "عناية أعمق ووصول مبكر لتجارب وروتينات جديدة.",
+        },
+        gold: {
+          label: "رتبة الذهب",
+          perks: "عناية مميزة وأولوية في طقوس الموسم الخاص.",
+        },
+        platinum: {
+          label: "رتبة البلاتين",
+          perks: "مكانة رفيعة مع أرحب مستويات العناية.",
+        },
+      },
     },
     orders: {
       emptyTitle: "لا توجد طلبات بعد",

@@ -12,7 +12,6 @@ type CompareProductConfig = {
   texture: string[];
   usage: string[];
   format: string;
-  priceLabel: string;
   priceNumber: number;
   detail: ProductDetailContent;
 };
@@ -25,7 +24,7 @@ type CompareBundleConfig = {
   texture: string[];
   ritualType: string[];
   included: string[];
-  priceLabel: string;
+  priceNumber: number;
 };
 
 const productFormatMap: Record<string, string> = {
@@ -79,8 +78,6 @@ const bundleExtrasMap = shopCatalog.reduce<Record<string, string[]>>((acc, entry
   return acc;
 }, {});
 
-const formatCurrency = (value: number) => `${value.toFixed(2)} EGP`;
-
 export function getCompareProductConfig(productId: string): CompareProductConfig | null {
   const detail = productDetailById[productId];
   if (!detail) return null;
@@ -93,7 +90,6 @@ export function getCompareProductConfig(productId: string): CompareProductConfig
     texture: detail.sensoryExperience.slice(0, 3),
     usage: usageLookup(productExtrasMap[productId] ?? []),
     format: productFormatMap[productId] ?? "Standard format",
-    priceLabel: detail.priceLabel,
     priceNumber: detail.priceNumber,
     detail,
   };
@@ -120,6 +116,6 @@ export function getCompareBundleConfig(bundleId: string): CompareBundleConfig | 
     texture: [bundle.description],
     ritualType,
     included,
-    priceLabel: `Approx. ${formatCurrency(price)}`,
+    priceNumber: price,
   };
 }

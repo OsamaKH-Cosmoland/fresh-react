@@ -24,6 +24,9 @@ export const en = {
       },
     },
   },
+  currency: {
+    label: "Display currency: {currency}",
+  },
   meta: {
     titles: {
       home: "Home",
@@ -511,6 +514,10 @@ export const en = {
       title: "Thank you",
       subtitle: "Your routine is on its way with a whispered note.",
       summary: "You placed {itemCount} items totaling {total}.",
+      loyaltyEarned: "You earned {points} ritual points with this order.",
+      loyaltyStatus: "Your status: {tier}.",
+      loyaltyTotal: "You now have {points} ritual points.",
+      loyaltyProgress: "Earn {points} more to reach {nextTier}.",
       viewOrders: "View your orders",
     },
     cta: {
@@ -537,6 +544,13 @@ export const en = {
       promoCode: "Promo code",
       last4: "Card ending in {last4}",
       items: "Items in this order",
+    },
+    loyalty: {
+      label: "Loyalty",
+      status: "Current tier: {tier}",
+      points: "Total points: {points}",
+      nextTier: "Earn {points} more to reach {tier}.",
+      maxTier: "You're in the highest tier.",
     },
   },
   ritualCoach: {
@@ -620,6 +634,35 @@ export const en = {
       emptyValue: "Not set yet",
       hint: "These preferences help the Routine Finder, Routine Coach, and personalized highlights stay aligned with you.",
       edit: "Edit routine profile",
+    },
+    region: {
+      title: "Region & currency",
+      description: "Set the display currency to match where you shop—totals remain in the base currency.",
+    },
+    loyalty: {
+      title: "Loyalty",
+      totalPoints: "Total ritual points",
+      lastOrder: "Last order",
+      nextTier: "Earn {points} more points to reach {tier}.",
+      maxTier: "You're in the highest tier.",
+      tiers: {
+        bronze: {
+          label: "Bronze Ritual",
+          perks: "Gentle welcome into the NaturaGloss ritual world.",
+        },
+        silver: {
+          label: "Silver Ritual",
+          perks: "Deeper care, early access to new rituals.",
+        },
+        gold: {
+          label: "Gold Ritual",
+          perks: "Priority care and special seasonal rituals.",
+        },
+        platinum: {
+          label: "Platinum Ritual",
+          perks: "Top-tier ritual status with the most generous care.",
+        },
+      },
     },
     orders: {
       emptyTitle: "No orders yet",

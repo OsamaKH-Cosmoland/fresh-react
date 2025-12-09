@@ -9,6 +9,8 @@ import { primaryNav, exploreNav } from "@/config/navigation";
 import { buildAppUrl, normalizeHref } from "@/utils/navigation";
 import { prefetchRoute, PREFETCH_ROUTE_ALIASES } from "@/utils/prefetchRoutes";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { CURRENCIES, type SupportedCurrency } from "@/currency/currencyConfig";
+import { useCurrency } from "@/currency/CurrencyProvider";
 
 interface NavbarProps {
   onMenuToggle: () => void;
@@ -49,6 +51,9 @@ export default function Navbar({
   const itemLabel = displayCount === 1 ? "item" : "items";
   const { locale, setLocale } = useLocale();
   const { t } = useTranslation();
+  const { currency, setCurrency } = useCurrency();
+  const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
+  const currencyMenuRef = useRef<HTMLDivElement | null>(null);
   const { isOnline } = useNetworkStatus();
   const dropdownResults = useGlobalSearch(searchQuery, 5);
   const showDropdown = searchActive && searchQuery.trim().length > 0;
@@ -106,15 +111,36 @@ export default function Navbar({
         setExploreOpen(false);
       }
     };
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        currencyMenuOpen &&
+        currencyMenuRef.current &&
+        !currencyMenuRef.current.contains(event.target as Node)
+      ) {
+        setCurrencyMenuOpen(false);
+      }
+    };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [currencyMenuOpen]);
 
   const focusExploreItem = (index: number) => {
     const count = exploreNav.length;
     if (!count) return;
     const normalized = (index + count) % count;
     setHighlightedExploreIndex(normalized);
+  };
+  const currencyOptions = CURRENCIES;
+  const currencyLabel =
+    currencyOptions.find((entry) => entry.code === currency)?.label ?? currency;
+  const handleCurrencySelect = (code: SupportedCurrency) => {
+    setCurrency(code);
+    setCurrencyMenuOpen(false);
   };
 
   useEffect(() => {
@@ -438,6 +464,43 @@ export default function Navbar({
             <div className="nav-bar__actions">
             {renderSearchField()}
             <div className="nav-utility-links">
+              <div
+                className="nav-currency"
+                ref={currencyMenuRef}
+              >
+                <button
+                  type="button"
+                  className="nav-currency__trigger"
+                  onClick={() => setCurrencyMenuOpen((prev) => !prev)}
+                  aria-haspopup="menu"
+                  aria-expanded={currencyMenuOpen}
+                  aria-label={t("currency.label", { currency: currencyLabel })}
+                >
+                  {currency}
+                </button>
+                {currencyMenuOpen && (
+                  <div
+                    className="nav-currency__menu"
+                    role="menu"
+                    aria-label={t("currency.label", { currency: currencyLabel })}
+                  >
+                    {currencyOptions.map((option) => (
+                      <button
+                        type="button"
+                        key={option.code}
+                        className={`nav-currency__option${
+                          currency === option.code ? " is-active" : ""
+                        }`}
+                        onClick={() => handleCurrencySelect(option.code)}
+                        role="menuitem"
+                      >
+                        <span>{option.code}</span>
+                        <small>{option.label}</small>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               <Button
                 variant="ghost"
                 size="sm"

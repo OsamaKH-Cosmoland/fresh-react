@@ -15,8 +15,10 @@ import { ritualBundles } from "@/content/bundles";
 import { shopCatalog, shopFocusLookup, type FocusTagId } from "@/content/shopCatalog";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { useSeo } from "@/seo/useSeo";
 import { useTranslation } from "@/localization/locale";
+import { useCurrency } from "@/currency/CurrencyProvider";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -31,6 +33,7 @@ export default function FavoritesPage() {
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const { t } = useTranslation();
+  const { currency } = useCurrency();
 
   const focusMap = useMemo(() => {
     return shopCatalog.reduce<Record<string, FocusTagId[]>>((acc, entry) => {
@@ -128,7 +131,9 @@ export default function FavoritesPage() {
                     <div className="shop-product-card__body">
                       <div className="shop-product-card__heading">
                         <h3>{detail.productName}</h3>
-                        <p className="shop-product-card__price">{detail.priceLabel}</p>
+                        <p className="shop-product-card__price">
+                          {formatCurrency(detail.priceNumber, currency)}
+                        </p>
                       </div>
                       <p className="shop-product-card__tagline">{detail.shortTagline}</p>
                       <div className="shop-product-card__chips">

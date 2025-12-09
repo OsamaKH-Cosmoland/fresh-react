@@ -6,6 +6,7 @@ import { useCart } from "@/cart/cartStore";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
 import { trackEvent } from "@/analytics/events";
+import { useCurrency } from "@/currency/CurrencyProvider";
 import { formatVariantMeta } from "@/utils/variantDisplay";
 import PromoCodePanel from "@/components/promo/PromoCodePanel";
 
@@ -30,6 +31,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   } = useCart();
   const [saveName, setSaveName] = useState("");
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const { currency } = useCurrency();
 
   const savedSummary = useMemo(
     () =>
@@ -193,17 +195,17 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <div>
                       <p className="cart-drawer__title">{item.name}</p>
                       {renderVariantMeta(item.variantLabel, item.variantAttributes)}
-                      <p className="cart-drawer__meta">{formatCurrency(item.price)}</p>
+                      <p className="cart-drawer__meta">{formatCurrency(item.price, currency)}</p>
                       {item.bundleId && (
                         <div className="cart-drawer__bundle-meta">
                           {item.bundleCompareAt && item.bundleCompareAt > item.price && (
                             <p className="cart-drawer__bundle-compare">
-                              Regular {formatCurrency(item.bundleCompareAt)}
+                              Regular {formatCurrency(item.bundleCompareAt, currency)}
                             </p>
                           )}
                           {item.bundleSavings && item.bundleSavings > 0 && (
                             <p className="cart-drawer__bundle-savings">
-                              You save {formatCurrency(item.bundleSavings)}
+                              You save {formatCurrency(item.bundleSavings, currency)}
                               {item.bundleSavingsPercent ? ` (${item.bundleSavingsPercent}%)` : ""}
                             </p>
                           )}
@@ -357,17 +359,17 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             <div className="cart-drawer__totals">
               <div className="cart-drawer__totals-row">
                 <span>{t("cart.summary.subtotal")}</span>
-                <strong>{formatCurrency(subtotal)}</strong>
+                <strong>{formatCurrency(subtotal, currency)}</strong>
               </div>
               {discountTotal > 0 && (
                 <div className="cart-drawer__totals-row">
                   <span>{t("cart.summary.discount")}</span>
-                  <strong>-{formatCurrency(discountTotal)}</strong>
+                  <strong>-{formatCurrency(discountTotal, currency)}</strong>
                 </div>
               )}
               <div className="cart-drawer__totals-row cart-drawer__totals-row--highlight">
                 <span>{t("cart.summary.total")}</span>
-                <strong>{formatCurrency(Math.max(subtotal - discountTotal, 0))}</strong>
+                <strong>{formatCurrency(Math.max(subtotal - discountTotal, 0), currency)}</strong>
               </div>
             </div>
             <Button

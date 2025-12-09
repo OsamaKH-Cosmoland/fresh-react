@@ -1,6 +1,8 @@
 import React from "react";
 import { Button, Card, SectionTitle } from "@/components/ui";
+import { useCurrency } from "@/currency/CurrencyProvider";
 import { useTranslation } from "@/localization/locale";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 export type HeroSummaryBullet = string;
 
@@ -72,7 +74,11 @@ export function ProductDetailLayout({
 }: ProductDetailLayoutProps) {
   const { t } = useTranslation();
   const selectedVariant = variants?.find((variant) => variant.variantId === selectedVariantId);
-  const displayPriceLabel = selectedVariant?.priceLabel ?? priceLabel;
+  const { currency } = useCurrency();
+  const displayPriceLabel = formatCurrency(
+    selectedVariant?.priceNumber ?? priceNumber,
+    currency
+  );
   const variantDescriptor = selectedVariant
     ? Object.values(selectedVariant.attributes).filter(Boolean).join(" · ")
     : "";

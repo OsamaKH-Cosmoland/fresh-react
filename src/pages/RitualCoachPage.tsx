@@ -28,9 +28,11 @@ import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { getBundlePricing } from "@/content/bundlePricing";
 import { RitualBundle } from "@/content/bundles";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
+import { useCurrency } from "@/currency/CurrencyProvider";
 
 const CONCERN_TO_FOCUS: Record<ConcernOption, FocusTagId> = {
   bodyHydration: "body",
@@ -113,6 +115,7 @@ export default function RitualCoachPage() {
   usePageAnalytics("coach");
   useSeo({ route: "coach" });
   const { t } = useTranslation();
+  const { currency } = useCurrency();
   const { preferences } = useUserPreferences();
   const { addBundleToCart } = useBundleActions();
   const { addItem, saveCustomCart } = useCart();
@@ -420,11 +423,12 @@ export default function RitualCoachPage() {
                           {mainVariant.label}
                         </p>
                       )}
-                      {mainMatch.entry.item.priceLabel && (
-                        <p className="ritual-coach-product-card__price">
-                          {mainMatch.entry.item.priceLabel}
-                        </p>
+                      <p className="ritual-coach-product-card__price">
+                        {formatCurrency(
+                          mainVariant?.priceNumber ?? mainMatch.entry.item.priceNumber,
+                          currency
                         )}
+                      </p>
                       </div>
                     </Card>
                   )}
@@ -470,11 +474,12 @@ export default function RitualCoachPage() {
                           {lighterVariant.label}
                         </p>
                       )}
-                      {lighterMatch.entry.item.priceLabel && (
-                        <p className="ritual-coach-product-card__price">
-                          {lighterMatch.entry.item.priceLabel}
-                        </p>
-                      )}
+                      <p className="ritual-coach-product-card__price">
+                        {formatCurrency(
+                          lighterVariant?.priceNumber ?? lighterMatch.entry.item.priceNumber,
+                          currency
+                        )}
+                      </p>
                       <Button
                         variant="secondary"
                         size="md"
@@ -519,11 +524,12 @@ export default function RitualCoachPage() {
                         {variant?.label && (
                           <p className="ritual-coach-product-card__variant">{variant.label}</p>
                         )}
-                        {detail.priceLabel && (
-                          <p className="ritual-coach-product-card__price">
-                            {detail.priceLabel}
-                          </p>
-                        )}
+                        <p className="ritual-coach-product-card__price">
+                          {formatCurrency(
+                            variant?.priceNumber ?? detail.priceNumber,
+                            currency
+                          )}
+                        </p>
                         <Button
                           variant="secondary"
                           size="md"

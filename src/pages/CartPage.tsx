@@ -5,6 +5,7 @@ import { type CartItem, useCart } from "@/cart/cartStore";
 import { PRODUCT_INDEX } from "../data/products";
 import { ritualBundles } from "@/content/bundles";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { useCurrency } from "@/currency/CurrencyProvider";
 import { useTranslation } from "@/localization/locale";
 import { trackEvent } from "@/analytics/events";
 import { formatVariantMeta } from "@/utils/variantDisplay";
@@ -27,6 +28,7 @@ export default function CartPage() {
     clearCart,
   } = useCart();
   const { t } = useTranslation();
+  const { currency } = useCurrency();
   const totalItems = totalQuantity ?? cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const renderVariantDetail = (item: CartItem) => {
@@ -115,7 +117,7 @@ export default function CartPage() {
                         <div className="cart-page-info">
                           <h3>Gift · {item.giftBox.styleName}</h3>
                           {renderVariantDetail(item)}
-                          <span className="cart-page-price">{formatCurrency(item.price)}</span>
+                          <span className="cart-page-price">{formatCurrency(item.price, currency)}</span>
                           {item.giftBox.note && (
                             <p className="cart-page-bundle-note">“{item.giftBox.note}”</p>
                           )}
@@ -174,10 +176,10 @@ export default function CartPage() {
                           <h3>{bundle.name}</h3>
                           {renderVariantDetail(item)}
                           <p>{bundle.tagline}</p>
-                          <span className="cart-page-price">{formatCurrency(item.price)}</span>
+                          <span className="cart-page-price">{formatCurrency(item.price, currency)}</span>
                           {item.bundleSavings && item.bundleSavings > 0 && (
                             <p className="cart-page-bundle-note">
-                              You save {formatCurrency(item.bundleSavings)}
+                              You save {formatCurrency(item.bundleSavings, currency)}
                             </p>
                           )}
                           {item.bundleItems && item.bundleItems.length > 0 && (
@@ -223,13 +225,16 @@ export default function CartPage() {
 
                   const product = PRODUCT_INDEX[item.id];
                   if (!product) return null;
+                  const productPriceNumber = parsePrice(product.price);
                   return (
                     <li key={item.id} className="cart-page-item">
                       <div className="cart-page-info">
                         <h3>{product.title}</h3>
                         {renderVariantDetail(item)}
                         <p>{product.desc}</p>
-                        <span className="cart-page-price">{product.price}</span>
+                        <span className="cart-page-price">
+                          {formatCurrency(productPriceNumber, currency)}
+                        </span>
                       </div>
                       <div className="cart-page-actions">
                         <div className="cart-qty-controls" aria-label={`Quantity of ${product.title}`}>
@@ -275,17 +280,17 @@ export default function CartPage() {
                 </div>
                 <div>
                   <dt>{t("cart.summary.subtotal")}</dt>
-                  <dd>{formatCurrency(subtotal)}</dd>
+                  <dd>{formatCurrency(subtotal, currency)}</dd>
                 </div>
                 {discountTotal > 0 && (
                   <div>
                     <dt>{t("cart.summary.discount")}</dt>
-                    <dd>-{formatCurrency(discountTotal)}</dd>
+                    <dd>-{formatCurrency(discountTotal, currency)}</dd>
                   </div>
                 )}
                 <div className="cart-summary-panel__total-row">
                   <dt>{t("cart.summary.total")}</dt>
-                  <dd>{formatCurrency(Math.max(subtotal - discountTotal, 0))}</dd>
+                  <dd>{formatCurrency(Math.max(subtotal - discountTotal, 0), currency)}</dd>
                 </div>
               </dl>
               <p className="cart-summary-note">

@@ -26,6 +26,8 @@ import { getReviewStats } from "@/utils/reviewStorage";
 import { RatingBadge } from "@/components/reviews/RatingBadge";
 import { useTranslation } from "@/localization/locale";
 import { useSeo } from "@/seo/useSeo";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { useCurrency } from "@/currency/CurrencyProvider";
 import { useFavorites } from "@/favorites/favoritesStore";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import NewsletterSignup from "@/components/NewsletterSignup";
@@ -63,6 +65,7 @@ export default function ShopPage() {
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const { t } = useTranslation();
+  const { currency } = useCurrency();
   const { preferences } = useUserPreferences();
   const { favorites } = useFavorites();
   const recentEntries = useRecentlyViewed();
@@ -338,7 +341,9 @@ export default function ShopPage() {
                       <div className="shop-product-card__body">
                         <div className="shop-product-card__heading">
                           <h3>{item.productName}</h3>
-                          <p className="shop-product-card__price">{item.priceLabel}</p>
+                          <p className="shop-product-card__price">
+                            {formatCurrency(item.priceNumber, currency)}
+                          </p>
                         </div>
                         <p className="shop-product-card__tagline">{item.shortTagline}</p>
                         {variantSummary && variantSummary.count > 1 && (

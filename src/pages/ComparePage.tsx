@@ -14,6 +14,8 @@ import { useCompare } from "@/compare/compareStore";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { useSeo } from "@/seo/useSeo";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { useCurrency } from "@/currency/CurrencyProvider";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -31,7 +33,7 @@ type CompareColumn = {
   texture: string[];
   usage: string[];
   included: string[];
-  priceLabel: string;
+  priceNumber: number;
   detail?: { productId: string; productName: string; priceNumber: number; heroImage?: string };
   bundle?: RitualBundle;
 };
@@ -56,6 +58,7 @@ export default function ComparePage() {
   };
   const entries = listCompared();
   const { t } = useTranslation();
+  const { currency } = useCurrency();
 
   const columns = useMemo<CompareColumn[]>(
     () =>
@@ -75,7 +78,7 @@ export default function ComparePage() {
               texture: config.texture,
               usage: config.usage,
               included: [config.format],
-              priceLabel: config.priceLabel,
+              priceNumber: config.detail.priceNumber,
               detail: {
                 productId: config.detail.productId,
                 productName: config.detail.productName,
@@ -87,6 +90,7 @@ export default function ComparePage() {
           const config = getCompareBundleConfig(entry.id);
           if (!config) return null;
           const bundleId = entry.id;
+          const actualBundle = ritualBundles.find((bundle) => bundle.id === bundleId);
           return {
             id: entry.id,
             type: "bundle",
@@ -97,8 +101,8 @@ export default function ComparePage() {
             texture: config.texture,
             usage: config.ritualType,
             included: config.included,
-            priceLabel: config.priceLabel,
-            bundle: ritualBundles.find((bundle) => bundle.id === bundleId),
+            priceNumber: actualBundle?.bundlePriceNumber ?? 0,
+            bundle: actualBundle,
           };
         })
         .filter((value): value is CompareColumn => Boolean(value)),
@@ -187,7 +191,9 @@ export default function ComparePage() {
                   </div>
                   <div className="compare-column__row">
                     <p className="compare-column__row-label">Price</p>
-                    <p className="compare-column__row-value">{column.priceLabel}</p>
+                    <p className="compare-column__row-value">
+                      {formatCurrency(column.priceNumber ?? 0, currency)}
+                    </p>
                   </div>
                 </div>
                 <div className="compare-column__actions">

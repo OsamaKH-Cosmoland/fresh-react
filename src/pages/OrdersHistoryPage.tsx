@@ -9,6 +9,8 @@ import { useTranslation } from "@/localization/locale";
 import { formatVariantMeta } from "@/utils/variantDisplay";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
+import { useCurrency } from "@/currency/CurrencyProvider";
+import { useLoyalty } from "@/loyalty/useLoyalty";
 
 const navigateToPath = (path: string) => {
   const base = import.meta.env.BASE_URL ?? "/";
@@ -39,6 +41,12 @@ export default function OrdersHistoryPage() {
   usePageAnalytics("orders_history");
   useSeo({ route: "orders_history" });
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+  const { totalPoints, currentTier, nextTier, pointsToNextTier } = useLoyalty();
+  const currentTierLabel = t(`account.loyalty.tiers.${currentTier.id}.label`);
+  const nextTierLabel = nextTier
+    ? t(`account.loyalty.tiers.${nextTier.id}.label`)
+    : undefined;
   const [drawerOpen, setDrawerOpen] = useState(false);
   const orders = useMemo(() => readOrders(), []);
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(
@@ -54,6 +62,23 @@ export default function OrdersHistoryPage() {
         <header className="orders-history-hero">
           <SectionTitle title={t("ordersHistory.title")} subtitle={t("ordersHistory.subtitle")} align="center" />
         </header>
+        <div className="orders-history-loyalty">
+          <p>{t("ordersHistory.loyalty.label")}</p>
+          <strong>
+            {t("ordersHistory.loyalty.status", { tier: currentTierLabel })}
+          </strong>
+          <p>{t("ordersHistory.loyalty.points", { points: totalPoints })}</p>
+          {nextTierLabel && typeof pointsToNextTier === "number" ? (
+            <p>
+              {t("ordersHistory.loyalty.nextTier", {
+                points: pointsToNextTier,
+                tier: nextTierLabel,
+              })}
+            </p>
+          ) : (
+            <p>{t("ordersHistory.loyalty.maxTier")}</p>
+          )}
+        </div>
 
         {orders.length === 0 ? (
           <section className="orders-history-empty">
@@ -72,7 +97,9 @@ export default function OrdersHistoryPage() {
                       {t("ordersHistory.labels.orderId")} {order.id}
                     </p>
                     <p className="orders-history-card__meta">{formatLabel(order)}</p>
-                    <p className="orders-history-card__total">{formatCurrency(order.totals.total)}</p>
+                    <p className="orders-history-card__total">
+                      {formatCurrency(order.totals.total, currency)}
+                    </p>
                     <p className="orders-history-card__items">
                       {t("ordersHistory.labels.itemCount", {
                         count: order.items.reduce((sum, item) => sum + item.quantity, 0),
@@ -119,7 +146,7 @@ export default function OrdersHistoryPage() {
                     {order.totals.discountTotal > 0 && (
                       <div>
                         <strong>{t("ordersHistory.detail.discount")}</strong>
-                        <p>{formatCurrency(order.totals.discountTotal)}</p>
+                        <p>{formatCurrency(order.totals.discountTotal, currency)}</p>
                       </div>
                     )}
                     {order.promoCode && (
@@ -187,7 +214,7 @@ export default function OrdersHistoryPage() {
                                     )}
                                   </div>
                                   <span>
-                                    {item.quantity} × {formatCurrency(item.price)}
+                                    {item.quantity} × {formatCurrency(item.price, currency)}
                                   </span>
                                 </li>
                               );

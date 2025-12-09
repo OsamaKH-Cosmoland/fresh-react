@@ -1,12 +1,22 @@
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "EGP",
-  minimumFractionDigits: 2,
-});
+import { BASE_CURRENCY, type SupportedCurrency } from "@/currency/currencyConfig";
+import { convertFromBase, getCurrencyConfig } from "@/currency/currencyUtils";
 
-export function formatCurrency(value: number) {
-  if (!Number.isFinite(value)) {
-    return "EGP 0.00";
-  }
-  return currencyFormatter.format(value);
+type FormatOptions = {
+  withCode?: boolean;
+};
+
+export function formatCurrency(
+  baseAmount: number,
+  currency: SupportedCurrency = BASE_CURRENCY,
+  opts?: FormatOptions
+) {
+  const config = getCurrencyConfig(currency);
+  const converted = convertFromBase(baseAmount, currency);
+  const normalized = Number.isFinite(converted) ? converted : 0;
+  const formattedNumber = normalized.toFixed(config.decimals);
+  const value =
+    config.symbolPosition === "before"
+      ? `${config.symbol} ${formattedNumber}`
+      : `${formattedNumber} ${config.symbol}`;
+  return opts?.withCode ? `${value} ${currency}` : value;
 }

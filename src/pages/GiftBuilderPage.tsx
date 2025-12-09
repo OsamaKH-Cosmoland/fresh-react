@@ -26,6 +26,7 @@ import { useTranslation } from "@/localization/locale";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
+import { useCurrency } from "@/currency/CurrencyProvider";
 
 const steps = [
   "Choose your box",
@@ -47,6 +48,7 @@ export default function GiftBuilderPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const { addItem } = useCart();
   const { t } = useTranslation();
+  const { currency } = useCurrency();
 
   const currentStyle = giftBoxStyles.find((style) => style.id === selectedStyleId);
 
@@ -188,7 +190,7 @@ export default function GiftBuilderPage() {
                 />
                 <h3>{style.name}</h3>
                 <p>{style.description}</p>
-                <p className="gift-builder-card__price">{formatCurrency(style.price)}</p>
+                <p className="gift-builder-card__price">{formatCurrency(style.price, currency)}</p>
               </Card>
             );
           })}
@@ -219,7 +221,7 @@ export default function GiftBuilderPage() {
                 >
                   <div className="gift-builder-product__header">
                     <h3>{product.productName}</h3>
-                    <span>{formatCurrency(product.priceNumber)}</span>
+                    <span>{formatCurrency(product.priceNumber, currency)}</span>
                   </div>
                   <p className="gift-builder-product__tagline">{product.shortTagline}</p>
                   {variantOptions.length > 0 && (
@@ -277,7 +279,7 @@ export default function GiftBuilderPage() {
                     <p>{addOn.description}</p>
                   </div>
                   <div className="gift-builder-addon__actions">
-                    <span>{formatCurrency(addOn.price)}</span>
+                    <span>{formatCurrency(addOn.price, currency)}</span>
                     <Button
                       variant={selected ? "secondary" : "ghost"}
                       size="sm"
@@ -313,13 +315,13 @@ export default function GiftBuilderPage() {
         <h3>Box</h3>
         <p>{currentStyle?.name}</p>
         <p className="gift-builder-review__line">
-          Box: {formatCurrency(currentStyle?.price ?? 0)}
+          Box: {formatCurrency(currentStyle?.price ?? 0, currency)}
         </p>
         <h3>Products</h3>
         <ul className="gift-builder-review__list">
-          {selectedProducts.map((product) => (
+            {selectedProducts.map((product) => (
             <li key={product.productId}>
-              {product.productName} — {formatCurrency(product.priceNumber)}
+              {product.productName} — {formatCurrency(product.priceNumber, currency)}
             </li>
           ))}
         </ul>
@@ -332,7 +334,7 @@ export default function GiftBuilderPage() {
                 if (!addOn) return null;
                 return (
                   <li key={addOnId}>
-                    {addOn.label} — {formatCurrency(addOn.price)}
+                    {addOn.label} — {formatCurrency(addOn.price, currency)}
                   </li>
                 );
               })}
@@ -346,7 +348,7 @@ export default function GiftBuilderPage() {
           </>
         )}
         <p className="gift-builder-review__total">
-          Total: <strong>{formatCurrency(totalPrice)}</strong>
+          Total: <strong>{formatCurrency(totalPrice, currency)}</strong>
         </p>
         <Button
           variant="primary"

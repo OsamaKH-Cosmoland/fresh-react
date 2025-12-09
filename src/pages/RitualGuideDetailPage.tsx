@@ -11,10 +11,12 @@ import { getRitualGuideBySlug } from "@/content/ritualGuides";
 import { shopFocusLookup } from "@/content/shopCatalog";
 import { useTranslation } from "@/localization/locale";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
+import { formatCurrency } from "@/utils/formatCurrency";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
 import { buildAppUrl } from "@/utils/navigation";
+import { useCurrency } from "@/currency/CurrencyProvider";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -35,6 +37,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const { t } = useTranslation();
+  const { currency } = useCurrency();
   const articleJsonLd = useMemo(() => {
     if (!guide) return undefined;
     const focusLabels = (guide.focusTags ?? [])
@@ -177,9 +180,9 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
                     <div className="shop-product-card__body">
                       <div className="shop-product-card__heading">
                         <h3>{detail.productName}</h3>
-                        {detail.priceLabel && (
-                          <p className="shop-product-card__price">{detail.priceLabel}</p>
-                        )}
+                        <p className="shop-product-card__price">
+                          {formatCurrency(detail.priceNumber, currency)}
+                        </p>
                       </div>
                       <p className="shop-product-card__tagline">{detail.shortTagline}</p>
                         <div className="shop-product-card__actions">

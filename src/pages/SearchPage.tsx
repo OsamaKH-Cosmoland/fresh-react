@@ -32,6 +32,8 @@ import { ShopCatalogEntry } from "@/content/shopCatalog";
 import { useSeo } from "@/seo/useSeo";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { useCurrency } from "@/currency/CurrencyProvider";
 
 const getQueryFromLocation = () => {
   if (typeof window === "undefined") {
@@ -56,6 +58,7 @@ export default function SearchPage() {
   const { addBundleToCart } = useBundleActions();
   const query = getQueryFromLocation();
   const { t } = useTranslation();
+  const { currency } = useCurrency();
   const { preferences } = useUserPreferences();
   const { favorites } = useFavorites();
   const recentEntries = useRecentlyViewed();
@@ -290,7 +293,9 @@ export default function SearchPage() {
                       <div className="shop-product-card__body">
                         <div className="shop-product-card__heading">
                           <h3>{detail.productName}</h3>
-                          <p className="shop-product-card__price">{detail.priceLabel}</p>
+                          <p className="shop-product-card__price">
+                            {formatCurrency(detail.priceNumber, currency)}
+                          </p>
                         </div>
                         <p className="shop-product-card__tagline">{detail.shortTagline}</p>
                         {variantSummary && variantSummary.count > 1 && (

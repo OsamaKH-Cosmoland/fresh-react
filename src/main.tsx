@@ -10,23 +10,26 @@ import { FavoritesProvider } from "./favorites/favoritesStore";
 import { CompareProvider } from "./compare/compareStore";
 import { LocaleProvider } from "@/localization/locale";
 import { LiveAnnouncerProvider } from "@/components/accessibility/LiveAnnouncer";
+import { CurrencyProvider } from "@/currency/CurrencyProvider";
 
 const rootEl = document.getElementById("root");
 
 if (rootEl) {
   createRoot(rootEl).render(
     <StrictMode>
-    <LocaleProvider>
-      <LiveAnnouncerProvider>
-        <CartProvider>
-          <FavoritesProvider>
-            <CompareProvider>
-              <App />
-            </CompareProvider>
-          </FavoritesProvider>
-        </CartProvider>
-      </LiveAnnouncerProvider>
-    </LocaleProvider>
+      <CurrencyProvider>
+        <LocaleProvider>
+          <LiveAnnouncerProvider>
+            <CartProvider>
+              <FavoritesProvider>
+                <CompareProvider>
+                  <App />
+                </CompareProvider>
+              </FavoritesProvider>
+            </CartProvider>
+          </LiveAnnouncerProvider>
+        </LocaleProvider>
+      </CurrencyProvider>
     </StrictMode>
   );
   initScrollAnimations();

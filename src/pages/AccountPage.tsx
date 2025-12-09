@@ -31,6 +31,9 @@ import { RatingBadge } from "@/components/reviews/RatingBadge";
 import type { LocalOrder } from "@/types/localOrder";
 import type { LocalReview } from "@/types/localReview";
 import { useSeo } from "@/seo/useSeo";
+import { CURRENCIES } from "@/currency/currencyConfig";
+import { useCurrency } from "@/currency/CurrencyProvider";
+import { useLoyalty } from "@/loyalty/useLoyalty";
 
 const buildAppUrl = (pathname: string) => {
   const base = import.meta.env.BASE_URL ?? "/";
@@ -89,6 +92,8 @@ export default function AccountPage() {
   usePageAnalytics("account");
   useSeo({ route: "account" });
   const { t } = useTranslation();
+  const { currency, setCurrency } = useCurrency();
+  const { totalPoints, currentTier, nextTier, pointsToNextTier, lastOrderAt } = useLoyalty();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<AccountTabId>("profile");
   const [orders, setOrders] = useState<LocalOrder[]>(() =>
@@ -218,36 +223,100 @@ export default function AccountPage() {
     window.location.href = buildAppUrl(path);
   };
 
-  const renderProfileTab = () => (
-    <div className="account-card">
-      <dl className="account-profile-grid">
-        <div>
-          <dt>{t("account.profile.focusLabel")}</dt>
-          <dd>
-            {preferenceFocus.length ? preferenceFocus.join(" · ") : t("account.profile.emptyValue")}
-          </dd>
+  const renderProfileTab = () => {
+    const tierLabel = t(`account.loyalty.tiers.${currentTier.id}.label`);
+    const tierPerks = t(`account.loyalty.tiers.${currentTier.id}.perks`);
+    const nextTierLabel = nextTier
+      ? t(`account.loyalty.tiers.${nextTier.id}.label`)
+      : undefined;
+
+    return (
+      <div className="account-card">
+        <dl className="account-profile-grid">
+          <div>
+            <dt>{t("account.profile.focusLabel")}</dt>
+            <dd>
+              {preferenceFocus.length ? preferenceFocus.join(" · ") : t("account.profile.emptyValue")}
+            </dd>
+          </div>
+          <div>
+            <dt>{t("account.profile.timeLabel")}</dt>
+            <dd>{timePreference}</dd>
+          </div>
+          <div>
+            <dt>{t("account.profile.scentLabel")}</dt>
+            <dd>{scentPreference}</dd>
+          </div>
+          <div>
+            <dt>{t("account.profile.budgetLabel")}</dt>
+            <dd>{budgetPreference}</dd>
+          </div>
+        </dl>
+        <p className="account-profile-hint">{t("account.profile.hint")}</p>
+        <div className="account-actions">
+          <Button variant="secondary" size="md" onClick={() => navigateTo("/onboarding")}>
+            {t("account.profile.edit")}
+          </Button>
         </div>
-        <div>
-          <dt>{t("account.profile.timeLabel")}</dt>
-          <dd>{timePreference}</dd>
+        <div className="account-region">
+          <p className="account-region__title">{t("account.region.title")}</p>
+          <p className="account-region__description">{t("account.region.description")}</p>
+          <div className="account-region__options">
+            {CURRENCIES.map((option) => (
+              <button
+                type="button"
+                key={option.code}
+                className={`account-region__option${
+                  currency === option.code ? " is-active" : ""
+                }`}
+                onClick={() => setCurrency(option.code)}
+              >
+                <span>{option.code}</span>
+                <small>{option.label}</small>
+              </button>
+            ))}
+          </div>
         </div>
-        <div>
-          <dt>{t("account.profile.scentLabel")}</dt>
-          <dd>{scentPreference}</dd>
+        <div className="account-loyalty-card">
+          <div className="account-loyalty-card__header">
+            <p className="account-loyalty-card__label">{t("account.loyalty.title")}</p>
+            <h3>{tierLabel}</h3>
+            <p className="account-loyalty-card__perks">{tierPerks}</p>
+          </div>
+          <div className="account-loyalty-card__stats">
+            <div>
+              <span>{t("account.loyalty.totalPoints")}</span>
+              <strong>{totalPoints}</strong>
+            </div>
+            {lastOrderAt && (
+              <div>
+                <span>{t("account.loyalty.lastOrder")}</span>
+                <strong>
+                  {new Date(lastOrderAt).toLocaleDateString(undefined, {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </strong>
+              </div>
+            )}
+          </div>
+          <div className="account-loyalty-card__progress">
+            {nextTierLabel && typeof pointsToNextTier === "number" ? (
+              <p>
+                {t("account.loyalty.nextTier", {
+                  points: pointsToNextTier,
+                  tier: nextTierLabel,
+                })}
+              </p>
+            ) : (
+              <p>{t("account.loyalty.maxTier")}</p>
+            )}
+          </div>
         </div>
-        <div>
-          <dt>{t("account.profile.budgetLabel")}</dt>
-          <dd>{budgetPreference}</dd>
-        </div>
-      </dl>
-      <p className="account-profile-hint">{t("account.profile.hint")}</p>
-      <div className="account-actions">
-        <Button variant="secondary" size="md" onClick={() => navigateTo("/onboarding")}>
-          {t("account.profile.edit")}
-        </Button>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderOrdersTab = () => {
     if (!hasOrders) {
@@ -270,7 +339,7 @@ export default function AccountPage() {
                 </p>
                 <p className="account-order-card__meta">{formatOrderLabel(order)}</p>
                 <p className="account-order-card__meta">
-                  {formatCurrency(order.totals.total)}
+                  {formatCurrency(order.totals.total, currency)}
                 </p>
               </div>
               <Button
@@ -316,7 +385,7 @@ export default function AccountPage() {
                   {order.totals.discountTotal > 0 && (
                     <div>
                       <strong>{t("ordersHistory.detail.discount")}</strong>
-                      <p>{formatCurrency(order.totals.discountTotal)}</p>
+                      <p>{formatCurrency(order.totals.discountTotal, currency)}</p>
                     </div>
                   )}
                   {order.promoCode && (
@@ -386,7 +455,7 @@ export default function AccountPage() {
                             )}
                           </div>
                           <span>
-                            {item.quantity} × {formatCurrency(item.price)}
+                            {item.quantity} × {formatCurrency(item.price, currency)}
                           </span>
                         </li>
                       );
@@ -468,7 +537,7 @@ export default function AccountPage() {
                 <div>
                   <div className="account-favorite-card__heading">
                     <h3>{detail.productName}</h3>
-                    <p>{detail.priceLabel}</p>
+                    <p>{formatCurrency(detail.priceNumber, currency)}</p>
                   </div>
                   <p className="account-favorite-card__tagline">{detail.shortTagline}</p>
                   <RatingBadge average={stats.average} count={stats.count} />
@@ -528,10 +597,10 @@ export default function AccountPage() {
             return (
               <div className="account-favorite-card" key={bundle.id}>
                 <div>
-                  <div className="account-favorite-card__heading">
-                    <h3>{bundle.name}</h3>
-                    <p>{bundle.bundlePriceLabel ?? formatCurrency(bundle.bundlePriceNumber)}</p>
-                  </div>
+                    <div className="account-favorite-card__heading">
+                      <h3>{bundle.name}</h3>
+                      <p>{formatCurrency(bundle.bundlePriceNumber, currency)}</p>
+                    </div>
                   <p className="account-favorite-card__tagline">{bundle.tagline}</p>
                   <RatingBadge average={stats.average} count={stats.count} />
                   {focusChips.length > 0 && (

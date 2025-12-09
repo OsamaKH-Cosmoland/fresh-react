@@ -5,6 +5,8 @@ import { useGlobalSearch } from "@/hooks/useGlobalSearch";
 import { useLocale, useTranslation, type AppTranslationKey } from "@/localization/locale";
 import { mobileMenuGroups } from "@/config/navigation";
 import { buildAppUrl, normalizeHref } from "@/utils/navigation";
+import { CURRENCIES, type SupportedCurrency } from "@/currency/currencyConfig";
+import { useCurrency } from "@/currency/CurrencyProvider";
 
 interface SidebarProps {
   open: boolean;
@@ -14,6 +16,16 @@ interface SidebarProps {
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const { t } = useTranslation();
   const { locale, setLocale } = useLocale();
+  const { currency, setCurrency } = useCurrency();
+  const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
+  const currencyMenuRef = useRef<HTMLDivElement | null>(null);
+  const currencyOptions = CURRENCIES;
+  const currencyLabel =
+    currencyOptions.find((option) => option.code === currency)?.label ?? currency;
+  const handleCurrencySelect = (code: SupportedCurrency) => {
+    setCurrency(code);
+    setCurrencyMenuOpen(false);
+  };
   const { totalQuantity } = useCart();
   const compare = useCompare();
   const compareCount = compare.listCompared().length;
@@ -32,10 +44,17 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setSearchActive(false);
       }
+      if (
+        currencyMenuOpen &&
+        currencyMenuRef.current &&
+        !currencyMenuRef.current.contains(event.target as Node)
+      ) {
+        setCurrencyMenuOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  }, [currencyMenuOpen]);
 
   useEffect(() => {
     if (!open) return;
@@ -215,6 +234,36 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               {t("nav.cart")}
               {displayCount > 0 ? ` (${displayCount})` : ""}
             </a>
+            <div className="drawer-currency" ref={currencyMenuRef}>
+              <button
+                className="drawer-currency__trigger"
+                type="button"
+                onClick={() => setCurrencyMenuOpen((prev) => !prev)}
+                aria-expanded={currencyMenuOpen}
+                aria-haspopup="menu"
+                aria-label={t("currency.label", { currency: currencyLabel })}
+              >
+                {currency}
+              </button>
+              {currencyMenuOpen && (
+                <div className="drawer-currency__menu" role="menu">
+                  {currencyOptions.map((option) => (
+                    <button
+                      key={option.code}
+                      type="button"
+                      onClick={() => handleCurrencySelect(option.code)}
+                      className={`drawer-currency__option${
+                        currency === option.code ? " is-active" : ""
+                      }`}
+                      role="menuitem"
+                    >
+                      <span>{option.code}</span>
+                      <small>{option.label}</small>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <button
               className="drawer-language"
               onClick={() => setLocale(locale === "en" ? "ar" : "en")}

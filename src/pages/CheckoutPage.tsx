@@ -19,6 +19,10 @@ import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
 import { upsertAudienceContact } from "@/utils/audienceStorage";
 import PromoCodePanel from "@/components/promo/PromoCodePanel";
+import { useCurrency } from "@/currency/CurrencyProvider";
+import { calculatePointsForOrder } from "@/loyalty/loyaltyEngine";
+import { addPoints } from "@/utils/loyaltyStorage";
+import { useLoyalty } from "@/loyalty/useLoyalty";
 
 const SHIPPING_OPTIONS = [
   { id: "standard", cost: 45 },
@@ -69,6 +73,19 @@ export default function CheckoutPage() {
   const [orderPlaced, setOrderPlaced] = useState<LocalOrder | null>(null);
   const { isOnline } = useNetworkStatus();
   const [keepUpdated, setKeepUpdated] = useState(false);
+  const { currency } = useCurrency();
+  const {
+    currentTier,
+    nextTier,
+    pointsToNextTier,
+    totalPoints,
+    refresh: refreshLoyalty,
+  } = useLoyalty();
+  const currentTierLabel = t(`account.loyalty.tiers.${currentTier.id}.label`);
+  const nextTierLabel = nextTier
+    ? t(`account.loyalty.tiers.${nextTier.id}.label`)
+    : undefined;
+  const [pointsEarned, setPointsEarned] = useState(0);
 
   const hasCartItems = cartItems.length > 0;
   const shippingMethod = useMemo<ShippingMethod>(() => {
@@ -170,15 +187,14 @@ export default function CheckoutPage() {
   };
 
   const placeOrder = () => {
-    if (!isOnline) {
-      return;
-    }
+    if (!isOnline) return;
     if (!hasCartItems || !shippingMethod) return;
     const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     const orderId = generateOrderId();
+    const createdAt = new Date().toISOString();
     const order: LocalOrder = {
       id: orderId,
-      createdAt: new Date().toISOString(),
+      createdAt,
       items: cartItems.map((item) => ({ ...item })),
       totals: {
         subtotal: Number(subtotal.toFixed(2)),
@@ -234,6 +250,20 @@ export default function CheckoutPage() {
         shippingMethod: order.shippingMethod.label,
         shippingAddress: `${order.shippingAddress.street}, ${order.shippingAddress.city}`,
       });
+    }
+    const earnedPoints = calculatePointsForOrder(order.totals.subtotal);
+    setPointsEarned(earnedPoints);
+    if (earnedPoints > 0) {
+      try {
+        addPoints(earnedPoints, order.createdAt);
+        refreshLoyalty();
+        trackEvent({
+          type: "loyalty_points_awarded",
+          points: earnedPoints,
+        });
+      } catch (loyaltyError) {
+        console.warn("Unable to save loyalty points", loyaltyError);
+      }
     }
     if (order.customer.email && keepUpdated) {
       try {
@@ -351,9 +381,22 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
               <p>
                 {t("checkout.confirmation.summary", {
                   itemCount: orderPlaced.items.reduce((sum, item) => sum + item.quantity, 0),
-                  total: formatCurrency(orderPlaced.totals.total),
+                  total: formatCurrency(orderPlaced.totals.total, currency),
                 })}
               </p>
+            </div>
+            <div className="checkout-confirmation__loyalty">
+              <p>{t("checkout.confirmation.loyaltyEarned", { points: pointsEarned })}</p>
+              <p>{t("checkout.confirmation.loyaltyStatus", { tier: currentTierLabel })}</p>
+              <p>{t("checkout.confirmation.loyaltyTotal", { points: totalPoints })}</p>
+              {nextTierLabel && typeof pointsToNextTier === "number" && (
+                <p>
+                  {t("checkout.confirmation.loyaltyProgress", {
+                    nextTier: nextTierLabel,
+                    points: pointsToNextTier,
+                  })}
+                </p>
+              )}
             </div>
             <div className="checkout-confirmation__actions">
               <Button
@@ -462,7 +505,7 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                           </p>
                         </div>
                         <div className="checkout-shipping-option__meta">
-                          <span>{formatCurrency(option.cost)}</span>
+                          <span>{formatCurrency(option.cost, currency)}</span>
                           <small>
                             {t(`checkout.shippingOptions.${option.id}.eta` as AppTranslationKey)}
                           </small>
@@ -620,7 +663,7 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                           )}
                         </div>
                         <div>
-                          <p className="checkout-review__price">{formatCurrency(item.price)}</p>
+                          <p className="checkout-review__price">{formatCurrency(item.price, currency)}</p>
                           <small>
                             × {item.quantity}
                           </small>
@@ -631,12 +674,12 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                   <div className="checkout-review__totals">
                     <div>
                       <span>{t("checkout.review.labels.subtotal")}</span>
-                      <strong>{formatCurrency(subtotal)}</strong>
+                      <strong>{formatCurrency(subtotal, currency)}</strong>
                     </div>
                     {discountTotal > 0 && (
                       <div>
                         <span>{t("checkout.review.labels.discount")}</span>
-                        <strong>-{formatCurrency(discountTotal)}</strong>
+                        <strong>-{formatCurrency(discountTotal, currency)}</strong>
                       </div>
                     )}
                     <div>
@@ -644,12 +687,12 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                       <strong>
                         {appliedPromo?.freeShipping
                           ? t("cart.promo.freeShipping")
-                          : formatCurrency(finalShippingCost)}
+                          : formatCurrency(finalShippingCost, currency)}
                       </strong>
                     </div>
                     <div>
                       <span>{t("checkout.review.labels.total")}</span>
-                      <strong>{formatCurrency(total)}</strong>
+                      <strong>{formatCurrency(total, currency)}</strong>
                     </div>
                     {appliedPromo?.code && (
                       <div className="checkout-review__promo-code">

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useCart } from "@/cart/cartStore";
 import { useTranslation } from "@/localization/locale";
+import { useCurrency } from "@/currency/CurrencyProvider";
 
 interface PromoCodePanelProps {
   shippingCost?: number;
@@ -15,6 +16,7 @@ type StatusState = {
 
 export default function PromoCodePanel({ shippingCost = 0 }: PromoCodePanelProps) {
   const { activePromoCode, appliedPromo, applyPromoCode, clearPromoCode } = useCart();
+  const { currency } = useCurrency();
   const { t } = useTranslation();
   const [code, setCode] = useState(activePromoCode ?? "");
   const [status, setStatus] = useState<StatusState>(null);
@@ -28,7 +30,7 @@ export default function PromoCodePanel({ shippingCost = 0 }: PromoCodePanelProps
       return null;
     }
     return t("cart.promo.youSave", {
-      amount: formatCurrency(appliedPromo.discountAmount),
+      amount: formatCurrency(appliedPromo.discountAmount, currency),
     });
   }, [appliedPromo, t]);
 

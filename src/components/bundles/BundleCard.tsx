@@ -12,6 +12,7 @@ import { getBundlePricing } from "@/content/bundlePricing";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
 import { trackEvent, type BundleViewSource } from "@/analytics/events";
+import { useCurrency } from "@/currency/CurrencyProvider";
 
 export interface BundleCardProps {
   bundle: RitualBundle;
@@ -29,10 +30,11 @@ function BundleCardBase({
   viewSource,
 }: BundleCardProps) {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
   const pricing = getBundlePricing(bundle);
-  const bundlePriceDisplay = bundle.bundlePriceLabel ?? formatCurrency(pricing.bundlePrice);
-  const compareAtDisplay = formatCurrency(pricing.compareAt);
-  const savingsDisplay = formatCurrency(pricing.savingsAmount);
+  const bundlePriceDisplay = formatCurrency(pricing.bundlePrice, currency);
+  const compareAtDisplay = formatCurrency(pricing.compareAt, currency);
+  const savingsDisplay = formatCurrency(pricing.savingsAmount, currency);
   const initialVariantSelection = () => {
     const fallback: Record<string, string> = {};
     bundle.products.forEach((entry) => {
