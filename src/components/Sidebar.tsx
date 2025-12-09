@@ -8,6 +8,8 @@ import { buildAppUrl, normalizeHref } from "@/utils/navigation";
 import { CURRENCIES, type SupportedCurrency } from "@/currency/currencyConfig";
 import { useCurrency } from "@/currency/CurrencyProvider";
 
+export const MOBILE_DRAWER_ID = "mobile-navigation-drawer";
+
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
@@ -117,10 +119,11 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
     <>
       <div className={`drawer ${open ? "open" : ""}`} aria-hidden={!open}>
         <aside
+          id={MOBILE_DRAWER_ID}
           className="drawer-panel"
           dir={locale === "ar" ? "rtl" : "ltr"}
           role="dialog"
-          aria-modal="true"
+          aria-modal={open ? "true" : undefined}
           aria-labelledby="drawer-title"
           ref={panelRef}
           aria-hidden={!open}

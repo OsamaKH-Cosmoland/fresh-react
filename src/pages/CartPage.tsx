@@ -87,11 +87,12 @@ export default function CartPage() {
       <Navbar
         sticky={false}
         onMenuToggle={() => setDrawerOpen(true)}
+        menuOpen={drawerOpen}
         cartCount={totalItems}
       />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      <main className="cart-shell ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="cart-shell ng-mobile-shell">
         <header className="cart-header-block">
           <h1>Your NaturaGloss Bag</h1>
           <p>

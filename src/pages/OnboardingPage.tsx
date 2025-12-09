@@ -300,9 +300,10 @@ export default function OnboardingPage() {
         sticky
         onMenuToggle={() => setDrawerOpen(true)}
         showSectionLinks={false}
+        menuOpen={drawerOpen}
       />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <main className="onboarding-shell ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="onboarding-shell ng-mobile-shell">
         <header className="onboarding-hero" data-animate="fade-up">
           <SectionTitle
             title={t("onboarding.hero.title")}

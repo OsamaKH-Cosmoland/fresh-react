@@ -724,16 +724,18 @@ export default function AccountPage() {
         showSectionLinks={false}
         compactSearch
         onMenuToggle={() => setSidebarOpen(true)}
+        menuOpen={sidebarOpen}
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="ng-mobile-shell">
         <header className="account-hero">
-          <SectionTitle
-            title={t("account.hero.title")}
-            subtitle={t("account.hero.subtitle")}
-            align="center"
-          />
+        <SectionTitle
+          title={t("account.hero.title")}
+          subtitle={t("account.hero.subtitle")}
+          align="center"
+          as="h1"
+        />
         </header>
         <AccountTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 

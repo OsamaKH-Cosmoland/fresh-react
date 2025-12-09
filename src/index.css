@@ -37,6 +37,10 @@
   --mobile-heading-scale: 1.3rem;
   --mobile-subheading-scale: 1rem;
   --mobile-line-height: 1.45;
+  --navbar-height: 199px;
+  --focus-ring: rgba(244, 208, 135, 0.9);
+  --focus-ring-offset: 3px;
+  --focus-shadow: 0 0 0 3px rgba(244, 208, 135, 0.45);
 }
 
 body {
@@ -48,6 +52,18 @@ body {
 
 #main-content {
   padding-top: var(--navbar-height);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: var(--focus-shadow);
 }
 
 .skip-link {

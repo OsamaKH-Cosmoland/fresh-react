@@ -239,10 +239,15 @@ export default function SearchPage() {
 
   return (
     <div className="shop-page search-page">
-      <Navbar sticky showSectionLinks={false} onMenuToggle={() => setSidebarOpen(true)} />
+      <Navbar
+        sticky
+        showSectionLinks={false}
+        onMenuToggle={() => setSidebarOpen(true)}
+        menuOpen={sidebarOpen}
+      />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="shop-page__content ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="shop-page__content ng-mobile-shell">
         <SectionTitle
           title="Search routines, products, or experiences"
           subtitle={

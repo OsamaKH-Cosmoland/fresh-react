@@ -4,7 +4,7 @@ import { Button, Card, SectionTitle } from "@/components/ui";
 
 export default function RitualStoriesListPage() {
   return (
-    <main className="ritual-stories-page stories-page">
+    <main id="main-content" tabIndex={-1} className="ritual-stories-page stories-page">
       <SectionTitle
         title="Our Journal"
         subtitle="Slow, sensory routines to weave NaturaGloss into your daily life."

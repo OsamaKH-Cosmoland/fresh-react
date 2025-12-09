@@ -117,7 +117,7 @@ export default function AdminAnalyticsPage() {
   const maxOrders = Math.max(...chartDays.map((d) => d.orders), 1);
 
   return (
-    <main className="admin-analytics-page" style={{ padding: 32 }}>
+    <main id="main-content" tabIndex={-1} className="admin-analytics-page" style={{ padding: 32 }}>
       <SectionTitle title="Admin Analytics" subtitle="Track sales, orders, and product demand." />
       <div className="analytics-metrics">
         <Card className="metric-card">

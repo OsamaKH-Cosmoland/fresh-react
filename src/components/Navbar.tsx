@@ -11,6 +11,7 @@ import { prefetchRoute, PREFETCH_ROUTE_ALIASES } from "@/utils/prefetchRoutes";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { CURRENCIES, type SupportedCurrency } from "@/currency/currencyConfig";
 import { useCurrency } from "@/currency/CurrencyProvider";
+import { MOBILE_DRAWER_ID } from "@/components/Sidebar";
 
 interface NavbarProps {
   onMenuToggle: () => void;
@@ -20,6 +21,7 @@ interface NavbarProps {
   showSectionLinks?: boolean;
   compactSearch?: boolean;
   onCartOpen?: () => void;
+  menuOpen?: boolean;
 }
 
 export default function Navbar({
@@ -30,6 +32,7 @@ export default function Navbar({
   showSectionLinks = true,
   compactSearch = false,
   onCartOpen,
+  menuOpen = false,
 }: NavbarProps) {
   const [elevated, setElevated] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -51,6 +54,9 @@ export default function Navbar({
   const itemLabel = displayCount === 1 ? "item" : "items";
   const { locale, setLocale } = useLocale();
   const { t } = useTranslation();
+  const menuAriaLabel = menuOpen
+    ? t("accessibility.menu.close")
+    : t("accessibility.menu.open");
   const { currency, setCurrency } = useCurrency();
   const [currencyMenuOpen, setCurrencyMenuOpen] = useState(false);
   const currencyMenuRef = useRef<HTMLDivElement | null>(null);
@@ -568,8 +574,12 @@ export default function Navbar({
                 <span className="nav-cart__count">{displayCount}</span>
               </Button>
             <button
+              type="button"
               className="nav-mobile-actions__menu"
-              aria-label={t("accessibility.menu.open")}
+              aria-label={menuAriaLabel}
+              aria-expanded={menuOpen}
+              aria-controls={MOBILE_DRAWER_ID}
+              aria-haspopup="dialog"
               onClick={onMenuToggle}
             >
                 <span />

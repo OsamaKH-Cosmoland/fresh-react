@@ -308,13 +308,18 @@ export default function RitualCoachPage() {
 
   return (
     <div className="ritual-coach-page">
-      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} />
+      <Navbar
+        sticky
+        onMenuToggle={() => setDrawerOpen(true)}
+        menuOpen={drawerOpen}
+      />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <main className="ritual-coach-shell ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="ritual-coach-shell ng-mobile-shell">
         <header className="ritual-coach-hero" data-animate="fade-up">
           <SectionTitle
             title={t("ritualCoach.hero.title" as AppTranslationKey)}
             subtitle={t("ritualCoach.hero.subtitle" as AppTranslationKey)}
+            as="h1"
           />
           <p className="ritual-coach-profile">{profileRecap}</p>
           {!hasProfile && (

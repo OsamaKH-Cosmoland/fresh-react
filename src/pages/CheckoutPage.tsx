@@ -329,15 +329,16 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
 
   return (
     <div className="checkout-page">
-      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} />
+      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} menuOpen={drawerOpen} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <main className="checkout-shell ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="checkout-shell ng-mobile-shell">
         <header className="checkout-hero" data-animate="fade-up">
-          <SectionTitle
-            title={t("checkout.hero.title")}
-            subtitle={t("checkout.hero.subtitle")}
-            align="center"
-          />
+        <SectionTitle
+          title={t("checkout.hero.title")}
+          subtitle={t("checkout.hero.subtitle")}
+          align="center"
+          as="h1"
+        />
           <p className="checkout-hero__meta">{t("checkout.hero.meta")}</p>
           {!isOnline && (
             <p className="checkout-offline" role="status">

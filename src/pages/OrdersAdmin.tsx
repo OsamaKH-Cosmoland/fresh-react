@@ -49,10 +49,15 @@ export default function OrdersAdmin() {
 
   return (
     <div className="orders-page">
-      <Navbar sticky={false} onMenuToggle={() => setDrawerOpen(true)} cartCount={0} />
+      <Navbar
+        sticky={false}
+        onMenuToggle={() => setDrawerOpen(true)}
+        menuOpen={drawerOpen}
+        cartCount={0}
+      />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      <main className="orders-shell">
+      <main id="main-content" tabIndex={-1} className="orders-shell">
         <header className="orders-hero">
           <h1>Cash Orders Inbox</h1>
           <p>Review every cash-on-delivery submission and coordinate fulfilment.</p>

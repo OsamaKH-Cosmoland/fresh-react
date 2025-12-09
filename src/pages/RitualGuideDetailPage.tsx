@@ -97,9 +97,14 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
   if (!guide) {
     return (
       <div className="ritual-guide-detail-page">
-        <Navbar sticky onMenuToggle={() => setSidebarOpen(true)} showSectionLinks={false} />
+        <Navbar
+          sticky
+          onMenuToggle={() => setSidebarOpen(true)}
+          showSectionLinks={false}
+          menuOpen={sidebarOpen}
+        />
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="ritual-guide-detail-page__content ng-mobile-shell">
+        <main id="main-content" tabIndex={-1} className="ritual-guide-detail-page__content ng-mobile-shell">
           <SectionTitle title="Guide not found" align="center" />
           <p>The routine you are seeking has not yet been written.</p>
         </main>
@@ -114,10 +119,15 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
 
   return (
     <div className="ritual-guide-detail-page">
-      <Navbar sticky onMenuToggle={() => setSidebarOpen(true)} showSectionLinks={false} />
+      <Navbar
+        sticky
+        onMenuToggle={() => setSidebarOpen(true)}
+        showSectionLinks={false}
+        menuOpen={sidebarOpen}
+      />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="ritual-guide-detail-page__content ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="ritual-guide-detail-page__content ng-mobile-shell">
         <section className="ritual-guide-hero" data-animate="fade-up">
           <div className="ritual-guide-hero__copy">
             <div className="ritual-guide-hero__tags">

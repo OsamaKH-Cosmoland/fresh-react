@@ -84,7 +84,7 @@ export function ProductDetailLayout({
     : "";
   const hasVariants = Boolean(variants && variants.length);
   return (
-    <main className="product-detail-page">
+    <main id="main-content" tabIndex={-1} className="product-detail-page">
       <div className="ng-mobile-shell">
         <section className="product-detail-hero" data-animate="fade-up">
           <div className="product-detail-hero__copy">
@@ -158,12 +158,12 @@ export function ProductDetailLayout({
         <section className="product-detail-grid">
           <div className="product-detail-main">
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="What it’s made for" />
+            <SectionTitle title="What it’s made for" as="h2" />
             <p className="product-detail-section__copy">{whatItsMadeFor}</p>
           </article>
 
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="Routine" subtitle="A slow, sensory sequence" />
+            <SectionTitle title="Routine" subtitle="A slow, sensory sequence" as="h2" />
             <ol className="product-detail-steps">
               {ritualSteps.map((step) => (
                 <li key={step.title}>
@@ -175,7 +175,7 @@ export function ProductDetailLayout({
           </article>
 
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="Ingredients spotlight" />
+            <SectionTitle title="Ingredients spotlight" as="h2" />
             <div className="product-detail-ingredients">
               {ingredients.map((ingredient) => (
                 <Card className="product-detail-ingredient" key={ingredient.name}>
@@ -187,7 +187,7 @@ export function ProductDetailLayout({
           </article>
 
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="Sensory experience" />
+            <SectionTitle title="Sensory experience" as="h2" />
             <ul className="product-detail-sensory">
               {sensoryExperience.map((note) => (
                 <li key={note}>{note}</li>
@@ -196,7 +196,7 @@ export function ProductDetailLayout({
           </article>
 
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="Pairs well with" subtitle="Complete the routine" />
+            <SectionTitle title="Pairs well with" subtitle="Complete the routine" as="h2" />
             <div className="product-detail-pairings">
               {pairsWellWith.map((item) => (
                 <a key={item.name} href={item.slug} className="product-detail-pairing">
@@ -208,7 +208,11 @@ export function ProductDetailLayout({
 
           {faq && faq.length > 0 && (
             <article className="product-detail-section" data-animate="fade-up">
-              <SectionTitle title="FAQ" subtitle="Your questions answered" />
+              <SectionTitle
+                title="FAQ"
+                subtitle="Your questions answered"
+                as="h2"
+              />
               <div className="product-detail-faq">
                 {faq.map((entry) => (
                   <details key={entry.question} className="product-detail-faq__item">

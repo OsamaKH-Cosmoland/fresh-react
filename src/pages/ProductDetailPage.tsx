@@ -190,7 +190,11 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   }, []);
 
   if (!detail) {
-    return <p>Product not found.</p>;
+    return (
+      <main id="main-content" tabIndex={-1} className="ng-mobile-shell">
+        <p>Product not found.</p>
+      </main>
+    );
   }
 
   const relatedBundles = useMemo(

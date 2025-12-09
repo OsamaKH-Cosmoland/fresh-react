@@ -89,10 +89,11 @@ export default function FavoritesPage() {
         showSectionLinks={false}
         compactSearch
         onMenuToggle={() => setSidebarOpen(true)}
+        menuOpen={sidebarOpen}
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="shop-page__content ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="shop-page__content ng-mobile-shell">
         <SectionTitle
           title="Saved favourites"
         subtitle="Bookmark routines and products that feel right now."

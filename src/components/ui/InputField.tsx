@@ -13,13 +13,15 @@ export function InputField({
   error,
   containerClassName = "",
   className = "",
+  required,
   ...props
 }: InputFieldProps) {
+  const errorId = error ? `${name}-error` : undefined;
   return (
     <div className={["flex flex-col gap-1", containerClassName].filter(Boolean).join(" ")}>
       <label htmlFor={name} className="text-sm font-medium text-gray-700">
         {label}
-        {props.required && <span className="text-rose-500 ml-1">*</span>}
+        {required && <span className="text-rose-500 ml-1">*</span>}
       </label>
       <input
         id={name}
@@ -31,9 +33,17 @@ export function InputField({
         ]
           .filter(Boolean)
           .join(" ")}
+        required={required}
+        aria-required={required ? "true" : undefined}
+        aria-invalid={error ? "true" : undefined}
+        aria-describedby={errorId}
         {...props}
       />
-      {error && <p className="text-xs text-rose-600">{error}</p>}
+      {error && (
+        <p id={errorId} className="text-xs text-rose-600">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

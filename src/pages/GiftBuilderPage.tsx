@@ -365,14 +365,20 @@ export default function GiftBuilderPage() {
 
   return (
     <div className="gift-builder-page">
-      <Navbar sticky onMenuToggle={() => setSidebarOpen(true)} showSectionLinks={false} />
+      <Navbar
+        sticky
+        onMenuToggle={() => setSidebarOpen(true)}
+        showSectionLinks={false}
+        menuOpen={sidebarOpen}
+      />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="gift-builder-page__content ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="gift-builder-page__content ng-mobile-shell">
         <SectionTitle
           title="Build your gift"
           subtitle="Curate a custom box and let us wrap it with calm intention."
           align="left"
+          as="h1"
         />
         <div className="gift-builder-steps">
           <p className="gift-builder-steps__count">

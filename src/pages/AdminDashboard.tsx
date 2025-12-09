@@ -220,7 +220,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <main className="admin-dashboard" style={{ padding: 32, gap: 32 }}>
+    <main id="main-content" tabIndex={-1} className="admin-dashboard" style={{ padding: 32, gap: 32 }}>
       <SectionTitle
         title="Admin Dashboard"
         subtitle="Monitor orders and reviews without touching the API layer."

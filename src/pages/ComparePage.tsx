@@ -118,10 +118,11 @@ export default function ComparePage() {
         showSectionLinks={false}
         compactSearch
         onMenuToggle={() => setSidebarOpen(true)}
+        menuOpen={sidebarOpen}
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="shop-page__content ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="shop-page__content ng-mobile-shell">
         <SectionTitle
           title="Compare routines & products"
           subtitle="Line up focus, textures, and prices to decide the perfect routine."

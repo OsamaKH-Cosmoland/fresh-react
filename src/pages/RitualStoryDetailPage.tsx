@@ -11,7 +11,7 @@ export default function RitualStoryDetailPage({ slug }: RitualStoryDetailPagePro
   const story = useMemo(() => ritualStories.find((item) => item.slug === slug), [slug]);
   if (!story) {
     return (
-      <main className="ritual-story-detail">
+      <main id="main-content" tabIndex={-1} className="ritual-story-detail">
         <SlideUp>
           <SectionTitle title="Story not found" subtitle="Return to the Routine Stories library." />
         </SlideUp>
@@ -29,7 +29,7 @@ export default function RitualStoryDetailPage({ slug }: RitualStoryDetailPagePro
   const bodyParagraphs = story.body.split("\n\n").filter(Boolean);
 
   return (
-    <main className="ritual-story-detail">
+    <main id="main-content" tabIndex={-1} className="ritual-story-detail">
       <SlideUp>
         <SectionTitle
           title={story.title}

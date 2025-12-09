@@ -55,12 +55,17 @@ export default function OrdersHistoryPage() {
 
   return (
     <div className="orders-history-page">
-      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} />
+      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} menuOpen={drawerOpen} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      <main className="orders-history-shell ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="orders-history-shell ng-mobile-shell">
         <header className="orders-history-hero">
-          <SectionTitle title={t("ordersHistory.title")} subtitle={t("ordersHistory.subtitle")} align="center" />
+          <SectionTitle
+            title={t("ordersHistory.title")}
+            subtitle={t("ordersHistory.subtitle")}
+            align="center"
+            as="h1"
+          />
         </header>
         <div className="orders-history-loyalty">
           <p>{t("ordersHistory.loyalty.label")}</p>

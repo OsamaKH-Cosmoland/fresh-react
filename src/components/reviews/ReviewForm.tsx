@@ -1,4 +1,4 @@
-import { ChangeEvent, FormEvent, useMemo, useState } from "react";
+import { ChangeEvent, FormEvent, KeyboardEvent, useMemo, useState } from "react";
 import { Button, Card, InputField, TextareaField } from "@/components/ui";
 import { useTranslation } from "@/localization/locale";
 import type { ReviewSubmissionInput } from "@/hooks/useReviews";
@@ -66,6 +66,22 @@ export function ReviewForm({ addReview }: ReviewFormProps) {
     }
   };
 
+  const handleRatingKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const currentIndex = RATING_OPTIONS.indexOf(form.rating);
+    if (currentIndex === -1) return;
+    if (event.key === "ArrowRight" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const nextIndex = (currentIndex + 1) % RATING_OPTIONS.length;
+      setForm((prev) => ({ ...prev, rating: RATING_OPTIONS[nextIndex] }));
+      return;
+    }
+    if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
+      event.preventDefault();
+      const prevIndex = (currentIndex - 1 + RATING_OPTIONS.length) % RATING_OPTIONS.length;
+      setForm((prev) => ({ ...prev, rating: RATING_OPTIONS[prevIndex] }));
+    }
+  };
+
   return (
     <Card className="review-form-card">
       <h3>{t("reviews.form.heading")}</h3>
@@ -84,6 +100,7 @@ export function ReviewForm({ addReview }: ReviewFormProps) {
                 form.rating === value ? " is-selected" : ""
               }`}
               onClick={() => setForm((prev) => ({ ...prev, rating: value }))}
+              onKeyDown={handleRatingKeyDown}
               role="radio"
               aria-checked={form.rating === value}
             >

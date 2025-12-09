@@ -115,9 +115,9 @@ export default function AudiencePage() {
 
   return (
     <div className="audience-page">
-      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} />
+      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} menuOpen={drawerOpen} />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <main className="audience-page__shell ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="audience-page__shell ng-mobile-shell">
         <header className="audience-page__hero" data-animate="fade-up">
           <SectionTitle
             title={t("audience.hero.title")}

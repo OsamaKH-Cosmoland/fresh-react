@@ -226,7 +226,7 @@ function ProductShop() {
   const canAdd = name.trim() && !Number.isNaN(Number(price)) && Number(price) >= 0;
 
   return (
-    <main style={{ fontFamily: "system-ui", padding: 24, maxWidth: 640, margin: "0 auto" }}>
+    <main id="main-content" tabIndex={-1} style={{ fontFamily: "system-ui", padding: 24, maxWidth: 640, margin: "0 auto" }}>
       <h1>Product Lab</h1>
 
       <fieldset style={{ marginBottom: 16 }}>
@@ -453,9 +453,7 @@ export default function App() {
   return (
     <>
       <SkipToContent />
-      <div id="main-content" role="main" tabIndex={-1}>
-        {routeContent}
-      </div>
+      <div id="app-shell">{routeContent}</div>
     </>
   );
 }

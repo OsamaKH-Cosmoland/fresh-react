@@ -211,14 +211,16 @@ export default function ShopPage() {
         showSectionLinks={false}
         compactSearch
         onMenuToggle={() => setSidebarOpen(true)}
+        menuOpen={sidebarOpen}
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="shop-page__content ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="shop-page__content ng-mobile-shell">
         <SectionTitle
           title="Shop all routines & products"
           subtitle="Every product and bundle lives here. Filter by focus or type to find the routine that fits your day."
           align="center"
+          as="h1"
         />
 
         <div className="shop-filters" data-animate="fade-up">

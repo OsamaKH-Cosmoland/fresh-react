@@ -177,15 +177,21 @@ export default function RitualFinder() {
 
   return (
     <div className="ritual-finder-page">
-      <Navbar sticky onMenuToggle={() => setDrawerOpen(true)} showSectionLinks={false} />
+      <Navbar
+        sticky
+        onMenuToggle={() => setDrawerOpen(true)}
+        showSectionLinks={false}
+        menuOpen={drawerOpen}
+      />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      <main className="ritual-finder-shell ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="ritual-finder-shell ng-mobile-shell">
         <header className="ritual-finder-hero" data-animate="fade-up">
         <SectionTitle
           title="Routine Finder"
           subtitle="Answer a calm handful of questions and we will curate the routine that matches tonight."
           align="center"
+          as="h1"
         />
           <p>
             We listen to your focus, time, and scent preferences to recommend the precise balance of

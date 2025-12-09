@@ -130,7 +130,7 @@ export default function RitualPlanner() {
         </div>
       </header>
 
-      <main className="ritual-shell">
+      <main id="main-content" tabIndex={-1} className="ritual-shell">
         <aside className="ritual-focus-panel" aria-label="Select a NaturaGloss intention">
           <p className="ritual-step-label">Step 1: Choose your intention</p>
           <div className="ritual-focus-list">

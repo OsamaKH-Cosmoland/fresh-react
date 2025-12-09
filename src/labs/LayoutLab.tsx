@@ -191,19 +191,21 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
       <Navbar
         sticky
         onMenuToggle={() => setDrawerOpen(true)}
+        menuOpen={drawerOpen}
         cartCount={totalItems}
         onCartOpen={onCartOpen}
       />
       <Sidebar open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <OfflineNotice />
 
-      <main className="landing-hero ng-mobile-shell" data-animate="fade-up">
+      <main id="main-content" tabIndex={-1} className="landing-hero ng-mobile-shell" data-animate="fade-up">
         <div className="landing-hero__copy">
           <SectionTitle
             title="Luxury Inspired by Nature’s Essence"
             subtitle="Indulge in a world of serenity and sophistication, natural care designed for those who value beauty with soul."
             align="center"
             className="landing-hero__title"
+            as="h1"
           />
           <div className="landing-hero__actions">
             <Button

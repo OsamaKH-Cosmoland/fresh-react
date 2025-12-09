@@ -24,14 +24,20 @@ export default function RitualGuidesPage() {
 
   return (
     <div className="ritual-guides-page">
-      <Navbar sticky onMenuToggle={() => setSidebarOpen(true)} showSectionLinks={false} />
+      <Navbar
+        sticky
+        onMenuToggle={() => setSidebarOpen(true)}
+        showSectionLinks={false}
+        menuOpen={sidebarOpen}
+      />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <main className="ritual-guides-page__content ng-mobile-shell">
+      <main id="main-content" tabIndex={-1} className="ritual-guides-page__content ng-mobile-shell">
         <SectionTitle
           title="Routine Guides"
           subtitle="Calm essays, routines, and gentle know-how to guide every layer."
           align="center"
+          as="h1"
         />
         <div className="ritual-guides-grid ng-grid-mobile-2">
           {guides.map((guide) => (
