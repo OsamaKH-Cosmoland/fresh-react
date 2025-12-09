@@ -45,7 +45,7 @@
 
 body {
   font-family: var(--font-body);
-  margin: var(--space-6);
+  margin: 0;
   background: linear-gradient(180deg, #042216 0%, #04110b 100%);
   color: #f7ecd4;
 }
@@ -415,9 +415,9 @@ button:hover {
 
 .landing-hero {
   width: 100%;
-  padding: var(--space-10) 0 var(--space-12);
+  padding: var(--space-1) 0 var(--space-4);
   display: grid;
-  gap: var(--space-8);
+  gap: var(--space-6);
   justify-items: center;
   text-align: center;
 }
