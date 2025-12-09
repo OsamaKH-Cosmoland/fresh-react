@@ -29,6 +29,9 @@ import {
   getPersonalizationReasonsText,
 } from "@/personalization/personalizationEngine";
 import { ShopCatalogEntry } from "@/content/shopCatalog";
+import { useSeo } from "@/seo/useSeo";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 
 const getQueryFromLocation = () => {
   if (typeof window === "undefined") {
@@ -46,6 +49,8 @@ const navigateTo = (path: string) => {
 };
 
 export default function SearchPage() {
+  useSeo({ route: "search" });
+  usePageAnalytics("search");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
@@ -57,7 +62,17 @@ export default function SearchPage() {
   const orders = useMemo(() => readOrders(), []);
   const reviews = useMemo(() => listReviews(), []);
   const handleAddProduct = (detail: ProductDetailContent) => {
-    addItem(buildProductCartPayload(detail));
+    const payload = buildProductCartPayload(detail);
+    addItem(payload);
+    trackEvent({
+      type: "add_to_cart",
+      itemType: "product",
+      id: detail.productId,
+      quantity: 1,
+      price: payload.price,
+      variantId: payload.variantId,
+      source: "search",
+    });
   };
 
   const searchResults = useMemo(
@@ -408,6 +423,7 @@ export default function SearchPage() {
                       )}
                       <BundleCard
                         bundle={bundle}
+                        viewSource="search"
                         onAddBundle={(bundleItem, variantSelection) =>
                           addBundleToCart(bundleItem, variantSelection)
                         }

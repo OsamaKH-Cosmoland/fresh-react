@@ -14,6 +14,9 @@ import {
 } from "@/utils/orderNotifications";
 import { submitOrderToApi } from "@/utils/orderApi";
 import { useNetworkStatus } from "@/hooks/useNetworkStatus";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { useSeo } from "@/seo/useSeo";
 
 const SHIPPING_OPTIONS = [
   { id: "standard", cost: 45 },
@@ -49,6 +52,8 @@ const EMPTY_CONTACT = {
 };
 
 export default function CheckoutPage() {
+  usePageAnalytics("checkout");
+  useSeo({ route: "checkout" });
   const { t } = useTranslation();
   const { cartItems, subtotal, clearCart } = useCart();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -163,6 +168,7 @@ export default function CheckoutPage() {
       return;
     }
     if (!hasCartItems || !shippingMethod) return;
+    const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     const orderId = generateOrderId();
     const order: LocalOrder = {
       id: orderId,
@@ -196,6 +202,13 @@ export default function CheckoutPage() {
       },
     };
     addOrder(order);
+    trackEvent({
+      type: "complete_checkout",
+      orderId,
+      subtotal: order.totals.subtotal,
+      total: order.totals.total,
+      itemCount,
+    });
     clearCart();
     setOrderPlaced(order);
     setCurrentStep(STEPS.length - 1);

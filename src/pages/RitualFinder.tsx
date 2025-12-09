@@ -17,8 +17,13 @@ import {
 } from "@/hooks/useUserPreferences";
 import { chooseVariantForPreferences } from "@/content/productDetails";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { useSeo } from "@/seo/useSeo";
 
 export default function RitualFinder() {
+  usePageAnalytics("finder");
+  useSeo({ route: "finder" });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<RitualFinderAnswers>({});
@@ -144,16 +149,31 @@ export default function RitualFinder() {
   const addProductToBag = (productId: string, variantId?: string) => {
     const detail = PRODUCT_DETAIL_MAP[productId];
     if (!detail) return;
-    addItem(buildProductCartPayload(detail, variantId));
+    const payload = buildProductCartPayload(detail, variantId);
+    addItem(payload);
+    trackEvent({
+      type: "add_to_cart",
+      itemType: "product",
+      id: detail.productId,
+      quantity: 1,
+      price: payload.price,
+      variantId: payload.variantId,
+      source: "finder",
+    });
   };
 
   useEffect(() => {
     if (!complete) return;
+    trackEvent({
+      type: "finder_completed",
+      primaryBundleId: primaryBundle?.id,
+      productsCount: productSuggestions.length,
+    });
     if (primaryBundle) {
       recordView(primaryBundle.id, "bundle");
     }
     secondaryBundles.forEach((bundle) => recordView(bundle.id, "bundle"));
-  }, [complete, primaryBundle, secondaryBundles]);
+  }, [complete, primaryBundle, secondaryBundles, productSuggestions.length]);
 
   return (
     <div className="ritual-finder-page">
@@ -230,6 +250,7 @@ export default function RitualFinder() {
               <div className="bundle-grid ng-grid-mobile-2">
                 <BundleCard
                   bundle={primaryBundle}
+                  viewSource="finder"
                   onAddBundle={(bundleItem, variantSelection) =>
                     addBundleToCart(bundleItem, variantSelection)
                   }
@@ -243,6 +264,7 @@ export default function RitualFinder() {
                     <BundleCard
                       key={bundle.id}
                       bundle={bundle}
+                      viewSource="finder"
                       onAddBundle={(bundleItem, variantSelection) =>
                         addBundleToCart(bundleItem, variantSelection)
                       }

@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import type { CartItem } from "@/cart/cartStore";
 import { Button } from "@/components/ui";
 import { FadeIn } from "@/components/animate";
 import { useCart } from "@/cart/cartStore";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
+import { trackEvent } from "@/analytics/events";
 import { formatVariantMeta } from "@/utils/variantDisplay";
 
 interface CartDrawerProps {
@@ -97,8 +99,23 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     return <p className={className}>{variantMeta}</p>;
   };
 
+  const trackRemovalEvent = (item: CartItem) => {
+    trackEvent({
+      type: "remove_from_cart",
+      itemType: item.giftBox ? "gift" : item.bundleId ? "bundle" : "product",
+      id: item.bundleId ?? item.productId ?? item.id,
+      quantity: item.quantity,
+      variantId: item.variantId,
+    });
+  };
+
   const goToCheckout = () => {
     if (!canCheckout) return;
+    trackEvent({
+      type: "start_checkout",
+      subtotal,
+      itemCount: totalQuantity,
+    });
     onClose();
     const base = import.meta.env.BASE_URL ?? "/";
     const url = new URL(base, window.location.origin);
@@ -113,6 +130,10 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   const decrement = (itemId: string, current: number) => {
     if (current <= 1) {
+      const item = cartItems.find((entry) => entry.id === itemId);
+      if (item) {
+        trackRemovalEvent(item);
+      }
       removeItem(itemId);
       return;
     }
@@ -248,15 +269,18 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                           +
                         </button>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="cart-drawer__remove"
-                        aria-label={t("accessibility.cart.removeItem", { item: item.name })}
-                        onClick={() => removeItem(item.id)}
-                      >
-                        Remove
-                      </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="cart-drawer__remove"
+                            aria-label={t("accessibility.cart.removeItem", { item: item.name })}
+                            onClick={() => {
+                              trackRemovalEvent(item);
+                              removeItem(item.id);
+                            }}
+                          >
+                            Remove
+                          </Button>
                     </div>
                   </li>
                 ))}

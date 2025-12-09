@@ -18,12 +18,18 @@ import { ReviewForm } from "@/components/reviews/ReviewForm";
 import { ReviewList } from "@/components/reviews/ReviewList";
 import { ReviewSummary } from "@/components/reviews/ReviewSummary";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { isTargetVerifiedForAnyOrder } from "@/utils/reviewVerification";
+import { useSeo } from "@/seo/useSeo";
+import { buildAppUrl } from "@/utils/navigation";
 
 export interface ProductDetailPageProps {
   slug: string;
 }
 
 export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
+  usePageAnalytics("product");
   const detail = PRODUCT_DETAIL_MAP[slug];
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
@@ -54,6 +60,93 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   const selectedVariant =
     variantPool.find((variant) => variant.variantId === selectedVariantId) ?? variantPool[0];
 
+  const productTitle = detail
+    ? `${detail.productName}${detail.shortTagline ? ` · ${detail.shortTagline}` : ""}`
+    : undefined;
+  const productDescription = detail?.shortTagline ?? detail?.whatItsMadeFor;
+
+  const productJsonLd = useMemo(() => {
+    if (!detail) return undefined;
+    const price = selectedVariant?.priceNumber ?? detail.priceNumber;
+    const hasRating = averageRating !== null && reviewsCount > 0;
+    const aggregateRating = hasRating
+      ? {
+          "@type": "AggregateRating",
+          ratingValue: Number(averageRating?.toFixed(1)),
+          reviewCount: reviewsCount,
+        }
+      : undefined;
+    return {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: detail.productName,
+      description: productDescription ?? detail.shortTagline,
+      image: detail.heroImage,
+      sku: selectedVariant?.variantId ?? detail.productId,
+      brand: { "@type": "Brand", name: "NaturaGloss" },
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "EGP",
+        price,
+        availability: "https://schema.org/InStock",
+        url: buildAppUrl(`/products/${detail.slug}`),
+      },
+      ...(aggregateRating ? { aggregateRating } : {}),
+    };
+  }, [detail, selectedVariant, averageRating, reviewsCount, productDescription]);
+
+  const faqJsonLd = useMemo(() => {
+    if (!detail?.faq?.length) return undefined;
+    const entries = detail.faq
+      .slice(0, 3)
+      .map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      }))
+      .filter((entry) => entry.name && entry.acceptedAnswer?.text);
+    if (!entries.length) return undefined;
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: entries,
+    };
+  }, [detail?.faq]);
+
+  const jsonLdEntries = useMemo(() => {
+    if (!detail) return undefined;
+    const entries: { id: string; data: unknown }[] = [];
+    if (productJsonLd) {
+      entries.push({ id: `product-jsonld-${detail.productId}`, data: productJsonLd });
+    }
+    if (faqJsonLd) {
+      entries.push({ id: `product-faq-${detail.productId}`, data: faqJsonLd });
+    }
+    return entries.length ? entries : undefined;
+  }, [detail, productJsonLd, faqJsonLd]);
+
+  useSeo({
+    route: "product",
+    title: productTitle,
+    description: productDescription,
+    canonicalPath: detail ? `/products/${detail.slug}` : undefined,
+    ogImageUrl: detail?.heroImage,
+    jsonLd: jsonLdEntries,
+  });
+
+  useEffect(() => {
+    if (!detail) return;
+    trackEvent({
+      type: "view_product",
+      productId: detail.productId,
+      variantId: selectedVariant?.variantId,
+      source: "product_detail",
+    });
+  }, [detail?.productId, selectedVariant?.variantId]);
+
   const addToBag = useCallback(() => {
     if (!detail || priceNumber <= 0) return;
     addItem(buildProductCartPayload(detail, selectedVariantId));
@@ -62,7 +155,32 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
         item: detail.productName,
       })
     );
-  }, [addItem, announce, detail, priceNumber, selectedVariantId, t]);
+    const resolvedPrice =
+      selectedVariant?.priceNumber ?? detail.priceNumber;
+    trackEvent({
+      type: "add_to_cart",
+      itemType: "product",
+      id: detail.productId,
+      quantity: 1,
+      price: resolvedPrice,
+      variantId: selectedVariantId,
+      source: "product_detail",
+    });
+  }, [addItem, announce, detail, priceNumber, selectedVariantId, selectedVariant, t]);
+
+  const handleReviewSubmit = useCallback(
+    (values: Parameters<typeof addReview>[0]) => {
+      const nextReview = addReview(values);
+      trackEvent({
+        type: "submit_review",
+        targetId: productId,
+        rating: nextReview.rating,
+        verified: isTargetVerifiedForAnyOrder(productId, "product"),
+      });
+      return nextReview;
+    },
+    [addReview, productId]
+  );
 
   const goToCollection = useCallback(() => {
     const base = import.meta.env.BASE_URL ?? "/";
@@ -104,19 +222,19 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
           align="left"
         />
         <div className="product-review-section__grid">
-          <div className="product-review-section__summary">
-            <ReviewSummary
-              averageRating={averageRating}
-              reviewsCount={reviewsCount}
-              isVerifiedAvailable={isVerifiedAvailable}
-            />
-          </div>
-          <div className="product-review-section__details">
-            <ReviewList reviews={reviews} isVerified={isVerifiedAvailable} />
-            <ReviewForm addReview={addReview} />
-          </div>
-        </div>
-      </section>
+              <div className="product-review-section__summary">
+                <ReviewSummary
+                  averageRating={averageRating}
+                  reviewsCount={reviewsCount}
+                  isVerifiedAvailable={isVerifiedAvailable}
+                />
+              </div>
+              <div className="product-review-section__details">
+                <ReviewList reviews={reviews} isVerified={isVerifiedAvailable} />
+                <ReviewForm addReview={handleReviewSubmit} />
+              </div>
+            </div>
+          </section>
       {relatedBundles.length > 0 && (
         <section className="product-detail-bundles ng-mobile-shell" data-animate="fade-up">
         <SectionTitle
@@ -124,17 +242,18 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
           subtitle="These curated bundles pair naturally with this beauty."
           align="left"
         />
-          <div className="bundle-grid ng-grid-mobile-2">
+            <div className="bundle-grid ng-grid-mobile-2">
             {relatedBundles.map((bundle) => (
               <BundleCard
                 key={bundle.id}
                 bundle={bundle}
+                viewSource="product_detail"
                 onAddBundle={(bundleItem, variantSelection) =>
                   addBundleToCart(bundleItem, variantSelection)
                 }
               />
             ))}
-          </div>
+            </div>
         </section>
       )}
     </>

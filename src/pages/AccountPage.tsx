@@ -8,6 +8,8 @@ import { useCart } from "@/cart/cartStore";
 import { useFavorites } from "@/favorites/favoritesStore";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { useTranslation } from "@/localization/locale";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import {
   shopCatalog,
   shopFocusLookup,
@@ -28,6 +30,7 @@ import { isTargetVerifiedForAnyOrder } from "@/utils/reviewVerification";
 import { RatingBadge } from "@/components/reviews/RatingBadge";
 import type { LocalOrder } from "@/types/localOrder";
 import type { LocalReview } from "@/types/localReview";
+import { useSeo } from "@/seo/useSeo";
 
 const buildAppUrl = (pathname: string) => {
   const base = import.meta.env.BASE_URL ?? "/";
@@ -83,6 +86,8 @@ const getReviewTargetInfo = (review: LocalReview) => {
 type AccountTabId = "profile" | "orders" | "saved" | "favorites" | "reviews";
 
 export default function AccountPage() {
+  usePageAnalytics("account");
+  useSeo({ route: "account" });
   const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<AccountTabId>("profile");
@@ -188,6 +193,20 @@ export default function AccountPage() {
         .filter((bundle): bundle is typeof ritualBundles[number] => Boolean(bundle)),
     [favorites]
   );
+
+  const handleFavoriteProductAdd = (detail: typeof favoriteProducts[number]) => {
+    const payload = buildProductCartPayload(detail);
+    addItem(payload);
+    trackEvent({
+      type: "add_to_cart",
+      itemType: "product",
+      id: detail.productId,
+      quantity: 1,
+      price: payload.price,
+      variantId: payload.variantId,
+      source: "account",
+    });
+  };
 
   const hasFavorites = favoriteProducts.length > 0 || favoriteBundles.length > 0;
   const hasOrders = orders.length > 0;
@@ -457,7 +476,7 @@ export default function AccountPage() {
                     <Button
                       variant="primary"
                       size="sm"
-                      onClick={() => addItem(buildProductCartPayload(detail))}
+                      onClick={() => handleFavoriteProductAdd(detail)}
                     >
                       {t("cta.addToBag")}
                     </Button>

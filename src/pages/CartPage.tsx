@@ -6,6 +6,7 @@ import { PRODUCT_INDEX } from "../data/products";
 import { ritualBundles } from "@/content/bundles";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
+import { trackEvent } from "@/analytics/events";
 import { formatVariantMeta } from "@/utils/variantDisplay";
 
 const parsePrice = (price: string | number) => {
@@ -35,6 +36,11 @@ export default function CartPage() {
     const checkoutUrl = new URL(base, window.location.origin);
     checkoutUrl.searchParams.set("view", "checkout");
     checkoutUrl.hash = "";
+    trackEvent({
+      type: "start_checkout",
+      subtotal,
+      itemCount: totalItems,
+    });
     window.location.href = checkoutUrl.toString();
   };
 
@@ -48,6 +54,21 @@ export default function CartPage() {
     const item = cartItems.find((entry) => entry.id === itemId);
     if (!item) return;
     updateQuantity(itemId, item.quantity - 1);
+  };
+
+  const trackRemovalEvent = (item: CartItem) => {
+    trackEvent({
+      type: "remove_from_cart",
+      itemType: item.giftBox ? "gift" : item.bundleId ? "bundle" : "product",
+      id: item.bundleId ?? item.productId ?? item.id,
+      quantity: item.quantity,
+      variantId: item.variantId,
+    });
+  };
+
+  const handleRemoveItem = (item: CartItem) => {
+    trackRemovalEvent(item);
+    removeItem(item.id);
   };
 
   return (
@@ -126,7 +147,7 @@ export default function CartPage() {
                           <button
                             type="button"
                             className="ghost-btn"
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => handleRemoveItem(item)}
                           >
                             Remove
                           </button>
@@ -182,7 +203,7 @@ export default function CartPage() {
                           <button
                             type="button"
                             className="ghost-btn"
-                            onClick={() => removeItem(item.id)}
+                            onClick={() => handleRemoveItem(item)}
                           >
                             Remove
                           </button>
@@ -214,7 +235,7 @@ export default function CartPage() {
                         <button
                           type="button"
                           className="ghost-btn"
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => handleRemoveItem(item)}
                         >
                           Remove
                         </button>

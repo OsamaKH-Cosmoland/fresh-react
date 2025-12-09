@@ -23,6 +23,9 @@ import {
   calculateProductTotal,
 } from "@/utils/giftPricing";
 import { useTranslation } from "@/localization/locale";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { useSeo } from "@/seo/useSeo";
 
 const steps = [
   "Choose your box",
@@ -32,6 +35,8 @@ const steps = [
 ];
 
 export default function GiftBuilderPage() {
+  usePageAnalytics("gift_builder");
+  useSeo({ route: "gift_builder" });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedStyleId, setSelectedStyleId] = useState<string>(giftBoxStyles[0]?.id ?? "");
@@ -136,6 +141,13 @@ export default function GiftBuilderPage() {
         boxPrice: currentStyle.price,
         addonsPrice: addOnTotal,
       },
+    });
+    trackEvent({
+      type: "gift_builder_completed",
+      boxId: currentStyle.id,
+      productCount: selectedProducts.length,
+      addonsCount: selectedAddOns.length,
+      totalPrice,
     });
     setSuccess("Gift box added to your bag.");
     setCurrentStep(1);

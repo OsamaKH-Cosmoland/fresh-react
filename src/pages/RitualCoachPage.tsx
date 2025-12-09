@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { Button, Card, SectionTitle } from "@/components/ui";
@@ -28,6 +28,9 @@ import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { getBundlePricing } from "@/content/bundlePricing";
 import { RitualBundle } from "@/content/bundles";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { useSeo } from "@/seo/useSeo";
 
 const CONCERN_TO_FOCUS: Record<ConcernOption, FocusTagId> = {
   bodyHydration: "body",
@@ -107,6 +110,8 @@ const createBundleCartItem = (bundle: RitualBundle): CartItem => {
 
 
 export default function RitualCoachPage() {
+  usePageAnalytics("coach");
+  useSeo({ route: "coach" });
   const { t } = useTranslation();
   const { preferences } = useUserPreferences();
   const { addBundleToCart } = useBundleActions();
@@ -216,9 +221,19 @@ export default function RitualCoachPage() {
     if (!mainMatch) return;
     if (mainMatch.entry.kind === "bundle") {
       addBundleToCart(mainMatch.entry.item);
-    } else {
-      addItem(buildProductCartPayload(mainMatch.entry.item, mainVariant?.variantId));
+      return;
     }
+    const payload = buildProductCartPayload(mainMatch.entry.item, mainVariant?.variantId);
+    addItem(payload);
+    trackEvent({
+      type: "add_to_cart",
+      itemType: "product",
+      id: mainMatch.entry.item.productId,
+      quantity: 1,
+      price: payload.price,
+      variantId: payload.variantId,
+      source: "coach",
+    });
   };
 
   const handleSaveRitual = () => {
@@ -236,7 +251,17 @@ export default function RitualCoachPage() {
   };
 
   const handleAddProduct = (detail: ProductDetailContent, variantId?: string) => {
-    addItem(buildProductCartPayload(detail, variantId));
+    const payload = buildProductCartPayload(detail, variantId);
+    addItem(payload);
+    trackEvent({
+      type: "add_to_cart",
+      itemType: "product",
+      id: detail.productId,
+      quantity: 1,
+      price: payload.price,
+      variantId: payload.variantId,
+      source: "coach",
+    });
   };
 
   const mainExplanation = formatTemplate(
@@ -267,6 +292,16 @@ export default function RitualCoachPage() {
   );
 
   const showFocusControl = focusChoices.length > 1;
+
+  useEffect(() => {
+    if (!mainMatch) return;
+    trackEvent({
+      type: "coach_completed",
+      primaryBundleId:
+        mainMatch.entry.kind === "bundle" ? mainMatch.entry.item.id : undefined,
+      intensity,
+    });
+  }, [mainMatch?.entry.kind, mainMatch?.entry.item?.id, intensity]);
 
   return (
     <div className="ritual-coach-page">
@@ -361,6 +396,7 @@ export default function RitualCoachPage() {
                   {mainMatch.entry.kind === "bundle" ? (
                     <BundleCard
                       bundle={mainMatch.entry.item}
+                      viewSource="coach"
                       heroImage={getBundleHeroImage(mainMatch.entry.item.id)}
                       onAddBundle={(bundleItem, variantSelection) =>
                         addBundleToCart(bundleItem, variantSelection)

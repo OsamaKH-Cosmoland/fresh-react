@@ -4,6 +4,9 @@ import Sidebar from "@/components/Sidebar";
 import { Button, Card, SectionTitle } from "@/components/ui";
 import { ritualGuides } from "@/content/ritualGuides";
 import { shopFocusLookup } from "@/content/shopCatalog";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { useSeo } from "@/seo/useSeo";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -14,6 +17,8 @@ const navigateTo = (path: string) => {
 };
 
 export default function RitualGuidesPage() {
+  usePageAnalytics("guides");
+  useSeo({ route: "guides" });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const guides = useMemo(() => ritualGuides, []);
 
@@ -54,7 +59,14 @@ export default function RitualGuidesPage() {
                 <Button
                   variant="secondary"
                   size="md"
-                  onClick={() => navigateTo(`/ritual-guides/${guide.slug}`)}
+                  onClick={() => {
+                    trackEvent({
+                      type: "view_guide",
+                      guideId: guide.id,
+                      source: "guides",
+                    });
+                    navigateTo(`/ritual-guides/${guide.slug}`);
+                  }}
                 >
                   Read the guide
                 </Button>

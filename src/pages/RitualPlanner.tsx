@@ -1,12 +1,47 @@
 import { useEffect, useMemo, useState } from "react";
+import { buildAppUrl } from "@/utils/navigation";
+import brandLogo from "@/assets/Logo.webp";
+import { useSeo } from "@/seo/useSeo";
 import { RITUALS } from "../data/rituals";
 import { PRODUCT_INDEX } from "../data/products";
 import type { Ritual } from "../types/ritual";
 import type { Product } from "../types/product";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 
 const DEFAULT_RITUAL = "radiance";
 
 export default function RitualPlanner() {
+  usePageAnalytics("landing");
+  const landingJsonLd = useMemo(() => {
+    const baseUrl = buildAppUrl("/");
+    return [
+      {
+        id: "naturagloss-organization",
+        data: {
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: "NaturaGloss",
+          url: baseUrl,
+          logo: brandLogo,
+        },
+      },
+      {
+        id: "naturagloss-website",
+        data: {
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "NaturaGloss",
+          url: baseUrl,
+          potentialAction: {
+            "@type": "SearchAction",
+            target: `${buildAppUrl("/search")}?q={search_term_string}`,
+            "query-input": "required name=search_term_string",
+          },
+        },
+      },
+    ];
+  }, []);
+  useSeo({ route: "landing", jsonLd: landingJsonLd });
   const [focusedRitual, setFocusedRitual] = useState<string>(DEFAULT_RITUAL);
   const [status, setStatus] = useState<{ type: "success" | "info"; message: string } | null>(null);
 

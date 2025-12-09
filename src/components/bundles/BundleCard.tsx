@@ -11,15 +11,23 @@ import {
 import { getBundlePricing } from "@/content/bundlePricing";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
+import { trackEvent, type BundleViewSource } from "@/analytics/events";
 
 export interface BundleCardProps {
   bundle: RitualBundle;
   onAddBundle?: (bundle: RitualBundle, variantSelection?: Record<string, string>) => void;
   onViewDetails?: (bundle: RitualBundle) => void;
   heroImage?: string;
+  viewSource?: BundleViewSource;
 }
 
-function BundleCardBase({ bundle, onAddBundle, onViewDetails, heroImage }: BundleCardProps) {
+function BundleCardBase({
+  bundle,
+  onAddBundle,
+  onViewDetails,
+  heroImage,
+  viewSource,
+}: BundleCardProps) {
   const { t } = useTranslation();
   const pricing = getBundlePricing(bundle);
   const bundlePriceDisplay = bundle.bundlePriceLabel ?? formatCurrency(pricing.bundlePrice);
@@ -48,6 +56,14 @@ function BundleCardBase({ bundle, onAddBundle, onViewDetails, heroImage }: Bundl
     () => bundle.products.filter((entry) => getProductVariants(entry.productId).length > 0),
     [bundle.products]
   );
+
+  useEffect(() => {
+    trackEvent({
+      type: "view_bundle",
+      bundleId: bundle.id,
+      source: viewSource ?? "shop",
+    });
+  }, [bundle.id, viewSource]);
   return (
     <Card className="bundle-card hover-lift" data-animate="fade-up">
       <CompareToggle id={bundle.id} type="bundle" itemLabel={bundle.name} />

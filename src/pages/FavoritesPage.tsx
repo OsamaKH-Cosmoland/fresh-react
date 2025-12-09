@@ -5,6 +5,8 @@ import { BundleCard } from "@/components/bundles/BundleCard";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
 import { Button, Card, SectionTitle } from "@/components/ui";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useCart } from "@/cart/cartStore";
 import { useBundleActions } from "@/cart/cartBundles";
 import { useFavorites } from "@/favorites/favoritesStore";
@@ -13,6 +15,7 @@ import { ritualBundles } from "@/content/bundles";
 import { shopCatalog, shopFocusLookup, type FocusTagId } from "@/content/shopCatalog";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
+import { useSeo } from "@/seo/useSeo";
 import { useTranslation } from "@/localization/locale";
 
 const navigateTo = (path: string) => {
@@ -21,6 +24,8 @@ const navigateTo = (path: string) => {
 };
 
 export default function FavoritesPage() {
+  usePageAnalytics("favorites");
+  useSeo({ route: "favorites" });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { favorites } = useFavorites();
   const { addItem } = useCart();
@@ -61,7 +66,17 @@ export default function FavoritesPage() {
   const focusLabels = (ids: FocusTagId[]) => ids.map((id) => shopFocusLookup[id]).filter(Boolean);
 
   const handleAddProduct = (detail: typeof favoriteProducts[number]) => {
-    addItem(buildProductCartPayload(detail));
+    const payload = buildProductCartPayload(detail);
+    addItem(payload);
+    trackEvent({
+      type: "add_to_cart",
+      itemType: "product",
+      id: detail.productId,
+      quantity: 1,
+      price: payload.price,
+      variantId: payload.variantId,
+      source: "favorites",
+    });
   };
 
   return (
@@ -173,6 +188,7 @@ export default function FavoritesPage() {
                     </div>
                     <BundleCard
                       bundle={bundle}
+                      viewSource="favorites"
                       heroImage={getBundleHeroImage(bundle.id)}
                       onAddBundle={(bundleItem, variantSelection) =>
                         addBundleToCart(bundleItem, variantSelection)

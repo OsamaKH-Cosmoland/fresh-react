@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { Button, Card, SectionTitle } from "@/components/ui";
@@ -11,6 +11,10 @@ import { getRitualGuideBySlug } from "@/content/ritualGuides";
 import { shopFocusLookup } from "@/content/shopCatalog";
 import { useTranslation } from "@/localization/locale";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { useSeo } from "@/seo/useSeo";
+import { buildAppUrl } from "@/utils/navigation";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -25,11 +29,51 @@ export interface RitualGuideDetailPageProps {
 }
 
 export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPageProps) {
+  usePageAnalytics("guide_detail");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const guide = useMemo(() => getRitualGuideBySlug(slug), [slug]);
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const { t } = useTranslation();
+  const articleJsonLd = useMemo(() => {
+    if (!guide) return undefined;
+    const focusLabels = (guide.focusTags ?? [])
+      .map((tag) => shopFocusLookup[tag])
+      .filter(Boolean);
+    return [
+      {
+        id: `guide-jsonld-${guide.id}`,
+        data: {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: guide.title,
+          description: guide.subtitle,
+          image: guide.heroImage,
+          author: { "@type": "Organization", name: "NaturaGloss" },
+          publisher: { "@type": "Organization", name: "NaturaGloss" },
+          url: buildAppUrl(`/ritual-guides/${guide.slug}`),
+          articleSection: focusLabels,
+        },
+      },
+    ];
+  }, [guide]);
+  useSeo({
+    route: "guide_detail",
+    title: guide?.title,
+    description: guide?.subtitle,
+    canonicalPath: guide ? `/ritual-guides/${guide.slug}` : undefined,
+    ogImageUrl: guide?.heroImage,
+    jsonLd: articleJsonLd,
+  });
+
+  useEffect(() => {
+    if (!guide) return;
+    trackEvent({
+      type: "view_guide",
+      guideId: guide.id,
+      source: "guides",
+    });
+  }, [guide?.id]);
 
   const relatedProducts = useMemo(
     () =>
@@ -142,7 +186,19 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
                           <Button
                             variant="primary"
                             size="md"
-                            onClick={() => addItem(buildProductCartPayload(detail))}
+                            onClick={() => {
+                              const payload = buildProductCartPayload(detail);
+                              addItem(payload);
+                              trackEvent({
+                                type: "add_to_cart",
+                                itemType: "product",
+                                id: detail.productId,
+                                quantity: 1,
+                                price: payload.price,
+                                variantId: payload.variantId,
+                                source: "guide",
+                              });
+                            }}
                           >
                             {t("cta.addToBag")}
                           </Button>
@@ -166,6 +222,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
                     <BundleCard
                       key={bundle.id}
                       bundle={bundle}
+                      viewSource="guide"
                       onAddBundle={(bundleItem, variantSelection) =>
                         addBundleToCart(bundleItem, variantSelection)
                       }

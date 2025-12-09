@@ -12,6 +12,9 @@ import {
   useUserPreferences,
 } from "@/hooks/useUserPreferences";
 import { useTranslation } from "@/localization/locale";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { useSeo } from "@/seo/useSeo";
 
 type StepId = "concerns" | "time" | "scent" | "budget";
 
@@ -36,6 +39,8 @@ const buildDraftFromSource = (source: UserPreferences | null): UserPreferences =
 });
 
 export default function OnboardingPage() {
+  usePageAnalytics("onboarding");
+  useSeo({ route: "onboarding" });
   const { preferences, savePreferences } = useUserPreferences();
   const { t } = useTranslation();
   const flowRef = useRef<HTMLElement | null>(null);
@@ -192,6 +197,13 @@ export default function OnboardingPage() {
 
   const handleComplete = useCallback(() => {
     savePreferences({ ...draft });
+    trackEvent({
+      type: "update_preferences",
+      concerns: draft.concerns,
+      time: draft.timePreference,
+      scent: draft.scentPreference,
+      budget: draft.budgetPreference,
+    });
     setComplete(true);
   }, [draft, savePreferences]);
 

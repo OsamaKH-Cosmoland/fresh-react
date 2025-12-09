@@ -11,6 +11,7 @@ import {
 } from "@/content/productDetails";
 import { CompareToggle } from "@/components/CompareToggle";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
+import { trackEvent } from "@/analytics/events";
 
 interface CardGridProps {
   onAddToCart?: (product: Product) => void;
@@ -81,6 +82,14 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
       name: item.title ?? item.name ?? "Product",
       price: Number.isFinite(priceValue) ? priceValue : 0,
       imageUrl: item.image ?? undefined,
+    });
+    trackEvent({
+      type: "add_to_cart",
+      itemType: "product",
+      id: String(item.id ?? item._id ?? item.title),
+      quantity: 1,
+      price: Number.isFinite(priceValue) ? priceValue : 0,
+      source: "lab",
     });
     onAddToCart(item);
     const recommendationId = recommendationMap[item.id];

@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { Button, Card, SectionTitle } from "@/components/ui";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useCart } from "@/cart/cartStore";
 import { useBundleActions } from "@/cart/cartBundles";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
@@ -11,6 +13,7 @@ import { useTranslation } from "@/localization/locale";
 import { useCompare } from "@/compare/compareStore";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
+import { useSeo } from "@/seo/useSeo";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -34,10 +37,23 @@ type CompareColumn = {
 };
 
 export default function ComparePage() {
+  usePageAnalytics("compare");
+  useSeo({ route: "compare" });
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { listCompared, toggleCompare, clearCompare } = useCompare();
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
+  const recordProductAdd = (id: string, price: number, variantId?: string) => {
+    trackEvent({
+      type: "add_to_cart",
+      itemType: "product",
+      id,
+      quantity: 1,
+      price,
+      variantId,
+      source: "compare",
+    });
+  };
   const entries = listCompared();
   const { t } = useTranslation();
 
@@ -180,31 +196,37 @@ export default function ComparePage() {
                       variant="primary"
                       size="md"
                       onClick={() => {
-                        const detail = PRODUCT_DETAIL_MAP[column.detail!.productId];
-                        if (detail) {
-                          addItem(buildProductCartPayload(detail));
+                        const detailEntry = PRODUCT_DETAIL_MAP[column.detail.productId];
+                        if (detailEntry) {
+                          const payload = buildProductCartPayload(detailEntry);
+                          addItem(payload);
+                          recordProductAdd(detailEntry.productId, payload.price, payload.variantId);
                           return;
                         }
-                        addItem({
-                          productId: column.detail!.productId,
-                          id: column.detail!.productId,
-                          name: column.detail!.productName,
-                          price: column.detail!.priceNumber,
-                          imageUrl: column.detail!.heroImage,
-                        });
+                        const fallbackPayload = {
+                          productId: column.detail.productId,
+                          id: column.detail.productId,
+                          name: column.detail.productName,
+                          price: column.detail.priceNumber,
+                          imageUrl: column.detail.heroImage,
+                        };
+                        addItem(fallbackPayload);
+                        recordProductAdd(column.detail.productId, fallbackPayload.price);
                       }}
                     >
                       {t("cta.addToBag")}
                     </Button>
                   )}
                   {column.type === "bundle" && column.bundle && (
-                    <Button
-                      variant="primary"
-                      size="md"
-                      onClick={() => addBundleToCart(column.bundle)}
-                    >
-                      {t("cta.addRitualToBag")}
-                    </Button>
+                    <>
+                      <Button
+                        variant="primary"
+                        size="md"
+                        onClick={() => addBundleToCart(column.bundle)}
+                      >
+                        {t("cta.addRitualToBag")}
+                      </Button>
+                    </>
                   )}
                   <Button
                     variant="ghost"

@@ -7,6 +7,8 @@ import type { LocalOrder } from "@/types/localOrder";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
 import { formatVariantMeta } from "@/utils/variantDisplay";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { useSeo } from "@/seo/useSeo";
 
 const navigateToPath = (path: string) => {
   const base = import.meta.env.BASE_URL ?? "/";
@@ -34,6 +36,8 @@ const formatItemLabel = (item: LocalOrder["items"][number], t: ReturnType<typeof
 };
 
 export default function OrdersHistoryPage() {
+  usePageAnalytics("orders_history");
+  useSeo({ route: "orders_history" });
   const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const orders = useMemo(() => readOrders(), []);

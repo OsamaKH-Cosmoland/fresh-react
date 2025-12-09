@@ -5,6 +5,8 @@ import { BundleCard } from "@/components/bundles/BundleCard";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
 import { Button, Card, SectionTitle } from "@/components/ui";
+import { trackEvent } from "@/analytics/events";
+import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useCart } from "@/cart/cartStore";
 import { useBundleActions } from "@/cart/cartBundles";
 import {
@@ -23,6 +25,7 @@ import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { getReviewStats } from "@/utils/reviewStorage";
 import { RatingBadge } from "@/components/reviews/RatingBadge";
 import { useTranslation } from "@/localization/locale";
+import { useSeo } from "@/seo/useSeo";
 import { useFavorites } from "@/favorites/favoritesStore";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
@@ -50,6 +53,8 @@ const getProductUrl = (slug: string) => {
 };
 
 export default function ShopPage() {
+  useSeo({ route: "shop" });
+  usePageAnalytics("shop");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [focusFilter, setFocusFilter] = useState<FocusTagId[]>([]);
   const [typeFilter, setTypeFilter] = useState<ShopTypeFilter>("all");
@@ -182,7 +187,17 @@ export default function ShopPage() {
   };
 
   const handleAddProduct = (product: ShopCatalogProductEntry["item"]) => {
-    addItem(buildProductCartPayload(product));
+    const payload = buildProductCartPayload(product);
+    addItem(payload);
+    trackEvent({
+      type: "add_to_cart",
+      itemType: "product",
+      id: product.productId,
+      quantity: 1,
+      price: payload.price,
+      variantId: payload.variantId,
+      source: "shop",
+    });
   };
 
   return (
@@ -429,6 +444,7 @@ export default function ShopPage() {
                       </div>
                       <BundleCard
                         bundle={entry.item}
+                        viewSource="shop"
                         heroImage={heroImage}
                         onAddBundle={(bundleItem, variantSelection) =>
                           addBundleToCart(bundleItem, variantSelection)

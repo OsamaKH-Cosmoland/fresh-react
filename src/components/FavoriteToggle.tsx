@@ -1,3 +1,4 @@
+import { trackEvent } from "@/analytics/events";
 import { useFavorites, type FavoriteType } from "@/favorites/favoritesStore";
 import { useTranslation } from "@/localization/locale";
 
@@ -38,7 +39,14 @@ export function FavoriteToggle({ id, type, className = "", itemLabel }: Favorite
       className={`favorite-toggle ${active ? "is-active" : ""} ${className}`.trim()}
       onClick={(event) => {
         event.stopPropagation();
+        const nextFavorite = !active;
         toggleFavorite({ id, type });
+        trackEvent({
+          type: "toggle_favorite",
+          id,
+          itemType: type,
+          isFavorite: nextFavorite,
+        });
       }}
     >
       <span aria-hidden="true">{active ? "♥" : "♡"}</span>
