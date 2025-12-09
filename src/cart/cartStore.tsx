@@ -1,5 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 import type { ReactNode } from "react";
+import { PROMO_CODES } from "@/discounts/promoCodes";
+import {
+  evaluatePromoForCart,
+  type AppliedPromo,
+  type ApplyPromoResult,
+} from "@/discounts/discountEngine";
 
 const STORAGE_KEY = "naturagloss_cart";
 const SAVED_CART_KEY = "naturagloss_saved_carts";
@@ -45,6 +51,12 @@ export interface CartItem {
   };
 }
 
+interface StoredCartPayload {
+  items: CartItem[];
+  activePromoCode?: string | null;
+  appliedPromo?: AppliedPromo | null;
+}
+
 export interface SavedCart {
   id: string;
   name: string;
@@ -58,16 +70,28 @@ type CartState = {
   updatedAt: number;
   savedCarts: SavedCart[];
   activeSavedCartId: string | null;
+  activePromoCode: string | null;
+  appliedPromo: AppliedPromo | null;
 };
 
 type CartAction =
-  | { type: "hydrate"; payload: { items: CartItem[]; savedCarts: SavedCart[]; activeSavedCartId: string | null } }
+  | {
+      type: "hydrate";
+      payload: {
+        items: CartItem[];
+        savedCarts: SavedCart[];
+        activeSavedCartId: string | null;
+        activePromoCode?: string | null;
+        appliedPromo?: AppliedPromo | null;
+      };
+    }
   | { type: "add"; payload: CartItem }
   | { type: "update"; payload: { id: string; quantity: number } }
   | { type: "remove"; payload: { id: string } }
   | { type: "clear" }
   | { type: "set-saved"; payload: SavedCart[] }
-  | { type: "load-saved"; payload: { items: CartItem[]; activeSavedCartId: string | null } };
+  | { type: "load-saved"; payload: { items: CartItem[]; activeSavedCartId: string | null } }
+  | { type: "set-promo"; payload: { activePromoCode: string | null; appliedPromo: AppliedPromo | null } };
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
@@ -76,6 +100,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         items: action.payload.items,
         savedCarts: action.payload.savedCarts,
         activeSavedCartId: action.payload.activeSavedCartId,
+        activePromoCode: action.payload.activePromoCode ?? null,
+        appliedPromo: action.payload.appliedPromo ?? null,
         updatedAt: Date.now(),
       };
     case "add": {
@@ -92,6 +118,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         items: updatedItems,
         savedCarts: state.savedCarts,
         activeSavedCartId: null,
+        activePromoCode: null,
+        appliedPromo: null,
         updatedAt: Date.now(),
       };
     }
@@ -101,6 +129,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           items: state.items.filter((item) => item.id !== action.payload.id),
           savedCarts: state.savedCarts,
           activeSavedCartId: null,
+          activePromoCode: null,
+          appliedPromo: null,
           updatedAt: Date.now(),
         };
       }
@@ -112,6 +142,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ),
         savedCarts: state.savedCarts,
         activeSavedCartId: null,
+        activePromoCode: null,
+        appliedPromo: null,
         updatedAt: Date.now(),
       };
     }
@@ -120,6 +152,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         items: state.items.filter((item) => item.id !== action.payload.id),
         savedCarts: state.savedCarts,
         activeSavedCartId: null,
+        activePromoCode: null,
+        appliedPromo: null,
         updatedAt: Date.now(),
       };
     case "clear":
@@ -127,6 +161,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         items: [],
         savedCarts: state.savedCarts,
         activeSavedCartId: null,
+        activePromoCode: null,
+        appliedPromo: null,
         updatedAt: Date.now(),
       };
     case "set-saved":
@@ -140,6 +176,15 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ...state,
         items: action.payload.items,
         activeSavedCartId: action.payload.activeSavedCartId,
+        activePromoCode: null,
+        appliedPromo: null,
+        updatedAt: Date.now(),
+      };
+    case "set-promo":
+      return {
+        ...state,
+        activePromoCode: action.payload.activePromoCode,
+        appliedPromo: action.payload.appliedPromo,
         updatedAt: Date.now(),
       };
     default:
@@ -153,6 +198,9 @@ interface CartContextValue {
   subtotal: number;
   savedCarts: SavedCart[];
   activeSavedCartId: string | null;
+  activePromoCode: string | null;
+  appliedPromo: AppliedPromo | null;
+  discountTotal: number;
   addItem: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => void;
   updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
@@ -163,6 +211,8 @@ interface CartContextValue {
   saveCustomCart: (name: string, items: CartItem[]) => boolean;
   deleteSavedCart: (id: string) => boolean;
   renameSavedCart: (id: string, newName: string) => boolean;
+  applyPromoCode: (code: string, shippingCost?: number) => ApplyPromoResult;
+  clearPromoCode: () => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -189,25 +239,64 @@ function readSavedCarts(): SavedCart[] {
   return [];
 }
 
-function readStoredCart() {
-  if (typeof window === "undefined") return [];
+function sanitizeCartItems(items: CartItem[]): CartItem[] {
+  return items.map((item) => ({
+    ...item,
+    quantity: typeof item.quantity === "number" && item.quantity > 0 ? item.quantity : 1,
+  }));
+}
+
+function readStoredCartPayload(): StoredCartPayload {
+  if (typeof window === "undefined") return { items: [] };
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const data = JSON.parse(stored);
-      if (Array.isArray(data)) return data;
+    if (!stored) return { items: [] };
+    const parsed = JSON.parse(stored);
+    if (Array.isArray(parsed)) {
+      return { items: sanitizeCartItems(parsed) };
+    }
+    if (parsed && typeof parsed === "object" && Array.isArray(parsed.items)) {
+      return {
+        items: sanitizeCartItems(parsed.items),
+        activePromoCode: parsed.activePromoCode ?? null,
+        appliedPromo: parsed.appliedPromo ?? null,
+      };
     }
   } catch (error) {
     console.error("Failed to read saved cart:", error);
   }
-  return [];
+  return { items: [] };
+}
+
+function rehydrateStoredPromo(payload: StoredCartPayload): {
+  activePromoCode: string | null;
+  appliedPromo: AppliedPromo | null;
+} {
+  const candidate = payload.activePromoCode?.trim().toUpperCase();
+  if (!candidate) {
+    return { activePromoCode: null, appliedPromo: null };
+  }
+  const promo = PROMO_CODES.find((entry) => entry.code === candidate && entry.isActive);
+  if (!promo) {
+    return { activePromoCode: null, appliedPromo: null };
+  }
+  const subtotal = payload.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const evaluation = evaluatePromoForCart(promo, { items: payload.items, subtotal }, 0);
+  if (!evaluation) {
+    return { activePromoCode: null, appliedPromo: null };
+  }
+  return { activePromoCode: promo.code, appliedPromo: evaluation };
 }
 
 function createInitialState(): CartState {
+  const stored = readStoredCartPayload();
+  const promoState = rehydrateStoredPromo(stored);
   return {
-    items: readStoredCart(),
+    items: stored.items,
     savedCarts: readSavedCarts(),
     activeSavedCartId: null,
+    activePromoCode: promoState.activePromoCode,
+    appliedPromo: promoState.appliedPromo,
     updatedAt: Date.now(),
   };
 }
@@ -218,11 +307,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.items));
+      window.localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          items: state.items,
+          activePromoCode: state.activePromoCode,
+          appliedPromo: state.appliedPromo,
+        })
+      );
     } catch (error) {
       console.error("Failed to save cart:", error);
     }
-  }, [state.items]);
+  }, [state.items, state.activePromoCode, state.appliedPromo]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -242,6 +338,32 @@ export function CartProvider({ children }: { children: ReactNode }) {
     () => state.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [state.items]
   );
+  const discountTotal = state.appliedPromo?.discountAmount ?? 0;
+  const applyPromoCode = (code: string, shippingCost = 0): ApplyPromoResult => {
+    const normalized = code.trim().toUpperCase();
+    if (!normalized) {
+      return { status: "invalid" };
+    }
+    const promo = PROMO_CODES.find((entry) => entry.code === normalized);
+    if (!promo || !promo.isActive) {
+      return { status: "invalid" };
+    }
+    const evaluation = evaluatePromoForCart(promo, { items: state.items, subtotal }, shippingCost);
+    if (!evaluation) {
+      return { status: "not_applicable" };
+    }
+    dispatch({
+      type: "set-promo",
+      payload: { activePromoCode: promo.code, appliedPromo: evaluation },
+    });
+    return { status: "applied", applied: evaluation };
+  };
+  const clearPromoCode = () => {
+    if (!state.activePromoCode && !state.appliedPromo) {
+      return;
+    }
+    dispatch({ type: "set-promo", payload: { activePromoCode: null, appliedPromo: null } });
+  };
 
   const addItem = (item: Omit<CartItem, "quantity"> & { quantity?: number }) => {
     dispatch({
@@ -265,7 +387,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const setCart = (items: CartItem[]) => {
     dispatch({
       type: "hydrate",
-      payload: { items, savedCarts: state.savedCarts, activeSavedCartId: null },
+      payload: {
+        items,
+        savedCarts: state.savedCarts,
+        activeSavedCartId: null,
+        activePromoCode: null,
+        appliedPromo: null,
+      },
     });
   };
 
@@ -350,6 +478,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     subtotal,
     savedCarts: state.savedCarts,
     activeSavedCartId: state.activeSavedCartId,
+    activePromoCode: state.activePromoCode,
+    appliedPromo: state.appliedPromo,
+    discountTotal,
     addItem,
     updateQuantity,
     removeItem,
@@ -360,6 +491,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     saveCustomCart,
     deleteSavedCart,
     renameSavedCart,
+    applyPromoCode,
+    clearPromoCode,
   };
 
   return (

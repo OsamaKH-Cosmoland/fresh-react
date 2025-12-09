@@ -17,6 +17,7 @@ import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
+import PromoCodePanel from "@/components/promo/PromoCodePanel";
 
 const SHIPPING_OPTIONS = [
   { id: "standard", cost: 45 },
@@ -55,7 +56,7 @@ export default function CheckoutPage() {
   usePageAnalytics("checkout");
   useSeo({ route: "checkout" });
   const { t } = useTranslation();
-  const { cartItems, subtotal, clearCart } = useCart();
+  const { cartItems, subtotal, discountTotal, appliedPromo, clearCart } = useCart();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [contactInfo, setContactInfo] = useState(EMPTY_CONTACT);
@@ -80,7 +81,9 @@ export default function CheckoutPage() {
     };
   }, [selectedShippingId, t]);
   const shippingCost = shippingMethod?.cost ?? 0;
-  const total = subtotal + shippingCost;
+  const finalShippingCost = appliedPromo?.freeShipping ? 0 : shippingCost;
+  const discountedSubtotal = Math.max(subtotal - discountTotal, 0);
+  const total = discountedSubtotal + finalShippingCost;
 
   const handleContactChange = (field: keyof typeof contactInfo, value: string) => {
     setContactInfo((prev) => ({ ...prev, [field]: value }));
@@ -176,10 +179,12 @@ export default function CheckoutPage() {
       items: cartItems.map((item) => ({ ...item })),
       totals: {
         subtotal: Number(subtotal.toFixed(2)),
-        shippingCost,
+        discountTotal: Number(discountTotal.toFixed(2)),
+        shippingCost: Number(finalShippingCost.toFixed(2)),
         total: Number(total.toFixed(2)),
         currency: "EGP",
       },
+      promoCode: appliedPromo?.code ?? undefined,
       customer: {
         name: contactInfo.fullName.trim(),
         email: contactInfo.email.trim(),
@@ -529,6 +534,9 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
               <section className="checkout-card">
                 <h3>{t("checkout.sections.review")}</h3>
                 <p>{t("checkout.sections.reviewHelp")}</p>
+                <div className="checkout-card__promo">
+                  <PromoCodePanel shippingCost={shippingCost} />
+                </div>
                 <div className="checkout-review">
                   <div className="checkout-review__items">
                     {cartItems.map((item) => (
@@ -597,14 +605,30 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                       <span>{t("checkout.review.labels.subtotal")}</span>
                       <strong>{formatCurrency(subtotal)}</strong>
                     </div>
+                    {discountTotal > 0 && (
+                      <div>
+                        <span>{t("checkout.review.labels.discount")}</span>
+                        <strong>-{formatCurrency(discountTotal)}</strong>
+                      </div>
+                    )}
                     <div>
                       <span>{t("checkout.review.labels.shipping")}</span>
-                      <strong>{formatCurrency(shippingCost)}</strong>
+                      <strong>
+                        {appliedPromo?.freeShipping
+                          ? t("cart.promo.freeShipping")
+                          : formatCurrency(finalShippingCost)}
+                      </strong>
                     </div>
                     <div>
                       <span>{t("checkout.review.labels.total")}</span>
                       <strong>{formatCurrency(total)}</strong>
                     </div>
+                    {appliedPromo?.code && (
+                      <div className="checkout-review__promo-code">
+                        <span>{t("checkout.review.labels.promoCode")}</span>
+                        <p>{appliedPromo.code}</p>
+                      </div>
+                    )}
                     <div className="checkout-review__method">
                       <span>{t("checkout.review.labels.shippingMethod")}</span>
                       <p>{t(`checkout.shippingOptions.${shippingMethod.id}.label` as AppTranslationKey)}</p>

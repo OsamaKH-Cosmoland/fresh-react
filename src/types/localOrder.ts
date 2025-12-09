@@ -4,6 +4,7 @@ export type PaymentStatus = "paid" | "simulated";
 
 export interface OrderTotals {
   subtotal: number;
+  discountTotal: number;
   shippingCost: number;
   total: number;
   currency: string;
@@ -41,6 +42,7 @@ export interface LocalOrder {
   createdAt: string;
   items: CartItem[];
   totals: OrderTotals;
+  promoCode?: string;
   customer: CustomerContact;
   shippingAddress: ShippingAddress;
   shippingMethod: ShippingMethod;

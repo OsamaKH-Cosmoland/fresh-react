@@ -7,6 +7,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
 import { trackEvent } from "@/analytics/events";
 import { formatVariantMeta } from "@/utils/variantDisplay";
+import PromoCodePanel from "@/components/promo/PromoCodePanel";
 
 interface CartDrawerProps {
   open: boolean;
@@ -18,6 +19,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     cartItems,
     subtotal,
     totalQuantity,
+    discountTotal,
     updateQuantity,
     removeItem,
     savedCarts,
@@ -288,6 +290,12 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             )}
           </div>
 
+          {cartItems.length > 0 && (
+            <div className="cart-drawer__promo">
+              <PromoCodePanel />
+            </div>
+          )}
+
           <section className="cart-drawer__saved" data-animate="fade-in">
             <div className="cart-drawer__saved-header">
           <h3>Saved routines</h3>
@@ -346,9 +354,21 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
           </section>
 
           <footer className="cart-drawer__footer" data-animate="fade-in">
-            <div className="cart-drawer__subtotal">
-              <span>Subtotal</span>
-              <strong>{subtotal.toFixed(2)} EGP</strong>
+            <div className="cart-drawer__totals">
+              <div className="cart-drawer__totals-row">
+                <span>{t("cart.summary.subtotal")}</span>
+                <strong>{formatCurrency(subtotal)}</strong>
+              </div>
+              {discountTotal > 0 && (
+                <div className="cart-drawer__totals-row">
+                  <span>{t("cart.summary.discount")}</span>
+                  <strong>-{formatCurrency(discountTotal)}</strong>
+                </div>
+              )}
+              <div className="cart-drawer__totals-row cart-drawer__totals-row--highlight">
+                <span>{t("cart.summary.total")}</span>
+                <strong>{formatCurrency(Math.max(subtotal - discountTotal, 0))}</strong>
+              </div>
             </div>
             <Button
               variant="primary"

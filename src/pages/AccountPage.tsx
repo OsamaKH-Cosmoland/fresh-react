@@ -286,36 +286,48 @@ export default function AccountPage() {
               </Button>
             </div>
             {expandedOrderId === order.id && (
-              <div className="account-order-card__details">
-                <div>
-                  <strong>{t("ordersHistory.detail.shippingMethod")}</strong>
-                  <p>{order.shippingMethod.label}</p>
-                  <p className="orders-history-card__eta">{order.shippingMethod.eta}</p>
-                </div>
-                <div>
-                  <strong>{t("ordersHistory.detail.address")}</strong>
-                  <p>{order.shippingAddress.street}</p>
-                  <p>
-                    {order.shippingAddress.city} · {order.shippingAddress.country}
-                  </p>
-                  {order.shippingAddress.postalCode && (
-                    <p>{order.shippingAddress.postalCode}</p>
+                <div className="account-order-card__details">
+                  <div>
+                    <strong>{t("ordersHistory.detail.shippingMethod")}</strong>
+                    <p>{order.shippingMethod.label}</p>
+                    <p className="orders-history-card__eta">{order.shippingMethod.eta}</p>
+                  </div>
+                  <div>
+                    <strong>{t("ordersHistory.detail.address")}</strong>
+                    <p>{order.shippingAddress.street}</p>
+                    <p>
+                      {order.shippingAddress.city} · {order.shippingAddress.country}
+                    </p>
+                    {order.shippingAddress.postalCode && (
+                      <p>{order.shippingAddress.postalCode}</p>
+                    )}
+                  </div>
+                  <div>
+                    <strong>{t("ordersHistory.detail.payment")}</strong>
+                    <p>{order.paymentSummary.methodLabel}</p>
+                    {order.paymentSummary.last4 && (
+                      <small>
+                        {t("ordersHistory.detail.last4", {
+                          last4: order.paymentSummary.last4,
+                        })}
+                      </small>
+                    )}
+                  </div>
+                  {order.totals.discountTotal > 0 && (
+                    <div>
+                      <strong>{t("ordersHistory.detail.discount")}</strong>
+                      <p>{formatCurrency(order.totals.discountTotal)}</p>
+                    </div>
                   )}
-                </div>
-                <div>
-                  <strong>{t("ordersHistory.detail.payment")}</strong>
-                  <p>{order.paymentSummary.methodLabel}</p>
-                  {order.paymentSummary.last4 && (
-                    <small>
-                      {t("ordersHistory.detail.last4", {
-                        last4: order.paymentSummary.last4,
-                      })}
-                    </small>
+                  {order.promoCode && (
+                    <div>
+                      <strong>{t("ordersHistory.detail.promoCode")}</strong>
+                      <p>{order.promoCode}</p>
+                    </div>
                   )}
-                </div>
-                <div>
-                  <strong>{t("ordersHistory.detail.items")}</strong>
-                  <ul className="orders-history-card__item-list">
+                  <div>
+                    <strong>{t("ordersHistory.detail.items")}</strong>
+                    <ul className="orders-history-card__item-list">
                     {order.items.map((item) => {
                       const itemVariant = formatVariantMeta(
                         item.variantLabel,

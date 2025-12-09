@@ -22,10 +22,12 @@ export async function submitOrderToApi(order: LocalOrder) {
       items: formatItems(order.items),
       totals: {
         subtotal: order.totals.subtotal,
+        discount: order.totals.discountTotal,
         shipping: order.totals.shippingCost,
         grandTotal: order.totals.total,
         currency: order.totals.currency,
       },
+      promoCode: order.promoCode,
       paymentMethod: "card",
       shippingMethod: order.shippingMethod?.label,
       shippingAddress: {

@@ -8,6 +8,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
 import { trackEvent } from "@/analytics/events";
 import { formatVariantMeta } from "@/utils/variantDisplay";
+import PromoCodePanel from "@/components/promo/PromoCodePanel";
 
 const parsePrice = (price: string | number) => {
   const number = parseFloat(String(price).replace(/[^\d.]/g, ""));
@@ -16,7 +17,15 @@ const parsePrice = (price: string | number) => {
 
 export default function CartPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { cartItems, totalQuantity, subtotal, updateQuantity, removeItem, clearCart } = useCart();
+  const {
+    cartItems,
+    totalQuantity,
+    subtotal,
+    discountTotal,
+    updateQuantity,
+    removeItem,
+    clearCart,
+  } = useCart();
   const { t } = useTranslation();
   const totalItems = totalQuantity ?? cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -255,15 +264,28 @@ export default function CartPage() {
             </div>
 
             <aside className="cart-summary-panel">
-              <h2>Order Summary</h2>
+              <h2>{t("cart.summary.title")}</h2>
+              <div className="cart-summary-panel__promo">
+                <PromoCodePanel />
+              </div>
               <dl>
                 <div>
-                  <dt>Items</dt>
+                  <dt>{t("cart.summary.items")}</dt>
                   <dd>{totalItems}</dd>
                 </div>
                 <div>
-                  <dt>Subtotal</dt>
-                  <dd>{subtotal.toFixed(2)} EGP</dd>
+                  <dt>{t("cart.summary.subtotal")}</dt>
+                  <dd>{formatCurrency(subtotal)}</dd>
+                </div>
+                {discountTotal > 0 && (
+                  <div>
+                    <dt>{t("cart.summary.discount")}</dt>
+                    <dd>-{formatCurrency(discountTotal)}</dd>
+                  </div>
+                )}
+                <div className="cart-summary-panel__total-row">
+                  <dt>{t("cart.summary.total")}</dt>
+                  <dd>{formatCurrency(Math.max(subtotal - discountTotal, 0))}</dd>
                 </div>
               </dl>
               <p className="cart-summary-note">

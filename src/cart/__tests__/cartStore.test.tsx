@@ -19,6 +19,8 @@ const baseState: CartState = {
   items: [],
   savedCarts: [],
   activeSavedCartId: null,
+  activePromoCode: null,
+  appliedPromo: null,
   updatedAt: 0,
 };
 
