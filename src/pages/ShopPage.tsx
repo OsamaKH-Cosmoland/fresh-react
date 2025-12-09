@@ -28,6 +28,7 @@ import { useTranslation } from "@/localization/locale";
 import { useSeo } from "@/seo/useSeo";
 import { useFavorites } from "@/favorites/favoritesStore";
 import { useRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import NewsletterSignup from "@/components/NewsletterSignup";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { readOrders } from "@/utils/orderStorage";
 import { listReviews } from "@/utils/reviewStorage";
@@ -469,6 +470,9 @@ export default function ShopPage() {
           </Button>
             </div>
           )}
+        </section>
+        <section className="shop-newsletter ng-mobile-shell" data-animate="fade-up">
+          <NewsletterSignup variant="footer" />
         </section>
       </main>
     </div>

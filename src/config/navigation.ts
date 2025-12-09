@@ -27,6 +27,7 @@ export const exploreNav: NavItem[] = [
   { id: "compare", labelKey: "nav.compare", href: "/compare" },
   { id: "orders", labelKey: "nav.orders", href: "/orders-history" },
   { id: "account", labelKey: "nav.account", href: "/account" },
+  { id: "audience", labelKey: "nav.audience", href: "/audience" },
 ];
 
 export const mobileMenuGroups: NavGroup[] = [

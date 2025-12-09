@@ -6,7 +6,7 @@ import { useCart } from "@/cart/cartStore";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { addOrder } from "@/utils/orderStorage";
 import type { LocalOrder, ShippingMethod } from "@/types/localOrder";
-import { useTranslation, type AppTranslationKey } from "@/localization/locale";
+import { useLocale, useTranslation, type AppTranslationKey } from "@/localization/locale";
 import { formatVariantMeta } from "@/utils/variantDisplay";
 import {
   buildNotificationItems,
@@ -17,6 +17,7 @@ import { useNetworkStatus } from "@/hooks/useNetworkStatus";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
+import { upsertAudienceContact } from "@/utils/audienceStorage";
 import PromoCodePanel from "@/components/promo/PromoCodePanel";
 
 const SHIPPING_OPTIONS = [
@@ -55,6 +56,7 @@ const EMPTY_CONTACT = {
 export default function CheckoutPage() {
   usePageAnalytics("checkout");
   useSeo({ route: "checkout" });
+  const { locale } = useLocale();
   const { t } = useTranslation();
   const { cartItems, subtotal, discountTotal, appliedPromo, clearCart } = useCart();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -66,6 +68,7 @@ export default function CheckoutPage() {
   const [cardData, setCardData] = useState({ number: "", expiry: "", cvc: "" });
   const [orderPlaced, setOrderPlaced] = useState<LocalOrder | null>(null);
   const { isOnline } = useNetworkStatus();
+  const [keepUpdated, setKeepUpdated] = useState(false);
 
   const hasCartItems = cartItems.length > 0;
   const shippingMethod = useMemo<ShippingMethod>(() => {
@@ -232,6 +235,21 @@ export default function CheckoutPage() {
         shippingAddress: `${order.shippingAddress.street}, ${order.shippingAddress.city}`,
       });
     }
+    if (order.customer.email && keepUpdated) {
+      try {
+        upsertAudienceContact({
+          email: order.customer.email,
+          locale,
+          consentsToAdd: [
+            { channel: "product_updates", source: "checkout" },
+            { channel: "offers", source: "checkout" },
+          ],
+          lastOrderAt: order.createdAt,
+        });
+      } catch (error) {
+        console.warn("Unable to capture audience contact from checkout", error);
+      }
+    }
   };
 
   const navigateToAppPath = (path: string) => {
@@ -385,12 +403,22 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                   {renderContactField("email", "checkout.fields.email", true)}
                   {renderContactField("phone", "checkout.fields.phone")}
                   {renderContactField("country", "checkout.fields.country")}
-                  {renderContactField("city", "checkout.fields.city", true)}
-                  {renderContactField("street", "checkout.fields.street", true)}
-                  {renderContactField("postalCode", "checkout.fields.postalCode")}
-                </div>
-              </section>
-            )}
+                {renderContactField("city", "checkout.fields.city", true)}
+                {renderContactField("street", "checkout.fields.street", true)}
+                {renderContactField("postalCode", "checkout.fields.postalCode")}
+              </div>
+              <div className="checkout-field checkout-field--full">
+                <label className="checkout-consent">
+                  <input
+                    type="checkbox"
+                    checked={keepUpdated}
+                    onChange={(event) => setKeepUpdated(event.target.checked)}
+                  />
+                  <span>{t("checkout.newsletterConsent")}</span>
+                </label>
+              </div>
+            </section>
+          )}
 
             {currentStep === 1 && (
               <section className="checkout-card">

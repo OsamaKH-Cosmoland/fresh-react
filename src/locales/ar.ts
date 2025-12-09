@@ -12,6 +12,7 @@ export const ar = {
     viewCart: "عرض السلة",
     orders: "الطلبات",
     account: "الحساب",
+    audience: "الجمهور (المالك)",
     explore: "استكشف",
     ritualProfile: "ملف روتينك",
     ritualCoach: "مدرب الروتين",
@@ -43,6 +44,7 @@ export const ar = {
       stories: "قصص الروتين",
       storyDetail: "قصة الروتين",
       product: "المنتج",
+      audience: "الجمهور",
     },
     descriptions: {
       home: "تخلق NaturaGloss طقوساً مدروسة للعناية بالجسم والشعر، مرتكزة على النباتات والخطوات الحسية.",
@@ -60,6 +62,7 @@ export const ar = {
       orders: "استعرض طلباتك السابقة ومعلومات الشحن والمجموع بكل وضوح.",
       search: "ابحث في كل المنتجات، الدلائل، والروتينات عما يحتاجه روتينك الآن.",
       onboarding: "أنشئ ملف روتينك مع التركيز، التوقيت، الرائحة، والميزانية.",
+      audience: "راجع جهات الاتصال والموافقات وسجل الطلبات للاستخدام الداخلي.",
     },
   },
   accessibility: {
@@ -369,6 +372,19 @@ export const ar = {
         finder: "افتح موجه الروتين",
       },
     },
+    newsletter: {
+      heading: "حافظ على تواصل الروتين",
+      body: "شارك بريدًا إلكترونيًا لنرسل تحديثات ونصائح مبنية على ملفك.",
+      emailLabel: "البريد الإلكتروني (اختياري)",
+      emailPlaceholder: "you@naturagloss.com",
+      consentLabel: "أود النصائح والاقتراحات حسب ملفي.",
+      helper: "أكمل الملف لنُسجل ملاحظات الروتين.",
+      success: "شكراً—تم حفظ تحديثات ملفك.",
+      errors: {
+        invalidEmail: "استخدم بريداً إلكترونياً صالحاً.",
+        general: "حدث خطأ أثناء حفظ بريدك.",
+      },
+    },
     personalization: {
       title: "ملف روتينك",
       description: "نبرز الروتينات التي تتوافق مع تركيزك وتوقيتك.",
@@ -418,6 +434,7 @@ export const ar = {
       review: "راجع الطلب",
       reviewHelp: "تأكد من المجموعات، الرسوم والعنوان قبل الحجز.",
     },
+    newsletterConsent: "أبقني مطلعاً على الطقوس والعروض الجديدة.",
     fields: {
       fullName: "الاسم الكامل",
       email: "البريد الإلكتروني",
@@ -622,6 +639,65 @@ export const ar = {
       heading: "تقييماتي",
       empty: "لم تشارك بعد تجربة روتينية.",
       verifiedLabel: "روتين موثق",
+    },
+  },
+  newsletter: {
+    heading: "تابعنا في تدوينتك الروتينية",
+    subtitle: "احصل على تحديثات هادئة وروتينات وعروض مصممة لروحك.",
+    helper: "نشارك فقط ملاحظات هادئة عن الطقوس والعروض.",
+    form: {
+      emailLabel: "البريد الإلكتروني",
+      emailPlaceholder: "you@naturagloss.com",
+      consentLabel: "أخبرني بالنصائح والعروض",
+      submit: "انضم للقائمة",
+    },
+    success: "تمت الإضافة — ستصلك نغمات روتينية هادئة قريباً.",
+    errors: {
+      invalidEmail: "يرجى إدخال بريد إلكتروني صالح.",
+      general: "تعذر الحفظ الآن. أعد المحاولة لاحقاً.",
+    },
+  },
+  audience: {
+    hero: {
+      title: "الجمهور",
+      subtitle: "جهات الاتصال، الموافقات، وسياق الطلبات لعرض داخلي.",
+    },
+    filters: {
+      channel: "قناة الموافقة",
+      allChannels: "كل القنوات",
+      orders: {
+        label: "نشاط الطلب",
+        all: "كل الجهات",
+        withOrders: "له طلبات",
+        withoutOrders: "لم يطلب بعد",
+      },
+    },
+    actions: {
+      exportJson: "تصدير JSON",
+      exportCsv: "تصدير CSV",
+    },
+    table: {
+      email: "البريد الإلكتروني",
+      locale: "اللغة",
+      concerns: "الاهتمامات",
+      orders: "الطلبات",
+      lastOrder: "آخر طلب",
+      consents: "الموافقات",
+      created: "أنشئ في",
+      updated: "آخر تحديث",
+    },
+    emptyState: "لا توجد جهات اتصال محفوظة حتى الآن.",
+    consentChannels: {
+      newsletter: "النشرة الإخبارية",
+      productUpdates: "تحديثات المنتجات",
+      offers: "عروض وترويجات",
+      research: "أبحاث",
+    },
+    sources: {
+      newsletter_form: "نموذج النشرة",
+      checkout: "الشراء",
+      onboarding: "إنشاء الملف",
+      account: "الحساب",
     },
   },
   mobile: {

@@ -7,6 +7,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import RitualStoriesListPage from "./pages/RitualStoriesListPage";
 import RitualStoryDetailPage from "./pages/RitualStoryDetailPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import AudiencePage from "./pages/AudiencePage";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 import type { Product } from "./types/product";
 import { RouteLoadingShell, DetailSkeleton } from "./components/skeletons/Skeletons";
@@ -116,6 +117,10 @@ const ROUTE_TITLE_MATCHERS: RouteTitleMatcher[] = [
   {
     key: "meta.titles.account",
     match: (path, view) => view === "account" || path === "/account",
+  },
+  {
+    key: "meta.titles.audience",
+    match: (path) => path === "/audience",
   },
   {
     key: "meta.titles.search",
@@ -325,6 +330,8 @@ export default function App() {
     routeContent = <AdminDashboard />;
   } else if (view === "orders" || path === "/orders") {
     routeContent = <OrdersAdmin />;
+  } else if (path === "/audience") {
+    routeContent = <AudiencePage />;
   } else if (view === "ritualplanner" || path === "/rituals") {
     routeContent = <RitualPlanner />;
   } else if (view === "ritualfinder" || path === "/ritual-finder") {

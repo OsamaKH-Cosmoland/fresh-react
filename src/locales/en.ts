@@ -12,6 +12,7 @@ export const en = {
     viewCart: "View cart",
     orders: "Orders",
     account: "Account",
+    audience: "Audience (owner)",
     explore: "Explore",
     ritualProfile: "Your routine profile",
     ritualCoach: "Routine Coach",
@@ -43,6 +44,7 @@ export const en = {
       stories: "Stories",
       storyDetail: "Story",
       product: "Product",
+      audience: "Audience",
     },
     descriptions: {
       home: "NaturaGloss crafts mindful body and hair rituals rooted in botanicals, ritual steps, and sensory calm.",
@@ -61,6 +63,7 @@ export const en = {
       orders: "Browse your past orders, shipment details, and totals with compassionate clarity.",
       search: "Search every product, guide, and routine to find what your ritual is missing today.",
       onboarding: "Create your ritual profile with focus, timing, scent, and budget preferences.",
+      audience: "Review captured contacts, consents, and commerce signals for internal use.",
     },
   },
   accessibility: {
@@ -369,6 +372,19 @@ export const en = {
         finder: "Open Routine Finder",
       },
     },
+    newsletter: {
+      heading: "Stay tuned for ritual guidance",
+      body: "Share an email so we can send gentle updates and suggestions tuned to your profile.",
+      emailLabel: "Email (optional)",
+      emailPlaceholder: "you@naturagloss.com",
+      consentLabel: "I’d like ritual tips and product suggestions.",
+      helper: "Complete the profile to capture your ritual notes.",
+      success: "Thanks—your profile updates are saved.",
+      errors: {
+        invalidEmail: "Please use a valid email address.",
+        general: "Something went wrong capturing your email.",
+      },
+    },
     personalization: {
       title: "Your routine profile",
       description: "We highlight routines that match your focus and routines timing.",
@@ -418,6 +434,7 @@ export const en = {
       review: "Review & confirm",
       reviewHelp: "Check every bundle, shipping fee, and address before placing your order.",
     },
+    newsletterConsent: "Keep me updated about new rituals and offers.",
     fields: {
       fullName: "Full name",
       email: "Email",
@@ -623,6 +640,65 @@ export const en = {
       heading: "My reviews",
       empty: "You haven't shared a routine yet.",
       verifiedLabel: "Verified routine",
+    },
+  },
+  newsletter: {
+    heading: "Keep ritual notes coming",
+    subtitle: "Receive calm updates, rituals, and special offers designed for your pace.",
+    helper: "We send only gentle notes about rituals and offers.",
+    form: {
+      emailLabel: "Email address",
+      emailPlaceholder: "you@naturagloss.com",
+      consentLabel: "Send me tips & offers",
+      submit: "Join the list",
+    },
+    success: "You're in—expect gentle ritual notes soon.",
+    errors: {
+      invalidEmail: "Please provide a valid email.",
+      general: "We couldn't save that right now. Try again soon.",
+    },
+  },
+  audience: {
+    hero: {
+      title: "Audience",
+      subtitle: "Captured contacts, consents, and order context for internal review.",
+    },
+    filters: {
+      channel: "Consent channel",
+      allChannels: "All channels",
+      orders: {
+        label: "Order activity",
+        all: "All contacts",
+        withOrders: "Has orders",
+        withoutOrders: "No orders yet",
+      },
+    },
+    actions: {
+      exportJson: "Export JSON",
+      exportCsv: "Export CSV",
+    },
+    table: {
+      email: "Email",
+      locale: "Locale",
+      concerns: "Concerns",
+      orders: "Orders",
+      lastOrder: "Last order",
+      consents: "Consents",
+      created: "Created",
+      updated: "Updated",
+    },
+    emptyState: "No audience contacts captured yet.",
+    consentChannels: {
+      newsletter: "Newsletter",
+      productUpdates: "Product updates",
+      offers: "Offers & promos",
+      research: "Research",
+    },
+    sources: {
+      newsletter_form: "Newsletter form",
+      checkout: "Checkout",
+      onboarding: "Onboarding",
+      account: "Account",
     },
   },
   mobile: {

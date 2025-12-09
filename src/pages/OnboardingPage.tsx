@@ -11,10 +11,11 @@ import {
   type UserPreferences,
   useUserPreferences,
 } from "@/hooks/useUserPreferences";
-import { useTranslation } from "@/localization/locale";
+import { useLocale, useTranslation } from "@/localization/locale";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
+import { upsertAudienceContact } from "@/utils/audienceStorage";
 
 type StepId = "concerns" | "time" | "scent" | "budget";
 
@@ -38,11 +39,14 @@ const buildDraftFromSource = (source: UserPreferences | null): UserPreferences =
   concerns: source?.concerns ?? [],
 });
 
+const EMAIL_CAPTURE_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function OnboardingPage() {
   usePageAnalytics("onboarding");
   useSeo({ route: "onboarding" });
   const { preferences, savePreferences } = useUserPreferences();
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const flowRef = useRef<HTMLElement | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -50,6 +54,10 @@ export default function OnboardingPage() {
   const [stepIndex, setStepIndex] = useState(0);
   const [complete, setComplete] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [profileEmail, setProfileEmail] = useState("");
+  const [profileConsent, setProfileConsent] = useState(true);
+  const [profileMessage, setProfileMessage] = useState<string | null>(null);
+  const [profileCaptureError, setProfileCaptureError] = useState<string | null>(null);
 
   const stepDefinitions = useMemo<StepConfig[]>(() => {
     const concernsOptions: StepOption[] = [
@@ -204,8 +212,35 @@ export default function OnboardingPage() {
       scent: draft.scentPreference,
       budget: draft.budgetPreference,
     });
+
+    setProfileMessage(null);
+    setProfileCaptureError(null);
+
+    if (profileConsent && profileEmail.trim()) {
+      const normalizedEmail = profileEmail.trim().toLowerCase();
+      if (!EMAIL_CAPTURE_REGEX.test(normalizedEmail)) {
+        setProfileCaptureError(t("onboarding.newsletter.errors.invalidEmail"));
+      } else {
+        try {
+          upsertAudienceContact({
+            email: normalizedEmail,
+            locale,
+            concerns: draft.concerns,
+            timePreference: draft.timePreference,
+            scentPreference: draft.scentPreference,
+            budgetPreference: draft.budgetPreference,
+            consentsToAdd: [{ channel: "newsletter", source: "onboarding" }],
+          });
+          setProfileMessage(t("onboarding.newsletter.success"));
+        } catch (captureError) {
+          console.warn("Failed to save onboarding audience contact", captureError);
+          setProfileCaptureError(t("onboarding.newsletter.errors.general"));
+        }
+      }
+    }
+
     setComplete(true);
-  }, [draft, savePreferences]);
+  }, [draft, locale, profileConsent, profileEmail, savePreferences, t]);
 
   const handleNext = () => {
     if (!currentStep) return;
@@ -239,6 +274,8 @@ export default function OnboardingPage() {
   const handleRevisit = () => {
     setComplete(false);
     setStepIndex(0);
+    setProfileMessage(null);
+    setProfileCaptureError(null);
   };
 
   const navigateToPath = useCallback((path: string) => {
@@ -379,6 +416,41 @@ export default function OnboardingPage() {
               )}
             </article>
           )}
+          <article className="onboarding-newsletter" data-animate="fade-up">
+            <div className="onboarding-newsletter__header">
+              <h3>{t("onboarding.newsletter.heading")}</h3>
+              <p>{t("onboarding.newsletter.body")}</p>
+            </div>
+            <div className="onboarding-newsletter__form">
+              <label>
+                <span>{t("onboarding.newsletter.emailLabel")}</span>
+                <input
+                  type="email"
+                  value={profileEmail}
+                  onChange={(event) => setProfileEmail(event.target.value)}
+                  placeholder={t("onboarding.newsletter.emailPlaceholder")}
+                />
+              </label>
+              <label className="onboarding-newsletter__checkbox">
+                <input
+                  type="checkbox"
+                  checked={profileConsent}
+                  onChange={(event) => setProfileConsent(event.target.checked)}
+                />
+                <span>{t("onboarding.newsletter.consentLabel")}</span>
+              </label>
+            </div>
+            <p
+              className={`onboarding-newsletter__status ${
+                profileMessage ? "is-success" : profileCaptureError ? "is-error" : ""
+              }`}
+              aria-live="polite"
+            >
+              {profileMessage ||
+                profileCaptureError ||
+                t("onboarding.newsletter.helper")}
+            </p>
+          </article>
         </section>
       </main>
     </div>
