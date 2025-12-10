@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { clearEventBuffer, getEventBuffer, trackEvent } from "../events";
 
 describe("trackEvent", () => {
@@ -7,7 +6,7 @@ describe("trackEvent", () => {
   });
 
   it("logs a variety of events without throwing", () => {
-    const consoleSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+    const consoleSpy = jest.spyOn(console, "info").mockImplementation(() => {});
 
     trackEvent({ type: "view_product", productId: "p-1", source: "shop" });
     trackEvent({

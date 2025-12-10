@@ -1,14 +1,13 @@
-import { describe, expect, it, vi } from "vitest";
-
-vi.mock("@/utils/orderStorage", () => ({
-  readOrders: vi.fn(),
-}));
-
-import { readOrders } from "@/utils/orderStorage";
-import { isTargetVerifiedForAnyOrder } from "@/utils/reviewVerification";
+import { jest } from "@jest/globals";
 import type { LocalOrder } from "@/types/localOrder";
 
-const mockedReadOrders = vi.mocked(readOrders);
+const mockedReadOrders = jest.fn();
+
+await jest.unstable_mockModule("@/utils/orderStorage", () => ({
+  readOrders: mockedReadOrders,
+}));
+
+const { isTargetVerifiedForAnyOrder } = await import("@/utils/reviewVerification");
 
 const baseOrder = {
   id: "order-1",

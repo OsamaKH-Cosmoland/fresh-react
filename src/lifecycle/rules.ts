@@ -35,7 +35,7 @@ export const lifecycleRules: LifecycleRuleDefinition[] = [
     messageKey: "lifecycle.messages.subscriptionRefill",
     cooldownSeconds: DAY_MS / 1000,
     evaluate(context, referenceTime) {
-      if (!context.subscriptions.length) return null;
+      if (!context.hasSubscriptions) return null;
       for (const subscription of context.subscriptions) {
         if (!subscription.nextRefillAt) continue;
         const refillMs = new Date(subscription.nextRefillAt).getTime();
@@ -47,6 +47,7 @@ export const lifecycleRules: LifecycleRuleDefinition[] = [
           }).format(refillMs);
           return {
             subscriptionName: subscription.name,
+            subscriptionId: subscription.id,
             refillDate: refillDateLabel,
             daysUntilRefill: toDays(delta),
           };

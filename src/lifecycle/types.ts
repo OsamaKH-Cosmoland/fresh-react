@@ -60,6 +60,8 @@ export interface LifecycleContext {
     visitCount: number;
   };
   subscriptions: LifecycleSubscription[];
+  hasSubscriptions: boolean;
+  nextSubscriptionRefillAt: string | null;
   route: {
     path: string;
     view: string | null;

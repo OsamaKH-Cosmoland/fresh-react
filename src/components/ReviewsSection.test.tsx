@@ -1,22 +1,25 @@
 /// <reference types="@testing-library/jest-dom" />
-import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import ReviewsSection from "./ReviewsSection";
 
 const mockFetch = (data: unknown, ok = true) =>
-  vi.fn().mockResolvedValue({
+  jest.fn().mockResolvedValue({
     ok,
     status: ok ? 200 : 500,
     json: async () => data,
   });
 
 describe("ReviewsSection", () => {
+  let originalFetch: typeof global.fetch;
+
   beforeEach(() => {
-    vi.stubGlobal("fetch", mockFetch([]));
+    originalFetch = global.fetch;
+    global.fetch = mockFetch([]) as typeof global.fetch;
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
+    global.fetch = originalFetch;
+    jest.restoreAllMocks();
   });
 
   it("renders empty state when no reviews", async () => {

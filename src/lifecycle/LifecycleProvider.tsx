@@ -23,7 +23,11 @@ import {
   VISIT_UPDATE_EVENT,
   VisitSnapshot,
 } from "./visitTracker";
-import { SUBSCRIPTION_STORAGE_KEY, loadSubscriptions } from "./subscriptionStorage";
+import {
+  REFILL_PLAN_STORAGE_KEY,
+  getEarliestNextRefillAt,
+  listActivePlans,
+} from "@/subscriptions";
 import { evaluateLifecycle } from "./engine";
 import { loadLifecycleHistory, saveLifecycleHistory } from "./storage";
 import type { LifecycleContext, LifecycleHistory, LifecycleProviderValue } from "./types";
@@ -97,6 +101,8 @@ function buildLifecycleContext(params: {
   reviews: LocalReview[];
   visits: VisitSnapshot;
   subscriptions: LifecycleContext["subscriptions"];
+  hasSubscriptions: boolean;
+  nextSubscriptionRefillAt: string | null;
   route: LifecycleContext["route"];
   locale: string;
 }) {
@@ -151,6 +157,8 @@ function buildLifecycleContext(params: {
       visitCount: visits.visitCount,
     },
     subscriptions,
+    hasSubscriptions,
+    nextSubscriptionRefillAt,
     route,
     locale,
   };
@@ -218,13 +226,13 @@ export function LifecycleProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const [subscriptions, setSubscriptions] = useState(() => loadSubscriptions());
+  const [refillPlans, setRefillPlans] = useState(() => listActivePlans());
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const refreshSubscriptions = () => setSubscriptions(loadSubscriptions());
+    const refreshPlans = () => setRefillPlans(listActivePlans());
     const handleStorage = (event: StorageEvent) => {
-      if (event.key === SUBSCRIPTION_STORAGE_KEY) {
-        refreshSubscriptions();
+      if (event.key === REFILL_PLAN_STORAGE_KEY) {
+        refreshPlans();
       }
     };
     window.addEventListener("storage", handleStorage);
@@ -245,6 +253,17 @@ export function LifecycleProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const lifecycleSubscriptions = useMemo(
+    () =>
+      refillPlans.map((plan) => ({
+        id: plan.id,
+        name: plan.label?.trim() ? plan.label : plan.source,
+        nextRefillAt: plan.nextRefillAt,
+      })),
+    [refillPlans]
+  );
+  const hasSubscriptions = refillPlans.length > 0;
+  const nextSubscriptionRefillAt = getEarliestNextRefillAt(refillPlans);
   const savedRitualsCount = cart.savedCarts.length;
   const context = useMemo(
     () =>
@@ -266,7 +285,9 @@ export function LifecycleProvider({ children }: { children: ReactNode }) {
         orders,
         reviews,
         visits,
-        subscriptions,
+        subscriptions: lifecycleSubscriptions,
+        hasSubscriptions,
+        nextSubscriptionRefillAt,
         route,
         locale,
       }),
@@ -284,7 +305,9 @@ export function LifecycleProvider({ children }: { children: ReactNode }) {
       orders,
       reviews,
       visits,
-      subscriptions,
+      lifecycleSubscriptions,
+      hasSubscriptions,
+      nextSubscriptionRefillAt,
       route,
       locale,
     ]

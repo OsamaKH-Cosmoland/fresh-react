@@ -123,6 +123,43 @@ summary:focus-visible {
   }
 }
 
+.lifecycle-slot {
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(5, 16, 11, 0.85);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1rem;
+}
+.lifecycle-slot__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.lifecycle-slot__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.lifecycle-slot__message {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  max-width: 40ch;
+}
+.lifecycle-slot__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.lifecycle-slot__close {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
 @keyframes rise-in {
   from {
     opacity: 0;
@@ -7912,6 +7949,64 @@ button:hover {
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.75);
 }
+.checkout-confirmation__refill {
+  margin-top: 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 1rem;
+}
+.refill-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.refill-panel__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.refill-panel__title {
+  margin: 0;
+  font-weight: 600;
+}
+.refill-panel__description {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+}
+.refill-panel__frequency {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.refill-frequency-option {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.35rem 0.9rem;
+  background: transparent;
+  color: #fff;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.refill-frequency-option.is-active {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.refill-panel__actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.refill-panel__status {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.85rem;
+}
 
 @media (max-width: 800px) {
   .checkout-stepper {
@@ -8298,11 +8393,86 @@ button:hover {
   display: grid;
   gap: 0.5rem;
 }
+.account-saved-card__refill {
+  margin-top: 0.5rem;
+}
+.account-saved-card__refill-panel {
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.02);
+}
 .account-review-card__meta {
   display: flex;
   justify-content: space-between;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
+}
+.account-refill-header {
+  margin-bottom: 1rem;
+}
+.account-refill-header h3 {
+  margin: 0;
+}
+.account-refill-header p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+}
+.account-refill-grid {
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 800px) {
+  .account-refill-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+.account-refill-card {
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(4, 11, 7, 0.9);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.account-refill-card__header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+.account-refill-card__header input {
+  flex: 1;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.02);
+  color: #fff;
+  padding: 0.6rem 0.8rem;
+}
+.account-refill-card__status {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(249, 228, 168, 0.9);
+}
+.account-refill-card__meta {
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+.account-refill-card__frequency-select {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.9rem;
+}
+.account-refill-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 .account-placeholder {
   text-align: center;

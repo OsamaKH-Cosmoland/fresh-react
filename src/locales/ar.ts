@@ -129,6 +129,13 @@ export const ar = {
       loyaltyThreshold: "تبقى لك {pointsToNext} نقطة للرتبة التالية من الولاء.",
       inactiveSinceOrder: "مر {daysSinceLastOrder} يوماً منذ طلبك الأخير. دع روتينك ينعشك من جديد.",
     },
+    actions: {
+      refill: {
+        title: "تذكير تعبئة الروتين",
+        cta: "جهّز حقيبة الروتين",
+        dismiss: "أغلق التذكير",
+      },
+    },
   },
   offline: {
     status: "غير متصل",
@@ -149,6 +156,18 @@ export const ar = {
     newHere: "جديد هنا؟",
     theRitualJournal: "سجل الروتين",
     ritualProfile: "ملف روتينك",
+  },
+  refillPlans: {
+    frequencyLabel: "الإيقاع",
+    createButton: "احفظ خطة التعبئة",
+    savedMessage: "تم حفظها في خطط التعبئة.",
+    errorMessage: "تعذّر حفظ الخطة الآن. حاول مرة أخرى لاحقاً.",
+    orderLabel: "طلب {orderId}",
+    frequencyLabels: {
+      "30d": "كل 30 يوماً",
+      "60d": "كل 60 يوماً",
+      "90d": "كل 90 يوماً",
+    },
   },
   analytics: {
     hero: {
@@ -623,6 +642,9 @@ export const ar = {
       title: "شكراً لك",
       subtitle: "روتينك في الطريق مع لمسة حانية.",
       summary: "أضفت {itemCount} عناصر بإجمالي {total}.",
+      refillTitle: "أبقِ هذا الروتين على التكرار",
+      refillBody: "احفظ {itemCount} منتجاً لنذكّرك بتعبئته على إيقاع هادئ.",
+      refillButton: "احفظ خطة التعبئة",
       loyaltyEarned: "لقد كسبت {points} نقطة طقسية مع هذا الطلب.",
       loyaltyStatus: "حالتك: {tier}.",
       loyaltyTotal: "لديك الآن {points} نقطة طقسية.",
@@ -734,6 +756,7 @@ export const ar = {
     tabs: {
       profile: "الملف",
       orders: "الطلبات",
+      refillPlans: "خطط التعبئة",
       credits: "الائتمانات وبطاقات الهدايا",
       referrals: "الإحالات",
       saved: "روتين محفوظ",
@@ -824,6 +847,9 @@ export const ar = {
       empty: "احفظ روتينًا لتعود إليه متى شئت.",
       load: "تحميل الروتين في السلة",
       delete: "حذف الروتين",
+      refillTitle: "حدد وتيرة تعبئة لطيفة",
+      refillBody: "احفظ هذا الروتين واختر تكراراً ناعماً لنذكّرك قبل موعد التعبئة.",
+      refillButton: "احفظ خطة التعبئة",
     },
     favorites: {
       empty: "اضغط على القلب لأي روتين أو منتج لتثبيته هنا.",
@@ -835,6 +861,28 @@ export const ar = {
       heading: "تقييماتي",
       empty: "لم تشارك بعد تجربة روتينية.",
       verifiedLabel: "روتين موثق",
+    },
+    refillPlans: {
+      heading: "خطط التعبئة",
+      description: "تذكيرات هادئة وتجهيز للروتين حتى تعيد طلبيتك دون ضجيج.",
+      emptyTitle: "لا توجد خطط تعبئة بعد",
+      emptyBody: "احفظ طلباً أو روتيناً وسيظهر هنا كخطة تعبئة.",
+      frequencyLabel: "التكرار",
+      nextRefillLabel: "التعبئة التالية",
+      nextRefillNone: "—",
+      placeholderLabel: "سمِّ هذا الروتين",
+      statuses: {
+        active: "نشط",
+        paused: "متوقف مؤقتاً",
+        cancelled: "ملغى",
+      },
+      actions: {
+        refillNow: "أعد تعبئته الآن",
+        pause: "أوقف الخطة",
+        resume: "استأنف الخطة",
+        cancel: "ألغِ الخطة",
+        delete: "احذف الخطة",
+      },
     },
   },
   newsletter: {

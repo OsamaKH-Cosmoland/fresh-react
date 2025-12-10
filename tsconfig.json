@@ -18,7 +18,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "include": ["src", "api", "server", "shared", "vite.config.*", "eslint.config.js"],
   "exclude": ["node_modules", "dist"]

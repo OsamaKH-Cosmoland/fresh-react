@@ -34,6 +34,7 @@ import {
   getReferralCodeFromLocation,
   storeLastAttributionCode,
 } from "@/referrals/referralAttribution";
+import { LifecycleActionSlot } from "@/components/lifecycle/LifecycleActionSlot";
 
 const LazyLayoutLab = lazy(() => import("./labs/LayoutLab"));
 
@@ -473,7 +474,10 @@ export default function App() {
   return (
     <>
       <SkipToContent />
-      <div id="app-shell">{routeContent}</div>
+      <div id="app-shell">
+        <LifecycleActionSlot />
+        {routeContent}
+      </div>
     </>
   );
 }

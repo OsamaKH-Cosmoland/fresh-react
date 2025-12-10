@@ -136,6 +136,17 @@ export type AnalyticsEvent =
       totalPrice: number;
     };
 
+type RuntimeEnv = Record<string, string | boolean | undefined>;
+const resolvedEnv: RuntimeEnv =
+  typeof import.meta !== "undefined" && typeof import.meta.env !== "undefined"
+    ? (import.meta.env as RuntimeEnv)
+    : (process.env as RuntimeEnv);
+
+const isDevEnvironment =
+  resolvedEnv.DEV === true ||
+  resolvedEnv.DEV === "true" ||
+  resolvedEnv.NODE_ENV === "development";
+
 const ANALYTICS_BUFFER: AnalyticsEvent[] = [];
 
 declare global {
@@ -155,7 +166,7 @@ export function trackEvent(event: AnalyticsEvent): void {
       window.dataLayer.push(event);
     }
   }
-  if (import.meta.env.DEV) {
+  if (isDevEnvironment) {
     console.info("[analytics]", event);
   }
   // Future integration point: forward events to GA/PostHog or custom HTTP endpoint.

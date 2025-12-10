@@ -39,6 +39,7 @@ import {
   saveGiftCredits,
 } from "@/utils/giftCreditStorage";
 import { isGiftCardProduct } from "@/giftcards/giftCardCatalog";
+import { RefillPlanCreationPanel } from "@/components/refill/RefillPlanCreationPanel";
 
 const SHIPPING_OPTIONS = [
   { id: "standard", cost: 45 },
@@ -561,6 +562,19 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
             ) : (
               <p>{t("account.loyalty.maxTier")}</p>
             )}
+            </div>
+            <div className="checkout-confirmation__refill">
+              <RefillPlanCreationPanel
+                title={t("checkout.confirmation.refillTitle")}
+                description={t("checkout.confirmation.refillBody", {
+                  itemCount: orderPlaced.items.reduce((sum, item) => sum + item.quantity, 0),
+                })}
+                items={orderPlaced.items}
+                source="order"
+                label={t("refillPlans.orderLabel", { orderId: orderPlaced.id })}
+                startAt={orderPlaced.createdAt}
+                buttonLabel={t("checkout.confirmation.refillButton")}
+              />
             </div>
             {referralProfile && referralLink && (
               <section className="checkout-confirmation__referral" aria-live="polite">

@@ -1,4 +1,3 @@
-import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
 import type { ReactNode } from "react";
 import { renderHook, act } from "@testing-library/react";
 import {
@@ -93,7 +92,7 @@ describe("CartProvider logic", () => {
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   it("manages totals and clear", () => {

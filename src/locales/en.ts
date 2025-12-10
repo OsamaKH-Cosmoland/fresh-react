@@ -130,6 +130,13 @@ export const en = {
       loyaltyThreshold: "You're {pointsToNext} points away from the next loyalty tier.",
       inactiveSinceOrder: "It has been {daysSinceLastOrder} days since your last order. Reawaken your ritual.",
     },
+    actions: {
+      refill: {
+        title: "Ritual refill reminder",
+        cta: "Prepare ritual bag",
+        dismiss: "Close reminder",
+      },
+    },
   },
   offline: {
     status: "Offline",
@@ -149,6 +156,18 @@ export const en = {
     newHere: "New here?",
     theRitualJournal: "The Routine Journal",
     ritualProfile: "Your routine profile",
+  },
+  refillPlans: {
+    frequencyLabel: "Cadence",
+    createButton: "Save refill plan",
+    savedMessage: "Saved to your refill plans.",
+    errorMessage: "Could not save the refill—please try again.",
+    orderLabel: "Order {orderId}",
+    frequencyLabels: {
+      "30d": "Every 30 days",
+      "60d": "Every 60 days",
+      "90d": "Every 90 days",
+    },
   },
   analytics: {
     hero: {
@@ -623,6 +642,9 @@ export const en = {
       title: "Thank you",
       subtitle: "Your routine is on its way with a whispered note.",
       summary: "You placed {itemCount} items totaling {total}.",
+      refillTitle: "Keep this ritual on repeat",
+      refillBody: "Save {itemCount} items to revisit them on a gentle cadence.",
+      refillButton: "Save as refill plan",
       loyaltyEarned: "You earned {points} ritual points with this order.",
       loyaltyStatus: "Your status: {tier}.",
       loyaltyTotal: "You now have {points} ritual points.",
@@ -735,6 +757,7 @@ export const en = {
     tabs: {
       profile: "Profile",
       orders: "Orders",
+      refillPlans: "Refill plans",
       credits: "Credits & gift cards",
       referrals: "Referrals",
       saved: "Saved rituals",
@@ -825,6 +848,9 @@ export const en = {
       empty: "Save a ritual to revisit it whenever you need it.",
       load: "Load ritual into bag",
       delete: "Delete ritual",
+      refillTitle: "Set a refill cadence",
+      refillBody: "Save this ritual and choose how often you'd like a gentle reminder to reorder.",
+      refillButton: "Save refill plan",
     },
     favorites: {
       empty: "Tap the heart on any routine or product to call it up here.",
@@ -836,6 +862,28 @@ export const en = {
       heading: "My reviews",
       empty: "You haven't shared a routine yet.",
       verifiedLabel: "Verified routine",
+    },
+    refillPlans: {
+      heading: "Refill plans",
+      description: "Calm reminders and ready-to-go rituals so you can reorder without pressure.",
+      emptyTitle: "No refill plans yet",
+      emptyBody: "Save an order or ritual to create your first refill plan.",
+      frequencyLabel: "Cadence",
+      nextRefillLabel: "Next refill",
+      nextRefillNone: "—",
+      placeholderLabel: "Name this ritual",
+      statuses: {
+        active: "Active",
+        paused: "Paused",
+        cancelled: "Cancelled",
+      },
+      actions: {
+        refillNow: "Refill now",
+        pause: "Pause plan",
+        resume: "Resume plan",
+        cancel: "Cancel plan",
+        delete: "Delete plan",
+      },
     },
   },
   newsletter: {

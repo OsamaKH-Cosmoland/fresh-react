@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
+import { RefillPlanCreationPanel } from "@/components/refill/RefillPlanCreationPanel";
 import { AccountTabs } from "@/components/account/AccountTabs";
 import { Button, SectionTitle } from "@/components/ui";
 import { useBundleActions } from "@/cart/cartBundles";
@@ -37,6 +38,13 @@ import { buildAppUrl } from "@/utils/navigation";
 import { useReferralProfile } from "@/referrals/useReferralProfile";
 import { GIFT_CREDIT_KEY, listGiftCredits } from "@/utils/giftCreditStorage";
 import type { GiftCredit } from "@/giftcards/giftCardTypes";
+import {
+  deletePlan,
+  REFILL_FREQUENCY_OPTIONS,
+  type RefillPlan,
+  updatePlan,
+  useRefillPlans,
+} from "@/subscriptions";
 
 const formatOrderLabel = (order: LocalOrder) =>
   `${order.id} · ${new Date(order.createdAt).toLocaleDateString(undefined, {
@@ -82,7 +90,35 @@ const getReviewTargetInfo = (review: LocalReview) => {
   };
 };
 
-type AccountTabId = "profile" | "orders" | "referrals" | "saved" | "favorites" | "reviews" | "credits";
+type AccountTabId =
+  | "profile"
+  | "orders"
+  | "referrals"
+  | "saved"
+  | "favorites"
+  | "reviews"
+  | "credits"
+  | "refillPlans";
+
+const ACCOUNT_TAB_IDS: AccountTabId[] = [
+  "profile",
+  "orders",
+  "refillPlans",
+  "credits",
+  "referrals",
+  "saved",
+  "favorites",
+  "reviews",
+];
+
+const getInitialAccountTab = () => {
+  if (typeof window === "undefined") return "profile";
+  const view = new URLSearchParams(window.location.search).get("view");
+  if (view && ACCOUNT_TAB_IDS.includes(view as AccountTabId)) {
+    return view as AccountTabId;
+  }
+  return "profile";
+};
 
 export default function AccountPage() {
   usePageAnalytics("account");
@@ -99,7 +135,7 @@ export default function AccountPage() {
   const totalPoints = ritualPointsState.totalPoints;
   const lastOrderAt = ritualPointsState.lastOrderAt;
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<AccountTabId>("profile");
+  const [activeTab, setActiveTab] = useState<AccountTabId>(getInitialAccountTab);
   const [orders, setOrders] = useState<LocalOrder[]>(() =>
     typeof window === "undefined" ? [] : readOrders()
   );
@@ -121,9 +157,10 @@ export default function AccountPage() {
   const [referralSaveMessage, setReferralSaveMessage] = useState<string | null>(null);
   const referralSaveTimer = useRef<number | null>(null);
   const { preferences } = useUserPreferences();
-  const { savedCarts, loadSavedCart, deleteSavedCart, addItem } = useCart();
+  const { savedCarts, loadSavedCart, deleteSavedCart, addItem, setCart } = useCart();
   const { addBundleToCart } = useBundleActions();
   const { favorites, toggleFavorite } = useFavorites();
+  const { plans: refillPlans, refresh: refreshRefillPlans } = useRefillPlans();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -185,6 +222,7 @@ export default function AccountPage() {
     () => [
       { id: "profile", label: t("account.tabs.profile") },
       { id: "orders", label: t("account.tabs.orders") },
+      { id: "refillPlans", label: t("account.tabs.refillPlans") },
       { id: "credits", label: t("account.tabs.credits") },
       { id: "referrals", label: t("account.tabs.referrals") },
       { id: "saved", label: t("account.tabs.saved") },
@@ -585,9 +623,58 @@ export default function AccountPage() {
                 {t("account.saved.delete")}
               </Button>
             </div>
+            <div className="account-saved-card__refill">
+              <RefillPlanCreationPanel
+                title={t("account.saved.refillTitle")}
+                description={t("account.saved.refillBody")}
+                items={cart.items}
+                source="saved"
+                label={cart.name}
+                startAt={cart.updatedAt}
+                buttonLabel={t("account.saved.refillButton")}
+                onCreated={refreshRefillPlans}
+                className="account-saved-card__refill-panel"
+              />
+            </div>
           </div>
         ))}
       </div>
+    );
+  };
+
+  const renderRefillPlansTab = () => {
+    if (!refillPlans.length) {
+      return (
+        <div className="account-placeholder">
+          <h3>{t("account.refillPlans.emptyTitle")}</h3>
+          <p>{t("account.refillPlans.emptyBody")}</p>
+        </div>
+      );
+    }
+
+    const handleRefillNow = (plan: RefillPlan) => {
+      setCart(plan.items.map((item) => ({ ...item })));
+      window.location.href = buildAppUrl("/checkout");
+    };
+
+    return (
+      <>
+        <header className="account-refill-header">
+          <h3>{t("account.refillPlans.heading")}</h3>
+          <p>{t("account.refillPlans.description")}</p>
+        </header>
+        <div className="account-refill-grid">
+          {refillPlans.map((plan) => (
+            <RefillPlanCard
+              key={plan.id}
+              plan={plan}
+              locale={locale}
+              onRefresh={refreshRefillPlans}
+              onRefillNow={handleRefillNow}
+            />
+          ))}
+        </div>
+      </>
     );
   };
 
@@ -933,6 +1020,8 @@ export default function AccountPage() {
         return renderProfileTab();
       case "orders":
         return renderOrdersTab();
+      case "refillPlans":
+        return renderRefillPlansTab();
       case "referrals":
         return renderReferralsTab();
       case "credits":
@@ -980,5 +1069,119 @@ export default function AccountPage() {
         </section>
       </main>
     </div>
+  );
+}
+
+interface RefillPlanCardProps {
+  plan: RefillPlan;
+  locale: string;
+  onRefresh: () => void;
+  onRefillNow: (plan: RefillPlan) => void;
+}
+
+function RefillPlanCard({ plan, locale, onRefresh, onRefillNow }: RefillPlanCardProps) {
+  const { t } = useTranslation();
+  const [label, setLabel] = useState(plan.label ?? "");
+
+  useEffect(() => {
+    setLabel(plan.label ?? "");
+  }, [plan.label]);
+
+  const handleLabelCommit = () => {
+    const trimmed = label.trim();
+    if (trimmed === (plan.label ?? "")) {
+      return;
+    }
+    updatePlan(plan.id, { label: trimmed || null });
+    onRefresh();
+  };
+
+  const handleFrequencyChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    updatePlan(plan.id, { frequency: value });
+    onRefresh();
+  };
+
+  const handlePauseResume = () => {
+    const nextStatus = plan.status === "active" ? "paused" : "active";
+    updatePlan(plan.id, { status: nextStatus });
+    onRefresh();
+  };
+
+  const handleCancel = () => {
+    updatePlan(plan.id, { status: "cancelled" });
+    onRefresh();
+  };
+
+  const handleDelete = () => {
+    deletePlan(plan.id);
+    onRefresh();
+  };
+
+  const statusLabel = t(`account.refillPlans.statuses.${plan.status}`);
+  const frequencyLabel = t(`refillPlans.frequencyLabels.${plan.frequency}`) ?? plan.frequency;
+  const nextRefillLabel = plan.nextRefillAt
+    ? new Intl.DateTimeFormat(locale, {
+        month: "short",
+        day: "numeric",
+      }).format(new Date(plan.nextRefillAt))
+    : t("account.refillPlans.nextRefillNone");
+
+  return (
+    <article className="account-refill-card">
+      <div className="account-refill-card__header">
+        <input
+          type="text"
+          value={label}
+          placeholder={t("account.refillPlans.placeholderLabel")}
+          onChange={(event) => setLabel(event.target.value)}
+          onBlur={handleLabelCommit}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              handleLabelCommit();
+            }
+          }}
+        />
+        <span className="account-refill-card__status">{statusLabel}</span>
+      </div>
+      <div className="account-refill-card__meta">
+        <p>
+          {t("account.refillPlans.frequencyLabel")}: {frequencyLabel}
+        </p>
+        <p>
+          {t("account.refillPlans.nextRefillLabel")}: {nextRefillLabel}
+        </p>
+        <select
+          className="account-refill-card__frequency-select"
+          value={plan.frequency}
+          onChange={handleFrequencyChange}
+        >
+          {REFILL_FREQUENCY_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {t(option.labelKey)}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="account-refill-card__actions">
+        <Button variant="secondary" size="sm" onClick={() => onRefillNow(plan)}>
+          {t("account.refillPlans.actions.refillNow")}
+        </Button>
+        <Button variant="ghost" size="sm" onClick={handlePauseResume}>
+          {plan.status === "active"
+            ? t("account.refillPlans.actions.pause")
+            : t("account.refillPlans.actions.resume")}
+        </Button>
+        {plan.status !== "cancelled" && (
+          <Button variant="ghost" size="sm" onClick={handleCancel}>
+            {t("account.refillPlans.actions.cancel")}
+          </Button>
+        )}
+        <Button variant="ghost" size="sm" onClick={handleDelete}>
+          {t("account.refillPlans.actions.delete")}
+        </Button>
+      </div>
+    </article>
   );
 }
