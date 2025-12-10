@@ -740,6 +740,7 @@ export const en = {
       title: "Loyalty",
       totalPoints: "Total ritual points",
       lastOrder: "Last order",
+      starting: "Place your first order to start earning ritual points.",
       nextTier: "Earn {points} more points to reach {tier}.",
       maxTier: "You're in the highest tier.",
       tiers: {

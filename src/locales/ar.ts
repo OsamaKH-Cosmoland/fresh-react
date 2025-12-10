@@ -739,6 +739,7 @@ export const ar = {
       title: "الولاء",
       totalPoints: "مجموع النقاط الروتينية",
       lastOrder: "آخر طلب",
+      starting: "أكمل طلبك الأول لتبدأ في كسب نقاط الروتين.",
       nextTier: "احصل على {points} نقطة إضافية لتصل إلى {tier}.",
       maxTier: "أنت في أعلى مستوى من الولاء.",
       tiers: {

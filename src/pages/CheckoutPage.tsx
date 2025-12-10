@@ -1,4 +1,4 @@
-import { useMemo, useState, type KeyboardEvent } from "react";
+import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { Button, SectionTitle } from "@/components/ui";
@@ -20,9 +20,8 @@ import { useSeo } from "@/seo/useSeo";
 import { upsertAudienceContact } from "@/utils/audienceStorage";
 import PromoCodePanel from "@/components/promo/PromoCodePanel";
 import { useCurrency } from "@/currency/CurrencyProvider";
-import { calculatePointsForOrder } from "@/loyalty/loyaltyEngine";
-import { addPoints } from "@/utils/loyaltyStorage";
-import { useLoyalty } from "@/loyalty/useLoyalty";
+import { calculateEarnedPoints } from "@/loyalty/ritualPoints";
+import { useRitualPoints } from "@/loyalty/useRitualPoints";
 import { buildAppUrl } from "@/utils/navigation";
 import { useReferralProfile } from "@/referrals/useReferralProfile";
 import { loadLastAttributionCode } from "@/referrals/referralAttribution";
@@ -104,12 +103,13 @@ export default function CheckoutPage() {
   const [keepUpdated, setKeepUpdated] = useState(false);
   const { currency } = useCurrency();
   const {
-    currentTier,
+    state: loyaltyState,
+    tier: currentTier,
     nextTier,
-    pointsToNextTier,
-    totalPoints,
-    refresh: refreshLoyalty,
-  } = useLoyalty();
+    pointsToNext,
+    registerOrder,
+  } = useRitualPoints();
+  const totalPoints = loyaltyState.totalPoints;
   const currentTierLabel = t(`account.loyalty.tiers.${currentTier.id}.label`);
   const nextTierLabel = nextTier
     ? t(`account.loyalty.tiers.${nextTier.id}.label`)
@@ -117,6 +117,19 @@ export default function CheckoutPage() {
   const [pointsEarned, setPointsEarned] = useState(0);
   const { profile: referralProfile } = useReferralProfile();
   const [referralCopyState, setReferralCopyState] = useState<"idle" | "copied" | "error">("idle");
+
+  useEffect(() => {
+    if (!orderPlaced) return;
+    const earnedPoints = calculateEarnedPoints(orderPlaced.totals.total);
+    registerOrder(orderPlaced.id, orderPlaced.totals.total);
+    setPointsEarned(earnedPoints);
+    if (earnedPoints > 0) {
+      trackEvent({
+        type: "loyalty_points_awarded",
+        points: earnedPoints,
+      });
+    }
+  }, [orderPlaced, registerOrder, trackEvent, calculateEarnedPoints]);
 
 
   const hasCartItems = cartItems.length > 0;
@@ -391,20 +404,6 @@ export default function CheckoutPage() {
         shippingAddress: `${order.shippingAddress.street}, ${order.shippingAddress.city}`,
       });
     }
-    const earnedPoints = calculatePointsForOrder(order.totals.subtotal);
-    setPointsEarned(earnedPoints);
-    if (earnedPoints > 0) {
-      try {
-        addPoints(earnedPoints, order.createdAt);
-        refreshLoyalty();
-        trackEvent({
-          type: "loyalty_points_awarded",
-          points: earnedPoints,
-        });
-      } catch (loyaltyError) {
-        console.warn("Unable to save loyalty points", loyaltyError);
-      }
-    }
     if (order.customer.email && keepUpdated) {
       try {
         upsertAudienceContact({
@@ -552,14 +551,16 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
               <p>{t("checkout.confirmation.loyaltyEarned", { points: pointsEarned })}</p>
               <p>{t("checkout.confirmation.loyaltyStatus", { tier: currentTierLabel })}</p>
               <p>{t("checkout.confirmation.loyaltyTotal", { points: totalPoints })}</p>
-              {nextTierLabel && typeof pointsToNextTier === "number" && (
-                <p>
-                  {t("checkout.confirmation.loyaltyProgress", {
-                    nextTier: nextTierLabel,
-                    points: pointsToNextTier,
-                  })}
-                </p>
-              )}
+            {nextTierLabel && typeof pointsToNext === "number" ? (
+              <p>
+                {t("checkout.confirmation.loyaltyProgress", {
+                  nextTier: nextTierLabel,
+                  points: pointsToNext,
+                })}
+              </p>
+            ) : (
+              <p>{t("account.loyalty.maxTier")}</p>
+            )}
             </div>
             {referralProfile && referralLink && (
               <section className="checkout-confirmation__referral" aria-live="polite">
