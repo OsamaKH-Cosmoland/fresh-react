@@ -1,16 +1,22 @@
 import { ritualStories } from "../content/stories";
+import { buildAppUrl } from "@/utils/navigation";
 import type { CSSProperties } from "react";
 import { Button, Card, SectionTitle } from "@/components/ui";
 
 export default function RitualStoriesListPage() {
   return (
     <main id="main-content" tabIndex={-1} className="ritual-stories-page stories-page">
-      <SectionTitle
-        title="Our Journal"
-        subtitle="Slow, sensory routines to weave NaturaGloss into your daily life."
-        align="left"
-        className="stories-page__title"
-      />
+      <div className="stories-page__title-bar">
+        <a className="stories-page__brand-link" href={buildAppUrl("/")}>
+          <span className="stories-page__brand-text">NATURAGLOSS</span>
+        </a>
+        <SectionTitle
+          title="Our Journal"
+          subtitle="Slow, sensory routines to weave NaturaGloss into your daily life."
+          align="center"
+          className="stories-page__title"
+        />
+      </div>
       <p className="stories-page__intro" data-animate="fade-up">
         Each routine is captured in a story field filled with warmth, scent, and steady breath so you
         can step into your care practice with intention.

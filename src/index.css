@@ -410,6 +410,7 @@ button:hover {
 .section-title__subtitle--center {
   margin-left: auto;
   margin-right: auto;
+  text-align: center;
 }
 
 .landing-page { min-height: 100vh; color: #fbe7ad; }
@@ -1838,6 +1839,25 @@ button:hover {
   z-index: 1;
   text-align: center;
 }
+.stories-page__title-bar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+.stories-page__brand-link {
+  letter-spacing: 0.45em;
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  color: #ffecc5;
+  text-transform: uppercase;
+}
+.stories-page__brand-text {
+  display: inline-block;
+  font-size: 1.4rem;
+}
 .stories-page__title .section-title__heading {
   color: #ffecc5;
   letter-spacing: 0.18em;
@@ -1874,7 +1894,7 @@ button:hover {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 0.2rem;
+  bottom: 0.6rem;
 }
 
 .stories-page__intro {
@@ -5401,6 +5421,9 @@ button:hover {
   display: grid;
   gap: var(--space-4);
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  align-items: center;
+  justify-items: center;
+  text-align: center;
 }
 .onboarding-progress {
   display: grid;
@@ -8341,8 +8364,7 @@ button:hover {
   gap: 0.65rem;
   font-size: 0.95rem;
 }
-.newsletter-signup__checkbox input,
-.onboarding-newsletter__checkbox input {
+.newsletter-signup__checkbox input {
   width: 1rem;
   height: 1rem;
   accent-color: #f9d685;
@@ -8370,53 +8392,6 @@ button:hover {
   gap: 0.5rem;
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.8);
-}
-.onboarding-newsletter {
-  margin-top: var(--space-6);
-  padding: var(--space-4);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(3, 10, 8, 0.8);
-}
-.onboarding-newsletter__header h3 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-.onboarding-newsletter__header p {
-  margin: 0.25rem 0 0;
-  color: rgba(255, 255, 255, 0.75);
-}
-.onboarding-newsletter__form {
-  margin-top: var(--space-3);
-  display: grid;
-  gap: var(--space-3);
-}
-.onboarding-newsletter__form label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  font-size: 0.95rem;
-}
-.onboarding-newsletter__form input {
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.02);
-  color: #fff;
-  padding: 0.8rem 1rem;
-}
-.onboarding-newsletter__checkbox span {
-  color: rgba(255, 255, 255, 0.85);
-}
-.onboarding-newsletter__status {
-  margin: var(--space-2) 0 0;
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.65);
-}
-.onboarding-newsletter__status.is-success {
-  color: #a6ffef;
-}
-.onboarding-newsletter__status.is-error {
-  color: #ffb0b0;
 }
 .audience-page {
   padding-top: var(--space-6);
