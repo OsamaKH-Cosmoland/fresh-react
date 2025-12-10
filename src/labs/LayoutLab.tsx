@@ -5,7 +5,6 @@ import OfflineNotice from "@/components/OfflineNotice";
 import Sidebar from "../components/Sidebar";
 import CardGrid from "../components/CardGrid";
 import ReviewsSection from "../components/ReviewsSection";
-import NewsletterSignup from "../components/NewsletterSignup";
 import { prefetchRoute } from "@/utils/prefetchRoutes";
 import collectionImage from "../assets/collection.png";
 import iconLeft from "../assets/NaturaGloss_shiny_gold_icon_left.webp";
@@ -585,9 +584,6 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           )}
         </section>
         )}
-      <section className="landing-newsletter ng-mobile-shell" data-animate="fade-up">
-        <NewsletterSignup variant="landing" />
-      </section>
       <section
         className="landing-stories ng-mobile-shell"
         aria-labelledby="landing-stories-title"

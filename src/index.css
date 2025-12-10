@@ -840,6 +840,8 @@ button:hover {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .landing-personalization__saved-name {
@@ -847,6 +849,7 @@ button:hover {
   font-size: 1.35rem;
   letter-spacing: 0.08em;
   font-family: var(--font-heading);
+  white-space: normal;
 }
 
 .landing-personalization__saved-meta {
@@ -855,6 +858,8 @@ button:hover {
   font-size: var(--font-size-small);
   text-transform: uppercase;
   letter-spacing: 0.3em;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
 
 .landing-personalization__saved-items {
@@ -1019,7 +1024,7 @@ button:hover {
 .bundle-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--space-6);
+  gap: var(--space-8);
 }
 
 .landing-guides-teaser {
@@ -3213,6 +3218,13 @@ button:hover {
   gap: var(--space-6);
   padding: var(--space-6) 0;
   scroll-margin-top: max(var(--navbar-height), clamp(5rem, 12vh, 7.5rem));
+}
+.card-grid .card:nth-child(odd) {
+  margin-inline-start: 0;
+}
+
+.card-grid .card:nth-child(1) {
+  margin-inline-start: clamp(-0.25rem, -1vw, -0.6rem);
 }
 .card {
   background: linear-gradient(155deg, rgba(8, 46, 32, .95), rgba(6, 27, 19, .95));
