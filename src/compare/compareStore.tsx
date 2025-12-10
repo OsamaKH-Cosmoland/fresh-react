@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from "react";
 import type { ReactNode } from "react";
+import { getCompareProductConfig, getCompareBundleConfig } from "@/content/compareCatalog";
 
 const STORAGE_KEY = "naturagloss_compare";
 
@@ -17,10 +18,19 @@ type CompareAction =
   | { type: "toggle"; payload: CompareEntry }
   | { type: "clear" };
 
+const isEntryValid = (entry: CompareEntry) => {
+  if (entry.type === "product") {
+    return Boolean(getCompareProductConfig(entry.id));
+  }
+  return Boolean(getCompareBundleConfig(entry.id));
+};
+
+const sanitize = (entries: CompareState) => entries.filter(isEntryValid);
+
 const compareReducer = (state: CompareState, action: CompareAction): CompareState => {
   switch (action.type) {
     case "hydrate":
-      return action.payload;
+      return sanitize(action.payload);
     case "toggle": {
       const exists = state.some(
         (entry) => entry.id === action.payload.id && entry.type === action.payload.type
@@ -56,7 +66,7 @@ export function CompareProvider({ children }: { children: ReactNode }) {
       const serialized = window.localStorage.getItem(STORAGE_KEY);
       if (serialized) {
         const parsed = JSON.parse(serialized);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed)) return sanitize(parsed);
       }
     } catch {
       // ignore
