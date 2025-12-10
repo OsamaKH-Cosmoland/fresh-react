@@ -113,6 +113,24 @@ export const en = {
     },
     variantSelector: "Choose a variant",
   },
+  lifecycle: {
+    reasons: {
+      firstVisit: "First visit welcome",
+      subscriptionRefill: "Subscription refill reminder",
+      softAbandonedCart: "Soft abandoned cart",
+      reviewReminder: "Review reminder",
+      loyaltyThreshold: "Loyalty milestone",
+      inactiveSinceOrder: "We miss you",
+    },
+    messages: {
+      firstVisit: "Welcome to NaturaGloss Rituals—let us guide your calm, natural care.",
+      subscriptionRefill: "Your {subscriptionName} refill is scheduled for {refillDate}.",
+      softAbandonedCart: "Your ritual bag has {itemCount} items waiting to be completed.",
+      reviewReminder: "It's been {daysSince} days since your order; {pending} rituals await your review.",
+      loyaltyThreshold: "You're {pointsToNext} points away from the next loyalty tier.",
+      inactiveSinceOrder: "It has been {daysSinceLastOrder} days since your last order. Reawaken your ritual.",
+    },
+  },
   offline: {
     status: "Offline",
     message: "You appear to be offline. Saved rituals, guides, and your bag are still available.",

@@ -1,6 +1,7 @@
 import type { LocalReview, LocalReviewInput, ReviewTargetType } from "@/types/localReview";
 
 const STORAGE_KEY = "naturagloss_reviews";
+export const REVIEWS_UPDATE_EVENT = "naturagloss:reviews-updated";
 
 const canUseStorage = () =>
   typeof window !== "undefined" && typeof window.localStorage !== "undefined";
@@ -36,6 +37,7 @@ function writeReviews(reviews: LocalReview[]): void {
   if (!canUseStorage()) return;
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
+    window.dispatchEvent(new Event(REVIEWS_UPDATE_EVENT));
   } catch (error) {
     console.warn("Unable to write reviews", error);
   }

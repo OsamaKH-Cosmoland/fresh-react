@@ -1,6 +1,7 @@
 import type { LocalOrder } from "@/types/localOrder";
 
 const STORAGE_KEY = "naturagloss_orders";
+export const ORDERS_UPDATE_EVENT = "naturagloss:orders-updated";
 
 const canUseStorage = () =>
   typeof window !== "undefined" && typeof window.localStorage !== "undefined";
@@ -27,6 +28,7 @@ export function writeOrders(orders: LocalOrder[]): void {
   if (!canUseStorage()) return;
   try {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+    window.dispatchEvent(new Event(ORDERS_UPDATE_EVENT));
   } catch (error) {
     console.warn("Unable to write orders", error);
   }

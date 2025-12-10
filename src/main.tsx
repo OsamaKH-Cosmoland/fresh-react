@@ -11,6 +11,7 @@ import { CompareProvider } from "./compare/compareStore";
 import { LocaleProvider } from "@/localization/locale";
 import { LiveAnnouncerProvider } from "@/components/accessibility/LiveAnnouncer";
 import { CurrencyProvider } from "@/currency/CurrencyProvider";
+import { LifecycleProvider } from "@/lifecycle";
 
 const rootEl = document.getElementById("root");
 
@@ -19,15 +20,17 @@ if (rootEl) {
     <StrictMode>
       <CurrencyProvider>
         <LocaleProvider>
-          <LiveAnnouncerProvider>
-            <CartProvider>
-              <FavoritesProvider>
-                <CompareProvider>
+        <LiveAnnouncerProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              <CompareProvider>
+                <LifecycleProvider>
                   <App />
-                </CompareProvider>
-              </FavoritesProvider>
-            </CartProvider>
-          </LiveAnnouncerProvider>
+                </LifecycleProvider>
+              </CompareProvider>
+            </FavoritesProvider>
+          </CartProvider>
+        </LiveAnnouncerProvider>
         </LocaleProvider>
       </CurrencyProvider>
     </StrictMode>

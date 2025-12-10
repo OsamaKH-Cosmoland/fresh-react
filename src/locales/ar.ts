@@ -112,6 +112,24 @@ export const ar = {
     },
     variantSelector: "اختر نسخة",
   },
+  lifecycle: {
+    reasons: {
+      firstVisit: "ترحيب الزيارة الأولى",
+      subscriptionRefill: "تذكير بتجديد الاشتراك",
+      softAbandonedCart: "سلة مهجورة بلطف",
+      reviewReminder: "تذكير بالمراجعة",
+      loyaltyThreshold: "معلومة الولاء",
+      inactiveSinceOrder: "نفتقدك",
+    },
+    messages: {
+      firstVisit: "مرحباً بك في NaturaGloss Rituals؛ دعنا نرشدك إلى رعاية هادئة وطبيعية.",
+      subscriptionRefill: "سيُعاد تعبئة {subscriptionName} بتاريخ {refillDate}.",
+      softAbandonedCart: "سلة روتينك تحتوي على {itemCount} منتجات بانتظار استكمالها.",
+      reviewReminder: "مر {daysSince} يوماً على طلبك؛ {pending} روتيناً في انتظار مراجعتك.",
+      loyaltyThreshold: "تبقى لك {pointsToNext} نقطة للرتبة التالية من الولاء.",
+      inactiveSinceOrder: "مر {daysSinceLastOrder} يوماً منذ طلبك الأخير. دع روتينك ينعشك من جديد.",
+    },
+  },
   offline: {
     status: "غير متصل",
     message:

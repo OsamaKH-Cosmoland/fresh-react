@@ -252,6 +252,7 @@ interface CartContextValue {
   grandTotalBase: number;
   creditAppliedBase: number;
   grandTotalAfterCreditBase: number;
+  lastUpdatedAt: number;
   applyGiftCredit: (code: string, orderTotalBase?: number) => ApplyGiftCreditResult;
   clearGiftCredit: () => void;
   addItem: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => void;
@@ -605,6 +606,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     grandTotalBase,
     creditAppliedBase,
     grandTotalAfterCreditBase,
+    lastUpdatedAt: state.updatedAt,
     addItem,
     updateQuantity,
     removeItem,
