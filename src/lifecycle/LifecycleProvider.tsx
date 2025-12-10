@@ -116,6 +116,8 @@ function buildLifecycleContext(params: {
     reviews,
     visits,
     subscriptions,
+    hasSubscriptions,
+    nextSubscriptionRefillAt,
     route,
     locale,
   } = params;
