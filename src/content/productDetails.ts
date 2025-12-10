@@ -496,6 +496,74 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       },
     ],
   },
+  {
+    slug: "gift-card-500",
+    productId: "gift-card-500",
+    productName: "NaturaGloss Gift Card – 500",
+    shortTagline: "Give the ritual of choice.",
+    priceLabel: "500 EGP",
+    priceNumber: 500,
+    heroSummaryBullets: [
+      "Deliver a calm surprise without guessing their favorites.",
+      "Redeemable on products, bundles, and the Gift Builder.",
+      "A unique code is ready the moment checkout completes.",
+    ],
+    heroImage:
+      "https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=900&q=80",
+    whatItsMadeFor:
+      "Celebrate milestones, say thank you, or surprise someone with a flexible ritual credit.",
+    ritualSteps: [
+      {
+        title: "Choose the amount",
+        description: "Pick the value that matches the intention behind the gift.",
+      },
+      {
+        title: "Checkout",
+        description: "The code appears instantly and is also saved to your local order history.",
+      },
+      {
+        title: "Share or cherish",
+        description: "Send the code to someone special or keep it for your next ritual reset.",
+      },
+    ],
+    ingredients: [
+      {
+        name: "Intention",
+        description: "Built for thoughtful gifting without guessing favorite rituals.",
+      },
+      {
+        name: "Choice",
+        description: "Redeemable across every Ritual product, bundle, and experience.",
+      },
+      {
+        name: "Care",
+        description: "Arrives with a gentle reminder to slow down and practice kindness.",
+      },
+    ],
+    sensoryExperience: [
+      "Feels like a handwritten ritual note delivered digitally.",
+      "Soft luminance that matches the NaturaGloss palette.",
+      "Ready for inboxes and shared moments.",
+    ],
+    pairsWellWith: createPairings([
+      { name: "Body Balm", slug: "/products/body-balm" },
+      { name: "Calm & Glow Body Soap", slug: "/products/calm-glow-body-soap" },
+    ]),
+    faq: [
+      {
+        question: "How is the code delivered?",
+        answer: "It shows on the confirmation screen and saves to your local order history.",
+      },
+      {
+        question: "Can I gift multiple cards?",
+        answer: "Yes—add several to your bag and each generates a unique code.",
+      },
+      {
+        question: "What can it be redeemed on?",
+        answer: "Any product, bundle, gift box, or experience in the shop.",
+      },
+    ],
+  },
 ];
 
 export const PRODUCT_DETAIL_MAP: Record<string, ProductDetailContent> = PRODUCT_DETAIL_CONFIGS.reduce<

@@ -635,6 +635,43 @@ button:hover {
   color: rgba(255, 255, 255, 0.7);
 }
 
+.analytics-referrals__stats {
+  margin-bottom: var(--space-3);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.analytics-referrals__stats span {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+.analytics-referrals__stats strong {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+}
+.analytics-referrals__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+}
+.analytics-referrals__list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+.analytics-referrals__list span {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .analytics-card--full {
   padding: var(--space-3);
 }
@@ -8439,4 +8476,282 @@ button:hover {
   .audience-page__exports {
     flex-wrap: wrap;
   }
+}
+.cart-drawer__gift-credit,
+.cart-summary-panel__gift-credit {
+  margin-top: var(--space-3);
+}
+.gift-credit-panel {
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: var(--space-3);
+  background: rgba(10, 16, 12, 0.9);
+}
+.gift-credit-panel__header {
+  margin-bottom: 0.5rem;
+}
+.gift-credit-panel__title {
+  margin: 0;
+  font-weight: 600;
+}
+.gift-credit-panel__help {
+  margin: 0.25rem 0 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.9rem;
+}
+.gift-credit-panel__form {
+  margin-top: 0.5rem;
+}
+.gift-credit-panel__controls {
+  display: flex;
+  gap: 0.6rem;
+}
+.gift-credit-panel__controls input {
+  flex: 1;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  color: #fff;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.95rem;
+}
+.gift-credit-panel__controls button {
+  white-space: nowrap;
+}
+.gift-credit-panel__error {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: #ffb0b0;
+}
+.gift-credit-panel__applied {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.gift-credit-panel__applied-code {
+  margin: 0;
+  font-size: 0.95rem;
+}
+.gift-credit-panel__applied-amount {
+  margin: 0;
+  font-weight: 600;
+}
+.account-credits {
+  border-radius: 20px;
+  padding: var(--space-4);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 6, 3, 0.85);
+}
+.account-credits__header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+.account-credits__header p {
+  margin: 0.25rem 0 1rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+.account-credits__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.account-credits__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.75rem;
+}
+.account-credits__item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.account-credits__item strong {
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+}
+.account-credits__item p {
+  margin: 0.25rem 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+.account-credits__meta {
+  text-align: right;
+}
+.account-credits__status {
+  font-size: 0.85rem;
+  color: #f9d685;
+  letter-spacing: 0.08em;
+  display: block;
+}
+.checkout-confirmation__gift-codes {
+  margin: var(--space-3) 0;
+  padding: var(--space-3);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(6, 10, 7, 0.8);
+}
+.checkout-confirmation__gift-codes h4 {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+}
+.checkout-confirmation__gift-codes p {
+  margin: 0 0 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+.checkout-confirmation__gift-codes ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.checkout-confirmation__gift-codes li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+}
+.checkout-confirmation__credit-note {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+.checkout-confirmation__referral {
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(8, 14, 11, 0.85);
+  display: grid;
+  gap: 0.5rem;
+}
+.checkout-confirmation__referral-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+.checkout-confirmation__referral input {
+  flex: 1;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.55rem 0.85rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+.checkout-confirmation__referral-error {
+  margin: 0;
+  color: #ffb0b0;
+  font-size: 0.85rem;
+}
+.account-referrals {
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: var(--space-4);
+  background: rgba(3, 10, 7, 0.85);
+  display: grid;
+  gap: var(--space-3);
+}
+.account-referrals__hero h3 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+.account-referrals__hero p {
+  margin: 0.4rem 0 0;
+  color: rgba(255, 255, 255, 0.75);
+}
+.account-referrals__link-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.account-referrals__link {
+  display: flex;
+  gap: 0.6rem;
+}
+.account-referrals__link input {
+  flex: 1;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  color: #fff;
+  padding: 0.6rem 0.9rem;
+}
+.account-referrals__link-error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #ffb0b0;
+}
+.account-referrals__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.account-referrals__stats span {
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
+}
+.account-referrals__stats strong {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 1.55rem;
+}
+.account-referrals__form {
+  display: grid;
+  gap: 0.45rem;
+}
+.account-referrals__form input {
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  color: #fff;
+  padding: 0.6rem 0.9rem;
+}
+.account-referrals__form-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.account-referrals__form-status {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #a6ffef;
+}
+.account-referrals__list {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: var(--space-2);
+}
+.account-referrals__list header h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+.account-referrals__list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+.account-referrals__list li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+.account-referrals__list-empty {
+  margin: 0.5rem 0 0;
+  color: rgba(255, 255, 255, 0.7);
 }

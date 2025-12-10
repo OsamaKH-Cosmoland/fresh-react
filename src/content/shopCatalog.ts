@@ -35,6 +35,7 @@ const PRODUCT_TAGS: Record<
   "hand-balm": { focus: ["hands"], extras: ["express"] },
   "hair-growth-oil": { focus: ["hair"], extras: ["express"] },
   "hair-shine-anti-frizz-oil": { focus: ["hair"], extras: ["express"] },
+  "gift-card-500": { focus: ["body"] },
 };
 
 const BUNDLE_TAGS: Record<RitualBundle["id"], TagConfig> = {

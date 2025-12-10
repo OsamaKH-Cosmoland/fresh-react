@@ -28,6 +28,7 @@ export const exploreNav: NavItem[] = [
   { id: "orders", labelKey: "nav.orders", href: "/orders-history" },
   { id: "account", labelKey: "nav.account", href: "/account" },
   { id: "audience", labelKey: "nav.audience", href: "/audience" },
+  { id: "analytics", labelKey: "nav.analytics", href: "/analytics" },
 ];
 
 export const mobileMenuGroups: NavGroup[] = [

@@ -23,6 +23,23 @@ import { useCurrency } from "@/currency/CurrencyProvider";
 import { calculatePointsForOrder } from "@/loyalty/loyaltyEngine";
 import { addPoints } from "@/utils/loyaltyStorage";
 import { useLoyalty } from "@/loyalty/useLoyalty";
+import { buildAppUrl } from "@/utils/navigation";
+import { useReferralProfile } from "@/referrals/useReferralProfile";
+import { loadLastAttributionCode } from "@/referrals/referralAttribution";
+import {
+  addReferralAttribution,
+  ensureReferralProfile,
+  saveReferralProfile,
+} from "@/utils/referralStorage";
+import { createManualGiftCredit } from "@/utils/giftCreditStorage";
+import {
+  applyCreditToAmount,
+  createGiftCreditFromOrder,
+  findCreditByCode,
+  listGiftCredits,
+  saveGiftCredits,
+} from "@/utils/giftCreditStorage";
+import { isGiftCardProduct } from "@/giftcards/giftCardCatalog";
 
 const SHIPPING_OPTIONS = [
   { id: "standard", cost: 45 },
@@ -62,7 +79,16 @@ export default function CheckoutPage() {
   useSeo({ route: "checkout" });
   const { locale } = useLocale();
   const { t } = useTranslation();
-  const { cartItems, subtotal, discountTotal, appliedPromo, clearCart } = useCart();
+  const {
+    cartItems,
+    subtotal,
+    discountTotal,
+    appliedPromo,
+    clearCart,
+    creditAppliedBase,
+    giftCreditCode,
+    giftCreditAppliedAmountBase,
+  } = useCart();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [contactInfo, setContactInfo] = useState(EMPTY_CONTACT);
@@ -71,6 +97,9 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<"card" | "cod">("card");
   const [cardData, setCardData] = useState({ number: "", expiry: "", cvc: "" });
   const [orderPlaced, setOrderPlaced] = useState<LocalOrder | null>(null);
+  const [createdGiftCredits, setCreatedGiftCredits] = useState<
+    { code: string; amountBase: number }[]
+  >([]);
   const { isOnline } = useNetworkStatus();
   const [keepUpdated, setKeepUpdated] = useState(false);
   const { currency } = useCurrency();
@@ -86,6 +115,9 @@ export default function CheckoutPage() {
     ? t(`account.loyalty.tiers.${nextTier.id}.label`)
     : undefined;
   const [pointsEarned, setPointsEarned] = useState(0);
+  const { profile: referralProfile } = useReferralProfile();
+  const [referralCopyState, setReferralCopyState] = useState<"idle" | "copied" | "error">("idle");
+
 
   const hasCartItems = cartItems.length > 0;
   const shippingMethod = useMemo<ShippingMethod>(() => {
@@ -104,6 +136,28 @@ export default function CheckoutPage() {
   const finalShippingCost = appliedPromo?.freeShipping ? 0 : shippingCost;
   const discountedSubtotal = Math.max(subtotal - discountTotal, 0);
   const total = discountedSubtotal + finalShippingCost;
+  const totalAfterCredit = Math.max(total - creditAppliedBase, 0);
+
+  const referralLink = referralProfile
+    ? `${buildAppUrl("/")}?ref=${encodeURIComponent(referralProfile.code)}`
+    : null;
+
+  const handleReferralCopy = async () => {
+    if (!referralLink) return;
+    if (typeof navigator === "undefined") {
+      setReferralCopyState("error");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      setReferralCopyState("copied");
+      if (typeof window !== "undefined") {
+        window.setTimeout(() => setReferralCopyState("idle"), 2000);
+      }
+    } catch {
+      setReferralCopyState("error");
+    }
+  };
 
   const handleContactChange = (field: keyof typeof contactInfo, value: string) => {
     setContactInfo((prev) => ({ ...prev, [field]: value }));
@@ -186,12 +240,93 @@ export default function CheckoutPage() {
     }
   };
 
+  const generateGiftCardCode = () =>
+    `NG-${Math.random().toString(36).slice(2, 5).toUpperCase()}-${Math.random()
+      .toString(36)
+      .slice(2, 5)
+      .toUpperCase()}`;
+
+  const createGiftCreditsFromOrder = (order: LocalOrder) => {
+    const records: { code: string; amountBase: number }[] = [];
+    order.items.forEach((item) => {
+      if (!isGiftCardProduct(item.productId)) return;
+      const unitPrice = item.price;
+      for (let index = 0; index < item.quantity; index += 1) {
+        const code = generateGiftCardCode();
+        const credit = createGiftCreditFromOrder({
+          code,
+          amountBase: unitPrice,
+          orderId: order.id,
+          note: item.name,
+        });
+        records.push({ code: credit.code, amountBase: credit.initialAmountBase });
+      }
+    });
+    return records;
+  };
+
   const placeOrder = () => {
     if (!isOnline) return;
     if (!hasCartItems || !shippingMethod) return;
+    setCreatedGiftCredits([]);
     const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     const orderId = generateOrderId();
     const createdAt = new Date().toISOString();
+    const subtotalBase = Number(subtotal.toFixed(2));
+    const referralCode = loadLastAttributionCode();
+    const referralProfileInstance = ensureReferralProfile();
+    let referralCreditAwardedBase = 0;
+    if (referralCode) {
+      const now = new Date().toISOString();
+      if (referralCode === referralProfileInstance.code) {
+        const awardBase = Math.floor(subtotalBase * 0.1);
+        if (awardBase > 0) {
+          const referralCreditCode = `REF-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+          createManualGiftCredit({
+            code: referralCreditCode,
+            amountBase: awardBase,
+            source: "referral_bonus",
+            orderId,
+            note: `Referral bonus for order ${orderId}`,
+          });
+          referralCreditAwardedBase = awardBase;
+          saveReferralProfile({
+            ...referralProfileInstance,
+            totalReferredOrders: referralProfileInstance.totalReferredOrders + 1,
+            totalReferralCreditBase: referralProfileInstance.totalReferralCreditBase + awardBase,
+          });
+        }
+      }
+      addReferralAttribution({
+        code: referralCode,
+        attributedAt: now,
+        orderId,
+        orderTotalBase: subtotalBase,
+        creditAwardedBase: referralCreditAwardedBase,
+      });
+    }
+    const orderTotalBeforeCredit = total;
+    let finalGiftCreditAmount = 0;
+    let finalGiftCreditCode: string | undefined;
+    if (giftCreditCode && creditAppliedBase > 0) {
+      const storedCredit = findCreditByCode(giftCreditCode);
+      if (storedCredit) {
+        const { appliedAmountBase, updatedCredit } = applyCreditToAmount(
+          storedCredit,
+          orderTotalBeforeCredit
+        );
+        if (appliedAmountBase > 0) {
+          finalGiftCreditAmount = appliedAmountBase;
+          finalGiftCreditCode = storedCredit.code;
+          const updatedList = listGiftCredits().map((entry) =>
+            entry.code === updatedCredit.code ? updatedCredit : entry
+          );
+          saveGiftCredits(updatedList);
+        }
+      }
+    }
+    const finalGiftCreditAmountBase = Number(finalGiftCreditAmount.toFixed(2));
+    const finalOrderTotal = Math.max(orderTotalBeforeCredit - finalGiftCreditAmountBase, 0);
     const order: LocalOrder = {
       id: orderId,
       createdAt,
@@ -200,7 +335,7 @@ export default function CheckoutPage() {
         subtotal: Number(subtotal.toFixed(2)),
         discountTotal: Number(discountTotal.toFixed(2)),
         shippingCost: Number(finalShippingCost.toFixed(2)),
-        total: Number(total.toFixed(2)),
+        total: Number(finalOrderTotal.toFixed(2)),
         currency: "EGP",
       },
       promoCode: appliedPromo?.code ?? undefined,
@@ -224,6 +359,9 @@ export default function CheckoutPage() {
             : undefined,
         status: "simulated",
       },
+      giftCreditCode: finalGiftCreditAmountBase > 0 ? finalGiftCreditCode : undefined,
+      giftCreditAppliedAmountBase:
+        finalGiftCreditAmountBase > 0 ? finalGiftCreditAmountBase : undefined,
     };
     addOrder(order);
     trackEvent({
@@ -234,6 +372,8 @@ export default function CheckoutPage() {
       itemCount,
     });
     clearCart();
+    const newGiftCredits = createGiftCreditsFromOrder(order);
+    setCreatedGiftCredits(newGiftCredits);
     setOrderPlaced(order);
     setCurrentStep(STEPS.length - 1);
     void submitOrderToApi(order);
@@ -386,6 +526,28 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                 })}
               </p>
             </div>
+            {createdGiftCredits.length > 0 && (
+              <div className="checkout-confirmation__gift-codes">
+                <h4>{t("checkout.confirmation.giftCodesTitle")}</h4>
+                <p>{t("checkout.confirmation.keepCodesSafe")}</p>
+                <ul>
+                  {createdGiftCredits.map((credit) => (
+                    <li key={credit.code}>
+                      <strong>{credit.code}</strong>
+                      <span>{formatCurrency(credit.amountBase, currency)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {orderPlaced.giftCreditAppliedAmountBase && orderPlaced.giftCreditCode && (
+              <p className="checkout-confirmation__credit-note">
+                {t("checkout.confirmation.creditUsed", {
+                  amount: formatCurrency(orderPlaced.giftCreditAppliedAmountBase, currency),
+                  code: orderPlaced.giftCreditCode,
+                })}
+              </p>
+            )}
             <div className="checkout-confirmation__loyalty">
               <p>{t("checkout.confirmation.loyaltyEarned", { points: pointsEarned })}</p>
               <p>{t("checkout.confirmation.loyaltyStatus", { tier: currentTierLabel })}</p>
@@ -399,6 +561,30 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                 </p>
               )}
             </div>
+            {referralProfile && referralLink && (
+              <section className="checkout-confirmation__referral" aria-live="polite">
+                <p>{t("checkout.confirmation.referralHint")}</p>
+                <div className="checkout-confirmation__referral-actions">
+                  <input value={referralLink} readOnly />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleReferralCopy}
+                  >
+                    {t(
+                      referralCopyState === "copied"
+                        ? "account.referrals.copied"
+                        : "account.referrals.copyLink"
+                    )}
+                  </Button>
+                </div>
+                {referralCopyState === "error" && (
+                  <p className="checkout-confirmation__referral-error">
+                    {t("account.referrals.copyError")}
+                  </p>
+                )}
+              </section>
+            )}
             <div className="checkout-confirmation__actions">
               <Button
                 variant="ghost"
@@ -691,9 +877,15 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                           : formatCurrency(finalShippingCost, currency)}
                       </strong>
                     </div>
+                    {creditAppliedBase > 0 && (
+                      <div>
+                        <span>{t("checkout.review.labels.giftCredit")}</span>
+                        <strong>-{formatCurrency(creditAppliedBase, currency)}</strong>
+                      </div>
+                    )}
                     <div>
                       <span>{t("checkout.review.labels.total")}</span>
-                      <strong>{formatCurrency(total, currency)}</strong>
+                      <strong>{formatCurrency(totalAfterCredit, currency)}</strong>
                     </div>
                     {appliedPromo?.code && (
                       <div className="checkout-review__promo-code">

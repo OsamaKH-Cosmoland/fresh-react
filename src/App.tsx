@@ -7,6 +7,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import RitualStoriesListPage from "./pages/RitualStoriesListPage";
 import RitualStoryDetailPage from "./pages/RitualStoryDetailPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 import AudiencePage from "./pages/AudiencePage";
 import { apiGet, apiPost, apiDelete, apiPut } from "./lib/api";
 import type { Product } from "./types/product";
@@ -29,6 +30,10 @@ import {
   LazyShopPage,
   LazyOnboardingPage,
 } from "@/routes/lazyRoutes";
+import {
+  getReferralCodeFromLocation,
+  storeLastAttributionCode,
+} from "@/referrals/referralAttribution";
 
 const LazyLayoutLab = lazy(() => import("./labs/LayoutLab"));
 
@@ -121,6 +126,10 @@ const ROUTE_TITLE_MATCHERS: RouteTitleMatcher[] = [
   {
     key: "meta.titles.audience",
     match: (path) => path === "/audience",
+  },
+  {
+    key: "meta.titles.analytics",
+    match: (path) => path === "/analytics",
   },
   {
     key: "meta.titles.search",
@@ -304,10 +313,19 @@ export default function App() {
     typeof window !== "undefined"
       ? window.location.pathname.replace(/\/+$/, "") || "/"
       : "/";
+  const search = typeof window !== "undefined" ? window.location.search : "";
 
   const titleKey =
     useMemo(() => getTitleKey(path, view), [path, view]);
   usePageTitle(titleKey);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const code = getReferralCodeFromLocation();
+    if (!code) return;
+    if (!code.startsWith("NG-") || code.length < 5) return;
+    storeLastAttributionCode(code);
+  }, [search, path, view]);
 
   let routeContent: React.ReactNode = null;
 
@@ -332,6 +350,8 @@ export default function App() {
     routeContent = <OrdersAdmin />;
   } else if (path === "/audience") {
     routeContent = <AudiencePage />;
+  } else if (path === "/analytics") {
+    routeContent = <AnalyticsPage />;
   } else if (view === "ritualplanner" || path === "/rituals") {
     routeContent = <RitualPlanner />;
   } else if (view === "ritualfinder" || path === "/ritual-finder") {

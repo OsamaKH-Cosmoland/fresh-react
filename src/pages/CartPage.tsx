@@ -10,6 +10,7 @@ import { useTranslation } from "@/localization/locale";
 import { trackEvent } from "@/analytics/events";
 import { formatVariantMeta } from "@/utils/variantDisplay";
 import PromoCodePanel from "@/components/promo/PromoCodePanel";
+import GiftCreditPanel from "@/components/cart/GiftCreditPanel";
 
 const parsePrice = (price: string | number) => {
   const number = parseFloat(String(price).replace(/[^\d.]/g, ""));
@@ -26,6 +27,12 @@ export default function CartPage() {
     updateQuantity,
     removeItem,
     clearCart,
+    giftCreditCode,
+    giftCreditAppliedAmountBase,
+    creditAppliedBase,
+    grandTotalAfterCreditBase,
+    applyGiftCredit,
+    clearGiftCredit,
   } = useCart();
   const { t } = useTranslation();
   const { currency } = useCurrency();
@@ -274,6 +281,15 @@ export default function CartPage() {
               <div className="cart-summary-panel__promo">
                 <PromoCodePanel />
               </div>
+              <div className="cart-summary-panel__gift-credit">
+                <GiftCreditPanel
+                  appliedCode={giftCreditCode}
+                  appliedAmountBase={giftCreditAppliedAmountBase}
+                  disabled={!cartItems.length}
+                  onApply={applyGiftCredit}
+                  onClear={clearGiftCredit}
+                />
+              </div>
               <dl>
                 <div>
                   <dt>{t("cart.summary.items")}</dt>
@@ -289,9 +305,15 @@ export default function CartPage() {
                     <dd>-{formatCurrency(discountTotal, currency)}</dd>
                   </div>
                 )}
+                {creditAppliedBase > 0 && (
+                  <div>
+                    <dt>{t("cart.summary.giftCredit")}</dt>
+                    <dd>-{formatCurrency(creditAppliedBase, currency)}</dd>
+                  </div>
+                )}
                 <div className="cart-summary-panel__total-row">
                   <dt>{t("cart.summary.total")}</dt>
-                  <dd>{formatCurrency(Math.max(subtotal - discountTotal, 0), currency)}</dd>
+                  <dd>{formatCurrency(grandTotalAfterCreditBase, currency)}</dd>
                 </div>
               </dl>
               <p className="cart-summary-note">

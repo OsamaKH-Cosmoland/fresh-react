@@ -155,6 +155,7 @@ export const en = {
       favorites: "Favorites",
       compare: "Compare",
       flowUsage: "Local flow usage",
+      referrals: "Referrals",
     },
     metrics: {
       ordersCount: "Order count",
@@ -166,6 +167,8 @@ export const en = {
       loyaltyPoints: "Loyalty points",
       audienceTotal: "Total contacts",
       audienceWithOrders: "Contacts with orders",
+      referralOrders: "Referred orders",
+      referralCredit: "Credit awarded",
       globalRating: "Average rating",
     },
     labels: {
@@ -174,6 +177,10 @@ export const en = {
       reviewCount: "{count} total reviews",
       favoritesHint: "Favorited items saved locally.",
       compareHint: "Items added to compare.",
+      referralTopCodes: "Top referral codes",
+      referralCode: "Code",
+      referralOrders: "Orders",
+      referralCredit: "Credit awarded",
       notAvailable: "Not available yet",
       type: {
         product: "Product",
@@ -281,6 +288,7 @@ export const en = {
       subtotal: "Subtotal",
       discount: "Discount",
       total: "Total",
+      giftCredit: "Gift credit",
     },
     promo: {
       label: "Promo code",
@@ -293,6 +301,20 @@ export const en = {
       removed: "Promo code removed",
       youSave: "You save {amount}",
       freeShipping: "Free shipping",
+    },
+    giftCredit: {
+      title: "Gift card or store credit",
+      help: "Redeem a gift card or manual credit code before you head to checkout.",
+      placeholder: "Enter gift card or credit code",
+      inputLabel: "Gift card or store credit code",
+      apply: "Apply",
+      remove: "Remove credit",
+      appliedLabel: "Applied code: {code}",
+      errors: {
+        not_found: "Code not found",
+        exhausted: "This credit has been fully used.",
+        invalid: "This code cannot be used right now.",
+      },
     },
   },
   loader: {
@@ -569,6 +591,7 @@ export const en = {
         shippingMethod: "Shipping method",
         payment: "Payment method",
         address: "Shipping address",
+        giftCredit: "Gift credit",
       },
     },
     defaults: {
@@ -586,6 +609,10 @@ export const en = {
       loyaltyStatus: "Your status: {tier}.",
       loyaltyTotal: "You now have {points} ritual points.",
       loyaltyProgress: "Earn {points} more to reach {nextTier}.",
+      giftCodesTitle: "Gift codes",
+      keepCodesSafe: "Keep these codes safe and share them with the person you gifted them to.",
+      creditUsed: "You used {amount} from your gift credit (code: {code}).",
+      referralHint: "Share your ritual link with a friend to earn store credit.",
       viewOrders: "View your orders",
     },
     cta: {
@@ -690,6 +717,8 @@ export const en = {
     tabs: {
       profile: "Profile",
       orders: "Orders",
+      credits: "Credits & gift cards",
+      referrals: "Referrals",
       saved: "Saved rituals",
       favorites: "Favourites",
       reviews: "Reviews",
@@ -735,6 +764,43 @@ export const en = {
     orders: {
       emptyTitle: "No orders yet",
       emptyBody: "When you place a routine order, it will appear here with delivery details.",
+    },
+    credits: {
+      heading: "Credits & gift cards",
+      description: "Gift cards and manual credits ready for your next ritual order.",
+      emptyTitle: "No credits yet",
+      emptyBody: "The credits you earn or receive will show up here with their remaining balance.",
+      remaining: "Remaining balance: {amount}",
+      statuses: {
+        active: "Active",
+        exhausted: "Exhausted",
+        disabled: "Disabled",
+      },
+      createdAt: "Added {date}",
+    },
+    referrals: {
+      heading: "Referrals",
+      description: "Share your link to invite friends and earn store credit.",
+      linkLabel: "Your referral link",
+      copyLink: "Copy link",
+      copied: "Link copied",
+      copyError: "Unable to copy the link right now.",
+      stats: {
+        orders: "Orders from your link",
+        credit: "Total referral credit",
+      },
+      form: {
+        nameLabel: "Name (optional)",
+        emailLabel: "Email (optional)",
+        save: "Save referral info",
+        saved: "Referral info saved",
+      },
+      list: {
+        title: "Recent referrals",
+        empty: "No referred orders yet.",
+        orderLabel: "Order {orderId}",
+        credited: "Credit: {amount}",
+      },
     },
     saved: {
       empty: "Save a ritual to revisit it whenever you need it.",

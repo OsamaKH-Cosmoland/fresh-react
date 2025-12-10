@@ -6,6 +6,11 @@ import {
   type AppliedPromo,
   type ApplyPromoResult,
 } from "@/discounts/discountEngine";
+import {
+  applyCreditToAmount,
+  findCreditByCode,
+  seedManualCreditsOnce,
+} from "@/utils/giftCreditStorage";
 
 const STORAGE_KEY = "naturagloss_cart";
 const SAVED_CART_KEY = "naturagloss_saved_carts";
@@ -55,6 +60,8 @@ interface StoredCartPayload {
   items: CartItem[];
   activePromoCode?: string | null;
   appliedPromo?: AppliedPromo | null;
+  giftCreditCode?: string | null;
+  giftCreditAppliedAmountBase?: number;
 }
 
 export interface SavedCart {
@@ -72,6 +79,8 @@ type CartState = {
   activeSavedCartId: string | null;
   activePromoCode: string | null;
   appliedPromo: AppliedPromo | null;
+  giftCreditCode: string | null;
+  giftCreditAppliedAmountBase: number;
 };
 
 type CartAction =
@@ -83,6 +92,8 @@ type CartAction =
         activeSavedCartId: string | null;
         activePromoCode?: string | null;
         appliedPromo?: AppliedPromo | null;
+        giftCreditCode?: string | null;
+        giftCreditAppliedAmountBase?: number;
       };
     }
   | { type: "add"; payload: CartItem }
@@ -91,7 +102,14 @@ type CartAction =
   | { type: "clear" }
   | { type: "set-saved"; payload: SavedCart[] }
   | { type: "load-saved"; payload: { items: CartItem[]; activeSavedCartId: string | null } }
-  | { type: "set-promo"; payload: { activePromoCode: string | null; appliedPromo: AppliedPromo | null } };
+  | { type: "set-promo"; payload: { activePromoCode: string | null; appliedPromo: AppliedPromo | null } }
+  | { type: "apply-gift-credit"; payload: { code: string; appliedAmountBase: number } }
+  | { type: "clear-gift-credit" };
+
+const DEFAULT_GIFT_CREDIT_STATE = {
+  giftCreditCode: null as string | null,
+  giftCreditAppliedAmountBase: 0,
+};
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
   switch (action.type) {
@@ -102,6 +120,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         activeSavedCartId: action.payload.activeSavedCartId,
         activePromoCode: action.payload.activePromoCode ?? null,
         appliedPromo: action.payload.appliedPromo ?? null,
+        giftCreditCode: action.payload.giftCreditCode ?? null,
+        giftCreditAppliedAmountBase: action.payload.giftCreditAppliedAmountBase ?? 0,
         updatedAt: Date.now(),
       };
     case "add": {
@@ -120,6 +140,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         activeSavedCartId: null,
         activePromoCode: null,
         appliedPromo: null,
+        ...DEFAULT_GIFT_CREDIT_STATE,
         updatedAt: Date.now(),
       };
     }
@@ -131,6 +152,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           activeSavedCartId: null,
           activePromoCode: null,
           appliedPromo: null,
+          ...DEFAULT_GIFT_CREDIT_STATE,
           updatedAt: Date.now(),
         };
       }
@@ -144,6 +166,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         activeSavedCartId: null,
         activePromoCode: null,
         appliedPromo: null,
+        ...DEFAULT_GIFT_CREDIT_STATE,
         updatedAt: Date.now(),
       };
     }
@@ -154,6 +177,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         activeSavedCartId: null,
         activePromoCode: null,
         appliedPromo: null,
+        ...DEFAULT_GIFT_CREDIT_STATE,
         updatedAt: Date.now(),
       };
     case "clear":
@@ -163,6 +187,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         activeSavedCartId: null,
         activePromoCode: null,
         appliedPromo: null,
+        ...DEFAULT_GIFT_CREDIT_STATE,
         updatedAt: Date.now(),
       };
     case "set-saved":
@@ -178,6 +203,7 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         activeSavedCartId: action.payload.activeSavedCartId,
         activePromoCode: null,
         appliedPromo: null,
+        ...DEFAULT_GIFT_CREDIT_STATE,
         updatedAt: Date.now(),
       };
     case "set-promo":
@@ -185,12 +211,32 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         ...state,
         activePromoCode: action.payload.activePromoCode,
         appliedPromo: action.payload.appliedPromo,
+        ...DEFAULT_GIFT_CREDIT_STATE,
+        updatedAt: Date.now(),
+      };
+    case "apply-gift-credit":
+      return {
+        ...state,
+        giftCreditCode: action.payload.code,
+        giftCreditAppliedAmountBase: action.payload.appliedAmountBase,
+        updatedAt: Date.now(),
+      };
+    case "clear-gift-credit":
+      return {
+        ...state,
+        ...DEFAULT_GIFT_CREDIT_STATE,
         updatedAt: Date.now(),
       };
     default:
       return state;
   }
 };
+
+export type GiftCreditApplyStatus = "ok" | "not_found" | "exhausted" | "invalid";
+
+export type ApplyGiftCreditResult =
+  | { status: "ok"; appliedAmountBase: number; code: string }
+  | { status: "not_found" | "exhausted" | "invalid" };
 
 interface CartContextValue {
   cartItems: CartItem[];
@@ -201,6 +247,13 @@ interface CartContextValue {
   activePromoCode: string | null;
   appliedPromo: AppliedPromo | null;
   discountTotal: number;
+  giftCreditCode: string | null;
+  giftCreditAppliedAmountBase: number;
+  grandTotalBase: number;
+  creditAppliedBase: number;
+  grandTotalAfterCreditBase: number;
+  applyGiftCredit: (code: string, orderTotalBase?: number) => ApplyGiftCreditResult;
+  clearGiftCredit: () => void;
   addItem: (item: Omit<CartItem, "quantity"> & { quantity?: number }) => void;
   updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
@@ -260,6 +313,8 @@ function readStoredCartPayload(): StoredCartPayload {
         items: sanitizeCartItems(parsed.items),
         activePromoCode: parsed.activePromoCode ?? null,
         appliedPromo: parsed.appliedPromo ?? null,
+        giftCreditCode: parsed.giftCreditCode ?? null,
+        giftCreditAppliedAmountBase: parsed.giftCreditAppliedAmountBase ?? 0,
       };
     }
   } catch (error) {
@@ -297,12 +352,18 @@ function createInitialState(): CartState {
     activeSavedCartId: null,
     activePromoCode: promoState.activePromoCode,
     appliedPromo: promoState.appliedPromo,
+    giftCreditCode: stored.giftCreditCode ?? null,
+    giftCreditAppliedAmountBase: stored.giftCreditAppliedAmountBase ?? 0,
     updatedAt: Date.now(),
   };
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, undefined, createInitialState);
+
+  useEffect(() => {
+    seedManualCreditsOnce();
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -313,12 +374,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
           items: state.items,
           activePromoCode: state.activePromoCode,
           appliedPromo: state.appliedPromo,
+          giftCreditCode: state.giftCreditCode,
+          giftCreditAppliedAmountBase: state.giftCreditAppliedAmountBase,
         })
       );
     } catch (error) {
       console.error("Failed to save cart:", error);
     }
-  }, [state.items, state.activePromoCode, state.appliedPromo]);
+  }, [
+    state.items,
+    state.activePromoCode,
+    state.appliedPromo,
+    state.giftCreditCode,
+    state.giftCreditAppliedAmountBase,
+  ]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -339,6 +408,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [state.items]
   );
   const discountTotal = state.appliedPromo?.discountAmount ?? 0;
+  const grandTotalBase = Math.max(subtotal - discountTotal, 0);
+  const creditAppliedBase = state.giftCreditAppliedAmountBase ?? 0;
+  const grandTotalAfterCreditBase = Math.max(grandTotalBase - creditAppliedBase, 0);
   const applyPromoCode = (code: string, shippingCost = 0): ApplyPromoResult => {
     const normalized = code.trim().toUpperCase();
     if (!normalized) {
@@ -363,6 +435,53 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return;
     }
     dispatch({ type: "set-promo", payload: { activePromoCode: null, appliedPromo: null } });
+  };
+
+  const applyGiftCredit = (
+    code: string,
+    orderTotalBaseOverride?: number
+  ): ApplyGiftCreditResult => {
+    const normalized = code.trim();
+    if (!normalized) {
+      return { status: "invalid" };
+    }
+    const credit = findCreditByCode(normalized);
+    if (!credit) {
+      return { status: "not_found" };
+    }
+    if (credit.status !== "active") {
+      return { status: "invalid" };
+    }
+    if (credit.remainingAmountBase <= 0) {
+      return { status: "exhausted" };
+    }
+    const targetTotal =
+      typeof orderTotalBaseOverride === "number"
+        ? Math.max(orderTotalBaseOverride, 0)
+        : grandTotalBase;
+    const { appliedAmountBase } = applyCreditToAmount(credit, targetTotal);
+    if (!appliedAmountBase) {
+      return { status: "exhausted" };
+    }
+    dispatch({
+      type: "apply-gift-credit",
+      payload: {
+        code: credit.code,
+        appliedAmountBase,
+      },
+    });
+    return {
+      status: "ok",
+      appliedAmountBase,
+      code: credit.code,
+    };
+  };
+
+  const clearGiftCredit = () => {
+    if (!state.giftCreditCode && !state.giftCreditAppliedAmountBase) {
+      return;
+    }
+    dispatch({ type: "clear-gift-credit" });
   };
 
   const addItem = (item: Omit<CartItem, "quantity"> & { quantity?: number }) => {
@@ -481,6 +600,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     activePromoCode: state.activePromoCode,
     appliedPromo: state.appliedPromo,
     discountTotal,
+    giftCreditCode: state.giftCreditCode,
+    giftCreditAppliedAmountBase: state.giftCreditAppliedAmountBase,
+    grandTotalBase,
+    creditAppliedBase,
+    grandTotalAfterCreditBase,
     addItem,
     updateQuantity,
     removeItem,
@@ -493,6 +617,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     renameSavedCart,
     applyPromoCode,
     clearPromoCode,
+    applyGiftCredit,
+    clearGiftCredit,
   };
 
   return (

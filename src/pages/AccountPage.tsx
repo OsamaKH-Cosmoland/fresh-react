@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { AccountTabs } from "@/components/account/AccountTabs";
@@ -7,7 +7,7 @@ import { useBundleActions } from "@/cart/cartBundles";
 import { useCart } from "@/cart/cartStore";
 import { useFavorites } from "@/favorites/favoritesStore";
 import { useUserPreferences } from "@/hooks/useUserPreferences";
-import { useTranslation } from "@/localization/locale";
+import { useLocale, useTranslation } from "@/localization/locale";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import {
@@ -15,9 +15,9 @@ import {
   shopFocusLookup,
   type FocusTagId,
 } from "@/content/shopCatalog";
-import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
+import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatVariantMeta } from "@/utils/variantDisplay";
 import { readOrders, ORDER_STORAGE_KEY } from "@/utils/orderStorage";
@@ -34,13 +34,10 @@ import { useSeo } from "@/seo/useSeo";
 import { CURRENCIES } from "@/currency/currencyConfig";
 import { useCurrency } from "@/currency/CurrencyProvider";
 import { useLoyalty } from "@/loyalty/useLoyalty";
-
-const buildAppUrl = (pathname: string) => {
-  const base = import.meta.env.BASE_URL ?? "/";
-  const normalizedBase = base.endsWith("/") ? base.slice(0, -1) : base;
-  const normalizedPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
-  return `${normalizedBase}${normalizedPath}`;
-};
+import { buildAppUrl } from "@/utils/navigation";
+import { useReferralProfile } from "@/referrals/useReferralProfile";
+import { GIFT_CREDIT_KEY, listGiftCredits } from "@/utils/giftCreditStorage";
+import type { GiftCredit } from "@/giftcards/giftCardTypes";
 
 const formatOrderLabel = (order: LocalOrder) =>
   `${order.id} · ${new Date(order.createdAt).toLocaleDateString(undefined, {
@@ -86,12 +83,13 @@ const getReviewTargetInfo = (review: LocalReview) => {
   };
 };
 
-type AccountTabId = "profile" | "orders" | "saved" | "favorites" | "reviews";
+type AccountTabId = "profile" | "orders" | "referrals" | "saved" | "favorites" | "reviews" | "credits";
 
 export default function AccountPage() {
   usePageAnalytics("account");
   useSeo({ route: "account" });
   const { t } = useTranslation();
+  const { locale } = useLocale();
   const { currency, setCurrency } = useCurrency();
   const { totalPoints, currentTier, nextTier, pointsToNextTier, lastOrderAt } = useLoyalty();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -103,6 +101,19 @@ export default function AccountPage() {
     orders[0]?.id ?? null
   );
   const [reviews, setReviews] = useState<LocalReview[]>(() => listReviews());
+  const [giftCredits, setGiftCredits] = useState<GiftCredit[]>(() =>
+    typeof window === "undefined" ? [] : listGiftCredits()
+  );
+  const {
+    profile: referralProfile,
+    attributions: referralAttributions,
+    updateProfile: updateReferralProfile,
+  } = useReferralProfile();
+  const [referralName, setReferralName] = useState(referralProfile.name ?? "");
+  const [referralEmail, setReferralEmail] = useState(referralProfile.email ?? "");
+  const [referralCopyState, setReferralCopyState] = useState<"idle" | "copied" | "error">("idle");
+  const [referralSaveMessage, setReferralSaveMessage] = useState<string | null>(null);
+  const referralSaveTimer = useRef<number | null>(null);
   const { preferences } = useUserPreferences();
   const { savedCarts, loadSavedCart, deleteSavedCart, addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
@@ -131,6 +142,17 @@ export default function AccountPage() {
   }, []);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === GIFT_CREDIT_KEY) {
+        setGiftCredits(listGiftCredits());
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  useEffect(() => {
     if (!orders.length) {
       setExpandedOrderId(null);
       return;
@@ -140,10 +162,25 @@ export default function AccountPage() {
     );
   }, [orders]);
 
+  useEffect(() => {
+    setReferralName(referralProfile.name ?? "");
+    setReferralEmail(referralProfile.email ?? "");
+  }, [referralProfile.name, referralProfile.email]);
+
+  useEffect(() => {
+    return () => {
+      if (referralSaveTimer.current) {
+        window.clearTimeout(referralSaveTimer.current);
+      }
+    };
+  }, []);
+
   const tabs = useMemo(
     () => [
       { id: "profile", label: t("account.tabs.profile") },
       { id: "orders", label: t("account.tabs.orders") },
+      { id: "credits", label: t("account.tabs.credits") },
+      { id: "referrals", label: t("account.tabs.referrals") },
       { id: "saved", label: t("account.tabs.saved") },
       { id: "favorites", label: t("account.tabs.favorites") },
       { id: "reviews", label: t("account.tabs.reviews") },
@@ -222,6 +259,42 @@ export default function AccountPage() {
     if (typeof window === "undefined") return;
     window.location.href = buildAppUrl(path);
   };
+
+  const handleReferralCopy = async () => {
+    if (!referralLink) return;
+    if (typeof navigator === "undefined") {
+      setReferralCopyState("error");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(referralLink);
+      setReferralCopyState("copied");
+      if (typeof window !== "undefined") {
+        window.setTimeout(() => setReferralCopyState("idle"), 2000);
+      }
+    } catch {
+      setReferralCopyState("error");
+    }
+  };
+
+  const handleReferralSave = () => {
+    updateReferralProfile({
+      name: referralName.trim() || undefined,
+      email: referralEmail.trim() || undefined,
+    });
+    setReferralSaveMessage(t("account.referrals.form.saved"));
+    if (referralSaveTimer.current) {
+      window.clearTimeout(referralSaveTimer.current);
+    }
+    if (typeof window !== "undefined") {
+      referralSaveTimer.current = window.setTimeout(
+        () => setReferralSaveMessage(null),
+        2000
+      );
+    }
+  };
+
+  const referralLink = `${buildAppUrl("/")}?ref=${encodeURIComponent(referralProfile.code)}`;
 
   const renderProfileTab = () => {
     const tierLabel = t(`account.loyalty.tiers.${currentTier.id}.label`);
@@ -700,12 +773,162 @@ export default function AccountPage() {
     );
   };
 
+  const renderReferralsTab = () => {
+    const hasAttributions = referralAttributions.length > 0;
+    return (
+      <div className="account-referrals">
+        <header className="account-referrals__hero">
+          <h3>{t("account.referrals.heading")}</h3>
+          <p>{t("account.referrals.description")}</p>
+        </header>
+        <div className="account-referrals__link-block">
+          <label className="sr-only">{t("account.referrals.linkLabel")}</label>
+          <div className="account-referrals__link">
+            <input value={referralLink} readOnly />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleReferralCopy}
+              disabled={!referralLink}
+            >
+              {t(
+                referralCopyState === "copied"
+                  ? "account.referrals.copied"
+                  : "account.referrals.copyLink"
+              )}
+            </Button>
+          </div>
+          {referralCopyState === "error" && (
+            <p className="account-referrals__link-error">
+              {t("account.referrals.copyError")}
+            </p>
+          )}
+        </div>
+        <div className="account-referrals__stats">
+          <div>
+            <span>{t("account.referrals.stats.orders")}</span>
+            <strong>{referralProfile.totalReferredOrders}</strong>
+          </div>
+          <div>
+            <span>{t("account.referrals.stats.credit")}</span>
+            <strong>{formatCurrency(referralProfile.totalReferralCreditBase, currency)}</strong>
+          </div>
+        </div>
+        <form
+          className="account-referrals__form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleReferralSave();
+          }}
+        >
+          <label htmlFor="referralName">{t("account.referrals.form.nameLabel")}</label>
+          <input
+            id="referralName"
+            type="text"
+            value={referralName}
+            onChange={(event) => setReferralName(event.target.value)}
+          />
+          <label htmlFor="referralEmail">{t("account.referrals.form.emailLabel")}</label>
+          <input
+            id="referralEmail"
+            type="email"
+            value={referralEmail}
+            onChange={(event) => setReferralEmail(event.target.value)}
+          />
+          <div className="account-referrals__form-actions">
+            <Button variant="primary" size="md" type="submit">
+              {t("account.referrals.form.save")}
+            </Button>
+            {referralSaveMessage && (
+              <p className="account-referrals__form-status" role="status">
+                {referralSaveMessage}
+              </p>
+            )}
+          </div>
+        </form>
+        <div className="account-referrals__list">
+          <header>
+            <h4>{t("account.referrals.list.title")}</h4>
+          </header>
+          {hasAttributions ? (
+            <ul>
+              {referralAttributions.slice(0, 5).map((entry) => (
+                <li key={`${entry.orderId}-${entry.attributedAt}`}>
+                  <strong>{t("account.referrals.list.orderLabel", { orderId: entry.orderId })}</strong>
+                  <p>
+                    {new Date(entry.attributedAt).toLocaleDateString(locale, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })} · {formatCurrency(entry.creditAwardedBase, currency)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="account-referrals__list-empty">
+              {t("account.referrals.list.empty")}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderCreditsTab = () => {
+    const activeCredits = giftCredits.filter((credit) => credit.remainingAmountBase > 0);
+    if (!activeCredits.length) {
+      return (
+        <div className="account-placeholder">
+          <h3>{t("account.credits.emptyTitle")}</h3>
+          <p>{t("account.credits.emptyBody")}</p>
+        </div>
+      );
+    }
+    return (
+      <div className="account-credits">
+        <header className="account-credits__header">
+          <h3>{t("account.credits.heading")}</h3>
+          <p>{t("account.credits.description")}</p>
+        </header>
+        <ul className="account-credits__list">
+          {activeCredits.map((credit) => (
+            <li className="account-credits__item" key={credit.id}>
+              <div>
+                <strong>{credit.code}</strong>
+                <p>{t("account.credits.remaining", { amount: formatCurrency(credit.remainingAmountBase, currency) })}</p>
+              </div>
+              <div className="account-credits__meta">
+                <span className="account-credits__status">
+                  {t(`account.credits.statuses.${credit.status}`)}
+                </span>
+                <small>
+                  {t("account.credits.createdAt", {
+                    date: new Date(credit.createdAt).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    }),
+                  })}
+                </small>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
+  };
+
   const tabContent = (() => {
     switch (activeTab) {
       case "profile":
         return renderProfileTab();
       case "orders":
         return renderOrdersTab();
+      case "referrals":
+        return renderReferralsTab();
+      case "credits":
+        return renderCreditsTab();
       case "saved":
         return renderSavedTab();
       case "favorites":

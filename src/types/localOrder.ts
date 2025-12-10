@@ -48,4 +48,6 @@ export interface LocalOrder {
   shippingMethod: ShippingMethod;
   paymentSummary: PaymentSummary;
   notes?: string;
+  giftCreditCode?: string;
+  giftCreditAppliedAmountBase?: number;
 }

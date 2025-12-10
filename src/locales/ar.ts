@@ -155,6 +155,7 @@ export const ar = {
       favorites: "المفضلات",
       compare: "المقارنة",
       flowUsage: "استخدام المسارات المحلية",
+      referrals: "الإحالات",
     },
     metrics: {
       ordersCount: "عدد الطلبات",
@@ -166,6 +167,8 @@ export const ar = {
       loyaltyPoints: "نقاط الولاء",
       audienceTotal: "إجمالي جهات الاتصال",
       audienceWithOrders: "جهات اتصال بصرف طلبات",
+      referralOrders: "طلبات الإحالة",
+      referralCredit: "الرصيد الممنوح",
       globalRating: "متوسط التقييم",
     },
     labels: {
@@ -174,6 +177,10 @@ export const ar = {
       reviewCount: "{count} إجمالي التقييمات",
       favoritesHint: "العناصر المفضلة محفوظة محلياً.",
       compareHint: "العناصر المضافة للمقارنة.",
+      referralTopCodes: "أفضل رموز الإحالة",
+      referralCode: "الرمز",
+      referralOrders: "الطلبات",
+      referralCredit: "الرصيد الممنوح",
       notAvailable: "غير متوفر حالياً",
       type: {
         product: "منتج",
@@ -281,6 +288,7 @@ export const ar = {
       subtotal: "المجموع الفرعي",
       discount: "الخصم",
       total: "الإجمالي",
+      giftCredit: "رصيد الهدايا",
     },
     promo: {
       label: "رمز التوفير",
@@ -293,6 +301,20 @@ export const ar = {
       removed: "تم إزالة الرمز",
       youSave: "توفر {amount}",
       freeShipping: "توصيل مجاني",
+    },
+    giftCredit: {
+      title: "بطاقة هدية أو رصيد المتجر",
+      help: "أضف الرمز قبل التوجه للدفع لتطبيق الرصيد على الطلب.",
+      placeholder: "أدخل رمز البطاقة أو الرصيد",
+      inputLabel: "رمز بطاقة الهدية أو الرصيد",
+      apply: "تطبيق",
+      remove: "إزالة الرصيد",
+      appliedLabel: "الرمز المطبق: {code}",
+      errors: {
+        not_found: "الرمز غير موجود",
+        exhausted: "هذا الرصيد استُهلك بالكامل.",
+        invalid: "لا يمكن استخدام هذا الرمز الآن.",
+      },
     },
   },
   loader: {
@@ -569,6 +591,7 @@ export const ar = {
         shippingMethod: "طريقة الشحن",
         payment: "طريقة الدفع",
         address: "عنوان التوصيل",
+        giftCredit: "رصيد الهدايا",
       },
     },
     defaults: {
@@ -586,6 +609,10 @@ export const ar = {
       loyaltyStatus: "حالتك: {tier}.",
       loyaltyTotal: "لديك الآن {points} نقطة طقسية.",
       loyaltyProgress: "احصل على {points} نقطة أخرى للوصول إلى {nextTier}.",
+      giftCodesTitle: "رموز الهدايا",
+      keepCodesSafe: "احفظ هذه الرموز بأمان وشاركها مباشرة مع من أهديتهم إياها.",
+      creditUsed: "استخدمت {amount} من رصيد الهدايا (الرمز: {code}).",
+      referralHint: "شارك هذا الرابط مع صديق ليكسب رصيداً في المتجر.",
       viewOrders: "عرض طلباتي",
     },
     cta: {
@@ -689,6 +716,8 @@ export const ar = {
     tabs: {
       profile: "الملف",
       orders: "الطلبات",
+      credits: "الائتمانات وبطاقات الهدايا",
+      referrals: "الإحالات",
       saved: "روتين محفوظ",
       favorites: "المفضلات",
       reviews: "التقييمات",
@@ -734,6 +763,43 @@ export const ar = {
     orders: {
       emptyTitle: "لا توجد طلبات بعد",
       emptyBody: "عند إتمام طلب ستجده هنا مع تفاصيل التوصيل.",
+    },
+    credits: {
+      heading: "الائتمانات وبطاقات الهدايا",
+      description: "تظهر هنا بطاقات الهدايا أو الأرصدة اليدوية المتاحة لطلبك القادم.",
+      emptyTitle: "لا توجد أرصدة حالياً",
+      emptyBody: "ستُضاف هنا الأرصدة التي تكسبها أو تهديها بعد كل طلب.",
+      remaining: "الرصيد المتبقي: {amount}",
+      statuses: {
+        active: "فعال",
+        exhausted: "مستنفد",
+        disabled: "معطل",
+      },
+      createdAt: "أضيف في {date}",
+    },
+    referrals: {
+      heading: "الإحالات",
+      description: "شارك رابطك لدعوة الأصدقاء وكسب رصيد المتجر.",
+      linkLabel: "رابط الإحالة الخاص بك",
+      copyLink: "نسخ الرابط",
+      copied: "تم نسخ الرابط",
+      copyError: "تعذر نسخ الرابط حالياً.",
+      stats: {
+        orders: "طلبات من الرابط",
+        credit: "إجمالي رصيد الإحالة",
+      },
+      form: {
+        nameLabel: "الاسم (اختياري)",
+        emailLabel: "البريد الإلكتروني (اختياري)",
+        save: "حفظ معلومات الإحالة",
+        saved: "تم حفظ معلومات الإحالة",
+      },
+      list: {
+        title: "الإحالات الأخيرة",
+        empty: "لا توجد طلبات محالة بعد.",
+        orderLabel: "طلب {orderId}",
+        credited: "الرصيد: {amount}",
+      },
     },
     saved: {
       empty: "احفظ روتينًا لتعود إليه متى شئت.",

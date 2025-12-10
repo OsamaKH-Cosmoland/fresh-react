@@ -9,6 +9,7 @@ import { trackEvent } from "@/analytics/events";
 import { useCurrency } from "@/currency/CurrencyProvider";
 import { formatVariantMeta } from "@/utils/variantDisplay";
 import PromoCodePanel from "@/components/promo/PromoCodePanel";
+import GiftCreditPanel from "@/components/cart/GiftCreditPanel";
 
 interface CartDrawerProps {
   open: boolean;
@@ -28,6 +29,12 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
     saveCurrentCart,
     loadSavedCart,
     deleteSavedCart,
+    giftCreditCode,
+    giftCreditAppliedAmountBase,
+    creditAppliedBase,
+    grandTotalAfterCreditBase,
+    applyGiftCredit,
+    clearGiftCredit,
   } = useCart();
   const [saveName, setSaveName] = useState("");
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -295,6 +302,15 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
           {cartItems.length > 0 && (
             <div className="cart-drawer__promo">
               <PromoCodePanel />
+              <div className="cart-drawer__gift-credit">
+                <GiftCreditPanel
+                  appliedCode={giftCreditCode}
+                  appliedAmountBase={giftCreditAppliedAmountBase}
+                  disabled={!cartItems.length}
+                  onApply={applyGiftCredit}
+                  onClear={clearGiftCredit}
+                />
+              </div>
             </div>
           )}
 
@@ -356,22 +372,28 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
           </section>
 
           <footer className="cart-drawer__footer" data-animate="fade-in">
-            <div className="cart-drawer__totals">
-              <div className="cart-drawer__totals-row">
-                <span>{t("cart.summary.subtotal")}</span>
-                <strong>{formatCurrency(subtotal, currency)}</strong>
-              </div>
-              {discountTotal > 0 && (
+              <div className="cart-drawer__totals">
                 <div className="cart-drawer__totals-row">
-                  <span>{t("cart.summary.discount")}</span>
-                  <strong>-{formatCurrency(discountTotal, currency)}</strong>
+                  <span>{t("cart.summary.subtotal")}</span>
+                  <strong>{formatCurrency(subtotal, currency)}</strong>
                 </div>
-              )}
-              <div className="cart-drawer__totals-row cart-drawer__totals-row--highlight">
-                <span>{t("cart.summary.total")}</span>
-                <strong>{formatCurrency(Math.max(subtotal - discountTotal, 0), currency)}</strong>
+                {discountTotal > 0 && (
+                  <div className="cart-drawer__totals-row">
+                    <span>{t("cart.summary.discount")}</span>
+                    <strong>-{formatCurrency(discountTotal, currency)}</strong>
+                  </div>
+                )}
+                {creditAppliedBase > 0 && (
+                  <div className="cart-drawer__totals-row">
+                    <span>{t("cart.summary.giftCredit")}</span>
+                    <strong>-{formatCurrency(creditAppliedBase, currency)}</strong>
+                  </div>
+                )}
+                <div className="cart-drawer__totals-row cart-drawer__totals-row--highlight">
+                  <span>{t("cart.summary.total")}</span>
+                  <strong>{formatCurrency(grandTotalAfterCreditBase, currency)}</strong>
+                </div>
               </div>
-            </div>
             <Button
               variant="primary"
               size="lg"
