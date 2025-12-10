@@ -1,9 +1,6 @@
-import { createRequire } from "node:module";
+import type { Config } from "jest";
 
-const require = createRequire(import.meta.url);
-
-/** @type {import("jest").Config} **/
-const config = {
+const config: Config = {
   preset: "ts-jest/presets/default-esm",
   testEnvironment: "jsdom",
   extensionsToTreatAsEsm: [".ts", ".tsx"],
@@ -17,9 +14,9 @@ const config = {
     ],
   },
   moduleNameMapper: {
-    "\\.(jpg|jpeg|png|gif|webp|avif|svg)$": "<rootDir>/__mocks__/fileMock.cjs",
-    "\\.(css|scss|sass)$": "<rootDir>/__mocks__/styleMock.cjs",
-    "^mongodb$": "<rootDir>/__mocks__/mongodbMock.cjs",
+    "\\.(jpg|jpeg|png|gif|webp|avif|svg)$": "<rootDir>/__mocks__/fileMock.ts",
+    "\\.(css|scss|sass)$": "<rootDir>/__mocks__/styleMock.ts",
+    "^mongodb$": "<rootDir>/__mocks__/mongodbMock.ts",
     "^@/(.*)$": "<rootDir>/src/$1",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],

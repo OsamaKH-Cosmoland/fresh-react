@@ -10,7 +10,7 @@
     "build:shared": "tsc -p tsconfig.shared.json",
     "build": "npm run build:shared && vite build",
     "lint": "eslint .",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --runInBand",
     "preview": "vite preview"
   },
   "dependencies": {
