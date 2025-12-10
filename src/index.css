@@ -41,6 +41,7 @@
   --focus-ring: rgba(244, 208, 135, 0.9);
   --focus-ring-offset: 3px;
   --focus-shadow: 0 0 0 3px rgba(244, 208, 135, 0.45);
+  scroll-padding-top: var(--navbar-height);
 }
 
 body {
@@ -51,7 +52,7 @@ body {
 }
 
 #main-content {
-  padding-top: var(--navbar-height);
+  padding-top: var(--space-6);
 }
 
 button:focus-visible,
@@ -2140,7 +2141,7 @@ button:hover {
   border-bottom: 1px solid rgba(245, 220, 168, 0.2);
   color: #f5dca8;
   padding: 0.65rem 0;
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
@@ -2158,7 +2159,7 @@ button:hover {
 .navbar.sticky {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 90;
   backdrop-filter: saturate(140%) blur(8px);
   background: color-mix(in srgb, #052116 70%, transparent);
 }
