@@ -2205,6 +2205,7 @@ button:hover {
 }
 .nav-explore {
   transform: translateX(16px);
+  z-index: 210;
 }
 
 .offline-notice {
@@ -2239,7 +2240,7 @@ button:hover {
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
-  z-index: 30;
+  z-index: 200;
 }
 .nav-explore__link {
   color: #fbe7ad;
