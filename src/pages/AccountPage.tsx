@@ -33,7 +33,6 @@ import type { LocalReview } from "@/types/localReview";
 import { useSeo } from "@/seo/useSeo";
 import { CURRENCIES } from "@/currency/currencyConfig";
 import { useCurrency } from "@/currency/CurrencyProvider";
-import { useLoyalty } from "@/loyalty/useLoyalty";
 import { buildAppUrl } from "@/utils/navigation";
 import { useReferralProfile } from "@/referrals/useReferralProfile";
 import { GIFT_CREDIT_KEY, listGiftCredits } from "@/utils/giftCreditStorage";
@@ -91,7 +90,14 @@ export default function AccountPage() {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const { currency, setCurrency } = useCurrency();
-  const { totalPoints, currentTier, nextTier, pointsToNextTier, lastOrderAt } = useLoyalty();
+  const {
+    state: ritualPointsState,
+    tier: currentTier,
+    nextTier,
+    pointsToNext,
+  } = useRitualPoints();
+  const totalPoints = ritualPointsState.totalPoints;
+  const lastOrderAt = ritualPointsState.lastOrderAt;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<AccountTabId>("profile");
   const [orders, setOrders] = useState<LocalOrder[]>(() =>
@@ -356,36 +362,38 @@ export default function AccountPage() {
             <h3>{tierLabel}</h3>
             <p className="account-loyalty-card__perks">{tierPerks}</p>
           </div>
-          <div className="account-loyalty-card__stats">
-            <div>
-              <span>{t("account.loyalty.totalPoints")}</span>
-              <strong>{totalPoints}</strong>
-            </div>
-            {lastOrderAt && (
-              <div>
-                <span>{t("account.loyalty.lastOrder")}</span>
-                <strong>
-                  {new Date(lastOrderAt).toLocaleDateString(undefined, {
+        <div className="account-loyalty-card__stats">
+          <div>
+            <span>{t("account.loyalty.totalPoints")}</span>
+            <strong>{totalPoints}</strong>
+          </div>
+          <div>
+            <span>{t("account.loyalty.lastOrder")}</span>
+            <strong>
+              {lastOrderAt
+                ? new Date(lastOrderAt).toLocaleDateString(undefined, {
                     month: "short",
                     day: "numeric",
                     year: "numeric",
-                  })}
-                </strong>
-              </div>
-            )}
+                  })
+                : "—"}
+            </strong>
           </div>
-          <div className="account-loyalty-card__progress">
-            {nextTierLabel && typeof pointsToNextTier === "number" ? (
-              <p>
-                {t("account.loyalty.nextTier", {
-                  points: pointsToNextTier,
-                  tier: nextTierLabel,
-                })}
-              </p>
-            ) : (
-              <p>{t("account.loyalty.maxTier")}</p>
-            )}
-          </div>
+        </div>
+        <div className="account-loyalty-card__progress">
+          {totalPoints === 0 ? (
+            <p>{t("account.loyalty.starting")}</p>
+          ) : nextTierLabel && typeof pointsToNext === "number" ? (
+            <p>
+              {t("account.loyalty.nextTier", {
+                points: pointsToNext,
+                tier: nextTierLabel,
+              })}
+            </p>
+          ) : (
+            <p>{t("account.loyalty.maxTier")}</p>
+          )}
+        </div>
         </div>
       </div>
     );

@@ -10,7 +10,7 @@ import { formatVariantMeta } from "@/utils/variantDisplay";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
 import { useCurrency } from "@/currency/CurrencyProvider";
-import { useLoyalty } from "@/loyalty/useLoyalty";
+import { useRitualPoints } from "@/loyalty/useRitualPoints";
 
 const navigateToPath = (path: string) => {
   const base = import.meta.env.BASE_URL ?? "/";
@@ -42,7 +42,13 @@ export default function OrdersHistoryPage() {
   useSeo({ route: "orders_history" });
   const { t } = useTranslation();
   const { currency } = useCurrency();
-  const { totalPoints, currentTier, nextTier, pointsToNextTier } = useLoyalty();
+  const {
+    state: ritualPointsState,
+    tier: currentTier,
+    nextTier,
+    pointsToNext,
+  } = useRitualPoints();
+  const totalPoints = ritualPointsState.totalPoints;
   const currentTierLabel = t(`account.loyalty.tiers.${currentTier.id}.label`);
   const nextTierLabel = nextTier
     ? t(`account.loyalty.tiers.${nextTier.id}.label`)
@@ -73,10 +79,10 @@ export default function OrdersHistoryPage() {
             {t("ordersHistory.loyalty.status", { tier: currentTierLabel })}
           </strong>
           <p>{t("ordersHistory.loyalty.points", { points: totalPoints })}</p>
-          {nextTierLabel && typeof pointsToNextTier === "number" ? (
+          {nextTierLabel && typeof pointsToNext === "number" ? (
             <p>
               {t("ordersHistory.loyalty.nextTier", {
-                points: pointsToNextTier,
+                points: pointsToNext,
                 tier: nextTierLabel,
               })}
             </p>

@@ -2,7 +2,7 @@ import { giftBoxStyles } from "@/content/giftBoxes";
 import { ritualBundles } from "@/content/bundles";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { listAudience } from "@/utils/audienceStorage";
-import { loadLoyalty } from "@/utils/loyaltyStorage";
+import { getTierFromPoints, loadRitualPointsState } from "@/loyalty/ritualPoints";
 import { listReferralAttributions } from "@/utils/referralStorage";
 import { listReviews } from "@/utils/reviewStorage";
 import { readOrders } from "@/utils/orderStorage";
@@ -182,21 +182,12 @@ export function computeAudienceSummary() {
 }
 
 export function computeLoyaltySummary() {
-  const loyalty = loadLoyalty();
-  let currentTierLabel: string | undefined;
+  const loyalty = loadRitualPointsState();
   const points = loyalty.totalPoints ?? 0;
-  if (points >= 1000) {
-    currentTierLabel = "Luminary";
-  } else if (points >= 500) {
-    currentTierLabel = "Luminous";
-  } else if (points >= 250) {
-    currentTierLabel = "Refined";
-  } else if (points > 0) {
-    currentTierLabel = "Dedicated";
-  }
+  const currentTier = getTierFromPoints(points);
   return {
     totalPoints: points,
-    currentTierLabel,
+    currentTierLabel: currentTier.name,
   };
 }
 
