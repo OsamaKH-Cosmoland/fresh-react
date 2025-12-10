@@ -5,7 +5,7 @@ export type User = {
 };
 
 export interface UserRepository {
-  findById(id: string): Promise<User | undefined>;
-  findByEmail(email: string): Promise<User | undefined>;
+  findById(id: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
   save(user: User): Promise<User>;
 }
