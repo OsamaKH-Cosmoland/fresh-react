@@ -61,4 +61,28 @@ describe('InMemoryUserRepository', () => {
   it('does not throw when deleting a non-existent user', async () => {
     await expect(repo.deleteById('missing')).resolves.toBeUndefined();
   });
+
+  describe('listAll()', () => {
+    it('returns an empty array when no users are saved', async () => {
+      const list = await repo.listAll();
+      expect(list).toEqual([]);
+    });
+
+    it('returns the single saved user', async () => {
+      const user: User = { id: 'l1', email: 'list1@example.com', name: 'List One' };
+      await repo.save(user);
+      const list = await repo.listAll();
+      expect(list).toEqual([user]);
+    });
+
+    it('returns all saved users in insertion order', async () => {
+      const users: User[] = [
+        { id: 'l2', email: 'list2@example.com', name: 'List Two' },
+        { id: 'l3', email: 'list3@example.com', name: 'List Three' },
+      ];
+      await Promise.all(users.map((user) => repo.save(user)));
+      const list = await repo.listAll();
+      expect(list).toEqual(users);
+    });
+  });
 });

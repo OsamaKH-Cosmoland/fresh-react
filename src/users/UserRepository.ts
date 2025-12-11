@@ -13,4 +13,5 @@ export interface UserRepository {
   findByEmail(email: string): Promise<User | null>;
   save(user: User): Promise<User>;
   deleteById(id: string): Promise<void>;
+  listAll(): Promise<User[]>;
 }

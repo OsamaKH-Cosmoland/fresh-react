@@ -26,6 +26,10 @@ class FakeUserRepository implements UserRepository {
   async deleteById(_id: string): Promise<void> {
     return;
   }
+
+  async listAll(): Promise<User[]> {
+    return this.user ? [this.user] : [];
+  }
 }
 
 class FakeEmailService implements EmailService {

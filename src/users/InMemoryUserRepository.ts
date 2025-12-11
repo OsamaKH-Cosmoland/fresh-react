@@ -33,6 +33,10 @@ export class InMemoryUserRepository implements UserRepository {
   async deleteById(id: string): Promise<void> {
     this.users.delete(id);
   }
+
+  async listAll(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
 }
 
 /** Helper that preloads the in-memory repo with initial data for tests. */
