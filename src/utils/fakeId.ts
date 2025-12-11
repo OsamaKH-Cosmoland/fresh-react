@@ -1,1 +1,1 @@
-export { createFakeIdGenerator } from "../../shared/fakeId";
+export { createFakeIdGenerator } from "../domain/shared/fakeId";

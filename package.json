@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"npm:api\" \"npm:vite\"",
     "vite": "vite",
-    "api": "tsx --enable-source-maps server/index.ts",
+    "api": "tsx --enable-source-maps src/presentation/http/server.ts",
     "build:shared": "tsc -p tsconfig.shared.json",
     "build": "npm run build:shared && vite build",
     "lint": "eslint .",

@@ -10,6 +10,11 @@
     "incremental": true,
     "tsBuildInfoFile": ".buildcache/tsconfig.shared.tsbuildinfo"
   },
-  "include": ["shared/**/*.ts"],
+  "include": [
+    "src/domain/**/*.ts",
+    "src/application/**/*.ts",
+    "src/infrastructure/**/*.ts",
+    "src/presentation/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }
