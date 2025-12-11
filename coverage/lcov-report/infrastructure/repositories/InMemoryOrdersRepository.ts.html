@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.3% </span>
+                <span class="strong">87.5% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>21/23</span>
+                <span class='fraction'>21/24</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">73.68% </span>
+                <span class="strong">76.19% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>14/19</span>
+                <span class='fraction'>16/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.61% </span>
+                <span class="strong">76.92% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>11/13</span>
+                <span class='fraction'>10/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.44% </span>
+                <span class="strong">94.73% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>17/18</span>
+                <span class='fraction'>18/19</span>
             </div>
         
             
@@ -125,18 +125,28 @@
 <a name='L60'></a><a href='#L60'>60</a>
 <a name='L61'></a><a href='#L61'>61</a>
 <a name='L62'></a><a href='#L62'>62</a>
-<a name='L63'></a><a href='#L63'>63</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -148,18 +158,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
@@ -170,9 +180,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -190,15 +200,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// In-memory orders repository for tests and fallback scenarios.
 import type { Order } from "../../domain/shared/Order";
 import type { OrdersRepository } from "./OrdersRepository";
-import { createFakeIdGenerator } from "../../domain/shared/fakeId";
-&nbsp;
-const nextId = createFakeIdGenerator("NG");
+import type { Clock } from "../../domain/shared/Clock";
+import type { IdGenerator } from "../../domain/shared/IdGenerator";
+import { DefaultIdGenerator } from "../ids/DefaultIdGenerator";
+import { SystemClock } from "../time/SystemClock";
 &nbsp;
 export class InMemoryOrdersRepository implements OrdersRepository {
   private orders: Order[];
+  private readonly idGenerator: IdGenerator;
+  private readonly clock: Clock;
 &nbsp;
-  constructor(initialOrders: Order[] = []) {
-    this.orders = initialOrders.map((order) =&gt; ({ ...order }));
+  constructor(initialOrders: Order[] = [], idGenerator: IdGenerator = new DefaultIdGenerator("NG"), clock: Clock = new SystemClock()) {
+    this.orders = initialOrders.map(<span class="fstat-no" title="function not covered" >(o</span>rder) =&gt; (<span class="cstat-no" title="statement not covered" >{ ...order })</span>);
+    this.idGenerator = idGenerator;
+    this.clock = clock;
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  replaceAll(</span>orders: Order[]) {
@@ -232,7 +247,7 @@ export class InMemoryOrdersRepository implements OrdersRepository {
   }
 &nbsp;
   async create(doc: Order): Promise&lt;Order&gt; {
-    const stored: Order = { ...doc, id: doc.id || nextId() };
+    const stored: Order = { ...doc, id: doc.id || this.idGenerator.nextId() };
     this.orders.push(stored);
     return stored;
   }
@@ -243,7 +258,7 @@ export class InMemoryOrdersRepository implements OrdersRepository {
     const updated: Order = {
       ...this.orders[index],
       status,
-      updatedAt: new Date().toISOString(),
+      updatedAt: this.clock.now().toISOString(),
     };
     this.orders[index] = updated;
     return updated;
@@ -256,7 +271,7 @@ export class InMemoryOrdersRepository implements OrdersRepository {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-12-11T19:15:50.535Z
+                at 2025-12-11T22:36:52.541Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

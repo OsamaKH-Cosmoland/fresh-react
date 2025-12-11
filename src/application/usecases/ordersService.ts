@@ -1,77 +1,27 @@
 import "dotenv/config";
 import { EventEmitter } from "events";
-import https from "https";
-import fs from "fs";
-import { fileURLToPath } from "url";
-import nodemailer from "nodemailer";
 import crypto from "crypto";
 import { ObjectId } from "mongodb";
 import { resolveOrdersRepository } from "../../infrastructure/repositories";
 import type { OrdersRepository } from "../../infrastructure/repositories/OrdersRepository";
 import type { Order } from "../../domain/shared/Order";
 import type { EmailProvider } from "../../domain/shared/EmailProvider";
+import type { NotificationService } from "../../domain/shared/NotificationService";
+import type { Clock } from "../../domain/shared/Clock";
+import type { IdGenerator } from "../../domain/shared/IdGenerator";
+import { SystemClock } from "../../infrastructure/time/SystemClock";
+import { DefaultIdGenerator } from "../../infrastructure/ids/DefaultIdGenerator";
+import { getDefaultNotificationService } from "../../infrastructure/notifications/createDefaultNotificationService";
+import { TelegramNotificationService } from "../../infrastructure/notifications/TelegramNotificationService";
 
-let cachedTransporter: nodemailer.Transporter | null = null;
 const bus = new EventEmitter();
 bus.setMaxListeners(0);
+const defaultClock: Clock = new SystemClock();
+const defaultIdGenerator: IdGenerator = new DefaultIdGenerator("NG");
 
 const sanitizeString = (value: unknown) => {
   if (value === null || value === undefined) return "";
   return String(value).trim();
-};
-
-const postJson = async (url: string, payload: unknown) => {
-  if (typeof fetch === "function") {
-    return fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-  }
-
-  const target = new URL(url);
-  const bodyString = JSON.stringify(payload);
-
-  return new Promise<{ ok: boolean; status: number; statusText: string; text: () => Promise<string> }>((resolve, reject) => {
-    const request = https.request(
-      {
-        hostname: target.hostname,
-        port: target.port || 443,
-        path: `${target.pathname}${target.search}`,
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Content-Length": Buffer.byteLength(bodyString),
-        },
-      },
-      (response) => {
-        const chunks: Buffer[] = [];
-        response.on("data", (chunk) => chunks.push(chunk));
-        response.on("end", () => {
-          const text = Buffer.concat(chunks).toString();
-          resolve({
-            ok: !!(response.statusCode && response.statusCode >= 200 && response.statusCode < 300),
-            status: response.statusCode ?? 0,
-            statusText: response.statusMessage ?? "",
-            text: async () => text,
-          });
-        });
-      }
-    );
-
-    request.on("error", reject);
-    request.write(bodyString);
-    request.end();
-  });
-};
-
-let cachedTelegramConfig: { token: string; chatId: string } | null = null;
-const resolveFromCandidates = (...values: string[]) => {
-  for (const value of values) {
-    const cleaned = sanitizeString(value);
-    if (cleaned) return cleaned;
-  }
-  return "";
 };
 
 const parseAmount = (value: unknown): number | null => {
@@ -125,51 +75,7 @@ const ensureObjectId = (value: unknown, fallbackSeed = "") => {
   return new ObjectId();
 };
 
-const loadTelegramConfigFile = () => {
-  try {
-    const configPath = new URL("../../../config/telegram.config.json", import.meta.url);
-    const resolvedPath = fileURLToPath(configPath);
-    if (!fs.existsSync(resolvedPath)) return {};
-    const raw = fs.readFileSync(resolvedPath, "utf8");
-    if (!raw.trim()) return {};
-    const parsed = JSON.parse(raw);
-    return {
-      token: sanitizeString(parsed.botToken ?? parsed.token ?? parsed.telegramBotToken),
-      chatId: sanitizeString(parsed.chatId ?? parsed.telegramChatId ?? parsed.telegram_chat_id),
-    };
-  } catch (error) {
-    console.warn("[telegram] failed to read telegram.config.json", error);
-    return {};
-  }
-};
-
-const getTelegramConfig = () => {
-  if (cachedTelegramConfig) return cachedTelegramConfig;
-  const envToken = resolveFromCandidates(
-    process.env.TELEGRAM_BOT_TOKEN || "",
-    process.env.VITE_TELEGRAM_BOT_TOKEN || "",
-    process.env.REACT_APP_TELEGRAM_BOT_TOKEN || "",
-    process.env.NG_TELEGRAM_BOT_TOKEN || ""
-  );
-  const envChat = resolveFromCandidates(
-    process.env.TELEGRAM_CHAT_ID || "",
-    process.env.VITE_TELEGRAM_CHAT_ID || "",
-    process.env.REACT_APP_TELEGRAM_CHAT_ID || "",
-    process.env.NG_TELEGRAM_CHAT_ID || ""
-  );
-  if (envToken && envChat) {
-    cachedTelegramConfig = { token: envToken, chatId: envChat };
-    return cachedTelegramConfig;
-  }
-  const fileConfig = loadTelegramConfigFile();
-  cachedTelegramConfig = {
-    token: envToken || (fileConfig as any).token || "",
-    chatId: envChat || (fileConfig as any).chatId || "",
-  };
-  return cachedTelegramConfig;
-};
-
-export function sanitizeOrderPayload(rawBody: any): Order {
+export function sanitizeOrderPayload(rawBody: any, idGenerator: IdGenerator = defaultIdGenerator): Order {
   let body: any = rawBody;
   if (typeof rawBody === "string" && rawBody.trim().length) {
     try {
@@ -291,7 +197,7 @@ export function sanitizeOrderPayload(rawBody: any): Order {
     notes: sanitizeString(body?.customer?.notes),
   };
 
-  const id = sanitizeString(body.id) || `NG-${Date.now().toString(36).toUpperCase()}`;
+  const id = sanitizeString(body.id) || idGenerator.nextId();
   const customerIdentifier = resolveCustomerId(
     body?.customerId,
     body?.customer?.customerId,
@@ -328,10 +234,7 @@ const cleanOrderDoc = ({ _id, customerId, ...rest }: any) => ({
   mongoId: _id?.toString(),
 });
 
-const generateOrderCode = () => {
-  const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
-  return `NG-${randomPart}`;
-};
+const generateOrderCode = (idGenerator: IdGenerator) => idGenerator.nextId();
 
 const toValidDate = (value: any, fallback: Date) => {
   if (!value) return fallback;
@@ -339,101 +242,55 @@ const toValidDate = (value: any, fallback: Date) => {
   return Number.isNaN(date.getTime()) ? fallback : date;
 };
 
-const ensureMailer = async () => {
-  if (cachedTransporter) return cachedTransporter;
+const formatOrderNotificationMessage = (order: Partial<Order>, clock: Clock) => {
+  const fmt = (value: unknown) => (value === null || value === undefined || value === "" ? "-" : String(value));
+  const createdAtCandidate = order?.createdAt ? new Date(order.createdAt) : clock.now();
+  const createdAt =
+    Number.isNaN(createdAtCandidate.getTime()) || !createdAtCandidate.getTime()
+      ? clock.now()
+      : createdAtCandidate;
 
-  const host = process.env.SMTP_HOST;
-  const port = Number(process.env.SMTP_PORT);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-
-  if (!host || !port || !user || !pass) {
-    throw new Error("Missing SMTP configuration env vars");
-  }
-
-  cachedTransporter = nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    auth: { user, pass },
-  });
-  return cachedTransporter;
-};
-
-const sendAdminEmail = async (order: Order) => {
-  const adminEmail = sanitizeString(process.env.ADMIN_EMAIL);
-  const fromEmail = sanitizeString(process.env.FROM_EMAIL || process.env.SMTP_USER);
-  if (!adminEmail || !fromEmail) {
-    throw new Error("Missing ADMIN_EMAIL or FROM_EMAIL env vars");
-  }
-
-  const transporter = await ensureMailer();
-  const { customer, totals, orderCode, id } = order;
-  const subject = `New cash order ${orderCode}`;
   const textLines = [
-    `Order ID: ${id}`,
-    `Order Code: ${orderCode}`,
-    `Name: ${customer.name}`,
-    `Email: ${customer.email}`,
-    `Phone: ${customer.phone}`,
-    `City: ${customer.city}`,
-    `Address: ${customer.address}`,
-    `Notes: ${customer.notes || "-"}`,
-    `Items: ${order.items.length}`,
-    `Subtotal: ${totals.subtotal}`,
-    `Received At: ${order.createdAt}`,
+    `🧾 New Order ${fmt(order.orderCode)}`,
+    `👤 Name: ${fmt(order.customer?.name)}`,
+    `📧 Email: ${fmt(order.customer?.email)}`,
+    `📞 Phone: ${fmt(order.customer?.phone)}`,
+    `🏙️ City: ${fmt(order.customer?.city)}`,
+    `💰 Total: ${fmt((order as any).total ?? order?.totals?.subtotal)}`,
+    `🕒 Time: ${createdAt.toLocaleString()}`,
   ];
-
-  await transporter.sendMail({
-    to: adminEmail,
-    from: fromEmail,
-    subject,
-    text: textLines.join("\n"),
-  });
+  return textLines.join("\n");
 };
 
-export const notifyTelegram = async (order: Partial<Order>) => {
+const resolveOpsRecipients = () => ({
+  email: sanitizeString(process.env.ADMIN_EMAIL),
+  telegram: sanitizeString(process.env.TELEGRAM_CHAT_ID),
+});
+
+const createTelegramNotificationService = () => new TelegramNotificationService();
+
+export const notifyTelegram = async (
+  order: Partial<Order>,
+  clock: Clock = defaultClock,
+  notificationService: NotificationService = createTelegramNotificationService()
+) => {
+  const message = formatOrderNotificationMessage(order, clock);
   try {
-    console.log(`[telegram] notifying for order ${order?.orderCode ?? order?.id ?? "unknown"}`);
-    const { token, chatId } = getTelegramConfig();
-    if (!token || !chatId) {
-      console.warn("[telegram] credentials missing: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID");
-      return { ok: false, missingEnv: true };
-    }
-    if (typeof fetch !== "function") {
-      console.warn("[telegram] global fetch unavailable; using https fallback");
-    }
-    const fmt = (value: unknown) =>
-      value === null || value === undefined || value === "" ? "-" : String(value);
-
-    const textLines = [
-      `🧾 New Order ${fmt(order.orderCode)}`,
-      `👤 Name: ${fmt(order.customer?.name)}`,
-      `📧 Email: ${fmt(order.customer?.email)}`,
-      `📞 Phone: ${fmt(order.customer?.phone)}`,
-      `🏙️ City: ${fmt(order.customer?.city)}`,
-      `💰 Total: ${fmt((order as any).total ?? order?.totals?.subtotal)}`,
-      `🕒 Time: ${new Date(order?.createdAt ?? Date.now()).toLocaleString()}`,
-    ];
-    const text = textLines.join("\n");
-
-    const url = `https://api.telegram.org/bot${token}/sendMessage`;
-    const body = {
-      chat_id: chatId,
-      text,
-      disable_web_page_preview: true,
-    };
-
-    const res = await postJson(url, body);
-    if (!res.ok) {
-      const textBody = await res.text().catch(() => "");
-      console.error("Telegram notify failed:", res.status, textBody || res.statusText);
-      return { ok: false, status: res.status, body: textBody };
-    }
+    await notificationService.notify("", message, {
+      category: "order",
+      orderId: sanitizeString((order as any).id),
+      orderCode: sanitizeString((order as any).orderCode),
+      recipients: { telegram: process.env.TELEGRAM_CHAT_ID || "" },
+    });
     return { ok: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Telegram notify error:", error);
-    return { ok: false, error };
+    return {
+      ok: false,
+      error,
+      status: error?.status,
+      missingEnv: error?.code === "MISSING_TELEGRAM_CONFIG",
+    };
   }
 };
 
@@ -572,9 +429,23 @@ export async function listOrders(limit: number, repo?: OrdersRepository) {
   return docs.map(cleanOrderDoc);
 }
 
-export async function createOrder(rawBody: any, repo?: OrdersRepository, emailProvider?: EmailProvider) {
+export type OrderServiceDependencies = {
+  clock?: Clock;
+  idGenerator?: IdGenerator;
+  notificationService?: NotificationService;
+};
+
+export async function createOrder(
+  rawBody: any,
+  repo?: OrdersRepository,
+  emailProvider?: EmailProvider,
+  deps: OrderServiceDependencies = {}
+) {
+  const clock = deps.clock ?? defaultClock;
+  const idGenerator = deps.idGenerator ?? defaultIdGenerator;
+  const notificationService = deps.notificationService ?? getDefaultNotificationService();
   const store = repo ?? (await resolveOrdersRepository()).store;
-  const payload = sanitizeOrderPayload(rawBody);
+  const payload = sanitizeOrderPayload(rawBody, idGenerator);
   console.log(
     "createOrder payload debug:",
     JSON.stringify(
@@ -625,7 +496,7 @@ export async function createOrder(rawBody: any, repo?: OrdersRepository, emailPr
     throw error;
   }
 
-  const now = new Date();
+  const now = clock.now();
   const cutoff = new Date(now.getTime() - 2 * 60 * 1000);
 
   if (payload.paymentMethod === "cash_on_delivery" && payload.customer.phone) {
@@ -641,7 +512,7 @@ export async function createOrder(rawBody: any, repo?: OrdersRepository, emailPr
 
   const createdAt = toValidDate((payload as any).createdAt, now);
   const updatedAt = toValidDate((payload as any).updatedAt, now);
-  const orderCode = generateOrderCode();
+  const orderCode = generateOrderCode(idGenerator);
   const doc: Order = {
     ...payload,
     orderCode,
@@ -663,19 +534,22 @@ export async function createOrder(rawBody: any, repo?: OrdersRepository, emailPr
     }
   }
 
-  try {
-    await sendAdminEmail(storedDoc);
-  } catch (emailError) {
-    console.error("Failed to send admin email for order", storedDoc.id, emailError);
-  }
-
   const cleanDoc = cleanOrderDoc(storedDoc);
   bus.emit("new-order", cleanDoc);
 
   try {
-    await notifyTelegram({ ...cleanDoc, total: cleanDoc?.totals?.subtotal });
-  } catch (telegramError) {
-    console.error("Failed to notify Telegram for order", storedDoc.id, telegramError);
+    const recipients = resolveOpsRecipients();
+    const opsMessage = formatOrderNotificationMessage({ ...cleanDoc, total: cleanDoc?.totals?.subtotal }, clock);
+    const primaryRecipient = recipients.email || recipients.telegram || "ops";
+    await notificationService.notify(primaryRecipient, opsMessage, {
+      category: "order",
+      subject: `New cash order ${orderCode}`,
+      orderId: sanitizeString((cleanDoc as any).id),
+      orderCode,
+      recipients,
+    });
+  } catch (notificationError) {
+    console.error("Failed to notify ops for order", storedDoc.id, notificationError);
   }
 
   return { stored: storedDoc, clean: cleanDoc };
@@ -687,13 +561,9 @@ export async function updateOrderStatus(id: string, status: string, repo?: Order
   return updated ? cleanOrderDoc(updated) : null;
 }
 
-export async function notifyTelegramTest() {
-  const { token, chatId } = getTelegramConfig();
-  if (!token || !chatId) {
-    const error: any = new Error("Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID env vars.");
-    error.statusCode = 400;
-    throw error;
-  }
+export async function notifyTelegramTest(
+  notificationService: NotificationService = createTelegramNotificationService()
+) {
   const sampleOrder = {
     orderCode: "TEST-123ABC",
     customer: {
@@ -708,10 +578,12 @@ export async function notifyTelegramTest() {
     createdAt: new Date().toISOString(),
   };
 
-  const result = await notifyTelegram(sampleOrder);
+  const result = await notifyTelegram(sampleOrder, defaultClock, notificationService);
   if (!result?.ok) {
-    const err: any = new Error("Failed to send Telegram message. Check server logs for details.");
-    err.statusCode = 500;
+    const message =
+      (result as any)?.error?.message ?? "Failed to send Telegram message. Check server logs for details.";
+    const err: any = new Error(message);
+    err.statusCode = (result as any)?.missingEnv ? 400 : 500;
     throw err;
   }
   return { ok: true };

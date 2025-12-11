@@ -1,12 +1,17 @@
 import type { Collection } from "mongodb";
 import type { Order } from "../../domain/shared/Order";
 import type { OrdersRepository } from "./OrdersRepository";
-import { createFakeIdGenerator } from "../../domain/shared/fakeId";
-
-const nextId = createFakeIdGenerator("NG");
+import type { Clock } from "../../domain/shared/Clock";
+import type { IdGenerator } from "../../domain/shared/IdGenerator";
+import { DefaultIdGenerator } from "../ids/DefaultIdGenerator";
+import { SystemClock } from "../time/SystemClock";
 
 export class MongoOrdersRepository implements OrdersRepository {
-  constructor(private collection: Collection<Order>) {}
+  constructor(
+    private collection: Collection<Order>,
+    private readonly idGenerator: IdGenerator = new DefaultIdGenerator("NG"),
+    private readonly clock: Clock = new SystemClock()
+  ) {}
 
   async list(limit = 50): Promise<Order[]> {
     const docs = await this.collection.find({}).sort({ createdAt: -1 }).limit(limit).toArray();
@@ -22,7 +27,7 @@ export class MongoOrdersRepository implements OrdersRepository {
   }
 
   async create(doc: Order): Promise<Order> {
-    const payload: Order = { ...doc, id: doc.id || nextId() };
+    const payload: Order = { ...doc, id: doc.id || this.idGenerator.nextId() };
     const insertResult = await this.collection.insertOne(payload);
     payload._id = payload._id ?? insertResult.insertedId;
     return payload;
@@ -31,7 +36,7 @@ export class MongoOrdersRepository implements OrdersRepository {
   async updateStatus(id: string, status: string): Promise<Order | null> {
     const result = await this.collection.findOneAndUpdate(
       { id },
-      { $set: { status, updatedAt: new Date().toISOString() } },
+      { $set: { status, updatedAt: this.clock.now().toISOString() } },
       { returnDocument: "after" }
     );
     const updated = (result as any)?.value as Order | null;

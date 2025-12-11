@@ -1,6 +1,6 @@
 import { AuthService } from './AuthService';
-import type { EmailService } from '../../domain/shared/EmailService';
 import type { UserRepository, User } from '../../domain/users/UserRepository';
+import { FakeNotificationService } from '../../infrastructure/notifications/FakeNotificationService';
 
 class FakeUserRepository implements UserRepository {
   constructor(
@@ -32,52 +32,44 @@ class FakeUserRepository implements UserRepository {
   }
 }
 
-class FakeEmailService implements EmailService {
-  public readonly calls: string[] = [];
-
-  async sendLoginNotification(email: string): Promise<void> {
-    this.calls.push(email);
-  }
-}
-
 describe('AuthService', () => {
   it('returns a token when the user exists', async () => {
     const user: User = { id: 'u1', email: 'test@example.com', name: 'Test' };
     const repo = new FakeUserRepository(user);
-    const emailService = new FakeEmailService();
-    const service = new AuthService(repo, emailService);
+    const notificationService = new FakeNotificationService();
+    const service = new AuthService(repo, notificationService);
 
     await expect(service.login('test@example.com')).resolves.toBe('token-for-u1');
-    expect(emailService.calls).toEqual(['test@example.com']);
+    expect(notificationService.calls[0]).toMatchObject({ recipient: 'test@example.com' });
   });
 
   it('throws when no user exists for the given email', async () => {
     const repo = new FakeUserRepository(null);
-    const emailService = new FakeEmailService();
-    const service = new AuthService(repo, emailService);
+    const notificationService = new FakeNotificationService();
+    const service = new AuthService(repo, notificationService);
 
     await expect(service.login('missing@example.com')).rejects.toThrow('Invalid credentials');
-    expect(emailService.calls).toHaveLength(0);
+    expect(notificationService.calls).toHaveLength(0);
   });
 
   it('propagates repository errors', async () => {
     const repo = new FakeUserRepository(null, new Error('DB failure'));
-    const emailService = new FakeEmailService();
-    const service = new AuthService(repo, emailService);
+    const notificationService = new FakeNotificationService();
+    const service = new AuthService(repo, notificationService);
 
     await expect(service.login('any@example.com')).rejects.toThrow('DB failure');
-    expect(emailService.calls).toHaveLength(0);
+    expect(notificationService.calls).toHaveLength(0);
   });
 
   it('propagates email delivery failures after finding the user', async () => {
     const user: User = { id: 'u2', email: 'notify@example.com', name: 'Notify' };
     const repo = new FakeUserRepository(user);
-    const emailService: EmailService = {
-      async sendLoginNotification() {
+    const notificationService = {
+      async notify() {
         throw new Error('email-down');
       },
-    };
-    const service = new AuthService(repo, emailService);
+    } as any;
+    const service = new AuthService(repo, notificationService);
 
     await expect(service.login('notify@example.com')).rejects.toThrow('email-down');
   });

@@ -4,12 +4,14 @@ import path from "path";
 import { fileURLToPath } from "url";
 import type { Order } from "../../domain/shared/Order";
 import type { OrdersRepository } from "./OrdersRepository";
-import { createFakeIdGenerator } from "../../domain/shared/fakeId";
+import type { Clock } from "../../domain/shared/Clock";
+import type { IdGenerator } from "../../domain/shared/IdGenerator";
 import { InMemoryOrdersRepository } from "./InMemoryOrdersRepository";
+import { DefaultIdGenerator } from "../ids/DefaultIdGenerator";
+import { SystemClock } from "../time/SystemClock";
 
 const FALLBACK_LIMIT = 500;
 const READONLY_FS_ERROR_CODES = new Set(["EACCES", "EPERM", "EROFS", "ENOSPC"]);
-const nextId = createFakeIdGenerator("NG");
 
 const ensureDir = async (filepath: string) => {
   const dir = path.dirname(filepath);
@@ -19,7 +21,11 @@ const ensureDir = async (filepath: string) => {
 const cloneOrder = (order: Order): Order => JSON.parse(JSON.stringify(order));
 
 export class FileOrdersRepository implements OrdersRepository {
-  constructor(private filePath: string) {}
+  constructor(
+    private filePath: string,
+    private readonly idGenerator: IdGenerator = new DefaultIdGenerator("NG"),
+    private readonly clock: Clock = new SystemClock()
+  ) {}
 
   private async readAll(): Promise<Order[]> {
     try {
@@ -66,7 +72,7 @@ export class FileOrdersRepository implements OrdersRepository {
 
   async create(doc: Order): Promise<Order> {
     const orders = await this.readAll();
-    const stored = cloneOrder({ ...doc, id: doc.id || nextId() });
+    const stored = cloneOrder({ ...doc, id: doc.id || this.idGenerator.nextId() });
     orders.push(stored);
     await this.writeAll(orders);
     return stored;
@@ -79,7 +85,7 @@ export class FileOrdersRepository implements OrdersRepository {
     const updated = {
       ...orders[index],
       status,
-      updatedAt: new Date().toISOString(),
+      updatedAt: this.clock.now().toISOString(),
     };
     orders[index] = updated;
     await this.writeAll(orders);

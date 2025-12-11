@@ -1,11 +1,11 @@
 import { InMemoryOrdersRepository } from "../../infrastructure/repositories/InMemoryOrdersRepository";
 import { createOrder, notifyTelegram, sanitizeOrderPayload } from "./orders";
 import { FakeEmailProvider } from "../../infrastructure/email/fakeEmailProvider";
-import nodemailer from "nodemailer";
 import https from "https";
 import { EventEmitter } from "events";
 import fs from "fs";
 import { ObjectId } from "mongodb";
+import { FakeNotificationService } from "../../infrastructure/notifications/FakeNotificationService";
 
 const originalFetch = global.fetch;
 const fakeFetch = jest.fn().mockResolvedValue({
@@ -41,18 +41,7 @@ const buildPayload = (overrides: any = {}) => ({
 
 describe("createOrder service", () => {
   beforeAll(() => {
-    process.env.SMTP_HOST = "smtp.test";
-    process.env.SMTP_PORT = "587";
-    process.env.SMTP_USER = "user@test.com";
-    process.env.SMTP_PASS = "pass";
-    process.env.ADMIN_EMAIL = "admin@test.com";
-    process.env.FROM_EMAIL = "from@test.com";
-    process.env.TELEGRAM_BOT_TOKEN = "dummy";
-    process.env.TELEGRAM_CHAT_ID = "123";
     global.fetch = fakeFetch as any;
-    jest.spyOn(nodemailer, "createTransport").mockReturnValue({
-      sendMail: jest.fn().mockResolvedValue({}),
-    } as any);
   });
 
   afterAll(() => {
@@ -62,7 +51,8 @@ describe("createOrder service", () => {
   it("creates an order with the repository", async () => {
     const repo = new InMemoryOrdersRepository();
     const emailProvider = new FakeEmailProvider();
-    const result = await createOrder(buildPayload(), repo, emailProvider);
+    const notifications = new FakeNotificationService();
+    const result = await createOrder(buildPayload(), repo, emailProvider, { notificationService: notifications });
     expect(result.clean.id).toBeTruthy();
     const all = await repo.list(10);
     expect(all.length).toBe(1);
@@ -72,13 +62,18 @@ describe("createOrder service", () => {
       subject: "Order Confirmation",
     });
     expect(emailProvider.sentEmails[0].body).toContain(result.stored.id);
+    expect(notifications.calls[0]).toMatchObject({
+      recipient: expect.any(String),
+      context: expect.objectContaining({ orderCode: result.clean.orderCode }),
+    });
   });
 
   it("blocks duplicate recent cash orders by phone", async () => {
     const repo = new InMemoryOrdersRepository();
     const emailProvider = new FakeEmailProvider();
-    await createOrder(buildPayload(), repo, emailProvider);
-    await expect(createOrder(buildPayload(), repo, emailProvider)).rejects.toMatchObject({
+    const notifications = new FakeNotificationService();
+    await createOrder(buildPayload(), repo, emailProvider, { notificationService: notifications });
+    await expect(createOrder(buildPayload(), repo, emailProvider, { notificationService: notifications })).rejects.toMatchObject({
       statusCode: 409,
     });
   });
@@ -87,14 +82,20 @@ describe("createOrder service", () => {
     const repo = new InMemoryOrdersRepository();
     const emailProvider = new FakeEmailProvider();
     await expect(
-      createOrder(buildPayload({ customer: { name: "", phone: "" } }), repo, emailProvider)
+      createOrder(buildPayload({ customer: { name: "", phone: "" } }), repo, emailProvider, {
+        notificationService: new FakeNotificationService(),
+      })
     ).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it("rejects when items are missing even after fallback", async () => {
     const repo = new InMemoryOrdersRepository();
     const emailProvider = new FakeEmailProvider();
-    await expect(createOrder({ customer: { name: "A", phone: "1" } }, repo, emailProvider)).rejects.toMatchObject({
+    await expect(
+      createOrder({ customer: { name: "A", phone: "1" } }, repo, emailProvider, {
+        notificationService: new FakeNotificationService(),
+      })
+    ).rejects.toMatchObject({
       statusCode: 400,
     });
   });
@@ -106,7 +107,9 @@ describe("createOrder service", () => {
       customer: { name: "Fallback User", phone: "123" },
       items: [{ id: "", title: "Invalid", quantity: 0, unitPrice: "" }],
     };
-    await expect(createOrder(payload as any, repo, emailProvider)).rejects.toMatchObject({ statusCode: 400 });
+    await expect(
+      createOrder(payload as any, repo, emailProvider, { notificationService: new FakeNotificationService() })
+    ).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it("hydrates items from orderItems fallback and normalizes totals", async () => {
@@ -118,7 +121,7 @@ describe("createOrder service", () => {
       totals: { items: 0, subtotal: null, subTotal: null, shipping: 10, currency: "EGP" },
       orderItems: [{ id: "x", title: "X", quantity: 2, price: 25, unitPrice: "25 EGP" }],
     };
-    const result = await createOrder(payload, repo, emailProvider);
+    const result = await createOrder(payload, repo, emailProvider, { notificationService: new FakeNotificationService() });
     expect(result.clean.items).toHaveLength(1);
     expect(result.clean.items[0].qty).toBe(2);
     expect(result.clean.totals.subtotal).toBe(50);
@@ -133,7 +136,9 @@ describe("createOrder service", () => {
     process.env.ADMIN_EMAIL = "";
     process.env.FROM_EMAIL = "";
     const throwingProvider = { send: jest.fn().mockRejectedValue(new Error("send failure")) } as any;
-    const result = await createOrder(buildPayload(), repo, throwingProvider);
+    const result = await createOrder(buildPayload(), repo, throwingProvider, {
+      notificationService: new FakeNotificationService(),
+    });
     expect(result.clean.id).toBeTruthy();
     process.env.ADMIN_EMAIL = originalAdmin;
     process.env.FROM_EMAIL = originalFrom;
@@ -191,6 +196,8 @@ describe("notifications", () => {
   });
 
   it("uses https fallback when fetch is unavailable", async () => {
+    process.env.TELEGRAM_BOT_TOKEN = "dummy";
+    process.env.TELEGRAM_CHAT_ID = "123";
     const originalFetch = global.fetch;
     // remove fetch to trigger https fallback path
     // @ts-expect-error
@@ -220,6 +227,8 @@ describe("notifications", () => {
   });
 
   it("surfaces non-ok telegram responses", async () => {
+    process.env.TELEGRAM_BOT_TOKEN = "dummy";
+    process.env.TELEGRAM_CHAT_ID = "123";
     const failingFetch = jest.fn().mockResolvedValue({
       ok: false,
       status: 500,
@@ -233,6 +242,8 @@ describe("notifications", () => {
   });
 
   it("returns ok false when notifyTelegram throws", async () => {
+    process.env.TELEGRAM_BOT_TOKEN = "dummy";
+    process.env.TELEGRAM_CHAT_ID = "123";
     global.fetch = jest.fn().mockRejectedValue(new Error("network down")) as any;
     const result = await notifyTelegram(sampleOrder as any);
     expect(result.ok).toBe(false);

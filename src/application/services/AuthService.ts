@@ -1,4 +1,4 @@
-import type { EmailService } from '../../domain/shared/EmailService';
+import type { NotificationService } from '../../domain/shared/NotificationService';
 import type { UserRepository } from '../../domain/users/UserRepository';
 
 /**
@@ -7,7 +7,7 @@ import type { UserRepository } from '../../domain/users/UserRepository';
 export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly emailService: EmailService,
+    private readonly notificationService: NotificationService,
   ) {}
 
   async login(email: string): Promise<string> {
@@ -16,7 +16,10 @@ export class AuthService {
       throw new Error('Invalid credentials');
     }
 
-    await this.emailService.sendLoginNotification(user.email);
+    await this.notificationService.notify(user.email, 'Login notification', {
+      category: 'auth',
+      subject: 'Login notification',
+    });
 
     return `token-for-${user.id}`;
   }

@@ -1,4 +1,6 @@
-import { AppContainer } from './AppContainer';
+import { AppContainer, TOKENS } from './AppContainer';
+import { FakeClock } from '../../infrastructure/time/FakeClock';
+import { FakeIdGenerator } from '../../infrastructure/ids/FakeIdGenerator';
 
 describe('AppContainer', () => {
   it('resolves a registered provider', () => {
@@ -35,5 +37,16 @@ describe('AppContainer', () => {
     const container = new AppContainer('prod');
     container.register('env-only', () => ({}), { envs: ['test'] });
     expect(() => container.resolve('env-only')).toThrow(/No provider registered/);
+  });
+
+  it('allows overriding clock and id generator per scope', () => {
+    const container = new AppContainer('test');
+    container.register(TOKENS.clock, () => new FakeClock("2024-01-01T00:00:00.000Z"), { scope: 'singleton' });
+    const scoped = container.createScope();
+    scoped.register(TOKENS.idGenerator, () => new FakeIdGenerator("T", 10), { scope: 'scoped' });
+
+    expect(container.resolve(TOKENS.clock).now().toISOString()).toBe("2024-01-01T00:00:00.000Z");
+    expect(scoped.resolve(TOKENS.idGenerator).nextId()).toBe("T-10");
+    expect(scoped.resolve(TOKENS.idGenerator).nextId()).toBe("T-11");
   });
 });

@@ -1,8 +1,15 @@
 import type { EmailService } from '../../domain/shared/EmailService';
+import type { NotificationService } from '../../domain/shared/NotificationService';
+import type { Clock } from '../../domain/shared/Clock';
+import type { IdGenerator } from '../../domain/shared/IdGenerator';
 import type { UserRepository } from '../../domain/users/UserRepository';
 import { AuthService } from './AuthService';
 import { ConsoleEmailService } from '../../infrastructure/email/ConsoleEmailService';
+import { createDefaultNotificationService } from '../../infrastructure/notifications/createDefaultNotificationService';
+import { FakeNotificationService } from '../../infrastructure/notifications/FakeNotificationService';
 import { InMemoryUserRepository } from '../../infrastructure/repositories/InMemoryUserRepository';
+import { SystemClock } from '../../infrastructure/time/SystemClock';
+import { DefaultIdGenerator } from '../../infrastructure/ids/DefaultIdGenerator';
 
 export type Scope = 'singleton' | 'scoped' | 'transient';
 
@@ -20,7 +27,10 @@ interface Provider<TValue> {
 export const TOKENS = {
   userRepository: 'userRepository',
   emailService: 'emailService',
+  notificationService: 'notificationService',
   authService: 'authService',
+  clock: 'clock',
+  idGenerator: 'idGenerator',
 } as const;
 
 export type ContainerToken = string;
@@ -28,7 +38,7 @@ export type ContainerToken = string;
 export class AppContainer {
   private readonly registry: Map<ContainerToken, Provider<unknown>>;
   private readonly instances: Map<ContainerToken, unknown>;
-  private readonly env: string;
+  readonly env: string;
   private readonly parent?: AppContainer;
 
   constructor(env = process.env.NODE_ENV ?? 'development', parent?: AppContainer) {
@@ -49,8 +59,23 @@ export class AppContainer {
     options?: BindingOptions,
   ): this;
   register(
+    token: typeof TOKENS.notificationService,
+    factory: (container: AppContainer) => NotificationService,
+    options?: BindingOptions,
+  ): this;
+  register(
     token: typeof TOKENS.authService,
     factory: (container: AppContainer) => AuthService,
+    options?: BindingOptions,
+  ): this;
+  register(
+    token: typeof TOKENS.clock,
+    factory: (container: AppContainer) => Clock,
+    options?: BindingOptions,
+  ): this;
+  register(
+    token: typeof TOKENS.idGenerator,
+    factory: (container: AppContainer) => IdGenerator,
     options?: BindingOptions,
   ): this;
   register<T>(token: ContainerToken, factory: (container: AppContainer) => T, options?: BindingOptions): this;
@@ -69,7 +94,10 @@ export class AppContainer {
 
   resolve(token: typeof TOKENS.userRepository): UserRepository;
   resolve(token: typeof TOKENS.emailService): EmailService;
+  resolve(token: typeof TOKENS.notificationService): NotificationService;
   resolve(token: typeof TOKENS.authService): AuthService;
+  resolve(token: typeof TOKENS.clock): Clock;
+  resolve(token: typeof TOKENS.idGenerator): IdGenerator;
   resolve<T = unknown>(token: ContainerToken): T;
   resolve<T = unknown>(token: ContainerToken): T {
     const provider = this.registry.get(token) as Provider<T> | undefined;
@@ -108,12 +136,21 @@ const appContainer = new AppContainer();
 const seededUsers = [{ id: 'server-user', email: 'user@example.com', name: 'Server User' }];
 
 appContainer
+  .register(TOKENS.clock, () => new SystemClock(), { scope: 'singleton' })
+  .register(TOKENS.idGenerator, () => new DefaultIdGenerator('NG'), { scope: 'singleton' })
   .register(TOKENS.userRepository, () => new InMemoryUserRepository(seededUsers), { scope: 'scoped' })
   .register(TOKENS.emailService, () => new ConsoleEmailService(), { scope: 'singleton' })
+  .register(
+    TOKENS.notificationService,
+    (container) => {
+      return container.env === 'test' ? new FakeNotificationService() : createDefaultNotificationService();
+    },
+    { scope: 'singleton' },
+  )
   .register(TOKENS.authService, (container) => {
     const userRepo = container.resolve(TOKENS.userRepository);
-    const emailService = container.resolve(TOKENS.emailService);
-    return new AuthService(userRepo, emailService);
+    const notificationService = container.resolve(TOKENS.notificationService);
+    return new AuthService(userRepo, notificationService);
   }, { scope: 'scoped' });
 
 export { appContainer };

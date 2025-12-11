@@ -1,15 +1,20 @@
 // In-memory orders repository for tests and fallback scenarios.
 import type { Order } from "../../domain/shared/Order";
 import type { OrdersRepository } from "./OrdersRepository";
-import { createFakeIdGenerator } from "../../domain/shared/fakeId";
-
-const nextId = createFakeIdGenerator("NG");
+import type { Clock } from "../../domain/shared/Clock";
+import type { IdGenerator } from "../../domain/shared/IdGenerator";
+import { DefaultIdGenerator } from "../ids/DefaultIdGenerator";
+import { SystemClock } from "../time/SystemClock";
 
 export class InMemoryOrdersRepository implements OrdersRepository {
   private orders: Order[];
+  private readonly idGenerator: IdGenerator;
+  private readonly clock: Clock;
 
-  constructor(initialOrders: Order[] = []) {
+  constructor(initialOrders: Order[] = [], idGenerator: IdGenerator = new DefaultIdGenerator("NG"), clock: Clock = new SystemClock()) {
     this.orders = initialOrders.map((order) => ({ ...order }));
+    this.idGenerator = idGenerator;
+    this.clock = clock;
   }
 
   replaceAll(orders: Order[]) {
@@ -43,7 +48,7 @@ export class InMemoryOrdersRepository implements OrdersRepository {
   }
 
   async create(doc: Order): Promise<Order> {
-    const stored: Order = { ...doc, id: doc.id || nextId() };
+    const stored: Order = { ...doc, id: doc.id || this.idGenerator.nextId() };
     this.orders.push(stored);
     return stored;
   }
@@ -54,7 +59,7 @@ export class InMemoryOrdersRepository implements OrdersRepository {
     const updated: Order = {
       ...this.orders[index],
       status,
-      updatedAt: new Date().toISOString(),
+      updatedAt: this.clock.now().toISOString(),
     };
     this.orders[index] = updated;
     return updated;
