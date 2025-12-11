@@ -1,3 +1,5 @@
+import type { EmailService } from '../../domain/shared/EmailService';
+import type { UserRepository } from '../../domain/users/UserRepository';
 import { AuthService } from './AuthService';
 import { ConsoleEmailService } from '../../infrastructure/email/ConsoleEmailService';
 import { InMemoryUserRepository } from '../../infrastructure/repositories/InMemoryUserRepository';
@@ -9,8 +11,8 @@ interface BindingOptions {
   envs?: string[];
 }
 
-interface Provider {
-  factory: (container: AppContainer) => unknown;
+interface Provider<TValue> {
+  factory: (container: AppContainer) => TValue;
   scope: Scope;
   envs?: string[];
 }
@@ -21,26 +23,42 @@ export const TOKENS = {
   authService: 'authService',
 } as const;
 
-export type ContainerToken = (typeof TOKENS)[keyof typeof TOKENS];
+export type ContainerToken = string;
 
 export class AppContainer {
-  private readonly registry: Map<string, Provider>;
-  private readonly instances: Map<string, unknown>;
+  private readonly registry: Map<ContainerToken, Provider<unknown>>;
+  private readonly instances: Map<ContainerToken, unknown>;
   private readonly env: string;
   private readonly parent?: AppContainer;
 
   constructor(env = process.env.NODE_ENV ?? 'development', parent?: AppContainer) {
     this.env = env;
     this.parent = parent;
-    this.registry = parent ? parent.registry : new Map();
-    this.instances = new Map();
+    this.registry = parent ? parent.registry : new Map<ContainerToken, Provider<unknown>>();
+    this.instances = new Map<ContainerToken, unknown>();
   }
 
-  register(token: string, factory: (container: AppContainer) => unknown, options?: BindingOptions) {
+  register(
+    token: typeof TOKENS.userRepository,
+    factory: (container: AppContainer) => UserRepository,
+    options?: BindingOptions,
+  ): this;
+  register(
+    token: typeof TOKENS.emailService,
+    factory: (container: AppContainer) => EmailService,
+    options?: BindingOptions,
+  ): this;
+  register(
+    token: typeof TOKENS.authService,
+    factory: (container: AppContainer) => AuthService,
+    options?: BindingOptions,
+  ): this;
+  register<T>(token: ContainerToken, factory: (container: AppContainer) => T, options?: BindingOptions): this;
+  register<T>(token: ContainerToken, factory: (container: AppContainer) => T, options?: BindingOptions): this {
     if (options?.envs && !options.envs.includes(this.env)) {
       return this;
     }
-    const provider: Provider = {
+    const provider: Provider<T> = {
       factory,
       scope: options?.scope ?? 'singleton',
       envs: options?.envs,
@@ -49,8 +67,12 @@ export class AppContainer {
     return this;
   }
 
-  resolve<T = unknown>(token: string): T {
-    const provider = this.registry.get(token);
+  resolve(token: typeof TOKENS.userRepository): UserRepository;
+  resolve(token: typeof TOKENS.emailService): EmailService;
+  resolve(token: typeof TOKENS.authService): AuthService;
+  resolve<T = unknown>(token: ContainerToken): T;
+  resolve<T = unknown>(token: ContainerToken): T {
+    const provider = this.registry.get(token) as Provider<T> | undefined;
     if (!provider) {
       throw new Error(`No provider registered for token "${token}"`);
     }
@@ -69,7 +91,7 @@ export class AppContainer {
       cacheTarget.instances.set(token, instance);
     }
 
-    return instance as T;
+    return instance;
   }
 
   createScope() {
@@ -89,7 +111,7 @@ appContainer
   .register(TOKENS.userRepository, () => new InMemoryUserRepository(seededUsers), { scope: 'scoped' })
   .register(TOKENS.emailService, () => new ConsoleEmailService(), { scope: 'singleton' })
   .register(TOKENS.authService, (container) => {
-    const userRepo = container.resolve(TOKENS.userRepository) as InMemoryUserRepository;
+    const userRepo = container.resolve(TOKENS.userRepository);
     const emailService = container.resolve(TOKENS.emailService);
     return new AuthService(userRepo, emailService);
   }, { scope: 'scoped' });

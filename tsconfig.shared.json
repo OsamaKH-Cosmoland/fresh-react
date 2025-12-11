@@ -6,7 +6,7 @@
     "target": "ES2022",
     "rootDir": ".",
     "outDir": ".",
-    "noEmit": false,
+    "noEmit": true,
     "incremental": true,
     "tsBuildInfoFile": ".buildcache/tsconfig.shared.tsbuildinfo"
   },

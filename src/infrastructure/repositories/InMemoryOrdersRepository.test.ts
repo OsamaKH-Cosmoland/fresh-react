@@ -1,23 +1,26 @@
 import { InMemoryOrdersRepository } from "./InMemoryOrdersRepository";
 import type { Order } from "../../domain/shared/Order";
 
-const makeOrder = (overrides: Partial<Order> = {}): Order => ({
-  id: overrides.id ?? "order-1",
-  paymentMethod: overrides.paymentMethod ?? "cash_on_delivery",
-  status: overrides.status ?? "pending",
-  totals: overrides.totals ?? { items: 1, subtotal: 100, shipping: 0, currency: "EGP" },
-  customer: overrides.customer ?? {
-    name: "Test",
-    email: "test@example.com",
-    phone: overrides.customer?.phone ?? "+201000000000",
-    address: "123 St",
-    city: "Cairo",
-    notes: "",
-  },
-  items: overrides.items ?? [],
-  createdAt: overrides.createdAt ?? "2024-01-01T00:00:00.000Z",
-  updatedAt: overrides.updatedAt,
-});
+const makeOrder = (overrides: Partial<Order> = {}): Order => {
+  const phone = overrides.customer?.phone ?? "+201000000000";
+  return {
+    id: overrides.id ?? "order-1",
+    paymentMethod: overrides.paymentMethod ?? "cash_on_delivery",
+    status: overrides.status ?? "pending",
+    totals: overrides.totals ?? { items: 1, subtotal: 100, shipping: 0, currency: "EGP" },
+    customer: overrides.customer ?? {
+      name: "Test",
+      email: "test@example.com",
+      phone,
+      address: "123 St",
+      city: "Cairo",
+      notes: "",
+    },
+    items: overrides.items ?? [],
+    createdAt: overrides.createdAt ?? "2024-01-01T00:00:00.000Z",
+    updatedAt: overrides.updatedAt,
+  };
+};
 
 describe("InMemoryOrdersRepository", () => {
   it("creates orders with generated ids and returns snapshots", async () => {

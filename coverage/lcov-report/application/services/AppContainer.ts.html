@@ -161,7 +161,31 @@
 <a name='L96'></a><a href='#L96'>96</a>
 <a name='L97'></a><a href='#L97'>97</a>
 <a name='L98'></a><a href='#L98'>98</a>
-<a name='L99'></a><a href='#L99'>99</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -200,6 +224,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -210,6 +250,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -259,7 +303,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { AuthService } from './AuthService';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type { EmailService } from '../../domain/shared/EmailService';
+import type { UserRepository } from '../../domain/users/UserRepository';
+import { AuthService } from './AuthService';
 import { ConsoleEmailService } from '../../infrastructure/email/ConsoleEmailService';
 import { InMemoryUserRepository } from '../../infrastructure/repositories/InMemoryUserRepository';
 &nbsp;
@@ -270,8 +316,8 @@ interface BindingOptions {
   envs?: string[];
 }
 &nbsp;
-interface Provider {
-  factory: (container: AppContainer) =&gt; unknown;
+interface Provider&lt;TValue&gt; {
+  factory: (container: AppContainer) =&gt; TValue;
   scope: Scope;
   envs?: string[];
 }
@@ -282,26 +328,42 @@ export const TOKENS = {
   authService: 'authService',
 } as const;
 &nbsp;
-export type ContainerToken = (typeof TOKENS)[keyof typeof TOKENS];
+export type ContainerToken = string;
 &nbsp;
 export class AppContainer {
-  private readonly registry: Map&lt;string, Provider&gt;;
-  private readonly instances: Map&lt;string, unknown&gt;;
+  private readonly registry: Map&lt;ContainerToken, Provider&lt;unknown&gt;&gt;;
+  private readonly instances: Map&lt;ContainerToken, unknown&gt;;
   private readonly env: string;
   private readonly parent?: AppContainer;
 &nbsp;
   constructor(env = process.env.NODE_ENV ?? <span class="branch-1 cbranch-no" title="branch not covered" >'development',</span> parent?: AppContainer) {
     this.env = env;
     this.parent = parent;
-    this.registry = parent ? parent.registry : new Map();
-    this.instances = new Map();
+    this.registry = parent ? parent.registry : new Map&lt;ContainerToken, Provider&lt;unknown&gt;&gt;();
+    this.instances = new Map&lt;ContainerToken, unknown&gt;();
   }
 &nbsp;
-  register(token: string, factory: (container: AppContainer) =&gt; unknown, options?: BindingOptions) {
+  register(
+    token: typeof TOKENS.userRepository,
+    factory: (container: AppContainer) =&gt; UserRepository,
+    options?: BindingOptions,
+  ): this;
+  register(
+    token: typeof TOKENS.emailService,
+    factory: (container: AppContainer) =&gt; EmailService,
+    options?: BindingOptions,
+  ): this;
+  register(
+    token: typeof TOKENS.authService,
+    factory: (container: AppContainer) =&gt; AuthService,
+    options?: BindingOptions,
+  ): this;
+  register&lt;T&gt;(token: ContainerToken, factory: (container: AppContainer) =&gt; T, options?: BindingOptions): this;
+  register&lt;T&gt;(token: ContainerToken, factory: (container: AppContainer) =&gt; T, options?: BindingOptions): this {
     if (options?.envs &amp;&amp; !options.envs.includes(this.env)) {
       return this;
     }
-    const provider: Provider = {
+    const provider: Provider&lt;T&gt; = {
       factory,
       scope: options?.scope ?? 'singleton',
       envs: options?.envs,
@@ -310,8 +372,12 @@ export class AppContainer {
     return this;
   }
 &nbsp;
-  resolve&lt;T = unknown&gt;(token: string): T {
-    const provider = this.registry.get(token);
+  resolve(token: typeof TOKENS.userRepository): UserRepository;
+  resolve(token: typeof TOKENS.emailService): EmailService;
+  resolve(token: typeof TOKENS.authService): AuthService;
+  resolve&lt;T = unknown&gt;(token: ContainerToken): T;
+  resolve&lt;T = unknown&gt;(token: ContainerToken): T {
+    const provider = this.registry.get(token) as Provider&lt;T&gt; | undefined;
     if (!provider) {
       throw new Error(`No provider registered for token "${token}"`);
     }
@@ -330,7 +396,7 @@ export class AppContainer {
       cacheTarget.instances.set(token, instance);
     }
 &nbsp;
-    return instance as T;
+    return instance;
   }
 &nbsp;
   createScope() {
@@ -350,7 +416,7 @@ appContainer
   .register(TOKENS.userRepository, () =&gt; new InMemoryUserRepository(seededUsers), { scope: 'scoped' })
   .register(TOKENS.emailService, () =&gt; new ConsoleEmailService(), { scope: 'singleton' })
   .register(TOKENS.authService, (container) =&gt; {
-    const userRepo = container.resolve(TOKENS.userRepository) as InMemoryUserRepository;
+    const userRepo = container.resolve(TOKENS.userRepository);
     const emailService = container.resolve(TOKENS.emailService);
     return new AuthService(userRepo, emailService);
   }, { scope: 'scoped' });
@@ -364,7 +430,7 @@ export default appContainer;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-12-11T17:27:50.588Z
+                at 2025-12-11T19:15:50.535Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -53,7 +53,7 @@ function setCors(res: Response) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 }
 
-const parseRequestBody = async (req: IncomingMessage) => {
+const parseRequestBody = async (req: IncomingMessage): Promise<unknown> => {
   const chunks: Buffer[] = [];
   await new Promise((resolve, reject) => {
     req.on("data", (chunk) => chunks.push(chunk));
@@ -74,7 +74,7 @@ const parseRequestBody = async (req: IncomingMessage) => {
   return raw;
 };
 
-const server = http.createServer(async (rawReq, rawRes) => {
+const server = http.createServer(async (rawReq, rawRes): Promise<void> => {
   const req = rawReq as Request;
   const res = rawRes as Response;
   setCors(res);                         // ✅ add CORS on every response
@@ -91,7 +91,8 @@ const server = http.createServer(async (rawReq, rawRes) => {
 
   if (req.method === "OPTIONS") {       // ✅ handle preflight
     res.statusCode = 204;
-    return res.end();
+    res.end();
+    return;
   }
 
   if (!req.url) {
@@ -151,6 +152,7 @@ const server = http.createServer(async (rawReq, rawRes) => {
   }
 
   respondNotFound(res);
+  return;
 });
 
 server.listen(PORT, () => {
