@@ -12,6 +12,9 @@ const authService = new AuthService(
   new ConsoleEmailService(),
 );
 
+/**
+ * HTTP handler for `/api/login`, delegates to AuthService and maps responses.
+ */
 export async function loginHandler(req: Request, res: Response) {
   try {
     if (req.method === "OPTIONS") {

@@ -1,7 +1,14 @@
+/**
+ * Email notification abstraction so callers can decide how to deliver messages.
+ */
+/**
+ * Notification abstraction for sending user-facing emails.
+ */
 export interface EmailService {
   sendLoginNotification(email: string): Promise<void>;
 }
 
+/** Console-backed email service used by the demo login handler. */
 export class ConsoleEmailService implements EmailService {
   private readonly sentEmails: string[] = [];
 

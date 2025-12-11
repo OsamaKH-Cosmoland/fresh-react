@@ -1,5 +1,8 @@
 import type { User, UserRepository } from './UserRepository';
 
+/**
+ * In-memory implementation of `UserRepository` used for tests and simple services.
+ */
 export class InMemoryUserRepository implements UserRepository {
   private readonly users: Map<string, User>;
 
@@ -32,6 +35,7 @@ export class InMemoryUserRepository implements UserRepository {
   }
 }
 
+/** Helper that preloads the in-memory repo with initial data for tests. */
 export function buildTestUserRepository(initialUsers: User[] = []): UserRepository {
   return new InMemoryUserRepository(initialUsers);
 }

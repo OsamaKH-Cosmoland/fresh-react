@@ -1,6 +1,9 @@
-import type { UserRepository } from '../users/UserRepository';
 import type { EmailService } from '../notifications/EmailService';
+import type { UserRepository } from '../users/UserRepository';
 
+/**
+ * Coordinates user authentication flows and side effects (email notifications).
+ */
 export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,

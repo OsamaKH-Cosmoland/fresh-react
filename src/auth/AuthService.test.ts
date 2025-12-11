@@ -23,7 +23,7 @@ class FakeUserRepository implements UserRepository {
     return user;
   }
 
-  async deleteById(): Promise<void> {
+  async deleteById(_id: string): Promise<void> {
     return;
   }
 }
