@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1765470896916" clover="3.2.0">
-  <project timestamp="1765470896916" name="All files">
-    <metrics statements="1168" coveredstatements="745" conditionals="1064" coveredconditionals="474" methods="299" coveredmethods="186" elements="2531" coveredelements="1405" complexity="0" loc="1168" ncloc="1168" packages="17" files="40" classes="40"/>
+<coverage generated="1765474070681" clover="3.2.0">
+  <project timestamp="1765474070681" name="All files">
+    <metrics statements="1168" coveredstatements="750" conditionals="1064" coveredconditionals="480" methods="299" coveredmethods="189" elements="2531" coveredelements="1419" complexity="0" loc="1168" ncloc="1168" packages="17" files="40" classes="40"/>
     <package name="analytics">
       <metrics statements="13" coveredstatements="11" conditionals="15" coveredconditionals="11" methods="3" coveredmethods="3"/>
       <file name="events.ts" path="/home/osama-khaireldin/fresh-react/src/analytics/events.ts">
@@ -70,9 +70,9 @@
       </file>
     </package>
     <package name="application.usecases">
-      <metrics statements="275" coveredstatements="192" conditionals="377" coveredconditionals="168" methods="41" coveredmethods="27"/>
+      <metrics statements="275" coveredstatements="197" conditionals="377" coveredconditionals="174" methods="41" coveredmethods="30"/>
       <file name="ordersService.ts" path="/home/osama-khaireldin/fresh-react/src/application/usecases/ordersService.ts">
-        <metrics statements="275" coveredstatements="192" conditionals="377" coveredconditionals="168" methods="41" coveredmethods="27"/>
+        <metrics statements="275" coveredstatements="197" conditionals="377" coveredconditionals="174" methods="41" coveredmethods="30"/>
         <line num="14" count="1" type="stmt"/>
         <line num="15" count="1" type="stmt"/>
         <line num="16" count="1" type="stmt"/>
@@ -86,11 +86,11 @@
         <line num="33" count="2" type="stmt"/>
         <line num="35" count="2" type="stmt"/>
         <line num="36" count="2" type="stmt"/>
-        <line num="48" count="0" type="stmt"/>
-        <line num="49" count="0" type="stmt"/>
-        <line num="50" count="0" type="stmt"/>
-        <line num="51" count="0" type="stmt"/>
-        <line num="52" count="0" type="stmt"/>
+        <line num="48" count="2" type="stmt"/>
+        <line num="49" count="2" type="stmt"/>
+        <line num="50" count="2" type="stmt"/>
+        <line num="51" count="2" type="stmt"/>
+        <line num="52" count="2" type="stmt"/>
         <line num="56" count="0" type="stmt"/>
         <line num="62" count="2" type="stmt"/>
         <line num="63" count="2" type="stmt"/>
@@ -248,13 +248,13 @@
         <line num="420" count="2" type="stmt"/>
         <line num="421" count="2" type="stmt"/>
         <line num="427" count="2" type="stmt"/>
-        <line num="428" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="428" count="2" type="cond" truecount="1" falsecount="1"/>
         <line num="429" count="0" type="stmt"/>
         <line num="430" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="431" count="0" type="stmt"/>
-        <line num="433" count="0" type="stmt"/>
-        <line num="435" count="2" type="stmt"/>
-        <line num="436" count="2" type="stmt"/>
+        <line num="433" count="2" type="stmt"/>
+        <line num="435" count="0" type="stmt"/>
+        <line num="436" count="0" type="stmt"/>
         <line num="440" count="1" type="stmt"/>
         <line num="442" count="1" type="stmt"/>
         <line num="443" count="2" type="cond" truecount="3" falsecount="1"/>

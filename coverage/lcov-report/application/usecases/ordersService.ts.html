@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.81% </span>
+                <span class="strong">70.84% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>203/295</span>
+                <span class='fraction'>209/295</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44.56% </span>
+                <span class="strong">46.15% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>168/377</span>
+                <span class='fraction'>174/377</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">65.85% </span>
+                <span class="strong">73.17% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>27/41</span>
+                <span class='fraction'>30/41</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.81% </span>
+                <span class="strong">71.63% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>192/275</span>
+                <span class='fraction'>197/275</span>
             </div>
         
             
@@ -828,11 +828,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1208,15 +1208,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1545,15 +1545,15 @@ const postJson = async (url: string, payload: unknown) =&gt; {
           "Content-Length": Buffer.byteLength(bodyString),
         },
       },
-<span class="fstat-no" title="function not covered" >      (r</span>esponse) =&gt; {
-        const chunks: Buffer[] = <span class="cstat-no" title="statement not covered" >[];</span>
-<span class="cstat-no" title="statement not covered" >        response.on("data", <span class="fstat-no" title="function not covered" >(c</span>hunk) =&gt; <span class="cstat-no" title="statement not covered" >chunks.push(chunk))</span>;</span>
-<span class="cstat-no" title="statement not covered" >        response.on("end", <span class="fstat-no" title="function not covered" >() =</span>&gt; {</span>
-          const text = <span class="cstat-no" title="statement not covered" >Buffer.concat(chunks).toString();</span>
-<span class="cstat-no" title="statement not covered" >          resolve({</span>
+      (response) =&gt; {
+        const chunks: Buffer[] = [];
+        response.on("data", (chunk) =&gt; chunks.push(chunk));
+        response.on("end", () =&gt; {
+          const text = Buffer.concat(chunks).toString();
+          resolve({
             ok: !!(response.statusCode &amp;&amp; response.statusCode &gt;= 200 &amp;&amp; response.statusCode &lt; 300),
-            status: response.statusCode ?? 0,
-            statusText: response.statusMessage ?? "",
+            status: response.statusCode ?? <span class="branch-1 cbranch-no" title="branch not covered" >0,</span>
+            statusText: response.statusMessage ?? <span class="branch-1 cbranch-no" title="branch not covered" >"",</span>
             text: <span class="fstat-no" title="function not covered" >async </span>() =&gt; <span class="cstat-no" title="statement not covered" >text,</span>
           });
         });
@@ -1926,15 +1926,15 @@ export const notifyTelegram = async (order: Partial&lt;Order&gt;) =&gt; {
     };
 &nbsp;
     const res = await postJson(url, body);
-<span class="cstat-no" title="statement not covered" >    if (!res.ok) {</span>
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!res.ok) {
       const textBody = <span class="cstat-no" title="statement not covered" >await res.text().catch(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >"")</span>;</span>
 <span class="cstat-no" title="statement not covered" >      console.error("Telegram notify failed:", res.status, textBody || res.statusText);</span>
 <span class="cstat-no" title="statement not covered" >      return { ok: false, status: res.status, body: textBody };</span>
     }
-<span class="cstat-no" title="statement not covered" >    return { ok: true };</span>
+    return { ok: true };
   } catch (error) {
-    console.error("Telegram notify error:", error);
-    return { ok: false, error };
+<span class="cstat-no" title="statement not covered" >    console.error("Telegram notify error:", error);</span>
+<span class="cstat-no" title="statement not covered" >    return { ok: false, error };</span>
   }
 };
 &nbsp;
@@ -2224,7 +2224,7 @@ export async function <span class="fstat-no" title="function not covered" >notif
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-12-11T16:34:56.758Z
+                at 2025-12-11T17:27:50.588Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
