@@ -68,4 +68,17 @@ describe('AuthService', () => {
     await expect(service.login('any@example.com')).rejects.toThrow('DB failure');
     expect(emailService.calls).toHaveLength(0);
   });
+
+  it('propagates email delivery failures after finding the user', async () => {
+    const user: User = { id: 'u2', email: 'notify@example.com', name: 'Notify' };
+    const repo = new FakeUserRepository(user);
+    const emailService: EmailService = {
+      async sendLoginNotification() {
+        throw new Error('email-down');
+      },
+    };
+    const service = new AuthService(repo, emailService);
+
+    await expect(service.login('notify@example.com')).rejects.toThrow('email-down');
+  });
 });

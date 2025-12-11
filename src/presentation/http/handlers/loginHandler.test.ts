@@ -1,4 +1,5 @@
 import { loginHandler } from './loginHandler';
+import { appContainer } from '../../../application/services/AppContainer';
 
 type MockRequest = {
   method?: string;
@@ -83,5 +84,31 @@ describe('loginHandler', () => {
 
     expect(res._status).toBe(401);
     expect(res._json).toEqual({ error: 'Invalid credentials' });
+  });
+
+  it('trims whitespace around the email before delegating to AuthService', async () => {
+    const { req, res } = createMockReqRes('POST', { email: '  user@example.com  ' });
+
+    await loginHandler(req as any, res as any);
+
+    expect(res._status).toBe(200);
+    expect(res._json).toEqual({ token: 'token-for-server-user' });
+  });
+
+  it('returns custom status codes for unexpected AuthService errors', async () => {
+    const { req, res } = createMockReqRes('POST', { email: 'boom@example.com' });
+    const error = Object.assign(new Error('Teapot'), { statusCode: 418 });
+    const fakeAuth = { login: jest.fn().mockRejectedValue(error) };
+    const createScopeSpy = jest
+      .spyOn(appContainer, 'createScope')
+      .mockReturnValue({ resolve: jest.fn().mockReturnValue(fakeAuth) } as any);
+
+    await loginHandler(req as any, res as any);
+
+    expect(fakeAuth.login).toHaveBeenCalledWith('boom@example.com');
+    expect(res._status).toBe(418);
+    expect(res._json).toEqual({ error: 'Teapot' });
+
+    createScopeSpy.mockRestore();
   });
 });
