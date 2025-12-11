@@ -1,4 +1,5 @@
 import { AuthService } from './AuthService';
+import type { EmailService } from '../notifications/EmailService';
 import type { UserRepository, User } from '../users/UserRepository';
 
 class FakeUserRepository implements UserRepository {
@@ -27,26 +28,40 @@ class FakeUserRepository implements UserRepository {
   }
 }
 
+class FakeEmailService implements EmailService {
+  public readonly calls: string[] = [];
+
+  async sendLoginNotification(email: string): Promise<void> {
+    this.calls.push(email);
+  }
+}
+
 describe('AuthService', () => {
   it('returns a token when the user exists', async () => {
     const user: User = { id: 'u1', email: 'test@example.com', name: 'Test' };
     const repo = new FakeUserRepository(user);
-    const service = new AuthService(repo);
+    const emailService = new FakeEmailService();
+    const service = new AuthService(repo, emailService);
 
     await expect(service.login('test@example.com')).resolves.toBe('token-for-u1');
+    expect(emailService.calls).toEqual(['test@example.com']);
   });
 
   it('throws when no user exists for the given email', async () => {
     const repo = new FakeUserRepository(null);
-    const service = new AuthService(repo);
+    const emailService = new FakeEmailService();
+    const service = new AuthService(repo, emailService);
 
     await expect(service.login('missing@example.com')).rejects.toThrow('Invalid credentials');
+    expect(emailService.calls).toHaveLength(0);
   });
 
   it('propagates repository errors', async () => {
     const repo = new FakeUserRepository(null, new Error('DB failure'));
-    const service = new AuthService(repo);
+    const emailService = new FakeEmailService();
+    const service = new AuthService(repo, emailService);
 
     await expect(service.login('any@example.com')).rejects.toThrow('DB failure');
+    expect(emailService.calls).toHaveLength(0);
   });
 });

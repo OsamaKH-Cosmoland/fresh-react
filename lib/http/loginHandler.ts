@@ -1,12 +1,16 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { AuthService } from "../../src/auth/AuthService";
 import { buildTestUserRepository } from "../../src/users/InMemoryUserRepository";
+import { ConsoleEmailService } from "../../src/notifications/EmailService";
 
 type Request = IncomingMessage & { method?: string; body?: any };
 type Response = ServerResponse & { status: (code: number) => Response; json: (payload: unknown) => void };
 
 const seededUsers = [{ id: "server-user", email: "user@example.com", name: "Server User" }];
-const authService = new AuthService(buildTestUserRepository(seededUsers));
+const authService = new AuthService(
+  buildTestUserRepository(seededUsers),
+  new ConsoleEmailService(),
+);
 
 export async function loginHandler(req: Request, res: Response) {
   try {
