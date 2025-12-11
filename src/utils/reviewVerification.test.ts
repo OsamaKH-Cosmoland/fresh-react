@@ -4,6 +4,7 @@ import type { LocalOrder } from "@/types/localOrder";
 const mockedReadOrders = jest.fn();
 
 await jest.unstable_mockModule("@/utils/orderStorage", () => ({
+  __esModule: true,
   readOrders: mockedReadOrders,
 }));
 
@@ -64,6 +65,10 @@ const baseOrder = {
 } satisfies LocalOrder;
 
 describe("reviewVerification", () => {
+  beforeEach(() => {
+    mockedReadOrders.mockReset();
+  });
+
   it("confirms verification for product, bundle, and gift box matches", () => {
     mockedReadOrders.mockReturnValue([baseOrder]);
     expect(isTargetVerifiedForAnyOrder("body-balm", "product")).toBe(true);

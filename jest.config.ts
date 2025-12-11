@@ -5,7 +5,7 @@ const config: Config = {
   testEnvironment: "jsdom",
   extensionsToTreatAsEsm: [".ts", ".tsx"],
   transform: {
-    "^.+\\.tsx?$": [
+    "^.+\\.[tj]sx?$": [
       "ts-jest",
       {
         tsconfig: "tsconfig.json",
@@ -21,6 +21,11 @@ const config: Config = {
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "cjs", "json", "node"],
+  testEnvironmentOptions: {
+    // Helps ESM modules that rely on URL/env-like behaviors
+    customExportConditions: ["node", "browser", "default"],
+    url: "http://localhost",
+  },
 };
 
 export default config;
