@@ -11,6 +11,8 @@
     "build": "npm run build:shared && vite build",
     "lint": "eslint .",
     "test": "node --experimental-vm-modules node_modules/.bin/jest --runInBand",
+    "test:watch": "node --experimental-vm-modules node_modules/.bin/jest --watch",
+    "test:coverage": "node --experimental-vm-modules node_modules/.bin/jest --coverage --runInBand",
     "preview": "vite preview"
   },
   "dependencies": {
