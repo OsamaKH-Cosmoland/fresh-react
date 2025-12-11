@@ -1186,6 +1186,20 @@ button:hover {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
+@media (max-width: 640px) {
+  .ritual-guides-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ritual-guides-card {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 0;
+  }
+}
+
 .ritual-guide-detail-page {
   min-height: 100vh;
   padding-bottom: var(--space-10);
@@ -2281,6 +2295,21 @@ button:hover {
 .nav-explore {
   transform: translateX(16px);
   z-index: 210;
+}
+
+@media (max-width: 640px) {
+  .nav-primary {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem 0;
+    row-gap: 0.7rem;
+  }
+  .nav-primary .nav-pill {
+    width: 100%;
+    transform: none;
+  }
+  .nav-explore {
+    transform: none;
+  }
 }
 
 .offline-notice {
