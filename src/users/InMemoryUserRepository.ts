@@ -26,6 +26,10 @@ export class InMemoryUserRepository implements UserRepository {
     this.users.set(user.id, stored);
     return stored;
   }
+
+  async deleteById(id: string): Promise<void> {
+    this.users.delete(id);
+  }
 }
 
 export function buildTestUserRepository(initialUsers: User[] = []): UserRepository {

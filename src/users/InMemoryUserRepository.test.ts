@@ -49,4 +49,16 @@ describe('InMemoryUserRepository', () => {
     const result = await repo.findByEmail('nope@example.com');
     expect(result).toBeNull();
   });
+
+  it('removes a user when deleteById is called', async () => {
+    const user: User = { id: 'u3', email: 'delete@example.com', name: 'To Delete' };
+    await repo.save(user);
+    await repo.deleteById(user.id);
+    const result = await repo.findById(user.id);
+    expect(result).toBeNull();
+  });
+
+  it('does not throw when deleting a non-existent user', async () => {
+    await expect(repo.deleteById('missing')).resolves.toBeUndefined();
+  });
 });

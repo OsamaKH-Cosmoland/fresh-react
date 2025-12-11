@@ -21,6 +21,10 @@ class FakeUserRepository implements UserRepository {
   async save(user: User): Promise<User> {
     return user;
   }
+
+  async deleteById(): Promise<void> {
+    return;
+  }
 }
 
 describe('AuthService', () => {
