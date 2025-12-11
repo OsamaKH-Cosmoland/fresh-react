@@ -11,6 +11,7 @@ import reviewsHandler from "../lib/http/reviewsHandler";
 import productsHandler from "../lib/http/productsHandler";
 import orderCreatedWebhookHandler from "../lib/http/orderCreatedWebhookHandler";
 import healthHandler from "../lib/http/healthHandler";
+import { loginHandler } from "../lib/http/loginHandler";
 import { GmailEmailProvider } from "../providers/gmailEmailProvider";
 import { FakeEmailProvider } from "../providers/fakeEmailProvider";
 import type { EmailProvider } from "../providers/emailProvider";
@@ -126,6 +127,11 @@ const server = http.createServer(async (rawReq, rawRes) => {
 
   if (pathname === "/api/health") {
     await healthHandler(req as any, res as any);
+    return;
+  }
+
+  if (pathname === "/api/login") {
+    await loginHandler(req as any, res as any);
     return;
   }
 
