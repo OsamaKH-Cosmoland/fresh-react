@@ -1,5 +1,5 @@
-import type { OrdersRepository } from "../OrdersRepository";
-import type { Order } from "../../../domain/shared/Order";
+import type { OrdersRepository } from "@/infrastructure/repositories/OrdersRepository";
+import type { Order } from "@/domain/shared/Order";
 
 export const makeTestOrder = (overrides: Partial<Order> = {}): Order => {
   const createdAt = overrides.createdAt ?? new Date().toISOString();
@@ -31,21 +31,22 @@ export const makeTestOrder = (overrides: Partial<Order> = {}): Order => {
   };
 };
 
-/**
- * Contract test suite for OrdersRepository implementations.
- *
- * @param name A label for the repository implementation.
- * @param factory A fresh repository factory for each test.
- */
-export function runOrdersRepositoryContract(
-  name: string,
-  factory: () => OrdersRepository
-) {
-  describe(`${name} OrdersRepository contract`, () => {
+type RepositoryFactory = {
+  name: string;
+  create: () => OrdersRepository | Promise<OrdersRepository>;
+  cleanup?: (repo: OrdersRepository) => void | Promise<void>;
+};
+
+export function runOrdersRepositoryContract(factory: RepositoryFactory) {
+  describe(`${factory.name} OrdersRepository contract`, () => {
     let repo: OrdersRepository;
 
-    beforeEach(() => {
-      repo = factory();
+    beforeEach(async () => {
+      repo = await factory.create();
+    });
+
+    afterEach(async () => {
+      await factory.cleanup?.(repo);
     });
 
     it("creates an order (autogenerates id when missing) and lists it", async () => {
@@ -53,7 +54,7 @@ export function runOrdersRepositoryContract(
       expect(stored.id).toBeTruthy();
 
       const listed = await repo.list(10);
-      expect(listed.find((o) => o.id === stored.id)).toBeTruthy();
+      expect(listed.find((order) => order.id === stored.id)).toBeTruthy();
     });
 
     it("updates status and persists the change", async () => {
@@ -64,7 +65,7 @@ export function runOrdersRepositoryContract(
       expect(updated?.updatedAt).toBeTruthy();
 
       const listed = await repo.list(5);
-      const found = listed.find((o) => o.id === created.id);
+      const found = listed.find((order) => order.id === created.id);
       expect(found?.status).toBe("completed");
     });
 

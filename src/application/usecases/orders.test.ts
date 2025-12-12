@@ -140,6 +140,23 @@ describe("createOrder service", () => {
     });
     expect(result.clean.id).toBeTruthy();
   });
+
+  it("is resilient when notification channels fail", async () => {
+    const repo = new InMemoryOrdersRepository();
+    const emailProvider = new FakeEmailProvider();
+    const failingNotificationService = {
+      async notify() {
+        throw new Error("notification fail");
+      },
+    };
+    const result = await createOrder(buildPayload(), repo, emailProvider, {
+      notificationService: failingNotificationService as any,
+    });
+    expect(result.clean.id).toBeTruthy();
+    const all = await repo.list(10);
+    expect(all.length).toBe(1);
+    expect(emailProvider.sentEmails).toHaveLength(1);
+  });
 });
 
 describe("sanitizeOrderPayload", () => {

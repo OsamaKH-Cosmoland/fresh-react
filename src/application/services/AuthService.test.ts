@@ -1,74 +1,66 @@
 import { AuthService } from './AuthService';
-import type { UserRepository, User } from '../../domain/users/UserRepository';
-import { FakeNotificationService } from '../../infrastructure/notifications/FakeNotificationService';
+import type { NotificationService } from '../../domain/shared/NotificationService';
+import type { User, UserRepository } from '../../domain/users/UserRepository';
 
-class FakeUserRepository implements UserRepository {
-  constructor(
-    private readonly user: User | null = null,
-    private readonly error: Error | null = null,
-  ) {}
+const createUserRepository = (): jest.Mocked<UserRepository> => ({
+  findByEmail: jest.fn(),
+  findById: jest.fn(),
+  save: jest.fn(),
+  deleteById: jest.fn(),
+  listAll: jest.fn(),
+});
 
-  async findByEmail(email: string): Promise<User | null> {
-    if (this.error) {
-      throw this.error;
-    }
-    return this.user && this.user.email === email ? this.user : null;
-  }
-
-  async findById(_id: string): Promise<User | null> {
-    return null;
-  }
-
-  async save(user: User): Promise<User> {
-    return user;
-  }
-
-  async deleteById(_id: string): Promise<void> {
-    return;
-  }
-
-  async listAll(): Promise<User[]> {
-    return this.user ? [this.user] : [];
-  }
-}
+const createNotificationService = (): jest.Mocked<NotificationService> => ({
+  notify: jest.fn(),
+});
 
 describe('AuthService', () => {
   it('returns a token when the user exists', async () => {
     const user: User = { id: 'u1', email: 'test@example.com', name: 'Test' };
-    const repo = new FakeUserRepository(user);
-    const notificationService = new FakeNotificationService();
+    const repo = createUserRepository();
+    repo.findByEmail.mockResolvedValue(user);
+    const notificationService = createNotificationService();
+    notificationService.notify.mockResolvedValue();
     const service = new AuthService(repo, notificationService);
 
     await expect(service.login('test@example.com')).resolves.toBe('token-for-u1');
-    expect(notificationService.calls[0]).toMatchObject({ recipient: 'test@example.com' });
+    expect(repo.findByEmail).toHaveBeenCalledWith('test@example.com');
+    expect(notificationService.notify).toHaveBeenCalledWith(
+      user.email,
+      'Login notification',
+      {
+        category: 'auth',
+        subject: 'Login notification',
+      },
+    );
   });
 
   it('throws when no user exists for the given email', async () => {
-    const repo = new FakeUserRepository(null);
-    const notificationService = new FakeNotificationService();
+    const repo = createUserRepository();
+    repo.findByEmail.mockResolvedValue(null);
+    const notificationService = createNotificationService();
     const service = new AuthService(repo, notificationService);
 
     await expect(service.login('missing@example.com')).rejects.toThrow('Invalid credentials');
-    expect(notificationService.calls).toHaveLength(0);
+    expect(notificationService.notify).not.toHaveBeenCalled();
   });
 
   it('propagates repository errors', async () => {
-    const repo = new FakeUserRepository(null, new Error('DB failure'));
-    const notificationService = new FakeNotificationService();
+    const repo = createUserRepository();
+    repo.findByEmail.mockRejectedValue(new Error('DB failure'));
+    const notificationService = createNotificationService();
     const service = new AuthService(repo, notificationService);
 
     await expect(service.login('any@example.com')).rejects.toThrow('DB failure');
-    expect(notificationService.calls).toHaveLength(0);
+    expect(notificationService.notify).not.toHaveBeenCalled();
   });
 
   it('propagates email delivery failures after finding the user', async () => {
     const user: User = { id: 'u2', email: 'notify@example.com', name: 'Notify' };
-    const repo = new FakeUserRepository(user);
-    const notificationService = {
-      async notify() {
-        throw new Error('email-down');
-      },
-    } as any;
+    const repo = createUserRepository();
+    repo.findByEmail.mockResolvedValue(user);
+    const notificationService = createNotificationService();
+    notificationService.notify.mockRejectedValue(new Error('email-down'));
     const service = new AuthService(repo, notificationService);
 
     await expect(service.login('notify@example.com')).rejects.toThrow('email-down');

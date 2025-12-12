@@ -41,10 +41,30 @@ describe('AppContainer', () => {
     expect(() => container.resolve('missing')).toThrow(/No provider registered/);
   });
 
+  it('fails fast when a provider depends on an unregistered token', () => {
+    const container = new AppContainer('test');
+    container.register('dependent', (c) => c.resolve('missing'), { scope: 'singleton' });
+    expect(() => container.resolve('dependent')).toThrow(/No provider registered for token "missing"/);
+  });
+
   it('skips bindings for mismatched environments', () => {
     const container = new AppContainer('prod');
     container.register('env-only', () => ({}), { envs: ['test'] });
     expect(() => container.resolve('env-only')).toThrow(/No provider registered/);
+  });
+
+  it('reports env misconfiguration when resolving a provider restricted to other envs', () => {
+    const container = new AppContainer('staging');
+    container.register('env-only', () => ({ name: 'env-only' }), { envs: ['staging'] });
+    Object.defineProperty(container, 'env', { value: 'prod' });
+    expect(() => container.resolve('env-only')).toThrow(/not registered for env "prod"/);
+  });
+
+  it('errors when the container env changes after registration', () => {
+    const container = new AppContainer('prod');
+    container.register('env-specific', () => ({ value: 1 }), { envs: ['prod'] });
+    Object.defineProperty(container, 'env', { value: 'staging' });
+    expect(() => container.resolve('env-specific')).toThrow(/not registered for env "staging"/);
   });
 
   it('allows overriding clock and id generator per scope', () => {

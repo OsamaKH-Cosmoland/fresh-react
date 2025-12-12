@@ -1,7 +1,10 @@
 import { InMemoryOrdersRepository } from "./InMemoryOrdersRepository";
-import { makeTestOrder, runOrdersRepositoryContract } from "./testing/ordersRepository.contract";
+import { makeTestOrder, runOrdersRepositoryContract } from "@/domain/orders/testing/ordersRepository.contract";
 
-runOrdersRepositoryContract("InMemoryOrdersRepository", () => new InMemoryOrdersRepository());
+runOrdersRepositoryContract({
+  name: "InMemoryOrdersRepository",
+  create: () => new InMemoryOrdersRepository(),
+});
 
 describe("InMemoryOrdersRepository specifics", () => {
   it("creates orders with generated ids and returns snapshots", async () => {
