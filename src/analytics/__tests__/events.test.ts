@@ -5,9 +5,7 @@ describe("trackEvent", () => {
     clearEventBuffer();
   });
 
-  it("logs a variety of events without throwing", () => {
-    const consoleSpy = jest.spyOn(console, "info").mockImplementation(() => {});
-
+  it("buffers a variety of events without throwing", () => {
     trackEvent({ type: "view_product", productId: "p-1", source: "shop" });
     trackEvent({
       type: "add_to_cart",
@@ -24,6 +22,5 @@ describe("trackEvent", () => {
     });
 
     expect(getEventBuffer().length).toBe(3);
-    consoleSpy.mockRestore();
   });
 });

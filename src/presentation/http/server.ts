@@ -9,12 +9,15 @@ import {
 } from "./handlers/ordersHandler";
 import reviewsHandler from "./handlers/reviewsHandler";
 import productsHandler from "./handlers/productsHandler";
-import orderCreatedWebhookHandler from "./handlers/orderCreatedWebhookHandler";
+import { createOrderCreatedWebhookHandler } from "./handlers/orderCreatedWebhookHandler";
 import healthHandler from "./handlers/healthHandler";
 import { loginHandler } from "./handlers/loginHandler";
 import { GmailEmailProvider } from "../../infrastructure/email/gmailEmailProvider";
 import { FakeEmailProvider } from "../../infrastructure/email/fakeEmailProvider";
 import type { EmailProvider } from "../../domain/shared/EmailProvider";
+import { getLogger } from "@/logging/globalLogger";
+import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
+import { SimpleFeatureFlagProvider } from "@/infrastructure/config/SimpleFeatureFlagProvider";
 
 type Request = IncomingMessage & {
   url?: string;
@@ -28,17 +31,31 @@ type Response = ServerResponse & {
   json: (payload: unknown) => void;
 };
 
+const configProvider = new EnvConfigProvider();
+const featureFlagProvider = new SimpleFeatureFlagProvider(configProvider, {
+  defaults: { TELEGRAM_NOTIFICATIONS: true },
+});
+
 // ✅ Railway sets PORT for you; also keep API_PORT fallback for local
-const PORT = Number(process.env.PORT || process.env.API_PORT || 3000);
+const PORT =
+  configProvider.getNumber("PORT") ??
+  configProvider.getNumber("API_PORT") ??
+  3000;
 
 let emailProvider: EmailProvider;
 try {
   emailProvider = new GmailEmailProvider();
 } catch (error) {
-  console.warn("[email] GmailEmailProvider unavailable:", error);
+  getLogger().warn("[email] GmailEmailProvider unavailable", { error });
   emailProvider = new FakeEmailProvider();
 }
-const ordersHandler = buildOrdersHandler({ emailProvider });
+const ordersHandler = buildOrdersHandler({
+  emailProvider,
+  configProvider,
+  featureFlagProvider,
+});
+
+const orderCreatedHandler = createOrderCreatedWebhookHandler(configProvider);
 
 const respondNotFound = (res: Response) => {
   res.statusCode = 404;
@@ -122,7 +139,7 @@ const server = http.createServer(async (rawReq, rawRes): Promise<void> => {
   }
 
   if (pathname === "/api/order-created") {
-    await orderCreatedWebhookHandler(req as any, res as any);
+    await orderCreatedHandler(req as any, res as any);
     return;
   }
 
@@ -156,5 +173,5 @@ const server = http.createServer(async (rawReq, rawRes): Promise<void> => {
 });
 
 server.listen(PORT, () => {
-  console.log(`[api] listening on http://localhost:${PORT}`);
+  getLogger().info("[api] listening", { port: PORT });
 });

@@ -1,4 +1,5 @@
 import type { LocalOrder } from "@/types/localOrder";
+import { getLogger } from "@/logging/globalLogger";
 
 const formatItems = (items: LocalOrder["items"]) =>
   items.map((item) => ({
@@ -45,9 +46,12 @@ export async function submitOrderToApi(order: LocalOrder) {
 
     if (!response.ok) {
       const text = await response.text().catch(() => "");
-      console.warn("Server order submission failed", response.status, text);
+      getLogger().warn("Server order submission failed", {
+        status: response.status,
+        text,
+      });
     }
   } catch (error) {
-    console.warn("Unable to send order to server", error);
+    getLogger().warn("Unable to send order to server", { error });
   }
 }

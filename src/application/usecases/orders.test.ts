@@ -1,11 +1,12 @@
 import { InMemoryOrdersRepository } from "../../infrastructure/repositories/InMemoryOrdersRepository";
-import { createOrder, notifyTelegram, sanitizeOrderPayload } from "./orders";
+import { createOrder, notifyTelegram, notifyTelegramTest, sanitizeOrderPayload } from "./orders";
 import { FakeEmailProvider } from "../../infrastructure/email/fakeEmailProvider";
 import https from "https";
 import { EventEmitter } from "events";
-import fs from "fs";
 import { ObjectId } from "mongodb";
 import { FakeNotificationService } from "../../infrastructure/notifications/FakeNotificationService";
+import { StaticConfigProvider } from "../../infrastructure/config/StaticConfigProvider";
+import { SimpleFeatureFlagProvider } from "../../infrastructure/config/SimpleFeatureFlagProvider";
 
 const originalFetch = global.fetch;
 const fakeFetch = jest.fn().mockResolvedValue({
@@ -131,17 +132,13 @@ describe("createOrder service", () => {
 
   it("continues even when email providers or admin config fail", async () => {
     const repo = new InMemoryOrdersRepository();
-    const originalAdmin = process.env.ADMIN_EMAIL;
-    const originalFrom = process.env.FROM_EMAIL;
-    process.env.ADMIN_EMAIL = "";
-    process.env.FROM_EMAIL = "";
     const throwingProvider = { send: jest.fn().mockRejectedValue(new Error("send failure")) } as any;
+    const configProvider = new StaticConfigProvider();
     const result = await createOrder(buildPayload(), repo, throwingProvider, {
       notificationService: new FakeNotificationService(),
+      configProvider,
     });
     expect(result.clean.id).toBeTruthy();
-    process.env.ADMIN_EMAIL = originalAdmin;
-    process.env.FROM_EMAIL = originalFrom;
   });
 });
 
@@ -174,52 +171,73 @@ describe("sanitizeOrderPayload", () => {
 });
 
 describe("notifications", () => {
-  const originalTelegramToken = process.env.TELEGRAM_BOT_TOKEN;
-  const originalTelegramChat = process.env.TELEGRAM_CHAT_ID;
   const sampleOrder = { orderCode: "TEST", customer: { name: "T", phone: "1" }, total: 10, createdAt: new Date().toISOString() };
 
+  const buildTelegramDeps = (
+    extraValues: Record<string, string> = {},
+    flagOverrides?: Record<string, boolean>
+  ) => {
+    const configProvider = new StaticConfigProvider({
+      values: {
+        TELEGRAM_BOT_TOKEN: "dummy",
+        TELEGRAM_CHAT_ID: "123",
+        FEATURE_TELEGRAM_NOTIFICATIONS: "true",
+        ...extraValues,
+      },
+    });
+    const flagProvider = new SimpleFeatureFlagProvider(configProvider, {
+      defaults: { TELEGRAM_NOTIFICATIONS: true },
+      overrides: flagOverrides,
+    });
+    return { configProvider, flagProvider };
+  };
+
   afterEach(() => {
-    process.env.TELEGRAM_BOT_TOKEN = originalTelegramToken;
-    process.env.TELEGRAM_CHAT_ID = originalTelegramChat;
     global.fetch = fakeFetch as any;
   });
 
+  it("skips notifyTelegram when feature flag disables it", async () => {
+    const { configProvider, flagProvider } = buildTelegramDeps({ FEATURE_TELEGRAM_NOTIFICATIONS: "false" });
+    const result = await notifyTelegram(sampleOrder as any, undefined, undefined, configProvider, flagProvider);
+    expect(result.ok).toBe(false);
+    expect(result.error?.message).toContain("disabled");
+  });
+
   it("returns missing env metadata when telegram credentials are absent", async () => {
-    process.env.TELEGRAM_BOT_TOKEN = "";
-    process.env.TELEGRAM_CHAT_ID = "";
-    const existsSpy = jest.spyOn(fs, "existsSync").mockReturnValue(false);
-    jest.resetModules();
-    const { notifyTelegram: freshNotify } = await import("./ordersService");
-    const result = await freshNotify(sampleOrder as any);
-    existsSpy.mockRestore();
+    const configProvider = new StaticConfigProvider({ values: { FEATURE_TELEGRAM_NOTIFICATIONS: "true" } });
+    const flagProvider = new SimpleFeatureFlagProvider(configProvider, {
+      defaults: { TELEGRAM_NOTIFICATIONS: true },
+    });
+    const result = await notifyTelegram(sampleOrder as any, undefined, undefined, configProvider, flagProvider);
     expect(result).toMatchObject({ ok: false, missingEnv: true });
   });
 
   it("uses https fallback when fetch is unavailable", async () => {
-    process.env.TELEGRAM_BOT_TOKEN = "dummy";
-    process.env.TELEGRAM_CHAT_ID = "123";
+    const { configProvider, flagProvider } = buildTelegramDeps();
     const originalFetch = global.fetch;
     // remove fetch to trigger https fallback path
     // @ts-expect-error
     global.fetch = undefined;
 
-    const requestMock = jest.spyOn(https, "request").mockImplementation((_options: any, callback: any) => {
-      const res: any = new EventEmitter();
-      res.statusCode = 200;
-      res.statusMessage = "OK";
-      process.nextTick(() => {
-        callback(res);
-        res.emit("data", Buffer.from("{}"));
-        res.emit("end");
+    const requestMock = jest
+      .spyOn(https, "request")
+      .mockImplementation((_options: any, callback: any) => {
+        const res: any = new EventEmitter();
+        res.statusCode = 200;
+        res.statusMessage = "OK";
+        process.nextTick(() => {
+          callback(res);
+          res.emit("data", Buffer.from("{}"));
+          res.emit("end");
+        });
+        return {
+          on: jest.fn(),
+          write: jest.fn(),
+          end: jest.fn(),
+        } as any;
       });
-      return {
-        on: jest.fn(),
-        write: jest.fn(),
-        end: jest.fn(),
-      } as any;
-    });
 
-    const result = await notifyTelegram(sampleOrder as any);
+    const result = await notifyTelegram(sampleOrder as any, undefined, undefined, configProvider, flagProvider);
     expect(result.ok).toBe(true);
     expect(requestMock).toHaveBeenCalled();
     global.fetch = originalFetch;
@@ -227,8 +245,7 @@ describe("notifications", () => {
   });
 
   it("surfaces non-ok telegram responses", async () => {
-    process.env.TELEGRAM_BOT_TOKEN = "dummy";
-    process.env.TELEGRAM_CHAT_ID = "123";
+    const { configProvider, flagProvider } = buildTelegramDeps();
     const failingFetch = jest.fn().mockResolvedValue({
       ok: false,
       status: 500,
@@ -236,50 +253,45 @@ describe("notifications", () => {
       text: async () => "failed",
     });
     global.fetch = failingFetch as any;
-    const result = await notifyTelegram(sampleOrder as any);
+    const result = await notifyTelegram(sampleOrder as any, undefined, undefined, configProvider, flagProvider);
     expect(result.ok).toBe(false);
     expect((result as any).status).toBe(500);
   });
 
   it("returns ok false when notifyTelegram throws", async () => {
-    process.env.TELEGRAM_BOT_TOKEN = "dummy";
-    process.env.TELEGRAM_CHAT_ID = "123";
+    const { configProvider, flagProvider } = buildTelegramDeps();
     global.fetch = jest.fn().mockRejectedValue(new Error("network down")) as any;
-    const result = await notifyTelegram(sampleOrder as any);
+    const result = await notifyTelegram(sampleOrder as any, undefined, undefined, configProvider, flagProvider);
     expect(result.ok).toBe(false);
     expect((result as any).error).toBeDefined();
   });
 
   it("throws a 400 when running notifyTelegramTest without credentials", async () => {
-    process.env.TELEGRAM_BOT_TOKEN = "";
-    process.env.TELEGRAM_CHAT_ID = "";
-    const existsSpy = jest.spyOn(fs, "existsSync").mockReturnValue(false);
-    jest.resetModules();
-    const { notifyTelegramTest: freshTest } = await import("./ordersService");
-    await expect(freshTest()).rejects.toMatchObject({ statusCode: 400 });
-    existsSpy.mockRestore();
+    const configProvider = new StaticConfigProvider({ values: { FEATURE_TELEGRAM_NOTIFICATIONS: "true" } });
+    const flagProvider = new SimpleFeatureFlagProvider(configProvider, {
+      defaults: { TELEGRAM_NOTIFICATIONS: true },
+    });
+    await expect(
+      notifyTelegramTest({ configProvider, featureFlagProvider: flagProvider })
+    ).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it("succeeds in notifyTelegramTest with credentials present", async () => {
-    process.env.TELEGRAM_BOT_TOKEN = "dummy";
-    process.env.TELEGRAM_CHAT_ID = "123";
-    jest.resetModules();
-    const { notifyTelegramTest: freshTest } = await import("./ordersService");
-    const result = await freshTest();
+    const { configProvider, flagProvider } = buildTelegramDeps();
+    const result = await notifyTelegramTest({ configProvider, featureFlagProvider: flagProvider });
     expect(result).toEqual({ ok: true });
   });
 
   it("bubbles a failure when notifyTelegram returns not ok inside notifyTelegramTest", async () => {
-    process.env.TELEGRAM_BOT_TOKEN = "dummy";
-    process.env.TELEGRAM_CHAT_ID = "123";
+    const { configProvider, flagProvider } = buildTelegramDeps();
     global.fetch = jest.fn().mockResolvedValue({
       ok: false,
       status: 503,
       statusText: "Unavailable",
       text: async () => "",
     }) as any;
-    jest.resetModules();
-    const { notifyTelegramTest: freshTest } = await import("./ordersService");
-    await expect(freshTest()).rejects.toMatchObject({ statusCode: 500 });
+    await expect(
+      notifyTelegramTest({ configProvider, featureFlagProvider: flagProvider })
+    ).rejects.toMatchObject({ statusCode: 500 });
   });
 });

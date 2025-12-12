@@ -1,4 +1,5 @@
 import type { AudienceContact, ConsentChannel, ConsentSource } from "@/types/audience";
+import { getLogger } from "@/logging/globalLogger";
 
 const AUDIENCE_KEY = "naturagloss_audience";
 
@@ -10,7 +11,7 @@ const safelyParse = (value: string | null) => {
   try {
     return JSON.parse(value);
   } catch (error) {
-    console.warn("Failed to parse audience data", error);
+    getLogger().warn("Failed to parse audience data", { error });
     return null;
   }
 };
@@ -20,7 +21,7 @@ function writeAudience(contacts: AudienceContact[]) {
   try {
     window.localStorage.setItem(AUDIENCE_KEY, JSON.stringify(contacts));
   } catch (error) {
-    console.warn("Unable to write audience data", error);
+    getLogger().warn("Unable to write audience data", { error });
   }
 }
 

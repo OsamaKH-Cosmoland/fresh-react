@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import { apiGet } from "../lib/api";
+import { getLogger } from "@/logging/globalLogger";
 import type { Order } from "../types/order";
 
 const formatDate = (isoString?: string | number | Date) => {
@@ -31,7 +32,7 @@ export default function OrdersAdmin() {
       const data = (await response.json()) as Order[];
       setOrders(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Failed to fetch orders", err);
+      getLogger().error("Failed to fetch orders", { error: err });
       setError((err as Error).message ?? "Unable to load orders.");
     } finally {
       setLoading(false);

@@ -1,6 +1,7 @@
 import { ChangeEvent, FormEvent, KeyboardEvent, useMemo, useState } from "react";
 import { Button, Card, InputField, TextareaField } from "@/components/ui";
 import { useTranslation } from "@/localization/locale";
+import { getLogger } from "@/logging/globalLogger";
 import type { ReviewSubmissionInput } from "@/hooks/useReviews";
 
 const RATING_OPTIONS = [5, 4, 3, 2, 1];
@@ -59,7 +60,7 @@ export function ReviewForm({ addReview }: ReviewFormProps) {
       resetForm();
       setStatus({ type: "success", message: t("reviews.form.success") });
     } catch (error) {
-      console.error("Unable to save review", error);
+      getLogger().error("Unable to save review", { error });
       setStatus({ type: "error", message: t("reviews.form.errors.generic") });
     } finally {
       setSubmitting(false);

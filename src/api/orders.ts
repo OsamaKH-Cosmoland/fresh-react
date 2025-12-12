@@ -1,3 +1,5 @@
+import { getLogger } from "@/logging/globalLogger";
+
 const ORDER_ENDPOINT = "/api/order-created";
 
 /**
@@ -47,7 +49,7 @@ export async function sendOrderToN8N(order: OrderWebhookPayload): Promise<Record
   }
 
   if (!response.ok || data?.ok !== true) {
-    console.error("[orders] Failed to send order", { status: response.status, data });
+    getLogger().error("[orders] Failed to send order", { status: response.status, data });
     throw new Error(data?.error || `Failed to send order (status ${response.status})`);
   }
 

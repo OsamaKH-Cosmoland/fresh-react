@@ -13,6 +13,8 @@ import {
   createInitialState,
 } from "@/cart/cartStore";
 import { GIFT_CREDIT_KEY } from "@/utils/giftCreditStorage";
+import { getLogger, setLogger } from "@/logging/globalLogger";
+import { TestLogger } from "@/infrastructure/logging";
 
 const wrapper = ({ children }: { children?: ReactNode }) => <CartProvider>{children}</CartProvider>;
 
@@ -358,11 +360,19 @@ describe("createInitialState hydration", () => {
   });
 
   it("falls back gracefully on malformed storage", () => {
-    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-    window.localStorage.setItem(STORAGE_KEY, "not-json");
-    const state = createInitialState();
-    expect(state.items).toEqual([]);
-    expect(errorSpy).toHaveBeenCalled();
+    const originalLogger = getLogger();
+    const logger = new TestLogger();
+    setLogger(logger);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, "not-json");
+      const state = createInitialState();
+      expect(state.items).toEqual([]);
+      expect(
+        logger.getEntries().some((entry) => entry.message.includes("Failed to read saved cart")),
+      ).toBe(true);
+    } finally {
+      setLogger(originalLogger);
+    }
   });
 
   it("drops stored promo when evaluation fails", () => {

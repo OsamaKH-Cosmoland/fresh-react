@@ -1,5 +1,6 @@
 import type { CartItem } from "@/cart/cartStore";
 import { formatVariantMeta } from "@/utils/variantDisplay";
+import { getLogger } from "@/logging/globalLogger";
 
 export interface OrderNotificationPayload {
   orderId: string;
@@ -28,10 +29,13 @@ export async function notifyOrderCreated(payload: OrderNotificationPayload) {
     });
     if (!response.ok) {
       const body = await response.text().catch(() => "");
-      console.warn("Order notification failed:", response.status, body);
+      getLogger().warn("Order notification failed", {
+        status: response.status,
+        body,
+      });
     }
   } catch (error) {
-    console.warn("Failed to notify order creation:", error);
+    getLogger().warn("Failed to notify order creation", { error });
   }
 }
 

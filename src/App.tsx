@@ -15,6 +15,7 @@ import { RouteLoadingShell, DetailSkeleton } from "./components/skeletons/Skelet
 import { SkipToContent } from "@/components/accessibility/SkipToContent";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useTranslation, type AppTranslationKey } from "@/localization/locale";
+import { getLogger } from "@/logging/globalLogger";
 import {
   LazyAccountPage,
   LazyCartPage,
@@ -168,7 +169,7 @@ function ProductShop() {
         const data = (await res.json()) as Product[];
         setProducts(data);
       } catch (e) {
-        console.error(e);
+        getLogger().error("Failed to fetch products", { error: e });
       } finally {
         setLoading(false);
       }
@@ -182,7 +183,7 @@ function ProductShop() {
 
     const res = await apiPost("/products", { name: clean, price: n });
     if (!res.ok) {
-      console.error("Failed to create product");
+      getLogger().error("Failed to create product");
       return;
     }
     const created = (await res.json()) as Product;
@@ -194,7 +195,7 @@ function ProductShop() {
   async function deleteProduct(id: string) {
     const res = await apiDelete(`/products?id=${encodeURIComponent(id)}`);
     if (!res.ok) {
-      console.error("Failed to delete product");
+      getLogger().error("Failed to delete product");
       return;
     }
     setProducts((prev) => prev.filter((f) => f._id !== id));

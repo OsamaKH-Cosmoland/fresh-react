@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button, Card, SectionTitle, InputField } from "../components/ui";
 import OrderDetailDrawer from "../components/admin/OrderDetailDrawer";
+import { getLogger } from "@/logging/globalLogger";
 import { exportOrdersToCsv } from "../utils/exportCsv";
 
 type OrderStatus = "pending" | "confirmed" | "shipped" | "cancelled" | string;
@@ -75,7 +76,7 @@ export default function AdminDashboard() {
         setOrders(mapped);
       } catch (error) {
         if (cancelled) return;
-        console.error("Failed to load orders:", error);
+        getLogger().error("Failed to load orders", { error });
         setOrdersError((error as Error)?.message ?? "Unable to load orders.");
       } finally {
         if (!cancelled) setOrdersLoading(false);
@@ -102,7 +103,7 @@ export default function AdminDashboard() {
         setReviews(mapped);
       } catch (error) {
         if (cancelled) return;
-        console.error("Failed to load reviews:", error);
+        getLogger().error("Failed to load reviews", { error });
         setReviewsError((error as Error)?.message ?? "Unable to load reviews.");
       } finally {
         if (!cancelled) setReviewsLoading(false);
@@ -212,7 +213,7 @@ export default function AdminDashboard() {
           prev && prev.id === orderId ? { ...prev, status: newStatus } : prev
         );
     } catch (error) {
-      console.error("Order status update failed:", error);
+      getLogger().error("Order status update failed", { error });
       setOrdersError((error as Error)?.message ?? "Unable to update order status.");
     } finally {
       setUpdatingOrderId(null);

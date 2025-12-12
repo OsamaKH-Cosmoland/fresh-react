@@ -1,0 +1,13 @@
+[
+  {
+    "id": "fallback-1",
+    "customer": {
+      "name": "Fallback",
+      "phone": "+1"
+    },
+    "totals": {
+      "subtotal": 0
+    },
+    "items": []
+  }
+]

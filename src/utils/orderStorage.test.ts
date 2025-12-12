@@ -4,6 +4,8 @@ import {
   readOrders,
   writeOrders,
 } from "@/utils/orderStorage";
+import { getLogger, setLogger } from "@/logging/globalLogger";
+import { TestLogger } from "@/infrastructure/logging/TestLogger";
 import type { CartItem } from "@/cart/cartStore";
 import type { LocalOrder } from "@/types/localOrder";
 
@@ -57,6 +59,20 @@ describe("orderStorage helpers", () => {
     expect(readOrders()).toEqual([]);
     window.localStorage.setItem(ORDER_STORAGE_KEY, "broken-json");
     expect(readOrders()).toEqual([]);
+  });
+
+  it("logs a warning when stored data is malformed", () => {
+    const originalLogger = getLogger();
+    const logger = new TestLogger();
+    setLogger(logger);
+    try {
+      window.localStorage.setItem(ORDER_STORAGE_KEY, "not-json");
+      const result = readOrders();
+      expect(result).toEqual([]);
+      expect(logger.getEntries().some((entry) => entry.message.includes("Failed to parse saved orders"))).toBe(true);
+    } finally {
+      setLogger(originalLogger);
+    }
   });
 
   it("writeOrders and readOrders keep orders stored", () => {

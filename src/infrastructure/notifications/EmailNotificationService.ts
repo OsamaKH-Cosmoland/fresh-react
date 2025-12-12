@@ -1,4 +1,6 @@
 import nodemailer from "nodemailer";
+import type { ConfigProvider } from "@/domain/config/ConfigProvider";
+import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
 import type { EmailService } from "../../domain/shared/EmailService";
 import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService";
 
@@ -9,18 +11,14 @@ const sanitizeString = (value: unknown) => {
   return String(value).trim();
 };
 
-let cachedTransporter: nodemailer.Transporter | null = null;
-
-const resolveFromEmail = () => sanitizeString(process.env.FROM_EMAIL || process.env.SMTP_USER);
-
-const ensureMailer = async () => {
+const ensureMailer = async (configProvider: ConfigProvider) => {
   if (cachedTransporter) return cachedTransporter;
 
-  const host = sanitizeString(process.env.SMTP_HOST);
-  const portRaw = sanitizeString(process.env.SMTP_PORT);
+  const host = sanitizeString(configProvider.get("SMTP_HOST"));
+  const portRaw = sanitizeString(configProvider.get("SMTP_PORT"));
   const port = portRaw ? Number(portRaw) : 587;
-  const user = sanitizeString(process.env.SMTP_USER);
-  const pass = sanitizeString(process.env.SMTP_PASS);
+  const user = sanitizeString(configProvider.get("SMTP_USER"));
+  const pass = sanitizeString(configProvider.get("SMTP_PASS"));
 
   if (!host || !port) {
     return null;
@@ -35,6 +33,8 @@ const ensureMailer = async () => {
   return cachedTransporter;
 };
 
+let cachedTransporter: nodemailer.Transporter | null = null;
+
 /**
  * Notification adapter that delegates to the existing EmailService for auth flows
  * and uses the SMTP configuration for generic notifications.
@@ -42,6 +42,7 @@ const ensureMailer = async () => {
 export class EmailNotificationService implements NotificationService {
   constructor(
     private readonly emailService: EmailService,
+    private readonly configProvider: ConfigProvider = new EnvConfigProvider(),
     private readonly logger: Logger = console
   ) {}
 
@@ -64,12 +65,12 @@ export class EmailNotificationService implements NotificationService {
       return;
     }
 
-    const transporter = await ensureMailer();
+    const transporter = await ensureMailer(this.configProvider);
     if (!transporter) {
       throw new Error("SMTP configuration is missing; cannot send email notification.");
     }
 
-    const from = resolveFromEmail() || target;
+    const from = sanitizeString(this.configProvider.get("FROM_EMAIL") || this.configProvider.get("SMTP_USER")) || target;
     const subject = sanitizeString(context?.subject) || "Notification";
 
     await transporter.sendMail({

@@ -3,6 +3,11 @@ import type { NotificationService } from '../../domain/shared/NotificationServic
 import type { Clock } from '../../domain/shared/Clock';
 import type { IdGenerator } from '../../domain/shared/IdGenerator';
 import type { UserRepository } from '../../domain/users/UserRepository';
+import type { AnalyticsClient } from '@/domain/analytics/AnalyticsClient';
+import type { Cache } from '@/domain/cache/Cache';
+import type { ConfigProvider } from '@/domain/config/ConfigProvider';
+import type { FeatureFlagProvider } from '@/domain/config/FeatureFlagProvider';
+import type { Logger } from '@/domain/logging/Logger';
 import { AuthService } from './AuthService';
 import { ConsoleEmailService } from '../../infrastructure/email/ConsoleEmailService';
 import { createDefaultNotificationService } from '../../infrastructure/notifications/createDefaultNotificationService';
@@ -10,6 +15,14 @@ import { FakeNotificationService } from '../../infrastructure/notifications/Fake
 import { InMemoryUserRepository } from '../../infrastructure/repositories/InMemoryUserRepository';
 import { SystemClock } from '../../infrastructure/time/SystemClock';
 import { DefaultIdGenerator } from '../../infrastructure/ids/DefaultIdGenerator';
+import { ConsoleAnalyticsClient } from '@/infrastructure/analytics/ConsoleAnalyticsClient';
+import { HttpAnalyticsClient } from '@/infrastructure/analytics/HttpAnalyticsClient';
+import { InMemoryAnalyticsClient } from '@/infrastructure/analytics/InMemoryAnalyticsClient';
+import { EnvConfigProvider } from '@/infrastructure/config/EnvConfigProvider';
+import { SimpleFeatureFlagProvider } from '@/infrastructure/config/SimpleFeatureFlagProvider';
+import { InMemoryCache, NoopCache } from '@/infrastructure/cache';
+import { ConsoleLogger, NullLogger } from '@/infrastructure/logging';
+import { configureLogger as configureGlobalLogger } from '@/logging/globalLogger';
 
 export type Scope = 'singleton' | 'scoped' | 'transient';
 
@@ -31,6 +44,11 @@ export const TOKENS = {
   authService: 'authService',
   clock: 'clock',
   idGenerator: 'idGenerator',
+  configProvider: 'configProvider',
+  featureFlagProvider: 'featureFlagProvider',
+  cache: 'cache',
+  analyticsClient: 'analyticsClient',
+  logger: 'logger',
 } as const;
 
 export type ContainerToken = string;
@@ -78,6 +96,26 @@ export class AppContainer {
     factory: (container: AppContainer) => IdGenerator,
     options?: BindingOptions,
   ): this;
+  register(
+    token: typeof TOKENS.configProvider,
+    factory: (container: AppContainer) => ConfigProvider,
+    options?: BindingOptions,
+  ): this;
+  register(
+    token: typeof TOKENS.featureFlagProvider,
+    factory: (container: AppContainer) => FeatureFlagProvider,
+    options?: BindingOptions,
+  ): this;
+  register(
+    token: typeof TOKENS.analyticsClient,
+    factory: (container: AppContainer) => AnalyticsClient,
+    options?: BindingOptions,
+  ): this;
+  register(
+    token: typeof TOKENS.logger,
+    factory: (container: AppContainer) => Logger,
+    options?: BindingOptions,
+  ): this;
   register<T>(token: ContainerToken, factory: (container: AppContainer) => T, options?: BindingOptions): this;
   register<T>(token: ContainerToken, factory: (container: AppContainer) => T, options?: BindingOptions): this {
     if (options?.envs && !options.envs.includes(this.env)) {
@@ -98,6 +136,11 @@ export class AppContainer {
   resolve(token: typeof TOKENS.authService): AuthService;
   resolve(token: typeof TOKENS.clock): Clock;
   resolve(token: typeof TOKENS.idGenerator): IdGenerator;
+  resolve(token: typeof TOKENS.configProvider): ConfigProvider;
+  resolve(token: typeof TOKENS.featureFlagProvider): FeatureFlagProvider;
+  resolve(token: typeof TOKENS.cache): Cache;
+  resolve(token: typeof TOKENS.analyticsClient): AnalyticsClient;
+  resolve(token: typeof TOKENS.logger): Logger;
   resolve<T = unknown>(token: ContainerToken): T;
   resolve<T = unknown>(token: ContainerToken): T {
     const provider = this.registry.get(token) as Provider<T> | undefined;
@@ -134,16 +177,57 @@ export class AppContainer {
 const appContainer = new AppContainer();
 
 const seededUsers = [{ id: 'server-user', email: 'user@example.com', name: 'Server User' }];
+const defaultLogger = createLogger(appContainer.env);
+
+export function createAnalyticsClient(configProvider: ConfigProvider, env: string): AnalyticsClient {
+  if (env === 'test') {
+    return new InMemoryAnalyticsClient();
+  }
+  const endpoint = configProvider.get('ANALYTICS_ENDPOINT');
+  if (endpoint) {
+    return new HttpAnalyticsClient(endpoint);
+  }
+  return new ConsoleAnalyticsClient();
+}
+
+export function createConfigProvider(env: string): ConfigProvider {
+  return new EnvConfigProvider();
+}
+
+export function createFeatureFlagProvider(configProvider: ConfigProvider): FeatureFlagProvider {
+  return new SimpleFeatureFlagProvider(configProvider);
+}
+
+export function createLogger(env: string): Logger {
+  if (env === 'test') {
+    return new NullLogger();
+  }
+  return new ConsoleLogger();
+}
 
 appContainer
   .register(TOKENS.clock, () => new SystemClock(), { scope: 'singleton' })
   .register(TOKENS.idGenerator, () => new DefaultIdGenerator('NG'), { scope: 'singleton' })
   .register(TOKENS.userRepository, () => new InMemoryUserRepository(seededUsers), { scope: 'scoped' })
   .register(TOKENS.emailService, () => new ConsoleEmailService(), { scope: 'singleton' })
+  .register(TOKENS.configProvider, (container) => createConfigProvider(container.env), { scope: 'singleton' })
+  .register(
+    TOKENS.featureFlagProvider,
+    (container) => createFeatureFlagProvider(container.resolve(TOKENS.configProvider)),
+    { scope: 'singleton' },
+  )
+  .register(TOKENS.cache, (container) => (container.env === 'test' ? new NoopCache() : new InMemoryCache()), {
+    scope: 'singleton',
+  })
   .register(
     TOKENS.notificationService,
     (container) => {
-      return container.env === 'test' ? new FakeNotificationService() : createDefaultNotificationService();
+      if (container.env === 'test') {
+        return new FakeNotificationService();
+      }
+      const configProvider = container.resolve(TOKENS.configProvider);
+      const featureFlags = container.resolve(TOKENS.featureFlagProvider);
+      return createDefaultNotificationService(configProvider, featureFlags);
     },
     { scope: 'singleton' },
   )
@@ -151,7 +235,14 @@ appContainer
     const userRepo = container.resolve(TOKENS.userRepository);
     const notificationService = container.resolve(TOKENS.notificationService);
     return new AuthService(userRepo, notificationService);
-  }, { scope: 'scoped' });
+  }, { scope: 'scoped' })
+  .register(
+    TOKENS.analyticsClient,
+    (container) => createAnalyticsClient(container.resolve(TOKENS.configProvider), container.env),
+    { scope: 'singleton' },
+  );
+appContainer.register(TOKENS.logger, () => defaultLogger, { scope: 'singleton' });
+configureGlobalLogger(defaultLogger);
 
 export { appContainer };
 export default appContainer;

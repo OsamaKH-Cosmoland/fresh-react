@@ -9,6 +9,7 @@ import type { IdGenerator } from "../../domain/shared/IdGenerator";
 import { InMemoryOrdersRepository } from "./InMemoryOrdersRepository";
 import { DefaultIdGenerator } from "../ids/DefaultIdGenerator";
 import { SystemClock } from "../time/SystemClock";
+import { getLogger } from "@/logging/globalLogger";
 
 const FALLBACK_LIMIT = 500;
 const READONLY_FS_ERROR_CODES = new Set(["EACCES", "EPERM", "EROFS", "ENOSPC"]);
@@ -35,7 +36,7 @@ export class FileOrdersRepository implements OrdersRepository {
       return Array.isArray(parsed) ? (parsed as Order[]) : [];
     } catch (error: any) {
       if (error && error.code === "ENOENT") return [];
-      console.warn("[orders:fallback] failed to read cache file", error);
+      getLogger().warn("[orders:fallback] failed to read cache file", { error });
       return [];
     }
   }
@@ -110,9 +111,10 @@ export class ReadonlyGuardRepository implements OrdersRepository {
 
   private async switchToMemory(error: any) {
     if (this.type === "memory") throw error;
-    console.warn(
-      `[orders:fallback] write failed (${error?.code ?? error}). Switching to in-memory store.`
-    );
+    getLogger().warn("[orders:fallback] write failed; switching to memory store", {
+      code: error?.code,
+      error,
+    });
     const existing = await this.fileRepo["readAll"]().catch(() => [] as Order[]);
     const memorySnapshot = this.memoryRepo.snapshot();
     const seen = new Set(existing.map((order) => order?.id).filter(Boolean));
@@ -148,7 +150,3 @@ export class ReadonlyGuardRepository implements OrdersRepository {
   create = this.withGuard("create");
   updateStatus = this.withGuard("updateStatus");
 }
-
-export const fallbackFilePath = fileURLToPath(
-  new URL("../../../config/orders-fallback.json", import.meta.url)
-);

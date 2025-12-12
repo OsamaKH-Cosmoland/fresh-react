@@ -1,7 +1,11 @@
 // HTTP adapter for order endpoints.
 import type { IncomingMessage, ServerResponse } from "http";
 import type { EmailProvider } from "../../../domain/shared/EmailProvider";
+import type { NotificationService } from "../../../domain/shared/NotificationService";
+import type { ConfigProvider } from "@/domain/config/ConfigProvider";
+import type { FeatureFlagProvider } from "@/domain/config/FeatureFlagProvider";
 import { createOrder, listOrders, notifyTelegramTest, ordersStream, updateOrderStatus } from "@/application/usecases/orders";
+import { getLogger } from "@/logging/globalLogger";
 
 type Request = IncomingMessage & { method?: string; body?: any; query?: Record<string, string>; url?: string };
 type Response = ServerResponse & { status: (code: number) => Response; json: (payload: unknown) => void };
@@ -37,7 +41,14 @@ export function streamOrdersHandler(_req: Request, res: Response) {
   _req.on("error", close);
 }
 
-export function buildOrdersHandler({ emailProvider }: { emailProvider: EmailProvider }) {
+export type BuildOrdersHandlerOptions = {
+  emailProvider: EmailProvider;
+  notificationService?: NotificationService;
+  configProvider?: ConfigProvider;
+  featureFlagProvider?: FeatureFlagProvider;
+};
+
+export function buildOrdersHandler({ emailProvider, notificationService, configProvider, featureFlagProvider }: BuildOrdersHandlerOptions) {
   return async function ordersHandler(req: Request, res: Response) {
     try {
       if (req.method === "OPTIONS") {
@@ -53,7 +64,11 @@ export function buildOrdersHandler({ emailProvider }: { emailProvider: EmailProv
       }
 
       if (req.method === "POST") {
-        const result = await createOrder(req.body, undefined, emailProvider);
+        const result = await createOrder(req.body, undefined, emailProvider, {
+          notificationService,
+          configProvider,
+          featureFlagProvider,
+        });
         return res
           .status(201)
           .json({ ok: true, orderId: result.stored.id, orderCode: result.stored.orderCode });
@@ -78,9 +93,9 @@ export function buildOrdersHandler({ emailProvider }: { emailProvider: EmailProv
       res.setHeader("Allow", ["GET", "POST", "PATCH"]);
       return res.status(405).end("Method Not Allowed");
     } catch (error: any) {
-      const statusCode = error?.statusCode ?? 500;
-      const message = error?.message ?? "Server error";
-      console.error("API /api/orders error:", error);
+    const statusCode = error?.statusCode ?? 500;
+    const message = error?.message ?? "Server error";
+    getLogger().error("API /api/orders error", { error });
       return res.status(statusCode).json({ error: message });
     }
   };

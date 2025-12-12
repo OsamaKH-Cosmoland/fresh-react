@@ -11,6 +11,7 @@ import {
   findCreditByCode,
   seedManualCreditsOnce,
 } from "@/utils/giftCreditStorage";
+import { getLogger } from "@/logging/globalLogger";
 
 const STORAGE_KEY = "naturagloss_cart";
 const SAVED_CART_KEY = "naturagloss_saved_carts";
@@ -319,7 +320,7 @@ function readStoredCartPayload(): StoredCartPayload {
       };
     }
   } catch (error) {
-    console.error("Failed to read saved cart:", error);
+    getLogger().error("Failed to read saved cart", { error });
   }
   return { items: [] };
 }
@@ -380,7 +381,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         })
       );
     } catch (error) {
-      console.error("Failed to save cart:", error);
+      getLogger().error("Failed to save cart", { error });
     }
   }, [
     state.items,
@@ -395,7 +396,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       window.localStorage.setItem(SAVED_CART_KEY, JSON.stringify(state.savedCarts));
     } catch (error) {
-      console.error("Failed to save saved carts:", error);
+      getLogger().error("Failed to save saved carts", { error });
     }
   }, [state.savedCarts]);
 

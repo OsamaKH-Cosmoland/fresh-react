@@ -1,6 +1,6 @@
-import fs from "fs";
 import https from "https";
-import { fileURLToPath } from "url";
+import type { ConfigProvider } from "@/domain/config/ConfigProvider";
+import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
 import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService";
 
 type TelegramConfig = { token: string; chatId: string };
@@ -8,14 +8,6 @@ type TelegramConfig = { token: string; chatId: string };
 const sanitizeString = (value: unknown) => {
   if (value === null || value === undefined) return "";
   return String(value).trim();
-};
-
-const resolveFromCandidates = (...values: string[]) => {
-  for (const value of values) {
-    const cleaned = sanitizeString(value);
-    if (cleaned) return cleaned;
-  }
-  return "";
 };
 
 const postJson = async (url: string, payload: unknown) => {
@@ -69,52 +61,21 @@ const postJson = async (url: string, payload: unknown) => {
 export class TelegramNotificationService implements NotificationService {
   private cachedConfig: TelegramConfig | null = null;
 
-  constructor(private readonly logger: Pick<Console, "warn" | "error" | "log"> = console) {}
-
-  private loadTelegramConfigFile() {
-    try {
-      const configPath = new URL("../../../config/telegram.config.json", import.meta.url);
-      const resolvedPath = fileURLToPath(configPath);
-      if (!fs.existsSync(resolvedPath)) return {};
-      const raw = fs.readFileSync(resolvedPath, "utf8");
-      if (!raw.trim()) return {};
-      const parsed = JSON.parse(raw);
-      return {
-        token: sanitizeString(parsed.botToken ?? parsed.token ?? parsed.telegramBotToken),
-        chatId: sanitizeString(parsed.chatId ?? parsed.telegramChatId ?? parsed.telegram_chat_id),
-      };
-    } catch (error) {
-      this.logger.warn("[telegram] failed to read telegram.config.json", error);
-      return {};
-    }
-  }
+  constructor(
+    private readonly configProvider: ConfigProvider = new EnvConfigProvider(),
+    private readonly logger: Pick<Console, "warn" | "error" | "log"> = console
+  ) {}
 
   private getConfig(): TelegramConfig {
     if (this.cachedConfig) return this.cachedConfig;
 
-    const envToken = resolveFromCandidates(
-      process.env.TELEGRAM_BOT_TOKEN || "",
-      process.env.VITE_TELEGRAM_BOT_TOKEN || "",
-      process.env.REACT_APP_TELEGRAM_BOT_TOKEN || "",
-      process.env.NG_TELEGRAM_BOT_TOKEN || ""
-    );
-    const envChat = resolveFromCandidates(
-      process.env.TELEGRAM_CHAT_ID || "",
-      process.env.VITE_TELEGRAM_CHAT_ID || "",
-      process.env.REACT_APP_TELEGRAM_CHAT_ID || "",
-      process.env.NG_TELEGRAM_CHAT_ID || ""
-    );
+    const envToken = sanitizeString(this.configProvider.get("TELEGRAM_BOT_TOKEN"));
+    const envChat = sanitizeString(this.configProvider.get("TELEGRAM_CHAT_ID"));
+    const fileConfig = this.configProvider.getObject<Partial<TelegramConfig>>("TELEGRAM_CONFIG") ?? {};
 
-    if (envToken && envChat) {
-      this.cachedConfig = { token: envToken, chatId: envChat };
-      return this.cachedConfig;
-    }
-
-    const fileConfig = this.loadTelegramConfigFile();
-    this.cachedConfig = {
-      token: envToken || (fileConfig as any).token || "",
-      chatId: envChat || (fileConfig as any).chatId || "",
-    };
+    const token = envToken || fileConfig.token || "";
+    const chatId = envChat || fileConfig.chatId || "";
+    this.cachedConfig = { token, chatId };
     return this.cachedConfig;
   }
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui";
 import { useLocale, useTranslation } from "@/localization/locale";
 import { upsertAudienceContact } from "@/utils/audienceStorage";
+import { getLogger } from "@/logging/globalLogger";
 
 type NewsletterVariant = "footer" | "landing";
 
@@ -47,7 +48,7 @@ export default function NewsletterSignup({ variant = "landing" }: NewsletterSign
       setError(null);
       setEmail("");
     } catch (captureError) {
-      console.warn("Newsletter signup failed", captureError);
+      getLogger().warn("Newsletter signup failed", { error: captureError });
       setStatus("error");
       setError(t("newsletter.errors.general"));
     }

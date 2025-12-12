@@ -18,6 +18,7 @@ import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
 import { upsertAudienceContact } from "@/utils/audienceStorage";
+import { getLogger } from "@/logging/globalLogger";
 import PromoCodePanel from "@/components/promo/PromoCodePanel";
 import { useCurrency } from "@/currency/CurrencyProvider";
 import { calculateEarnedPoints } from "@/loyalty/ritualPoints";
@@ -417,7 +418,7 @@ export default function CheckoutPage() {
           lastOrderAt: order.createdAt,
         });
       } catch (error) {
-        console.warn("Unable to capture audience contact from checkout", error);
+        getLogger().warn("Unable to capture audience contact from checkout", { error });
       }
     }
   };

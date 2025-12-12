@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "http";
+import { getLogger } from "@/logging/globalLogger";
 import { TOKENS, appContainer } from "../../../application/services/AppContainer";
 
 type Request = IncomingMessage & { method?: string; body?: any };
@@ -29,6 +30,7 @@ export async function loginHandler(req: Request, res: Response) {
     const token = await authService.login(email);
     return res.status(200).json({ token });
   } catch (error: any) {
+    getLogger().error("API /api/login error", { error });
     if (error?.message === "Invalid credentials") {
       return res.status(401).json({ error: error.message });
     }

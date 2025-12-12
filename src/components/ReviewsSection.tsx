@@ -3,6 +3,7 @@ import type React from "react";
 import { apiGet, apiPost } from "../lib/api";
 import type { Review } from "../types/review";
 import { Button, Card, SectionTitle, InputField, TextareaField } from "./ui";
+import { getLogger } from "@/logging/globalLogger";
 
 const buildStars = (count: number) => {
   const full = Math.min(5, Math.max(0, Math.round(count)));
@@ -32,7 +33,7 @@ export default function ReviewsSection() {
         const data = (await response.json()) as Review[];
         if (mounted) setReviews(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Failed to fetch reviews:", err);
+        getLogger().error("Failed to fetch reviews", { error: err });
         if (mounted) setError((err as Error)?.message ?? "Unable to load reviews.");
       } finally {
         if (mounted) setLoading(false);
@@ -85,7 +86,7 @@ export default function ReviewsSection() {
       setForm({ name: "", rating: 5, message: "" });
       setStatus({ type: "success", message: "Thank you for sharing your routine!" });
     } catch (err) {
-      console.error("Failed to submit review:", err);
+      getLogger().error("Failed to submit review", { error: err });
       const message = (err as Error)?.message ?? "Unable to submit review.";
       setStatus({ type: "error", message });
     } finally {

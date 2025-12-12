@@ -1,5 +1,6 @@
 import { MANUAL_CREDIT_SEEDS } from "@/giftcards/manualCreditsConfig";
 import type { CreditSource, GiftCredit } from "@/giftcards/giftCardTypes";
+import { getLogger } from "@/logging/globalLogger";
 
 export const GIFT_CREDIT_KEY = "naturagloss_gift_credit";
 const MANUAL_SEED_FLAG = `${GIFT_CREDIT_KEY}_manual_seeded`;
@@ -41,7 +42,7 @@ export function saveGiftCredits(list: GiftCredit[]): void {
   try {
     window.localStorage.setItem(GIFT_CREDIT_KEY, JSON.stringify(list));
   } catch (error) {
-    console.warn("Unable to save gift credits", error);
+    getLogger().warn("Unable to save gift credits", { error });
   }
 }
 

@@ -1,3 +1,5 @@
+import { getLogger } from "@/logging/globalLogger";
+
 export function registerServiceWorker() {
   if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) {
     return;
@@ -11,10 +13,10 @@ export function registerServiceWorker() {
     navigator.serviceWorker
       .register("/service-worker.js")
       .then((registration) => {
-        console.log("NaturaGloss service worker registered:", registration.scope);
+        getLogger().info("NaturaGloss service worker registered", { scope: registration.scope });
       })
       .catch((error) => {
-        console.error("Service worker registration failed:", error);
+        getLogger().error("Service worker registration failed", { error });
       });
   });
 }

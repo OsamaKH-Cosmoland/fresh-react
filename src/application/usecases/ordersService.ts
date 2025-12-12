@@ -13,11 +13,20 @@ import { SystemClock } from "../../infrastructure/time/SystemClock";
 import { DefaultIdGenerator } from "../../infrastructure/ids/DefaultIdGenerator";
 import { getDefaultNotificationService } from "../../infrastructure/notifications/createDefaultNotificationService";
 import { TelegramNotificationService } from "../../infrastructure/notifications/TelegramNotificationService";
+import type { ConfigProvider } from "@/domain/config/ConfigProvider";
+import type { FeatureFlagProvider } from "@/domain/config/FeatureFlagProvider";
+import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
+import { SimpleFeatureFlagProvider } from "@/infrastructure/config/SimpleFeatureFlagProvider";
+import { getLogger } from "@/logging/globalLogger";
 
 const bus = new EventEmitter();
 bus.setMaxListeners(0);
 const defaultClock: Clock = new SystemClock();
 const defaultIdGenerator: IdGenerator = new DefaultIdGenerator("NG");
+const defaultConfigProvider = new EnvConfigProvider();
+const defaultFeatureFlagProvider = new SimpleFeatureFlagProvider(defaultConfigProvider, {
+  defaults: { TELEGRAM_NOTIFICATIONS: true },
+});
 
 const sanitizeString = (value: unknown) => {
   if (value === null || value === undefined) return "";
@@ -262,29 +271,43 @@ const formatOrderNotificationMessage = (order: Partial<Order>, clock: Clock) => 
   return textLines.join("\n");
 };
 
-const resolveOpsRecipients = () => ({
-  email: sanitizeString(process.env.ADMIN_EMAIL),
-  telegram: sanitizeString(process.env.TELEGRAM_CHAT_ID),
+const resolveOpsRecipients = (configProvider: ConfigProvider = defaultConfigProvider) => ({
+  email: sanitizeString(configProvider.get("ADMIN_EMAIL")),
+  telegram: sanitizeString(configProvider.get("TELEGRAM_CHAT_ID")),
 });
 
-const createTelegramNotificationService = () => new TelegramNotificationService();
+const createTelegramNotificationService = (configProvider: ConfigProvider = defaultConfigProvider) =>
+  new TelegramNotificationService(configProvider);
 
 export const notifyTelegram = async (
   order: Partial<Order>,
   clock: Clock = defaultClock,
-  notificationService: NotificationService = createTelegramNotificationService()
+  notificationService?: NotificationService,
+  configProvider: ConfigProvider = defaultConfigProvider,
+  featureFlagProvider: FeatureFlagProvider = defaultFeatureFlagProvider
 ) => {
   const message = formatOrderNotificationMessage(order, clock);
+  const featureEnabled = await featureFlagProvider.isEnabled("TELEGRAM_NOTIFICATIONS");
+  if (!featureEnabled) {
+    return {
+      ok: false,
+      error: new Error("Telegram notifications are disabled."),
+      status: 0,
+      missingEnv: false,
+    };
+  }
+
+  const service = notificationService ?? createTelegramNotificationService(configProvider);
   try {
-    await notificationService.notify("", message, {
+    await service.notify("", message, {
       category: "order",
       orderId: sanitizeString((order as any).id),
       orderCode: sanitizeString((order as any).orderCode),
-      recipients: { telegram: process.env.TELEGRAM_CHAT_ID || "" },
+      recipients: { telegram: sanitizeString(configProvider.get("TELEGRAM_CHAT_ID")) },
     });
     return { ok: true };
   } catch (error: any) {
-    console.error("Telegram notify error:", error);
+    getLogger().error("Telegram notify error", { error });
     return {
       ok: false,
       error,
@@ -433,6 +456,8 @@ export type OrderServiceDependencies = {
   clock?: Clock;
   idGenerator?: IdGenerator;
   notificationService?: NotificationService;
+  configProvider?: ConfigProvider;
+  featureFlagProvider?: FeatureFlagProvider;
 };
 
 export async function createOrder(
@@ -443,23 +468,20 @@ export async function createOrder(
 ) {
   const clock = deps.clock ?? defaultClock;
   const idGenerator = deps.idGenerator ?? defaultIdGenerator;
-  const notificationService = deps.notificationService ?? getDefaultNotificationService();
+  const configProvider = deps.configProvider ?? defaultConfigProvider;
+  const featureFlagProvider = deps.featureFlagProvider ?? defaultFeatureFlagProvider;
+  const notificationService =
+    deps.notificationService ?? getDefaultNotificationService(configProvider, featureFlagProvider);
   const store = repo ?? (await resolveOrdersRepository()).store;
   const payload = sanitizeOrderPayload(rawBody, idGenerator);
-  console.log(
-    "createOrder payload debug:",
-    JSON.stringify(
-      {
-        rawBodyType: typeof rawBody,
-        rawBody,
-        items: payload.items,
-        itemsLength: payload.items?.length,
-        customer: payload.customer,
-      },
-      null,
-      2
-    )
-  );
+  const debugPayload = {
+    rawBodyType: typeof rawBody,
+    rawBody,
+    items: payload.items,
+    itemsLength: payload.items?.length,
+    customer: payload.customer,
+  };
+  getLogger().debug("createOrder payload debug", debugPayload);
   if (!payload.customer.name || !payload.customer.phone) {
     const error: any = new Error("Missing customer contact information.");
     error.statusCode = 400;
@@ -530,7 +552,10 @@ export async function createOrder(
       const htmlBody = buildOrderConfirmationHtml(storedDoc);
       await emailProvider.send(recipient, "Order Confirmation", htmlBody);
     } catch (emailError) {
-      console.error("Failed to send confirmation email for order", storedDoc.id, emailError);
+      getLogger().error("Failed to send confirmation email for order", {
+        orderId: storedDoc.id,
+        error: emailError,
+      });
     }
   }
 
@@ -538,7 +563,7 @@ export async function createOrder(
   bus.emit("new-order", cleanDoc);
 
   try {
-    const recipients = resolveOpsRecipients();
+    const recipients = resolveOpsRecipients(configProvider);
     const opsMessage = formatOrderNotificationMessage({ ...cleanDoc, total: cleanDoc?.totals?.subtotal }, clock);
     const primaryRecipient = recipients.email || recipients.telegram || "ops";
     await notificationService.notify(primaryRecipient, opsMessage, {
@@ -549,7 +574,10 @@ export async function createOrder(
       recipients,
     });
   } catch (notificationError) {
-    console.error("Failed to notify ops for order", storedDoc.id, notificationError);
+    getLogger().error("Failed to notify ops for order", {
+      orderId: storedDoc.id,
+      error: notificationError,
+    });
   }
 
   return { stored: storedDoc, clean: cleanDoc };
@@ -561,9 +589,13 @@ export async function updateOrderStatus(id: string, status: string, repo?: Order
   return updated ? cleanOrderDoc(updated) : null;
 }
 
-export async function notifyTelegramTest(
-  notificationService: NotificationService = createTelegramNotificationService()
-) {
+export type NotifyTelegramTestOptions = {
+  notificationService?: NotificationService;
+  configProvider?: ConfigProvider;
+  featureFlagProvider?: FeatureFlagProvider;
+};
+
+export async function notifyTelegramTest(options: NotifyTelegramTestOptions = {}) {
   const sampleOrder = {
     orderCode: "TEST-123ABC",
     customer: {
@@ -578,7 +610,18 @@ export async function notifyTelegramTest(
     createdAt: new Date().toISOString(),
   };
 
-  const result = await notifyTelegram(sampleOrder, defaultClock, notificationService);
+  const configProvider = options.configProvider ?? defaultConfigProvider;
+  const featureFlagProvider = options.featureFlagProvider ?? defaultFeatureFlagProvider;
+  const notificationService =
+    options.notificationService ?? createTelegramNotificationService(configProvider);
+
+  const result = await notifyTelegram(
+    sampleOrder,
+    defaultClock,
+    notificationService,
+    configProvider,
+    featureFlagProvider,
+  );
   if (!result?.ok) {
     const message =
       (result as any)?.error?.message ?? "Failed to send Telegram message. Check server logs for details.";

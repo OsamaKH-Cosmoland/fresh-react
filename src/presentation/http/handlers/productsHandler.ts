@@ -6,14 +6,18 @@ import {
   listProducts,
   updateProduct,
 } from "../../../application/usecases/products";
+import { getLogger } from "@/logging/globalLogger";
+import { TOKENS, appContainer } from "../../../application/services/AppContainer";
 
 type Request = IncomingMessage & { method?: string; body?: any; query?: Record<string, string> };
 type Response = ServerResponse & { status: (code: number) => Response; json: (payload: unknown) => void };
 
 export default async function productsHandler(req: Request, res: Response) {
+  const requestScope = appContainer.createScope();
+  const cache = requestScope.resolve(TOKENS.cache);
   try {
     if (req.method === "GET") {
-      const clean = await listProducts();
+      const clean = await listProducts({ cache });
       return res.status(200).json(clean);
     }
 
@@ -37,7 +41,7 @@ export default async function productsHandler(req: Request, res: Response) {
     res.setHeader("Allow", ["GET", "POST", "DELETE", "PUT"]);
     return res.status(405).end("Method Not Allowed");
   } catch (err: any) {
-    console.error("API /api/products error:", err);
+    getLogger().error("API /api/products error", { error: err });
     const statusCode = err?.statusCode ?? 500;
     return res.status(statusCode).json({ error: err?.message ?? "Server error" });
   }

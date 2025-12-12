@@ -1,4 +1,5 @@
 import type { LocalOrder } from "@/types/localOrder";
+import { getLogger } from "@/logging/globalLogger";
 
 const STORAGE_KEY = "naturagloss_orders";
 export const ORDERS_UPDATE_EVENT = "naturagloss:orders-updated";
@@ -11,7 +12,7 @@ const safelyParse = (value: string | null) => {
   try {
     return JSON.parse(value);
   } catch (error) {
-    console.warn("Failed to parse saved orders", error);
+    getLogger().warn("Failed to parse saved orders", { error });
     return null;
   }
 };
@@ -30,7 +31,7 @@ export function writeOrders(orders: LocalOrder[]): void {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
     window.dispatchEvent(new Event(ORDERS_UPDATE_EVENT));
   } catch (error) {
-    console.warn("Unable to write orders", error);
+    getLogger().warn("Unable to write orders", { error });
   }
 }
 

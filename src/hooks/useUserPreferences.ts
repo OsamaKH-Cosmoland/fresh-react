@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { getLogger } from "@/logging/globalLogger";
 
 const STORAGE_KEY = "naturagloss_prefs";
 
@@ -66,7 +67,7 @@ function parsePreferences(raw: string): UserPreferences | null {
       budgetPreference,
     };
   } catch (error) {
-    console.error("Failed to parse user preferences:", error);
+    getLogger().error("Failed to parse user preferences", { error });
     return null;
   }
 }

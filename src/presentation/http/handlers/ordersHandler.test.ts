@@ -1,10 +1,16 @@
 import { InMemoryOrdersRepository } from "@/infrastructure/repositories/InMemoryOrdersRepository";
 import { FakeEmailProvider } from "@/infrastructure/email/fakeEmailProvider";
 import { EventEmitter } from "events";
+import { FakeNotificationService } from "@/infrastructure/notifications/FakeNotificationService";
+import { StaticConfigProvider } from "@/infrastructure/config/StaticConfigProvider";
+import { SimpleFeatureFlagProvider } from "@/infrastructure/config/SimpleFeatureFlagProvider";
 
 let currentRepo: InMemoryOrdersRepository;
 let handler: any;
 let streamHandler: any;
+let fakeNotificationService: FakeNotificationService;
+let testConfigProvider: StaticConfigProvider;
+let testFeatureFlagProvider: SimpleFeatureFlagProvider;
 
 jest.mock("nodemailer", () => ({
   createTransport: jest.fn(() => ({
@@ -57,14 +63,6 @@ describe("ordersHandler", () => {
   const emailProvider = new FakeEmailProvider();
 
   beforeAll(() => {
-    process.env.SMTP_HOST = "smtp.test";
-    process.env.SMTP_PORT = "587";
-    process.env.SMTP_USER = "user@test.com";
-    process.env.SMTP_PASS = "pass";
-    process.env.ADMIN_EMAIL = "admin@test.com";
-    process.env.FROM_EMAIL = "from@test.com";
-    process.env.TELEGRAM_BOT_TOKEN = "dummy";
-    process.env.TELEGRAM_CHAT_ID = "123";
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -82,18 +80,37 @@ describe("ordersHandler", () => {
       throw new Error("jest.unstable_mockModule is unavailable");
     }
 
+    testConfigProvider = new StaticConfigProvider({
+      values: {
+        ADMIN_EMAIL: "admin@test.com",
+        FROM_EMAIL: "from@test.com",
+        TELEGRAM_BOT_TOKEN: "dummy",
+        TELEGRAM_CHAT_ID: "123",
+      },
+    });
+    testFeatureFlagProvider = new SimpleFeatureFlagProvider(testConfigProvider, {
+      defaults: { TELEGRAM_NOTIFICATIONS: true },
+    });
+    fakeNotificationService = new FakeNotificationService();
+
     await unstableMockModule("@/infrastructure/repositories", () => ({
       resolveOrdersRepository: jest.fn(async () => ({ type: "mock", store: currentRepo })),
       resetOrdersRepositoryCache: jest.fn(),
     }));
     const module = await import("./ordersHandler");
-    handler = module.buildOrdersHandler({ emailProvider }) as any;
+    handler = module.buildOrdersHandler({
+      emailProvider,
+      configProvider: testConfigProvider,
+      featureFlagProvider: testFeatureFlagProvider,
+      notificationService: fakeNotificationService,
+    }) as any;
     streamHandler = module.streamOrdersHandler;
   });
 
   beforeEach(() => {
     repo = new InMemoryOrdersRepository();
     currentRepo = repo;
+    fakeNotificationService.reset();
   });
 
   afterEach(() => {

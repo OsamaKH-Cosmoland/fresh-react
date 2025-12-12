@@ -1,3 +1,7 @@
+import { getAnalyticsClient } from "./client";
+import type { AnalyticsContext } from "@/domain/analytics/AnalyticsClient";
+import { getLogger } from "@/logging/globalLogger";
+
 export type ProductViewSource =
   | "shop"
   | "search"
@@ -166,10 +170,23 @@ export function trackEvent(event: AnalyticsEvent): void {
       window.dataLayer.push(event);
     }
   }
-  if (isDevEnvironment) {
-    console.info("[analytics]", event);
-  }
-  // Future integration point: forward events to GA/PostHog or custom HTTP endpoint.
+
+  const { type, ...payload } = event;
+  const hasPayload = Object.keys(payload).length > 0;
+  const payloadRecord = hasPayload ? (payload as Record<string, unknown>) : undefined;
+
+  const environmentLabel =
+    typeof resolvedEnv.NODE_ENV === "string"
+      ? resolvedEnv.NODE_ENV
+      : isDevEnvironment
+      ? "development"
+      : "production";
+
+  const context: AnalyticsContext = { metadata: { environment: environmentLabel } };
+
+  getAnalyticsClient().track(type, payloadRecord, context).catch((error) => {
+    getLogger().error("[analytics] tracking failed", { error });
+  });
 }
 
 export function getEventBuffer() {

@@ -1,4 +1,5 @@
 import type { ReferralAttribution, ReferralProfile } from "@/referrals/referralTypes";
+import { getLogger } from "@/logging/globalLogger";
 
 export const REFERRAL_PROFILE_KEY = "naturagloss_referral_profile";
 export const REFERRAL_ATTRIBUTIONS_KEY = "naturagloss_referral_attributions";
@@ -40,7 +41,7 @@ export function saveReferralProfile(profile: ReferralProfile): void {
     window.localStorage.setItem(REFERRAL_PROFILE_KEY, JSON.stringify(profile));
     window.dispatchEvent(new CustomEvent(REFERRAL_STORAGE_EVENT));
   } catch (error) {
-    console.warn("Unable to save referral profile", error);
+    getLogger().warn("Unable to save referral profile", { error });
   }
 }
 
@@ -76,6 +77,6 @@ export function addReferralAttribution(entry: ReferralAttribution): void {
     );
     window.dispatchEvent(new CustomEvent(REFERRAL_STORAGE_EVENT));
   } catch (error) {
-    console.warn("Unable to save referral attribution", error);
+    getLogger().warn("Unable to save referral attribution", { error });
   }
 }

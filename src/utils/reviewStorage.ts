@@ -1,4 +1,5 @@
 import type { LocalReview, LocalReviewInput, ReviewTargetType } from "@/types/localReview";
+import { getLogger } from "@/logging/globalLogger";
 
 const STORAGE_KEY = "naturagloss_reviews";
 export const REVIEWS_UPDATE_EVENT = "naturagloss:reviews-updated";
@@ -14,7 +15,7 @@ const safelyParse = (value: string | null): LocalReview[] | null => {
       return parsed as LocalReview[];
     }
   } catch (error) {
-    console.warn("Failed to parse saved reviews", error);
+    getLogger().warn("Failed to parse saved reviews", { error });
   }
   return null;
 };
@@ -39,7 +40,7 @@ function writeReviews(reviews: LocalReview[]): void {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
     window.dispatchEvent(new Event(REVIEWS_UPDATE_EVENT));
   } catch (error) {
-    console.warn("Unable to write reviews", error);
+    getLogger().warn("Unable to write reviews", { error });
   }
 }
 

@@ -1,5 +1,7 @@
 import { loginHandler } from './loginHandler';
 import { appContainer } from '../../../application/services/AppContainer';
+import { getLogger, setLogger } from "@/logging/globalLogger";
+import { TestLogger } from "@/infrastructure/logging";
 
 type MockRequest = {
   method?: string;
@@ -96,19 +98,25 @@ describe('loginHandler', () => {
   });
 
   it('returns custom status codes for unexpected AuthService errors', async () => {
+    const logger = new TestLogger();
+    const originalLogger = getLogger();
     const { req, res } = createMockReqRes('POST', { email: 'boom@example.com' });
     const error = Object.assign(new Error('Teapot'), { statusCode: 418 });
     const fakeAuth = { login: jest.fn().mockRejectedValue(error) };
     const createScopeSpy = jest
       .spyOn(appContainer, 'createScope')
       .mockReturnValue({ resolve: jest.fn().mockReturnValue(fakeAuth) } as any);
+    setLogger(logger);
+    try {
+      await loginHandler(req as any, res as any);
 
-    await loginHandler(req as any, res as any);
-
-    expect(fakeAuth.login).toHaveBeenCalledWith('boom@example.com');
-    expect(res._status).toBe(418);
-    expect(res._json).toEqual({ error: 'Teapot' });
-
-    createScopeSpy.mockRestore();
+      expect(fakeAuth.login).toHaveBeenCalledWith('boom@example.com');
+      expect(res._status).toBe(418);
+      expect(res._json).toEqual({ error: 'Teapot' });
+      expect(logger.getEntries().some((entry) => entry.message.includes("API /api/login error"))).toBe(true);
+    } finally {
+      setLogger(originalLogger);
+      createScopeSpy.mockRestore();
+    }
   });
 });
