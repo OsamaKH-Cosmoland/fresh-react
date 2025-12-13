@@ -26,6 +26,26 @@ const config: Config = {
     customExportConditions: ["node", "browser", "default"],
     url: "http://localhost",
   },
+  coverageThreshold: {
+    global: {
+      statements: 70,
+      branches: 50,
+      functions: 70,
+      lines: 70,
+    },
+    "src/domain/": {
+      statements: 90,
+      branches: 70,
+      functions: 90,
+      lines: 85,
+    },
+    "src/application/": {
+      statements: 85,
+      branches: 60,
+      functions: 85,
+      lines: 85,
+    },
+  },
 };
 
 export default config;
