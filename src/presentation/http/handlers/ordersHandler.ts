@@ -1,14 +1,11 @@
 // HTTP adapter for order endpoints.
-import type { IncomingMessage, ServerResponse } from "http";
 import type { EmailProvider } from "../../../domain/shared/EmailProvider";
 import type { NotificationService } from "../../../domain/shared/NotificationService";
 import type { ConfigProvider } from "@/domain/config/ConfigProvider";
 import type { FeatureFlagProvider } from "@/domain/config/FeatureFlagProvider";
 import { createOrder, listOrders, notifyTelegramTest, ordersStream, updateOrderStatus } from "@/application/usecases/orders";
 import { getLogger } from "@/logging/globalLogger";
-
-type Request = IncomingMessage & { method?: string; body?: any; query?: Record<string, string>; url?: string };
-type Response = ServerResponse & { status: (code: number) => Response; json: (payload: unknown) => void };
+import { Request, Response } from "./typeHandler";
 
 export function streamOrdersHandler(_req: Request, res: Response) {
   const bus = ordersStream();

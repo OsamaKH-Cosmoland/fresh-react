@@ -1,10 +1,7 @@
 // HTTP adapter for reviews endpoints.
-import type { IncomingMessage, ServerResponse } from "http";
 import { createReview, listReviews } from "../../../application/usecases/reviews";
 import { getLogger } from "@/logging/globalLogger";
-
-type Request = IncomingMessage & { method?: string; body?: any; query?: Record<string, string> };
-type Response = ServerResponse & { status: (code: number) => Response; json: (payload: unknown) => void };
+import { Request, Response } from "./typeHandler";
 
 export default async function reviewsHandler(req: Request, res: Response) {
   try {

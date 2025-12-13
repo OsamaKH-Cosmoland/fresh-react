@@ -1,9 +1,7 @@
-import type { IncomingMessage, ServerResponse } from "http";
 import { getLogger } from "@/logging/globalLogger";
 import { TOKENS, appContainer } from "../../../application/services/AppContainer";
+import { Request, Response } from "./typeHandler";
 
-type Request = IncomingMessage & { method?: string; body?: any };
-type Response = ServerResponse & { status: (code: number) => Response; json: (payload: unknown) => void };
 
 /**
  * HTTP handler for `/api/login`, delegates to AuthService and maps responses.

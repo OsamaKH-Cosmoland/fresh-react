@@ -1,5 +1,4 @@
 // HTTP adapter for products CRUD endpoints.
-import type { IncomingMessage, ServerResponse } from "http";
 import {
   createProduct,
   deleteProduct,
@@ -8,9 +7,7 @@ import {
 } from "../../../application/usecases/products";
 import { getLogger } from "@/logging/globalLogger";
 import { TOKENS, appContainer } from "../../../application/services/AppContainer";
-
-type Request = IncomingMessage & { method?: string; body?: any; query?: Record<string, string> };
-type Response = ServerResponse & { status: (code: number) => Response; json: (payload: unknown) => void };
+import { Request, Response } from "./typeHandler";
 
 export default async function productsHandler(req: Request, res: Response) {
   const requestScope = appContainer.createScope();

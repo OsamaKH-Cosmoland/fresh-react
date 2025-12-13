@@ -1,7 +1,6 @@
 // File-based orders repository used as a local fallback cache.
 import fs from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
 import type { Order } from "../../domain/shared/Order";
 import type { OrdersRepository } from "./OrdersRepository";
 import type { Clock } from "../../domain/shared/Clock";

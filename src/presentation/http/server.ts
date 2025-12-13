@@ -1,5 +1,5 @@
 import "dotenv/config";
-import http, { type IncomingMessage, type ServerResponse } from "http";
+import http, { type IncomingMessage } from "http";
 import { URL } from "url";
 
 import {
@@ -18,18 +18,7 @@ import type { EmailProvider } from "../../domain/shared/EmailProvider";
 import { getLogger } from "@/logging/globalLogger";
 import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
 import { SimpleFeatureFlagProvider } from "@/infrastructure/config/SimpleFeatureFlagProvider";
-
-type Request = IncomingMessage & {
-  url?: string;
-  method?: string;
-  body?: any;
-  query?: Record<string, string>;
-};
-
-type Response = ServerResponse & {
-  status: (code: number) => Response;
-  json: (payload: unknown) => void;
-};
+import type { Request, Response } from "./handlers/typeHandler";
 
 const configProvider = new EnvConfigProvider();
 const featureFlagProvider = new SimpleFeatureFlagProvider(configProvider, {
@@ -63,6 +52,14 @@ const respondNotFound = (res: Response) => {
   res.end(JSON.stringify({ error: "Not Found" }));
 };
 
+const sendServerError = (res: Response, error: unknown) => {
+  const statusCode = (error as any)?.statusCode ?? 500;
+  const message = (error as any)?.message ?? "Internal Server Error";
+  if (!res.writableEnded) {
+    res.status(statusCode).json({ error: message });
+  }
+};
+
 // ✅ CORS helper
 function setCors(res: Response) {
   res.setHeader("Access-Control-Allow-Origin", "*"); // or set your domain instead of *
@@ -70,22 +67,32 @@ function setCors(res: Response) {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 }
 
+const MAX_BODY_SIZE = 1_048_576;
+
 const parseRequestBody = async (req: IncomingMessage): Promise<unknown> => {
   const chunks: Buffer[] = [];
-  await new Promise((resolve, reject) => {
-    req.on("data", (chunk) => chunks.push(chunk));
+  let totalLength = 0;
+  await new Promise<void>((resolve, reject) => {
+    req.on("data", (chunk) => {
+      const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      totalLength += buffer.length;
+      if (totalLength > MAX_BODY_SIZE) {
+        reject(Object.assign(new Error("Payload too large"), { statusCode: 413 }));
+        return;
+      }
+      chunks.push(buffer);
+    });
     req.on("end", resolve);
     req.on("error", reject);
   });
-  const raw = Buffer.concat(chunks).toString();
+  const raw = chunks.length ? Buffer.concat(chunks).toString() : "";
   if (!raw) return {};
-
   const contentType = req.headers["content-type"] ?? "";
   if (contentType.includes("application/json")) {
     try {
       return JSON.parse(raw);
     } catch {
-      return {};
+      throw Object.assign(new Error("Invalid JSON payload"), { statusCode: 400 });
     }
   }
   return raw;
@@ -106,7 +113,8 @@ const server = http.createServer(async (rawReq, rawRes): Promise<void> => {
     res.end(JSON.stringify(payload));
   };
 
-  if (req.method === "OPTIONS") {       // ✅ handle preflight
+  try {
+    if (req.method === "OPTIONS") {
     res.statusCode = 204;
     res.end();
     return;
@@ -117,13 +125,19 @@ const server = http.createServer(async (rawReq, rawRes): Promise<void> => {
     return;
   }
 
-  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
+    const host = req.headers.host;
+    if (!host) {
+      respondNotFound(res);
+      return;
+    }
+
+    const parsedUrl = new URL(req.url, `http://${host}`);
   req.query = Object.fromEntries(parsedUrl.searchParams.entries());
 
   const pathname = parsedUrl.pathname;
 
   if (pathname === "/api/orders/stream") {
-    streamOrdersHandler(req as any, res as any);
+      await streamOrdersHandler(req, res);
     return;
   }
 
@@ -134,22 +148,22 @@ const server = http.createServer(async (rawReq, rawRes): Promise<void> => {
   }
 
   if (pathname === "/api/notify-test") {
-    await notifyTestHandler(req as any, res as any);
+      await notifyTestHandler(req, res);
     return;
   }
 
   if (pathname === "/api/order-created") {
-    await orderCreatedHandler(req as any, res as any);
+      await orderCreatedHandler(req, res);
     return;
   }
 
   if (pathname === "/api/health") {
-    await healthHandler(req as any, res as any);
+      await healthHandler(req, res);
     return;
   }
 
   if (pathname === "/api/login") {
-    await loginHandler(req as any, res as any);
+      await loginHandler(req, res);
     return;
   }
 
@@ -170,6 +184,10 @@ const server = http.createServer(async (rawReq, rawRes): Promise<void> => {
 
   respondNotFound(res);
   return;
+  } catch (error) {
+    getLogger().error("[api] request failure", { error });
+    sendServerError(res, error);
+  }
 });
 
 server.listen(PORT, () => {

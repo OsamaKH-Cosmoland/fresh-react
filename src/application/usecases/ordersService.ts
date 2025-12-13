@@ -469,9 +469,8 @@ export async function createOrder(
   const clock = deps.clock ?? defaultClock;
   const idGenerator = deps.idGenerator ?? defaultIdGenerator;
   const configProvider = deps.configProvider ?? defaultConfigProvider;
-  const featureFlagProvider = deps.featureFlagProvider ?? defaultFeatureFlagProvider;
   const notificationService =
-    deps.notificationService ?? getDefaultNotificationService(configProvider, featureFlagProvider);
+    deps.notificationService ?? getDefaultNotificationService(configProvider);
   const store = repo ?? (await resolveOrdersRepository()).store;
   const payload = sanitizeOrderPayload(rawBody, idGenerator);
   const debugPayload = {

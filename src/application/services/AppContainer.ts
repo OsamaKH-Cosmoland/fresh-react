@@ -190,7 +190,7 @@ export function createAnalyticsClient(configProvider: ConfigProvider, env: strin
   return new ConsoleAnalyticsClient();
 }
 
-export function createConfigProvider(env: string): ConfigProvider {
+export function createConfigProvider(): ConfigProvider {
   return new EnvConfigProvider();
 }
 
@@ -210,7 +210,7 @@ appContainer
   .register(TOKENS.idGenerator, () => new DefaultIdGenerator('NG'), { scope: 'singleton' })
   .register(TOKENS.userRepository, () => new InMemoryUserRepository(seededUsers), { scope: 'scoped' })
   .register(TOKENS.emailService, () => new ConsoleEmailService(), { scope: 'singleton' })
-  .register(TOKENS.configProvider, (container) => createConfigProvider(container.env), { scope: 'singleton' })
+  .register(TOKENS.configProvider, () => createConfigProvider(), { scope: 'singleton' })
   .register(
     TOKENS.featureFlagProvider,
     (container) => createFeatureFlagProvider(container.resolve(TOKENS.configProvider)),
@@ -226,8 +226,7 @@ appContainer
         return new FakeNotificationService();
       }
       const configProvider = container.resolve(TOKENS.configProvider);
-      const featureFlags = container.resolve(TOKENS.featureFlagProvider);
-      return createDefaultNotificationService(configProvider, featureFlags);
+      return createDefaultNotificationService(configProvider);
     },
     { scope: 'singleton' },
   )

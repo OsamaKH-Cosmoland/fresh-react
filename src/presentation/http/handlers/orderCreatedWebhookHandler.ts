@@ -1,10 +1,7 @@
 // HTTP adapter for the n8n order-created webhook.
-import type { IncomingMessage, ServerResponse } from "http";
 import type { ConfigProvider } from "@/domain/config/ConfigProvider";
 import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
-
-type Request = IncomingMessage & { body?: any; method?: string };
-type Response = ServerResponse & { status: (code: number) => Response; json: (payload: unknown) => void };
+import { Request, Response } from "./typeHandler";
 
 const DEFAULT_WEBHOOK_KEYS = ["N8N_ORDERS_WEBHOOK"];
 const API_KEY_KEYS = ["N8N_API_KEY"];
