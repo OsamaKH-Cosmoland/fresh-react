@@ -43,3 +43,7 @@ export class InMemoryUserRepository implements UserRepository {
 export function buildTestUserRepository(initialUsers: User[] = []): UserRepository {
   return new InMemoryUserRepository(initialUsers);
 }
+export const defaultSeededUsers: User[] = [
+  { id: 'server-user', email: 'user@example.com', name: 'Server User' },
+  { id: 'u1', email: 'osamakhaireldin@gmail.com', name: 'Osama' },
+];

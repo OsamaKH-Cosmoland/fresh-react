@@ -18,6 +18,7 @@
   "dependencies": {
     "aws": "^0.0.3-2",
     "dotenv": "^16.4.5",
+    "express": "^5.2.1",
     "mongodb": "^6.20.0",
     "ngrok": "^5.0.0-beta.2",
     "nodemailer": "^7.0.11",
@@ -28,8 +29,9 @@
     "@eslint/js": "^9.36.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
+    "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
-    "@types/node": "^24.10.1",
+    "@types/node": "^24.10.3",
     "@types/nodemailer": "^7.0.4",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",
@@ -53,5 +55,21 @@
     "vite": "^7.2.6",
     "vite-plugin-pwa": "^1.2.0"
   },
-  "overrides": {}
+  "overrides": {},
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OsamaKH-Cosmoland/fresh-react.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OsamaKH-Cosmoland/fresh-react/issues"
+  },
+  "homepage": "https://github.com/OsamaKH-Cosmoland/fresh-react#readme"
 }

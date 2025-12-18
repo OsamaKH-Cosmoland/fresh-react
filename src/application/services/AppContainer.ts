@@ -12,7 +12,7 @@ import { AuthService } from './AuthService';
 import { ConsoleEmailService } from '../../infrastructure/email/ConsoleEmailService';
 import { createDefaultNotificationService } from '../../infrastructure/notifications/createDefaultNotificationService';
 import { FakeNotificationService } from '../../infrastructure/notifications/FakeNotificationService';
-import { InMemoryUserRepository } from '../../infrastructure/repositories/InMemoryUserRepository';
+import { InMemoryUserRepository, defaultSeededUsers } from '../../infrastructure/repositories/InMemoryUserRepository';
 import { SystemClock } from '../../infrastructure/time/SystemClock';
 import { DefaultIdGenerator } from '../../infrastructure/ids/DefaultIdGenerator';
 import { ConsoleAnalyticsClient } from '@/infrastructure/analytics/ConsoleAnalyticsClient';
@@ -176,7 +176,6 @@ export class AppContainer {
 
 const appContainer = new AppContainer();
 
-const seededUsers = [{ id: 'server-user', email: 'user@example.com', name: 'Server User' }];
 const defaultLogger = createLogger(appContainer.env);
 
 export function createAnalyticsClient(configProvider: ConfigProvider, env: string): AnalyticsClient {
@@ -208,7 +207,7 @@ export function createLogger(env: string): Logger {
 appContainer
   .register(TOKENS.clock, () => new SystemClock(), { scope: 'singleton' })
   .register(TOKENS.idGenerator, () => new DefaultIdGenerator('NG'), { scope: 'singleton' })
-  .register(TOKENS.userRepository, () => new InMemoryUserRepository(seededUsers), { scope: 'scoped' })
+  .register(TOKENS.userRepository, () => new InMemoryUserRepository(defaultSeededUsers), { scope: 'scoped' })
   .register(TOKENS.emailService, () => new ConsoleEmailService(), { scope: 'singleton' })
   .register(TOKENS.configProvider, () => createConfigProvider(), { scope: 'singleton' })
   .register(
