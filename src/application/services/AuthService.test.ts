@@ -5,6 +5,7 @@ import type { User, UserRepository } from '../../domain/users/UserRepository';
 const createUserRepository = (): jest.Mocked<UserRepository> => ({
   findByEmail: jest.fn(),
   findById: jest.fn(),
+  updateById: jest.fn(),
   save: jest.fn(),
   deleteById: jest.fn(),
   listAll: jest.fn(),
