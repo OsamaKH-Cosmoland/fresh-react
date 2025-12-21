@@ -49,6 +49,19 @@ implementations.forEach(({ name, create }) => {
       await expect(repo.findByEmail("missing@example.com")).resolves.toBeNull();
     });
 
+    it("updates an existing user via updateById", async () => {
+      const user = buildUser("update-by-id");
+      await repo.save(user);
+      const updates = { name: "Updated Name" };
+      const updated = await repo.updateById(user.id, updates);
+      expect(updated).toEqual(expect.objectContaining({ ...user, ...updates }));
+      await expect(repo.findById(user.id)).resolves.toEqual(expect.objectContaining({ ...user, ...updates }));
+    });
+
+    it("returns null when updating a missing user", async () => {
+      await expect(repo.updateById("missing", { name: "Nope" })).resolves.toBeNull();
+    });
+
     it("updates an existing user when saving with the same id", async () => {
       const user = buildUser("updatable");
       await repo.save(user);

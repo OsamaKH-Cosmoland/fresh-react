@@ -23,8 +23,6 @@ import PromoCodePanel from "@/components/promo/PromoCodePanel";
 import { useCurrency } from "@/currency/CurrencyProvider";
 import { calculateEarnedPoints } from "@/loyalty/ritualPoints";
 import { useRitualPoints } from "@/loyalty/useRitualPoints";
-import { buildAppUrl } from "@/utils/navigation";
-import { useReferralProfile } from "@/referrals/useReferralProfile";
 import { loadLastAttributionCode } from "@/referrals/referralAttribution";
 import {
   addReferralAttribution,
@@ -40,7 +38,6 @@ import {
   saveGiftCredits,
 } from "@/utils/giftCreditStorage";
 import { isGiftCardProduct } from "@/giftcards/giftCardCatalog";
-import { RefillPlanCreationPanel } from "@/components/refill/RefillPlanCreationPanel";
 
 const SHIPPING_OPTIONS = [
   { id: "standard", cost: 45 },
@@ -56,8 +53,9 @@ const STEPS: AppTranslationKey[] = [
 ];
 
 const PAYMENT_METHODS = [
-  { id: "card", labelKey: "checkout.payment.methods.card" as AppTranslationKey },
   { id: "cod", labelKey: "checkout.payment.methods.cod" as AppTranslationKey },
+  { id: "instapay", labelKey: "checkout.payment.methods.instapay" as AppTranslationKey },
+  { id: "vodafone", labelKey: "checkout.payment.methods.vodafone" as AppTranslationKey },
 ];
 
 const generateOrderId = () =>
@@ -95,8 +93,7 @@ export default function CheckoutPage() {
   const [contactInfo, setContactInfo] = useState(EMPTY_CONTACT);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [selectedShippingId, setSelectedShippingId] = useState(SHIPPING_OPTIONS[0].id);
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "cod">("card");
-  const [cardData, setCardData] = useState({ number: "", expiry: "", cvc: "" });
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "instapay" | "vodafone">("cod");
   const [orderPlaced, setOrderPlaced] = useState<LocalOrder | null>(null);
   const [createdGiftCredits, setCreatedGiftCredits] = useState<
     { code: string; amountBase: number }[]
@@ -104,27 +101,12 @@ export default function CheckoutPage() {
   const { isOnline } = useNetworkStatus();
   const [keepUpdated, setKeepUpdated] = useState(false);
   const { currency } = useCurrency();
-  const {
-    state: loyaltyState,
-    tier: currentTier,
-    nextTier,
-    pointsToNext,
-    registerOrder,
-  } = useRitualPoints();
-  const totalPoints = loyaltyState.totalPoints;
-  const currentTierLabel = t(`account.loyalty.tiers.${currentTier.id}.label`);
-  const nextTierLabel = nextTier
-    ? t(`account.loyalty.tiers.${nextTier.id}.label`)
-    : undefined;
-  const [pointsEarned, setPointsEarned] = useState(0);
-  const { profile: referralProfile } = useReferralProfile();
-  const [referralCopyState, setReferralCopyState] = useState<"idle" | "copied" | "error">("idle");
+  const { registerOrder } = useRitualPoints();
 
   useEffect(() => {
     if (!orderPlaced) return;
     const earnedPoints = calculateEarnedPoints(orderPlaced.totals.total);
     registerOrder(orderPlaced.id, orderPlaced.totals.total);
-    setPointsEarned(earnedPoints);
     if (earnedPoints > 0) {
       trackEvent({
         type: "loyalty_points_awarded",
@@ -132,8 +114,6 @@ export default function CheckoutPage() {
       });
     }
   }, [orderPlaced, registerOrder, trackEvent, calculateEarnedPoints]);
-
-
   const hasCartItems = cartItems.length > 0;
   const shippingMethod = useMemo<ShippingMethod>(() => {
     const base = SHIPPING_OPTIONS.find((entry) => entry.id === selectedShippingId) ?? SHIPPING_OPTIONS[0];
@@ -152,27 +132,6 @@ export default function CheckoutPage() {
   const discountedSubtotal = Math.max(subtotal - discountTotal, 0);
   const total = discountedSubtotal + finalShippingCost;
   const totalAfterCredit = Math.max(total - creditAppliedBase, 0);
-
-  const referralLink = referralProfile
-    ? `${buildAppUrl("/")}?ref=${encodeURIComponent(referralProfile.code)}`
-    : null;
-
-  const handleReferralCopy = async () => {
-    if (!referralLink) return;
-    if (typeof navigator === "undefined") {
-      setReferralCopyState("error");
-      return;
-    }
-    try {
-      await navigator.clipboard.writeText(referralLink);
-      setReferralCopyState("copied");
-      if (typeof window !== "undefined") {
-        window.setTimeout(() => setReferralCopyState("idle"), 2000);
-      }
-    } catch {
-      setReferralCopyState("error");
-    }
-  };
 
   const handleContactChange = (field: keyof typeof contactInfo, value: string) => {
     setContactInfo((prev) => ({ ...prev, [field]: value }));
@@ -199,21 +158,7 @@ export default function CheckoutPage() {
     return Object.keys(nextErrors).length === 0;
   };
 
-  const validatePayment = () => {
-    if (paymentMethod !== "card") return true;
-    const nextErrors: Record<string, string> = {};
-    if (cardData.number.replace(/\s+/g, "").length !== 16) {
-      nextErrors.number = t("checkout.validation.cardNumber");
-    }
-    if (!/^\d{2}\/\d{2}$/.test(cardData.expiry)) {
-      nextErrors.expiry = t("checkout.validation.cardExpiry");
-    }
-    if (!/^\d{3,4}$/.test(cardData.cvc)) {
-      nextErrors.cvc = t("checkout.validation.cardCvc");
-    }
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
-  };
+  const validatePayment = () => true;
 
   const handleNext = () => {
     if (currentStep === 0) {
@@ -228,16 +173,6 @@ export default function CheckoutPage() {
   const handleBack = () => {
     setErrors({});
     setCurrentStep((prev) => Math.max(prev - 1, 0));
-  };
-
-  const handleCardInput = (field: keyof typeof cardData, value: string) => {
-    setCardData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => {
-      if (!prev[field]) return prev;
-      const next = { ...prev };
-      delete next[field];
-      return next;
-    });
   };
 
   const handleShippingKeyDown = (event: KeyboardEvent<HTMLButtonElement>, optionId: string) => {
@@ -368,10 +303,6 @@ export default function CheckoutPage() {
       shippingMethod,
       paymentSummary: {
         methodLabel: t(`checkout.payment.methods.${paymentMethod}` as AppTranslationKey),
-        last4:
-          paymentMethod === "card" && cardData.number
-            ? cardData.number.replace(/\s+/g, "").slice(-4)
-            : undefined,
         status: "simulated",
       },
       giftCreditCode: finalGiftCreditAmountBase > 0 ? finalGiftCreditCode : undefined,
@@ -519,14 +450,6 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                 })}
               </span>
             </div>
-            <div className="checkout-confirmation__summary">
-              <p>
-                {t("checkout.confirmation.summary", {
-                  itemCount: orderPlaced.items.reduce((sum, item) => sum + item.quantity, 0),
-                  total: formatCurrency(orderPlaced.totals.total, currency),
-                })}
-              </p>
-            </div>
             {createdGiftCredits.length > 0 && (
               <div className="checkout-confirmation__gift-codes">
                 <h4>{t("checkout.confirmation.giftCodesTitle")}</h4>
@@ -548,58 +471,6 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                   code: orderPlaced.giftCreditCode,
                 })}
               </p>
-            )}
-            <div className="checkout-confirmation__loyalty">
-              <p>{t("checkout.confirmation.loyaltyEarned", { points: pointsEarned })}</p>
-              <p>{t("checkout.confirmation.loyaltyStatus", { tier: currentTierLabel })}</p>
-              <p>{t("checkout.confirmation.loyaltyTotal", { points: totalPoints })}</p>
-            {nextTierLabel && typeof pointsToNext === "number" ? (
-              <p>
-                {t("checkout.confirmation.loyaltyProgress", {
-                  nextTier: nextTierLabel,
-                  points: pointsToNext,
-                })}
-              </p>
-            ) : (
-              <p>{t("account.loyalty.maxTier")}</p>
-            )}
-            </div>
-            <div className="checkout-confirmation__refill">
-              <RefillPlanCreationPanel
-                title={t("checkout.confirmation.refillTitle")}
-                description={t("checkout.confirmation.refillBody", {
-                  itemCount: orderPlaced.items.reduce((sum, item) => sum + item.quantity, 0),
-                })}
-                items={orderPlaced.items}
-                source="order"
-                label={t("refillPlans.orderLabel", { orderId: orderPlaced.id })}
-                startAt={orderPlaced.createdAt}
-                buttonLabel={t("checkout.confirmation.refillButton")}
-              />
-            </div>
-            {referralProfile && referralLink && (
-              <section className="checkout-confirmation__referral" aria-live="polite">
-                <p>{t("checkout.confirmation.referralHint")}</p>
-                <div className="checkout-confirmation__referral-actions">
-                  <input value={referralLink} readOnly />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleReferralCopy}
-                  >
-                    {t(
-                      referralCopyState === "copied"
-                        ? "account.referrals.copied"
-                        : "account.referrals.copyLink"
-                    )}
-                  </Button>
-                </div>
-                {referralCopyState === "error" && (
-                  <p className="checkout-confirmation__referral-error">
-                    {t("account.referrals.copyError")}
-                  </p>
-                )}
-              </section>
             )}
             <div className="checkout-confirmation__actions">
               <Button
@@ -738,7 +609,7 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                         value={method.id}
                         checked={paymentMethod === method.id}
                         onChange={() => {
-                          setPaymentMethod(method.id as "card" | "cod");
+                          setPaymentMethod(method.id as "cod" | "instapay" | "vodafone");
                           setErrors({});
                         }}
                       />
@@ -746,60 +617,10 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                     </label>
                   ))}
                 </div>
-                {paymentMethod === "card" && (
-                  <div className="checkout-form-grid">
-                    <div className="checkout-field">
-                      <label htmlFor="cardNumber">{t("checkout.fields.cardNumber")}</label>
-                      <input
-                        id="cardNumber"
-                        value={cardData.number}
-                        onChange={(e) => handleCardInput("number", e.target.value)}
-                        className="checkout-input"
-                        placeholder="0000 0000 0000 0000"
-                        aria-invalid={errors.number ? "true" : undefined}
-                        aria-describedby={errors.number ? "cardNumber-error" : undefined}
-                      />
-                      {errors.number && (
-                        <p id="cardNumber-error" className="checkout-error">
-                          {errors.number}
-                        </p>
-                      )}
-                    </div>
-                    <div className="checkout-field">
-                      <label htmlFor="cardExpiry">{t("checkout.fields.cardExpiry")}</label>
-                      <input
-                        id="cardExpiry"
-                        value={cardData.expiry}
-                        onChange={(e) => handleCardInput("expiry", e.target.value)}
-                        className="checkout-input"
-                        placeholder="MM/YY"
-                        aria-invalid={errors.expiry ? "true" : undefined}
-                        aria-describedby={errors.expiry ? "cardExpiry-error" : undefined}
-                      />
-                      {errors.expiry && (
-                        <p id="cardExpiry-error" className="checkout-error">
-                          {errors.expiry}
-                        </p>
-                      )}
-                    </div>
-                    <div className="checkout-field">
-                      <label htmlFor="cardCvc">{t("checkout.fields.cardCvc")}</label>
-                      <input
-                        id="cardCvc"
-                        value={cardData.cvc}
-                        onChange={(e) => handleCardInput("cvc", e.target.value)}
-                        className="checkout-input"
-                        placeholder="CVC"
-                        aria-invalid={errors.cvc ? "true" : undefined}
-                        aria-describedby={errors.cvc ? "cardCvc-error" : undefined}
-                      />
-                      {errors.cvc && (
-                        <p id="cardCvc-error" className="checkout-error">
-                          {errors.cvc}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                {(paymentMethod === "instapay" || paymentMethod === "vodafone") && (
+                  <p className="checkout-payment-note">
+                    {t("checkout.payment.transferNote")}
+                  </p>
                 )}
               </section>
             )}

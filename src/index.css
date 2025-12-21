@@ -4412,6 +4412,7 @@ button:hover {
   display: grid;
   gap: 1.2rem;
   box-shadow: 0 24px 50px rgba(0, 0, 0, .4);
+  --cart-summary-content-inset: clamp(.4rem, 1.5vw, .8rem);
 }
 .cart-summary-panel h2 {
   margin: 0;
@@ -4419,11 +4420,13 @@ button:hover {
   font-size: 1.4rem;
   letter-spacing: .05em;
   color: #ffecc5;
+  padding-inline: var(--cart-summary-content-inset);
 }
 .cart-summary-panel dl {
   margin: 0;
   display: grid;
   gap: .6rem;
+  padding-inline: var(--cart-summary-content-inset);
 }
 .cart-summary-panel dl div {
   display: flex;
@@ -4447,6 +4450,7 @@ button:hover {
   font-size: .9rem;
   line-height: 1.6;
   color: rgba(255, 236, 197, .7);
+  padding-inline: var(--cart-summary-content-inset);
 }
 .cart-summary-panel__promo {
   margin-top: 1rem;
@@ -4455,10 +4459,20 @@ button:hover {
   font-size: 1.2rem;
   color: #fff5c2;
 }
+.cart-summary-panel__promo .promo-panel,
+.cart-summary-panel__gift-credit .gift-credit-panel {
+  padding-inline: var(--cart-summary-content-inset);
+}
+.cart-summary-panel .cta-btn {
+  width: calc(100% - (var(--cart-summary-content-inset) * 2));
+  margin: 0 auto;
+  display: block;
+  text-align: center;
+}
 
 @media (min-width: 900px) {
   .cart-layout {
-    grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+    grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1.1fr);
     align-items: start;
   }
 }
@@ -7890,6 +7904,12 @@ button:hover {
 .checkout-payment-option.is-active {
   border-color: rgba(244, 208, 135, 0.8);
   background: rgba(244, 208, 135, 0.15);
+}
+.checkout-payment-note {
+  margin: 0.9rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(255, 236, 197, 0.78);
 }
 .checkout-review__items {
   display: grid;

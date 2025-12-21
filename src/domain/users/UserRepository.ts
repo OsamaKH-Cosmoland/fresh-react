@@ -11,6 +11,7 @@ export type User = {
 export interface UserRepository {
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
+  updateById(id: string, updates: Partial<User>): Promise<User | null>;
   save(user: User): Promise<User>;
   deleteById(id: string): Promise<void>;
   listAll(): Promise<User[]>;

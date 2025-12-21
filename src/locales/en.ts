@@ -560,7 +560,7 @@ export const en = {
       shipping: "Choose a shipping method",
       shippingHelp: "Select the delivery pace that fits your routine timing.",
       payment: "Pick a payment way",
-      paymentHelp: "We simulate card entry so you can see the flow before it is live.",
+      paymentHelp: "Choose how you would like to complete your payment.",
       review: "Review & confirm",
       reviewHelp: "Check every bundle, shipping fee, and address before placing your order.",
     },
@@ -599,9 +599,12 @@ export const en = {
     },
     payment: {
       methods: {
-        card: "Card",
         cod: "Cash on delivery",
+        instapay: "InstaPay",
+        vodafone: "Vodafone Cash",
       },
+      transferNote:
+        "Take a screenshot with the payment proof and the order name and send it to that number 01015429159.",
     },
     validation: {
       required: "This field is required.",

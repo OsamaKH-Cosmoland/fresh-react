@@ -12,6 +12,7 @@ import productsHandler from "./handlers/productsHandler";
 import { createOrderCreatedWebhookHandler } from "./handlers/orderCreatedWebhookHandler";
 import healthHandler from "./handlers/healthHandler";
 import { loginHandler } from "./handlers/loginHandler";
+import { getUsersHandler } from "./handlers/getUsersHandler";
 import { GmailEmailProvider } from "../../infrastructure/email/gmailEmailProvider";
 import { FakeEmailProvider } from "../../infrastructure/email/fakeEmailProvider";
 import type { EmailProvider } from "../../domain/shared/EmailProvider";
@@ -164,6 +165,11 @@ const server = http.createServer(async (rawReq, rawRes): Promise<void> => {
 
   if (pathname === "/api/login") {
       await loginHandler(req, res);
+    return;
+  }
+
+  if (pathname === "/api/users") {
+      await getUsersHandler(req, res);
     return;
   }
 
