@@ -5,7 +5,11 @@ import Sidebar from "../components/Sidebar";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { useBundleActions } from "@/cart/cartBundles";
 import { useCart } from "@/cart/cartStore";
-import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
+import {
+  PRODUCT_DETAIL_MAP,
+  getLocalizedProductVariants,
+  localizeProductDetail,
+} from "@/content/productDetails";
 import { RITUAL_QUESTIONS, matchRituals, type RitualFinderAnswers } from "@/content/ritualFinderQuiz";
 import { recordView } from "@/hooks/useRecentlyViewed";
 import { useTranslation } from "@/localization/locale";
@@ -32,7 +36,7 @@ export default function RitualFinder() {
 
   const { addBundleToCart } = useBundleActions();
   const { addItem } = useCart();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { preferences } = useUserPreferences();
   const prefAppliedRef = useRef(false);
 
@@ -56,7 +60,13 @@ export default function RitualFinder() {
             detail.productId,
             preferences?.scentPreference ?? null
           );
-          return { detail, variant };
+          const localizedDetail = localizeProductDetail(detail, locale);
+          const localizedVariant = variant
+            ? getLocalizedProductVariants(detail.productId, locale).find(
+                (entry) => entry.variantId === variant.variantId
+              )
+            : undefined;
+          return { detail: localizedDetail, variant: localizedVariant ?? variant };
         })
         .filter(
           (
@@ -115,7 +125,7 @@ export default function RitualFinder() {
   const handleNext = () => {
     if (!currentQuestion) return;
     if (!answers[currentQuestion.id]) {
-      setError("Select the answer that feels most aligned with tonight.");
+      setError(t("ritualFinder.errors.selectOption"));
       return;
     }
     if (isLastStep) {
@@ -188,15 +198,12 @@ export default function RitualFinder() {
       <main id="main-content" tabIndex={-1} className="ritual-finder-shell ng-mobile-shell">
         <header className="ritual-finder-hero" data-animate="fade-up">
         <SectionTitle
-          title="Routine Finder"
-          subtitle="Answer a calm handful of questions and we will curate the routine that matches tonight."
+          title={t("ritualFinder.title")}
+          subtitle={t("ritualFinder.subtitle")}
           align="center"
           as="h1"
         />
-          <p>
-            We listen to your focus, time, and scent preferences to recommend the precise balance of
-            cleanse, treat, and finish—packaged as our curated bundles.
-          </p>
+          <p>{t("ritualFinder.intro")}</p>
           {preferences?.concerns.length ? (
             <p className="ritual-finder-hint">{t("onboarding.hint")}</p>
           ) : null}
@@ -205,7 +212,8 @@ export default function RitualFinder() {
         <section className="ritual-finder-quiz" data-animate="fade-up">
           <div className="ritual-finder-progress">
             <span>
-              Step {complete ? RITUAL_QUESTIONS.length : step + 1} / {RITUAL_QUESTIONS.length}
+              {t("ritualFinder.progressLabel")} {complete ? RITUAL_QUESTIONS.length : step + 1} /{" "}
+              {RITUAL_QUESTIONS.length}
             </span>
             <div className="ritual-finder-progress-bar">
               <div style={{ width: `${progressPercent}%` }} />
@@ -237,10 +245,10 @@ export default function RitualFinder() {
               {error && <p className="ritual-finder-error">{error}</p>}
               <div className="ritual-finder-controls">
                 <Button variant="ghost" onClick={handleBack} disabled={step === 0}>
-                  Back
+                  {t("ritualFinder.actions.back")}
                 </Button>
                 <Button variant="primary" onClick={handleNext}>
-                  {isLastStep ? "Reveal my routine" : "Continue"}
+                  {isLastStep ? t("ritualFinder.actions.reveal") : t("ritualFinder.actions.continue")}
                 </Button>
               </div>
             </article>
@@ -249,8 +257,8 @@ export default function RitualFinder() {
           {complete && primaryBundle && (
             <article className="ritual-finder-results">
               <SectionTitle
-                title="We curated this routine for you"
-                subtitle="Add the bundle that best matches your answers."
+                title={t("ritualFinder.results.title")}
+                subtitle={t("ritualFinder.results.subtitle")}
                 align="left"
               />
               <div className="bundle-grid ng-grid-mobile-2">
@@ -264,7 +272,7 @@ export default function RitualFinder() {
               </div>
               {secondaryBundles.length > 0 && (
                 <div className="ritual-finder-also">
-                  <p>Also consider</p>
+                  <p>{t("ritualFinder.results.alsoConsider")}</p>
                   <div className="bundle-grid ng-grid-mobile-2">
                     {secondaryBundles.map((bundle) => (
                     <BundleCard
@@ -281,7 +289,11 @@ export default function RitualFinder() {
               )}
               {productSuggestions.length > 0 && (
                 <div className="ritual-finder-extras">
-                  <SectionTitle title="Also consider" subtitle="Single additions to pair beautifully." align="left" />
+                  <SectionTitle
+                    title={t("ritualFinder.results.alsoConsider")}
+                    subtitle={t("ritualFinder.results.extrasSubtitle")}
+                    align="left"
+                  />
                   <div className="ritual-finder-extras__grid ng-grid-mobile-2">
                     {productSuggestions.map(({ detail, variant }) => (
                       <Card
@@ -309,7 +321,7 @@ export default function RitualFinder() {
               )}
               <div className="ritual-finder-controls ritual-finder-controls--reset">
               <Button variant="ghost" onClick={handleReset}>
-                Retake the Routine Finder
+                {t("ritualFinder.actions.reset")}
               </Button>
               <Button variant="secondary" onClick={navigateToCoach}>
                 {t("ritualCoach.cta.refineWithCoach")}

@@ -5,10 +5,12 @@ import { Button, SectionTitle } from "@/components/ui";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
 import { buildAppUrl } from "@/utils/navigation";
+import { useTranslation } from "@/localization/locale";
 
 export default function GiftBuilderPage() {
   usePageAnalytics("gift_builder");
   useSeo({ route: "gift_builder" });
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const shopUrl = buildAppUrl("/shop");
 
@@ -25,19 +27,18 @@ export default function GiftBuilderPage() {
 
       <main id="main-content" tabIndex={-1} className="gift-builder-page__content ng-mobile-shell">
         <SectionTitle
-          title="Build your gift"
-          subtitle="Coming soon"
+          title={t("giftBuilder.comingSoon.title")}
+          subtitle={t("giftBuilder.comingSoon.subtitle")}
           align="center"
           as="h1"
           className="gift-builder-coming-soon__title"
         />
         <div className="gift-builder-coming-soon__card">
           <p>
-            We are polishing the gift builder experience so your curated care rituals arrive as
-            magic bundles. Check back soon for the first release.
+            {t("giftBuilder.comingSoon.body")}
           </p>
           <p className="gift-builder-coming-soon__note">
-            In the meantime, explore the collection and add your favorites to a ritual set.
+            {t("giftBuilder.comingSoon.note")}
           </p>
           <Button
             type="button"
@@ -47,7 +48,7 @@ export default function GiftBuilderPage() {
               window.location.href = shopUrl;
             }}
           >
-            Browse the collection
+            {t("giftBuilder.comingSoon.action")}
           </Button>
         </div>
       </main>

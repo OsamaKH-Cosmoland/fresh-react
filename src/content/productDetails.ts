@@ -18,49 +18,147 @@ export interface ProductDetailContent extends Omit<ProductDetailLayoutProps, "on
   slug: string;
   productId: string;
   priceNumber: number;
-  variants?: ProductVariant[];
+  variants?: LocalizedProductVariant[];
   defaultVariantId?: string;
+  productNameAr?: string;
+  shortTaglineAr?: string;
+  heroSummaryBulletsAr?: HeroSummaryBullet[];
+  whatItsMadeForAr?: string;
+  ritualStepsAr?: RitualStep[];
+  ingredientsAr?: IngredientHighlight[];
+  sensoryExperienceAr?: string[];
+  pairsWellWithAr?: Pairing[];
+  faqAr?: FAQItem[];
+}
+
+export interface LocalizedProductVariant extends ProductVariant {
+  labelAr?: string;
+  attributesAr?: Record<string, string>;
 }
 
 const createPairings = (items: Pairing[]): Pairing[] => items;
+type SupportedLocale = "en" | "ar";
+
+const localizeVariant = (variant: LocalizedProductVariant, locale: SupportedLocale) => {
+  if (locale !== "ar") return variant;
+  return {
+    ...variant,
+    label: variant.labelAr ?? variant.label,
+    attributes: variant.attributesAr ?? variant.attributes,
+  };
+};
+
+export const localizeProductDetail = (
+  detail: ProductDetailContent,
+  locale: SupportedLocale
+): ProductDetailContent => {
+  if (locale !== "ar") return detail;
+  return {
+    ...detail,
+    productName: detail.productNameAr ?? detail.productName,
+    shortTagline: detail.shortTaglineAr ?? detail.shortTagline,
+    heroSummaryBullets: detail.heroSummaryBulletsAr ?? detail.heroSummaryBullets,
+    whatItsMadeFor: detail.whatItsMadeForAr ?? detail.whatItsMadeFor,
+    ritualSteps: detail.ritualStepsAr ?? detail.ritualSteps,
+    ingredients: detail.ingredientsAr ?? detail.ingredients,
+    sensoryExperience: detail.sensoryExperienceAr ?? detail.sensoryExperience,
+    pairsWellWith: detail.pairsWellWithAr ?? detail.pairsWellWith,
+    faq: detail.faqAr ?? detail.faq,
+    variants: detail.variants?.map((variant) => localizeVariant(variant, locale)),
+  };
+};
+
+export const getLocalizedProductDetailBySlug = (
+  slug: string,
+  locale: SupportedLocale
+): ProductDetailContent | undefined => {
+  const detail = PRODUCT_DETAIL_MAP[slug];
+  return detail ? localizeProductDetail(detail, locale) : undefined;
+};
+
+export const getLocalizedProductName = (productId: string, locale: SupportedLocale) => {
+  const detail = PRODUCT_DETAIL_MAP[productId];
+  if (!detail) return productId;
+  return locale === "ar" ? detail.productNameAr ?? detail.productName : detail.productName;
+};
+
+export const getLocalizedProductVariants = (productId: string, locale: SupportedLocale) => {
+  const detail = PRODUCT_DETAIL_MAP[productId];
+  if (!detail?.variants) return [];
+  return detail.variants.map((variant) => localizeVariant(variant, locale));
+};
+
+export const getVariantSummaryForLocale = (
+  productId: string,
+  locale: SupportedLocale
+): VariantSummary | null => {
+  const variants = getLocalizedProductVariants(productId, locale);
+  if (!variants.length) return null;
+  const labels = variants.map((variant) => variant.label);
+  const prices = variants.map((variant) => variant.priceNumber);
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  return {
+    count: labels.length,
+    labels,
+    priceRange: prices.length ? { min, max } : undefined,
+  };
+};
 
 export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
   {
     slug: "body-balm",
     productId: "body-balm",
     productName: "Body Balm",
+    productNameAr: "بلسم الجسم",
     shortTagline: "Deep moisture for skin that craves calm.",
+    shortTaglineAr: "ترطيب عميق لبشرة تبحث عن السكينة.",
     priceLabel: "197.99 EGP",
     priceNumber: 197.99,
     variants: [
       {
         variantId: "body-balm-lavender",
         label: "Lavender Bloom",
+        labelAr: "أزهار اللافندر",
         priceLabel: "197.99 EGP",
         priceNumber: 197.99,
         attributes: {
           scent: "Lavender",
           size: "50 ml",
         },
+        attributesAr: {
+          scent: "لافندر",
+          size: "50 مل",
+        },
       },
       {
         variantId: "body-balm-unscented",
         label: "Unscented Calm",
+        labelAr: "سكينة بدون عطر",
         priceLabel: "195.99 EGP",
         priceNumber: 195.99,
         attributes: {
           scent: "Unscented",
           size: "50 ml",
         },
+        attributesAr: {
+          scent: "بدون عطر",
+          size: "50 مل",
+        },
       },
       {
         variantId: "body-balm-silk",
         label: "Silk Blossom Veil",
+        labelAr: "حجاب زهر الحرير",
         priceLabel: "199.99 EGP",
         priceNumber: 199.99,
         attributes: {
           scent: "Silk Blossom",
           size: "50 ml",
+        },
+        attributesAr: {
+          scent: "زهر الحرير",
+          size: "50 مل",
         },
       },
     ],
@@ -70,9 +168,16 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "Softens rough areas like elbows, knees, and hands.",
       "Wraps your body in a quiet, comforting routine at the end of the day.",
     ],
+    heroSummaryBulletsAr: [
+      "يحفظ الترطيب لفترة طويلة دون ملمس دهني.",
+      "يلطف المناطق الخشنة مثل المرفقين والركبتين واليدين.",
+      "يغلّف الجسم بروتين هادئ ومريح في نهاية اليوم.",
+    ],
     heroImage: bodyBalmImage,
     whatItsMadeFor:
       "Dry, tired skin needs a peaceful interlude—our butter blend cushions, seals, and shields without the weight of heavy oils.",
+    whatItsMadeForAr:
+      "لبشرة جافة ومتعبة تحتاج إلى استراحة هادئة—مزيج الزبدة يهدئ ويختم ويحمي دون ثقل الزيوت الثقيلة.",
     ritualSteps: [
       { title: "Warm", description: "Warm a small amount between palms until the texture melts into oil." },
       {
@@ -88,21 +193,67 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         description: "Boost the routine on heels, hands, and shoulders before bed for extra calm.",
       },
     ],
+    ritualStepsAr: [
+      {
+        title: "دفّئي",
+        description: "دفّئي كمية صغيرة بين راحتي اليد حتى تتحول إلى زيت.",
+      },
+      {
+        title: "اضغطي",
+        description: "اضغطي بلطف على الذراعين والساقين والمرفقين والركبتين وأي مناطق خشنة لتغطية متساوية.",
+      },
+      {
+        title: "دلّكي",
+        description: "دلّكي بحركات بطيئة للأعلى واتركي البلسم يتغلغل قبل ارتداء الملابس.",
+      },
+      {
+        title: "كرّري عند الحاجة",
+        description: "عزّزي الروتين على الكعبين واليدين والكتفين قبل النوم لمزيد من السكينة.",
+      },
+    ],
     ingredients: [
       { name: "Cocoa Butter", description: "Protective and occlusive, it locks in moisture and softens rough areas." },
       { name: "Shea Butter", description: "Deeply nourishing and comforting for dry, sensitive skin." },
       { name: "Sweet Almond Oil", description: "Replenishing and silky, it keeps skin smooth and supple." },
       { name: "Vitamin E", description: "Supports the skin barrier while providing gentle antioxidant care." },
     ],
+    ingredientsAr: [
+      {
+        name: "زبدة الكاكاو",
+        description: "واقية ومغلِّفة، تحبس الرطوبة وتنعّم المناطق الخشنة.",
+      },
+      {
+        name: "زبدة الشيا",
+        description: "مغذّية ومريحة للبشرة الجافة والحساسة.",
+      },
+      {
+        name: "زيت اللوز الحلو",
+        description: "مُرمّم وناعم، يحافظ على نعومة البشرة وليونتها.",
+      },
+      {
+        name: "فيتامين E",
+        description: "يدعم حاجز البشرة ويمنحها عناية مضادة للأكسدة بلطف.",
+      },
+    ],
     sensoryExperience: [
       "Rich in the jar, melts into a silky oil when warmed.",
       "Absorbs to a comfortable, non-sticky finish.",
       "Scent is soft, designed to support evening wind-down rather than overpower.",
     ],
+    sensoryExperienceAr: [
+      "قوام غني في العبوة، يذوب إلى زيت حريري عند التسخين.",
+      "يمتص ليمنح لمسة مريحة غير لزجة.",
+      "العطر ناعم ومصمم لدعم هدوء المساء دون أن يطغى.",
+    ],
     pairsWellWith: createPairings([
       { name: "Calm & Glow Body Soap", slug: "/products/calm-glow-body-soap" },
       { name: "Hand Balm", slug: "/products/hand-balm" },
       { name: "Silk Blossom Body Soap", slug: "/products/silk-blossom-body-soap" },
+    ]),
+    pairsWellWithAr: createPairings([
+      { name: "صابون الجسم سكينة وتوهج", slug: "/products/calm-glow-body-soap" },
+      { name: "بلسم اليدين", slug: "/products/hand-balm" },
+      { name: "صابون الجسم زهر الحرير", slug: "/products/silk-blossom-body-soap" },
     ]),
     faq: [
       {
@@ -122,12 +273,32 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         answer: "Formulated with gentle botanicals and no harsh synthetics, it is soothing even on sensitive skin.",
       },
     ],
+    faqAr: [
+      {
+        question: "هل يمكن استخدام بلسم الجسم يومياً؟",
+        answer: "نعم، يُستخدم مرة أو مرتين يومياً بعد التنظيف للحفاظ على تغذية عميقة.",
+      },
+      {
+        question: "هل يترك ملمساً دهنياً؟",
+        answer: "يذوب إلى زيت حريري يمتص بسرعة دون بقايا لزجة.",
+      },
+      {
+        question: "هل يمكن استخدامه على اليدين والقدمين؟",
+        answer: "بالتأكيد—ركّزي كمية إضافية على اليدين والكعبين أو المرفقين قبل النوم.",
+      },
+      {
+        question: "هل هو آمن للبشرة الحساسة؟",
+        answer: "تركيبة لطيفة بنباتات مهدئة دون مكونات قاسية، مناسبة للبشرة الحساسة.",
+      },
+    ],
   },
   {
     slug: "calm-glow-body-soap",
     productId: "calm-glow-body-soap",
     productName: "Calm & Glow Body Soap",
+    productNameAr: "صابون الجسم سكينة وتوهج",
     shortTagline: "Chamomile serenity for luminous skin.",
+    shortTaglineAr: "سكينة البابونج لبشرة مضيئة.",
     priceLabel: "228.99 EGP",
     priceNumber: 228.99,
     heroSummaryBullets: [
@@ -135,9 +306,16 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "Removes impurities without stripping natural oils.",
       "Builds a gentle glow so skin feels settled before routine steps.",
     ],
+    heroSummaryBulletsAr: [
+      "رغوة بابونج كريمية تهدئ البشرة وتنعّم السطح.",
+      "يزيل الشوائب دون تجريد الزيوت الطبيعية.",
+      "يبني توهجاً لطيفاً لتشعر البشرة بالهدوء قبل الخطوات التالية.",
+    ],
     heroImage: bodySoapOne,
     whatItsMadeFor:
       "Crafted for unsettled, reactive skin, the blend calms and restores balance while the micro-pearl glow leaves a whisper of radiance.",
+    whatItsMadeForAr:
+      "مصنوع للبشرة المتوترة والمتفاعلة؛ المزيج يهدئ ويعيد التوازن بينما يمنح التوهج اللؤلؤي لمسة إشراق خفيفة.",
     ritualSteps: [
       {
         title: "Lather",
@@ -150,6 +328,20 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       {
         title: "Glow",
         description: "Rinse, pat lightly, and follow with the Body Balm routine to seal in calm.",
+      },
+    ],
+    ritualStepsAr: [
+      {
+        title: "رغّي",
+        description: "كوّني رغوة غنية على البشرة المبللة أو على ليفة.",
+      },
+      {
+        title: "نظّفي",
+        description: "دلّكي بلطف من الكتفين إلى الأسفل ودعي النباتات تهدئك.",
+      },
+      {
+        title: "توّهجي",
+        description: "اشطفي، جففي بالتربيت، واتّبعيه بروتين بلسم الجسم لإغلاق الهدوء.",
       },
     ],
     ingredients: [
@@ -170,15 +362,43 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         description: "Deliver a barely-there glow that reflects candlelight.",
       },
     ],
+    ingredientsAr: [
+      {
+        name: "البابونج",
+        description: "يهدئ الاحمرار ويمنح إحساساً دافئاً.",
+      },
+      {
+        name: "نيرولي",
+        description: "يفتح البشرة ويمنح عطراً لطيفاً ومبهجاً.",
+      },
+      {
+        name: "الألوفيرا",
+        description: "ترطيب مُبرِّد يحافظ على نعومة البشرة.",
+      },
+      {
+        name: "لآلئ الميكا",
+        description: "تمنح توهجاً خفيفاً يعكس ضوء الشموع.",
+      },
+    ],
     sensoryExperience: [
       "Creates a creamy foam that smells like a tranquil boudoir.",
       "Skin feels clean yet never tight.",
       "Leaves behind a soft, warming finish that invites follow-up care.",
     ],
+    sensoryExperienceAr: [
+      "رغوة كريمية برائحة غرفة هادئة.",
+      "البشرة نظيفة دون شدّ.",
+      "يترك لمسة دافئة تدعو لخطوات لاحقة.",
+    ],
     pairsWellWith: createPairings([
       { name: "Body Balm", slug: "/products/body-balm" },
       { name: "Hand Balm", slug: "/products/hand-balm" },
       { name: "Silk Blossom Body Soap", slug: "/products/silk-blossom-body-soap" },
+    ]),
+    pairsWellWithAr: createPairings([
+      { name: "بلسم الجسم", slug: "/products/body-balm" },
+      { name: "بلسم اليدين", slug: "/products/hand-balm" },
+      { name: "صابون الجسم زهر الحرير", slug: "/products/silk-blossom-body-soap" },
     ]),
     faq: [
       {
@@ -194,12 +414,28 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         answer: "Daily, morning or night, whenever you want a comforting cleanse.",
       },
     ],
+    faqAr: [
+      {
+        question: "هل يمنح توهجاً فورياً؟",
+        answer: "نعم—لآلئ الميكا تمنح دفئاً فورياً دون لمعان مبالغ.",
+      },
+      {
+        question: "هل هو مناسب للبشرة الحساسة؟",
+        answer: "البابونج والألوفيرا يجعلان التركيبة لطيفة حتى للبشرة المتفاعلة.",
+      },
+      {
+        question: "كم مرة يمكن استخدامه؟",
+        answer: "يومياً، صباحاً أو مساءً، متى رغبتِ بتنظيف مريح.",
+      },
+    ],
   },
   {
     slug: "silk-blossom-body-soap",
     productId: "silk-blossom-body-soap",
     productName: "Silk Blossom Body Soap",
+    productNameAr: "صابون الجسم زهر الحرير",
     shortTagline: "Velvety jasmine for moments that bloom.",
+    shortTaglineAr: "ياسمين مخملي للحظات تتفتح.",
     priceLabel: "231.99 EGP",
     priceNumber: 231.99,
     heroSummaryBullets: [
@@ -207,9 +443,16 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "Creates an elegant foam that rinses away effortlessly.",
       "Designed to lift the senses with a floral finish.",
     ],
+    heroSummaryBulletsAr: [
+      "بتلات الياسمين وبروتينات الحرير تنعّم أثناء التنظيف.",
+      "تُكوّن رغوة أنيقة تُشطف بسهولة.",
+      "مصمم لرفع الحواس بلمسة زهرية.",
+    ],
     heroImage: bodySoapTwo,
     whatItsMadeFor:
       "For those who linger by candlelight—this soap cleanses with soft silkiness and a floral veil that keeps skin feeling poised.",
+    whatItsMadeForAr:
+      "لمن يحبون هدوء ضوء الشموع—هذا الصابون ينظف بملمس حريري وعبير زهري يحفظ توازن البشرة.",
     ritualSteps: [
       {
         title: "Bloom",
@@ -222,6 +465,20 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       {
         title: "Rinse",
         description: "Rinse with cool water, then follow with the Body Balm for finish.",
+      },
+    ],
+    ritualStepsAr: [
+      {
+        title: "تفتّحي",
+        description: "بلّلي البشرة ثم مرري الصابون على اليدين المبللتين أو الليفة.",
+      },
+      {
+        title: "شكّلي",
+        description: "دلّكي بلطف بحركات انسيابية لتنشيط الدورة.",
+      },
+      {
+        title: "اشطفي",
+        description: "اشطفي بماء فاتر ثم اتبعيه ببلسم الجسم كلمسة ختامية.",
       },
     ],
     ingredients: [
@@ -242,14 +499,41 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         description: "Helps maintain suppleness and resilience.",
       },
     ],
+    ingredientsAr: [
+      {
+        name: "الياسمين",
+        description: "يمنح نعومة زهرية ويهدئ الحواس.",
+      },
+      {
+        name: "بروتينات الحرير",
+        description: "تمنح انسيابية فاخرة وطبقة واقية.",
+      },
+      {
+        name: "زيت نخالة الأرز",
+        description: "يغذي دون ثقل.",
+      },
+      {
+        name: "فيتامين B5",
+        description: "يساعد على الحفاظ على المرونة والحيوية.",
+      },
+    ],
     sensoryExperience: [
       "The petals release a soft floral mist as you lather.",
       "Rinses with a polished, satin finish.",
       "Scent lingers but never feels overpowering.",
     ],
+    sensoryExperienceAr: [
+      "تطلق البتلات ضباباً زهرياً ناعماً أثناء الرغوة.",
+      "يشطف مع لمسة ساتانية مصقولة.",
+      "يبقى العطر دون أن يكون طاغياً.",
+    ],
     pairsWellWith: createPairings([
       { name: "Hand Balm", slug: "/products/hand-balm" },
       { name: "Body Balm", slug: "/products/body-balm" },
+    ]),
+    pairsWellWithAr: createPairings([
+      { name: "بلسم اليدين", slug: "/products/hand-balm" },
+      { name: "بلسم الجسم", slug: "/products/body-balm" },
     ]),
     faq: [
       {
@@ -265,12 +549,28 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         answer: "Yes—the formula is balanced for everyday bathing routines.",
       },
     ],
+    faqAr: [
+      {
+        question: "هل العطر قوي؟",
+        answer: "هو همسة زهرية هادئة—مصمم لدعم روتين مريح.",
+      },
+      {
+        question: "هل يجفف البشرة؟",
+        answer: "بروتينات الحرير وزيت نخالة الأرز يحافظان على الترطيب لملمس ناعم.",
+      },
+      {
+        question: "هل هو مناسب للاستخدام اليومي؟",
+        answer: "نعم—التركيبة متوازنة لروتين الاستحمام اليومي.",
+      },
+    ],
   },
   {
     slug: "hand-balm",
     productId: "hand-balm",
     productName: "Hand Balm",
+    productNameAr: "بلسم اليدين",
     shortTagline: "Focused nourishment for palms on the go.",
+    shortTaglineAr: "تغذية مركزة لراحة اليدين أثناء التنقل.",
     priceLabel: "195.99 EGP",
     priceNumber: 195.99,
     heroSummaryBullets: [
@@ -278,9 +578,16 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "Absorbs quickly while still leaving a silky veil.",
       "Tiny tube that travels easily and revives instantly.",
     ],
+    heroSummaryBulletsAr: [
+      "خفيف لكنه مُرمِّم لليدين المجهدتين.",
+      "يمتص بسرعة مع لمسة حريرية خفيفة.",
+      "أنبوب صغير يسافر بسهولة وينعش فوراً.",
+    ],
     heroImage: handBalmImage,
     whatItsMadeFor:
       "Work-worn palms, garden hands, or those who need a quick, restorative finish—this balm brings concentrated ceramides without tackiness.",
+    whatItsMadeForAr:
+      "لليدين المتعبة أو لمن يحتاج لمسة سريعة—هذا البلسم يوفر سيراميدات مركزة دون لزوجة.",
     ritualSteps: [
       { title: "Squeeze", description: "Place a pearl-sized amount onto fingertips." },
       {
@@ -290,6 +597,20 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       {
         title: "Slide",
         description: "Cover palms, cuticles, and fingertips with gentle strokes.",
+      },
+    ],
+    ritualStepsAr: [
+      {
+        title: "اعصري",
+        description: "ضعي مقدار حبة صغيرة على أطراف الأصابع.",
+      },
+      {
+        title: "دفّئي",
+        description: "افركي بين الكفين حتى يلين.",
+      },
+      {
+        title: "مرّري",
+        description: "غطي الكفين والجلد حول الأظافر والأطراف بحركات لطيفة.",
       },
     ],
     ingredients: [
@@ -310,14 +631,41 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         description: "Calms and supports the skin’s natural renewal cycle.",
       },
     ],
+    ingredientsAr: [
+      {
+        name: "السيراميدات",
+        description: "تعيد بناء الحاجز وتحمي من الضغوط اليومية.",
+      },
+      {
+        name: "زيت بذور الميدوفوم",
+        description: "يمنح نعومة مخملية دون ثقل.",
+      },
+      {
+        name: "زيت بذور دوار الشمس",
+        description: "غني بحمض اللينوليك لتهدئة وتغذية البشرة.",
+      },
+      {
+        name: "زيت التامانو",
+        description: "يهدئ ويدعم دورة تجدد البشرة الطبيعية.",
+      },
+    ],
     sensoryExperience: [
       "A delicate balm that dries to an invisible, non-greasy sheen.",
       "Tactile enough to feel like self-care, but quick to absorb.",
       "Fragrance is herbaceous and clean.",
     ],
+    sensoryExperienceAr: [
+      "بلسم لطيف يجف إلى لمعة غير دهنية.",
+      "إحساس عناية ذاتية مع امتصاص سريع.",
+      "العطر عشبي ونظيف.",
+    ],
     pairsWellWith: createPairings([
       { name: "Body Balm", slug: "/products/body-balm" },
       { name: "Calm & Glow Body Soap", slug: "/products/calm-glow-body-soap" },
+    ]),
+    pairsWellWithAr: createPairings([
+      { name: "بلسم الجسم", slug: "/products/body-balm" },
+      { name: "صابون الجسم سكينة وتوهج", slug: "/products/calm-glow-body-soap" },
     ]),
     faq: [
       {
@@ -333,33 +681,59 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         answer: "The ceramides and tamanu give it a restorative boost.",
       },
     ],
+    faqAr: [
+      {
+        question: "هل يمكن استخدامه على الجلد حول الأظافر؟",
+        answer: "نعم، ينعّم الجلد حول الأظافر دون ترك بقايا.",
+      },
+      {
+        question: "هل يؤثر على العمل؟",
+        answer: "يمتص بسرعة، لذا استخدميه قبل الكتابة أو بعد غسل اليدين.",
+      },
+      {
+        question: "هل يفيد للبشرة المتشققة؟",
+        answer: "السيراميدات والتامانو يمنحانه دفعة ترميمية.",
+      },
+    ],
   },
   {
     slug: "hair-growth-oil",
     productId: "hair-growth-oil",
     productName: "Hair Growth Oil",
+    productNameAr: "زيت نمو الشعر",
     shortTagline: "Scalp nourishment for resilient shine.",
+    shortTaglineAr: "تغذية لفروة الرأس ولمعان متين.",
     priceLabel: "229.99 EGP",
     priceNumber: 229.99,
     variants: [
       {
         variantId: "hair-growth-strength",
         label: "Strength Focus",
+        labelAr: "تركيز القوة",
         priceLabel: "229.99 EGP",
         priceNumber: 229.99,
         attributes: {
           focus: "Growth",
           scent: "Rosemary + Cedar",
         },
+        attributesAr: {
+          focus: "النمو",
+          scent: "إكليل الجبل + الأرز",
+        },
       },
       {
         variantId: "hair-growth-glow",
         label: "Glow & Lift",
+        labelAr: "توهج وانتعاش",
         priceLabel: "234.99 EGP",
         priceNumber: 234.99,
         attributes: {
           focus: "Shine",
           scent: "Citrus + Neroli",
+        },
+        attributesAr: {
+          focus: "اللمعان",
+          scent: "حمضيات + نيرولي",
         },
       },
     ],
@@ -369,9 +743,16 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "Lightweight oil that never feels heavy.",
       "Supports length retention and daily shine.",
     ],
+    heroSummaryBulletsAr: [
+      "خلايا جذعية من إكليل الجبل والبيوتين تقوي الجذور.",
+      "زيت خفيف لا يشعر بالثقل.",
+      "يدعم الحفاظ على الطول ولمعاناً يومياً.",
+    ],
     heroImage: hairGrowthImage,
     whatItsMadeFor:
       "For those growing their routine—this elixir nourishes the scalp, encourages resilience, and leaves hair whisper-soft.",
+    whatItsMadeForAr:
+      "لمن يطيلون روتينهم—هذا الإكسير يغذي الفروة ويعزز المتانة ويترك الشعر ناعماً كالهمس.",
     ritualSteps: [
       { title: "Section", description: "Part hair into sections to apply evenly on the scalp." },
       {
@@ -381,6 +762,20 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       {
         title: "Rest",
         description: "Let it sit for 30 minutes or overnight before rinsing lightly.",
+      },
+    ],
+    ritualStepsAr: [
+      {
+        title: "قسّمي",
+        description: "قسّمي الشعر إلى أقسام لتوزيع متساوٍ على الفروة.",
+      },
+      {
+        title: "ضعي",
+        description: "استخدمي القطّارة لوضع بضع قطرات على كل قسم ودلّكي بلطف.",
+      },
+      {
+        title: "اتركي",
+        description: "اتركيه 30 دقيقة أو طوال الليل قبل الشطف الخفيف.",
       },
     ],
     ingredients: [
@@ -401,14 +796,41 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         description: "Soothes sensitivity and nourishes the mane.",
       },
     ],
+    ingredientsAr: [
+      {
+        name: "خلايا جذعية من إكليل الجبل",
+        description: "تعزز بصيلات أقوى وتوازن فروة الرأس.",
+      },
+      {
+        name: "البيوتين",
+        description: "يدعم اللمعان ويساعد الشعر على الإحساس بالكثافة.",
+      },
+      {
+        name: "زيت الأرجان",
+        description: "ترطيب خفيف ينعّم الهيشان.",
+      },
+      {
+        name: "زيت بذور الكاميليا",
+        description: "يهدئ الحساسية ويغذي الشعر.",
+      },
+    ],
     sensoryExperience: [
       "A fine oil that spreads with a silky glide.",
       "Leaves hair soft but never weighed down.",
       "The scent is herbal with a hint of citrus.",
     ],
+    sensoryExperienceAr: [
+      "زيت ناعم ينتشر بانزلاق حريري.",
+      "يترك الشعر ناعماً دون ثقل.",
+      "العطر عشبي مع لمسة حمضية.",
+    ],
     pairsWellWith: createPairings([
       { name: "Hair Shine & Anti-Frizz Oil", slug: "/products/hair-shine-anti-frizz-oil" },
       { name: "Body Balm", slug: "/products/body-balm" },
+    ]),
+    pairsWellWithAr: createPairings([
+      { name: "زيت لمعان الشعر ومضاد للهيشان", slug: "/products/hair-shine-anti-frizz-oil" },
+      { name: "بلسم الجسم", slug: "/products/body-balm" },
     ]),
     faq: [
       {
@@ -424,12 +846,28 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         answer: "Yes—layer under your usual finishers or use solo.",
       },
     ],
+    faqAr: [
+      {
+        question: "كم مرة يجب استخدامه؟",
+        answer: "استخدميه ليلاً أو عدة مرات أسبوعياً للحصول على دفعة مركزة.",
+      },
+      {
+        question: "هل سيكون ثقيلاً على الجذور؟",
+        answer: "التركيبة خفيفة وتمتص سريعاً عند التدليك في الفروة.",
+      },
+      {
+        question: "هل يمكن استخدامه مع زيوت تصفيف أخرى؟",
+        answer: "نعم—استخدميه تحت منتجاتك النهائية المعتادة أو بمفرده.",
+      },
+    ],
   },
   {
     slug: "hair-shine-anti-frizz-oil",
     productId: "hair-shine-anti-frizz-oil",
     productName: "Hair Shine & Anti-Frizz Oil",
+    productNameAr: "زيت لمعان الشعر ومضاد للهيشان",
     shortTagline: "Glass-like shine without weight.",
+    shortTaglineAr: "لمعان زجاجي دون ثقل.",
     priceLabel: "196.99 EGP",
     priceNumber: 196.99,
     heroSummaryBullets: [
@@ -437,9 +875,16 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "Tames frizz while keeping movement natural.",
       "Pairs beautifully with a warm blow-dry or sleek finish.",
     ],
+    heroSummaryBulletsAr: [
+      "لمسة غنية بالسيليكا تنعّم القشرة لتوهج يشبه المرآة.",
+      "يهدئ الهيشان مع الحفاظ على حركة طبيعية.",
+      "يتناغم مع تسريح حراري أو لمسة ناعمة.",
+    ],
     heroImage: hairShineImage,
     whatItsMadeFor:
       "Designed for the finish line—seal in moisture, smooth stray hairs, and add a luminous halo without heaviness.",
+    whatItsMadeForAr:
+      "مصمم لخطوة النهاية—اختمي الترطيب، نعّمي الشعيرات المتطايرة، وأضيفي هالة مضيئة دون ثقل.",
     ritualSteps: [
       {
         title: "Dispense",
@@ -452,6 +897,20 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       {
         title: "Blend",
         description: "Blend lightly with fingers for a seamless finish.",
+      },
+    ],
+    ritualStepsAr: [
+      {
+        title: "اسكبي",
+        description: "دفّئي بضع قطرات بين الكفين.",
+      },
+      {
+        title: "مرّري",
+        description: "طبقي على منتصف الشعر والأطراف مع التركيز على مناطق الهيشان.",
+      },
+      {
+        title: "ادمجي",
+        description: "ادمجي بخفة بالأصابع لنتيجة ناعمة.",
       },
     ],
     ingredients: [
@@ -472,14 +931,41 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
         description: "Balances shine and mimics the scalp’s natural oils.",
       },
     ],
+    ingredientsAr: [
+      {
+        name: "السيليكا",
+        description: "تنعّم القشرة لتعكس الضوء.",
+      },
+      {
+        name: "زيت البوريتي",
+        description: "غني بالبيتا كاروتين لتعزيز اللمعان.",
+      },
+      {
+        name: "زيت زهرة الربيع المسائية",
+        description: "يهدئ الشعيرات المتطايرة دون تيبّس.",
+      },
+      {
+        name: "زيت الجوجوبا",
+        description: "يوازن اللمعان ويحاكي زيوت الفروة الطبيعية.",
+      },
+    ],
     sensoryExperience: [
       "Spreads like silk and leaves no residue.",
       "Reflective shine feels luminous but natural.",
       "Fragrance is warm amber with herbal clarity.",
     ],
+    sensoryExperienceAr: [
+      "ينتشر كأنه حرير ولا يترك بقايا.",
+      "لمعان انعكاسي يبدو طبيعياً.",
+      "العطر عنبر دافئ مع وضوح عشبي.",
+    ],
     pairsWellWith: createPairings([
       { name: "Hair Growth Oil", slug: "/products/hair-growth-oil" },
       { name: "Hand Balm", slug: "/products/hand-balm" },
+    ]),
+    pairsWellWithAr: createPairings([
+      { name: "زيت نمو الشعر", slug: "/products/hair-growth-oil" },
+      { name: "بلسم اليدين", slug: "/products/hand-balm" },
     ]),
     faq: [
       {
@@ -493,6 +979,20 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       {
         question: "Is it safe for color-treated hair?",
         answer: "It protects strands and adds softness without stripping color.",
+      },
+    ],
+    faqAr: [
+      {
+        question: "هل يمكن استخدامه على شعر رطب؟",
+        answer: "نعم—طبقيه قبل التصفيف للحماية من الرطوبة.",
+      },
+      {
+        question: "هل يثقل الشعر الناعم؟",
+        answer: "ابدئي بكمية صغيرة؛ يمكن تطبيقه بطبقات دون تسطيح.",
+      },
+      {
+        question: "هل هو آمن للشعر المصبوغ؟",
+        answer: "يحمي الخصلات ويمنح نعومة دون سحب اللون.",
       },
     ],
   },

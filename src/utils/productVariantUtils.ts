@@ -13,7 +13,11 @@ export interface ProductCartData {
 }
 
 export function resolveProductVariant(detail: ProductDetailContent, variantId?: string) {
-  return variantId ? getVariantById(detail.productId, variantId) : getDefaultVariant(detail.productId);
+  if (variantId) {
+    const fromDetail = detail.variants?.find((variant) => variant.variantId === variantId);
+    return fromDetail ?? getVariantById(detail.productId, variantId);
+  }
+  return detail.variants?.[0] ?? getDefaultVariant(detail.productId);
 }
 
 export function buildProductCartPayload(detail: ProductDetailContent, variantId?: string): ProductCartData {

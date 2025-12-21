@@ -5,7 +5,8 @@ import { ProductDetailLayout } from "@/components/product/ProductDetailLayout";
 import {
   PRODUCT_DETAIL_MAP,
   getDefaultVariant,
-  getProductVariants,
+  getLocalizedProductVariants,
+  localizeProductDetail,
 } from "@/content/productDetails";
 import { recordView } from "@/hooks/useRecentlyViewed";
 import { BundleCard } from "@/components/bundles/BundleCard";
@@ -30,14 +31,15 @@ export interface ProductDetailPageProps {
 
 export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   usePageAnalytics("product");
-  const detail = PRODUCT_DETAIL_MAP[slug];
+  const rawDetail = PRODUCT_DETAIL_MAP[slug];
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const { announce } = useLiveAnnouncer();
   const [selectedVariantId, setSelectedVariantId] = useState<string | undefined>(undefined);
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const detail = rawDetail ? localizeProductDetail(rawDetail, locale) : undefined;
 
-  const productId = detail?.productId ?? "";
+  const productId = rawDetail?.productId ?? "";
   const { reviews, averageRating, reviewsCount, isVerifiedAvailable, addReview } = useReviews(
     productId,
     "product"
@@ -46,11 +48,14 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
   const priceNumber = detail?.priceNumber ?? 0;
 
   useEffect(() => {
-    if (!detail) return;
-    recordView(detail.productId, "product");
-  }, [detail]);
+    if (!rawDetail) return;
+    recordView(rawDetail.productId, "product");
+  }, [rawDetail]);
 
-  const variantPool = useMemo(() => getProductVariants(productId), [productId]);
+  const variantPool = useMemo(
+    () => getLocalizedProductVariants(productId, locale),
+    [productId, locale]
+  );
   const defaultVariantId = useMemo(() => getDefaultVariant(productId)?.variantId, [productId]);
 
   useEffect(() => {
@@ -214,7 +219,7 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
         onVariantChange={setSelectedVariantId}
         heroActions={
           <Button variant="secondary" size="md" onClick={goToCollection}>
-            Back to collection
+            {t("productDetail.backToCollection")}
           </Button>
         }
         onAddToBag={addToBag}
@@ -242,8 +247,8 @@ export default function ProductDetailPage({ slug }: ProductDetailPageProps) {
       {relatedBundles.length > 0 && (
         <section className="product-detail-bundles ng-mobile-shell" data-animate="fade-up">
         <SectionTitle
-          title="Complete your routine"
-          subtitle="These curated bundles pair naturally with this beauty."
+          title={t("productDetail.related.title")}
+          subtitle={t("productDetail.related.subtitle")}
           align="left"
         />
             <div className="bundle-grid ng-grid-mobile-2">

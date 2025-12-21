@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type React from "react";
 import type { CSSProperties } from "react";
 import { PRODUCTS } from "../data/products";
-import type { Product } from "../types/product";
+import type { CatalogProduct } from "@/data/products";
 import { Button, Card } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
 import {
@@ -12,9 +12,10 @@ import {
 import { CompareToggle } from "@/components/CompareToggle";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { trackEvent } from "@/analytics/events";
+import { useTranslation } from "@/localization/locale";
 
 interface CardGridProps {
-  onAddToCart?: (product: Product) => void;
+  onAddToCart?: (product: CatalogProduct) => void;
 }
 
 function Heart({ filled }: { filled: boolean }) {
@@ -34,6 +35,7 @@ function Heart({ filled }: { filled: boolean }) {
 export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
   const initial = PRODUCTS;
   const { addItem } = useCart();
+  const { t, locale } = useTranslation();
 
   const recommendationMap: Record<number, number> = {
     2: 3,
@@ -45,8 +47,8 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
   const [favs, setFavs] = useState<Set<number>>(() => new Set());
   const [toast, setToast] = useState<{
     visible: boolean;
-    item: Product;
-    recommendation?: Product;
+    item: CatalogProduct;
+    recommendation?: CatalogProduct;
   } | null>(null);
   const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -73,13 +75,14 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
     }, 2800);
   };
 
-  const handleAdd = (item: Product) => {
+  const handleAdd = (item: CatalogProduct) => {
     const priceValue = Number(
       String(item.price).replace(/[^\d.]/g, "") || "0"
     );
+    const displayName = locale === "ar" ? item.titleAr ?? item.title : item.title;
     addItem({
       id: String(item.id ?? item._id ?? item.title),
-      name: item.title ?? item.name ?? "Product",
+      name: displayName ?? t("cardGrid.toast.itemFallback"),
       price: Number.isFinite(priceValue) ? priceValue : 0,
       imageUrl: item.image ?? undefined,
     });
@@ -94,7 +97,7 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
     onAddToCart(item);
     const recommendationId = recommendationMap[item.id];
     const recommendation = recommendationId
-      ? initial.find((entry: Product) => entry.id === recommendationId)
+      ? initial.find((entry: CatalogProduct) => entry.id === recommendationId)
       : undefined;
     setToast({ visible: true, item, recommendation });
     scheduleToastHide();
@@ -136,22 +139,34 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
             </svg>
           </span>
           <div className="toast-body">
-            <p className="toast-title">Added to your cart</p>
+            <p className="toast-title">{t("cardGrid.toast.title")}</p>
             <p className="toast-copy">
-              {toast.item?.title ?? "New item"} is now in your bag. Review your cart anytime.
+              {t("cardGrid.toast.messagePrefix")}
+              {(locale === "ar" ? toast.item?.titleAr : toast.item?.title) ??
+                t("cardGrid.toast.itemFallback")}
+              {t("cardGrid.toast.messageSuffix")}
             </p>
       <div className="toast-actions">
               {toast.recommendation && (
                 <>
                   <p className="toast-suggestion">
-                    Pair it with <strong>{toast.recommendation.title}</strong> for a complete ritual.
+                    {t("cardGrid.toast.pairPrefix")}{" "}
+                    <strong>
+                      {locale === "ar"
+                        ? toast.recommendation.titleAr ?? toast.recommendation.title
+                        : toast.recommendation.title}
+                    </strong>{" "}
+                    {t("cardGrid.toast.pairSuffix")}
                   </p>
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => handleAdd(toast.recommendation as Product)}
+                onClick={() => handleAdd(toast.recommendation as CatalogProduct)}
               >
-                Add {toast.recommendation.title}
+                {t("cardGrid.toast.addActionPrefix")}{" "}
+                {locale === "ar"
+                  ? toast.recommendation.titleAr ?? toast.recommendation.title
+                  : toast.recommendation.title}
               </Button>
                 </>
               )}
@@ -160,14 +175,14 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                 size="sm"
                 onClick={() => { window.location.href = `${import.meta.env.BASE_URL ?? "/"}?view=cart`; }}
               >
-                View bag
+                {t("cta.viewBag")}
               </Button>
             </div>
           </div>
           <button
             type="button"
             className="toast-close"
-            aria-label="Dismiss notification"
+            aria-label={t("cardGrid.toast.dismiss")}
             onClick={dismissToast}
           >
             ×
@@ -175,12 +190,14 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
         </div>
       )}
       <section id="grid" className="card-grid">
-        {initial.map((c: Product, index: number) => {
+        {initial.map((c: CatalogProduct, index: number) => {
           const isFav = favs.has(c.id);
           const delayStyle = { "--motion-delay": `${index * 80}ms` } as CSSProperties;
           const detailSlug = PRODUCT_DETAIL_SLUGS_BY_TITLE[c.title];
           const detail = detailSlug ? PRODUCT_DETAIL_MAP[detailSlug] : undefined;
           const compareId = detail?.productId ?? detailSlug ?? String(c.id);
+          const displayTitle = locale === "ar" ? c.titleAr ?? c.title : c.title;
+          const displayDesc = locale === "ar" ? c.descAr ?? c.desc : c.desc;
           return (
               <Card
                 key={c.id}
@@ -193,36 +210,38 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                   id={compareId}
                   type="product"
                   className="compare-toggle compare-toggle--grid"
-                  itemLabel={c.title}
+                  itemLabel={displayTitle}
                 />
                 <FavoriteToggle
                   id={String(c.id)}
                   type="product"
                   className="favorite-toggle favorite-toggle--grid"
-                  itemLabel={c.title}
+                  itemLabel={displayTitle}
                 />
                 {c.image && (
                 <img
                   src={c.image}
-                  alt={c.title}
+                  alt={displayTitle}
                   className="card-img"
                   loading="lazy"
                   decoding="async"
                 />
               )}
               <header className="card-head">
-                <h3>{c.title}</h3>
+                <h3>{displayTitle}</h3>
                 <button
                   className="icon-btn"
                   aria-pressed={isFav}
-                  aria-label={isFav ? "Unfavorite" : "Favorite"}
+                  aria-label={
+                    isFav ? t("cardGrid.actions.unfavorite") : t("cardGrid.actions.favorite")
+                  }
                   onClick={() => toggleFav(c.id)}
                   onKeyDown={(e) => handleFavKey(e, c.id)}
                 >
                   <Heart filled={isFav} />
                 </button>
               </header>
-              <p className="card-desc">{c.desc}</p>
+              <p className="card-desc">{displayDesc}</p>
               <p className="card-price">{c.price}</p>
               <div className="card-actions">
                 <Button
@@ -231,7 +250,7 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                   type="button"
                   onClick={() => handleAdd(c)}
                 >
-                  Add to cart
+                  {t("cta.addToBag")}
                 </Button>
                 {detailSlug && (
                   <button
@@ -239,7 +258,7 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                     className="card-detail-link"
                     onClick={() => navigateToProduct(detailSlug)}
                   >
-                    Learn more
+                    {t("cta.viewDetails")}
                   </button>
                 )}
               </div>

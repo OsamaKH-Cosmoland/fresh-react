@@ -4,6 +4,7 @@ import { apiGet, apiPost } from "../lib/api";
 import type { Review } from "../types/review";
 import { Button, Card, SectionTitle, InputField, TextareaField } from "./ui";
 import { getLogger } from "@/logging/globalLogger";
+import { useTranslation } from "@/localization/locale";
 
 const buildStars = (count: number) => {
   const full = Math.min(5, Math.max(0, Math.round(count)));
@@ -13,6 +14,7 @@ const buildStars = (count: number) => {
 const RATING_OPTIONS = [5, 4, 3, 2, 1];
 
 export default function ReviewsSection() {
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,7 @@ export default function ReviewsSection() {
         if (mounted) setReviews(Array.isArray(data) ? data : []);
       } catch (err) {
         getLogger().error("Failed to fetch reviews", { error: err });
-        if (mounted) setError((err as Error)?.message ?? "Unable to load reviews.");
+        if (mounted) setError((err as Error)?.message ?? t("reviews.errors.load"));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -66,7 +68,7 @@ export default function ReviewsSection() {
     e.preventDefault();
     setStatus(null);
     if (!form.message.trim()) {
-      setStatus({ type: "error", message: "Please share a few words about your experience." });
+      setStatus({ type: "error", message: t("reviews.form.errors.body") });
       return;
     }
     setSubmitting(true);
@@ -79,15 +81,15 @@ export default function ReviewsSection() {
       const response = await apiPost("/reviews", payload);
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
-        throw new Error(body?.error ?? "Unable to submit review.");
+        throw new Error(body?.error ?? t("reviews.errors.submit"));
       }
       const saved = await response.json();
       setReviews((prev) => [saved, ...prev]);
       setForm({ name: "", rating: 5, message: "" });
-      setStatus({ type: "success", message: "Thank you for sharing your routine!" });
+      setStatus({ type: "success", message: t("reviews.form.thankYou") });
     } catch (err) {
       getLogger().error("Failed to submit review", { error: err });
-      const message = (err as Error)?.message ?? "Unable to submit review.";
+      const message = (err as Error)?.message ?? t("reviews.errors.submit");
       setStatus({ type: "error", message });
     } finally {
       setSubmitting(false);
@@ -99,10 +101,10 @@ export default function ReviewsSection() {
       <div className="reviews-header">
         <Card className="reviews-summary-card hover-lift" data-animate="fade-up">
           <div>
-            <p className="reviews-eyebrow">Our community&apos;s experiences</p>
+            <p className="reviews-eyebrow">{t("reviews.eyebrow")}</p>
             <SectionTitle
-              title="Customer Reviews"
-              subtitle="Discover how NaturaGloss routines have elevated everyday moments."
+              title={t("reviews.sectionTitle")}
+              subtitle={t("reviews.sectionSubtitle")}
             />
             <p className="reviews-average">
               <span className="reviews-stars" aria-hidden="true">
@@ -110,7 +112,9 @@ export default function ReviewsSection() {
               </span>
               <span className="reviews-average-score">
                 {averageRating ? averageRating.toFixed(1) : "0.0"} / 5.0 · {reviews.length}{" "}
-                {reviews.length === 1 ? "review" : "reviews"}
+                {reviews.length === 1
+                  ? t("reviews.summary.reviewLabelSingular")
+                  : t("reviews.summary.reviewLabel")}
               </span>
             </p>
           </div>
@@ -135,31 +139,31 @@ export default function ReviewsSection() {
 
         <form className="reviews-form" onSubmit={handleSubmit}>
           <Card className="reviews-form-card">
-            <SectionTitle title="Share your routine" subtitle="Tell us about your NaturaGloss moment." />
+            <SectionTitle title={t("reviews.form.heading")} subtitle={t("reviews.form.subtitle")} />
             <div className="reviews-form__grid">
               <InputField
-                label="Your name"
+                label={t("reviews.form.labels.reviewerName")}
                 name="name"
-                placeholder="Anonymous"
+                placeholder={t("reviews.list.anonymous")}
                 value={form.name}
                 onChange={handleChange}
                 maxLength={80}
                 containerClassName="reviews-form__field"
               />
               <div className="reviews-form__field">
-                <span>Rating</span>
+                <span>{t("reviews.form.labels.rating")}</span>
                 <select name="rating" value={form.rating} onChange={handleChange}>
                   {RATING_OPTIONS.map((rating) => (
                     <option key={rating} value={rating}>
-                      {rating} {rating === 1 ? "Star" : "Stars"}
+                      {rating} {rating === 1 ? t("reviews.form.labels.star") : t("reviews.form.labels.stars")}
                     </option>
                   ))}
                 </select>
               </div>
               <TextareaField
-                label="Your experience"
+                label={t("reviews.form.labels.body")}
                 name="message"
-                placeholder="Tell us about your routine..."
+                placeholder={t("reviews.form.placeholders.body")}
                 rows={4}
                 value={form.message}
                 onChange={handleChange}
@@ -169,7 +173,7 @@ export default function ReviewsSection() {
               />
             </div>
             <Button type="submit" variant="primary" disabled={submitting} className="reviews-submit">
-              {submitting ? "Sending..." : "Share review"}
+              {submitting ? t("reviews.form.submitting") : t("reviews.form.submit")}
             </Button>
             {status && (
               <p
@@ -186,11 +190,11 @@ export default function ReviewsSection() {
 
       <div className="reviews-list">
         {loading ? (
-          <p>Loading reviews…</p>
+          <p>{t("reviews.loading")}</p>
         ) : error ? (
           <p className="reviews-status reviews-status--error">{error}</p>
         ) : reviews.length === 0 ? (
-          <p className="reviews-empty">No stories yet — be the first to share your routine.</p>
+          <p className="reviews-empty">{t("reviews.list.empty")}</p>
         ) : (
           reviews.map((review, index) => (
             <Card
@@ -204,7 +208,7 @@ export default function ReviewsSection() {
                   <p className="review-card__stars" aria-hidden="true">
                     {buildStars(review.rating)}
                   </p>
-                  <h3>{review.name || "Anonymous"}</h3>
+                  <h3>{review.name || t("reviews.list.anonymous")}</h3>
                 </div>
                 <time dateTime={review.createdAt}>{new Date(review.createdAt).toLocaleDateString()}</time>
               </header>

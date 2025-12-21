@@ -378,7 +378,7 @@ export default function Navbar({
     <header
       className={`navbar rise-once ${sticky ? "sticky" : ""} ${elevated ? "elevated" : ""} ${
         isScrolled ? "navbar-scrolled" : ""
-      }`}
+      } ${menuOpen ? "is-menu-open" : ""}`}
     >
       <div className="nav-inner">
         <FadeIn>

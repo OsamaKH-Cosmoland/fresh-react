@@ -2,8 +2,10 @@ import { ritualStories } from "../content/stories";
 import { buildAppUrl } from "@/utils/navigation";
 import type { CSSProperties } from "react";
 import { Button, Card, SectionTitle } from "@/components/ui";
+import { useTranslation } from "@/localization/locale";
 
 export default function RitualStoriesListPage() {
+  const { t } = useTranslation();
   return (
     <main id="main-content" tabIndex={-1} className="ritual-stories-page stories-page">
       <div className="stories-page__title-bar">
@@ -11,15 +13,14 @@ export default function RitualStoriesListPage() {
           <span className="stories-page__brand-text">NATURAGLOSS</span>
         </a>
         <SectionTitle
-          title="Our Journal"
-          subtitle="Slow, sensory routines to weave NaturaGloss into your daily life."
+          title={t("stories.title")}
+          subtitle={t("stories.subtitle")}
           align="center"
           className="stories-page__title"
         />
       </div>
       <p className="stories-page__intro" data-animate="fade-up">
-        Each routine is captured in a story field filled with warmth, scent, and steady breath so you
-        can step into your care practice with intention.
+        {t("stories.intro")}
       </p>
       <div className="stories-grid">
         {ritualStories.map((story, index) => (
@@ -34,21 +35,21 @@ export default function RitualStoriesListPage() {
             </div>
             <div className="story-card__content">
               <div className="story-card__field-row">
-                <span className="story-card__field-label">Date</span>
+                <span className="story-card__field-label">{t("stories.labels.date")}</span>
                 <span className="story-card__field-value">
                   {new Date(story.date).toLocaleDateString()}
                 </span>
               </div>
               <div className="story-card__field-row">
-                <span className="story-card__field-label">Read time</span>
+                <span className="story-card__field-label">{t("stories.labels.readTime")}</span>
                 <span className="story-card__field-value">
-                  {story.readTimeMinutes ?? 3} min
+                  {story.readTimeMinutes ?? 3} {t("stories.labels.minutes")}
                 </span>
               </div>
               <h3 className="story-card__title">{story.title}</h3>
               <p className="story-card__summary">{story.summary}</p>
               {story.tags?.length ? (
-                <div className="story-card__tags" aria-label="Story tags">
+                <div className="story-card__tags" aria-label={t("stories.labels.tags")}>
                   {story.tags.map((tag) => (
                     <span key={`${story.slug}-${tag}`} className="story-card__tag">
                       #{tag}
@@ -64,7 +65,7 @@ export default function RitualStoriesListPage() {
                     window.location.href = `/stories/${story.slug}`;
                   }}
                 >
-                  Read story
+                  {t("stories.actions.readStory")}
                 </Button>
               </div>
             </div>

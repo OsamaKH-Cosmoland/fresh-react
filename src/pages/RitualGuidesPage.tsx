@@ -7,6 +7,7 @@ import { shopFocusLookup } from "@/content/shopCatalog";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
+import { useTranslation } from "@/localization/locale";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -19,6 +20,7 @@ const navigateTo = (path: string) => {
 export default function RitualGuidesPage() {
   usePageAnalytics("guides");
   useSeo({ route: "guides" });
+  const { t } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const guides = useMemo(() => ritualGuides, []);
 
@@ -34,8 +36,8 @@ export default function RitualGuidesPage() {
 
       <main id="main-content" tabIndex={-1} className="ritual-guides-page__content ng-mobile-shell">
         <SectionTitle
-          title="Routine Guides"
-          subtitle="Calm essays, routines, and gentle know-how to guide every layer."
+          title={t("guides.title")}
+          subtitle={t("guides.subtitle")}
           align="center"
           as="h1"
         />
@@ -74,7 +76,7 @@ export default function RitualGuidesPage() {
                     navigateTo(`/ritual-guides/${guide.slug}`);
                   }}
                 >
-                  Read the guide
+                  {t("cta.readGuide")}
                 </Button>
               </div>
             </Card>

@@ -18,6 +18,7 @@ import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useSeo } from "@/seo/useSeo";
 import { useTranslation } from "@/localization/locale";
+import { localizeProductDetail } from "@/content/productDetails";
 import { useCurrency } from "@/currency/CurrencyProvider";
 
 const navigateTo = (path: string) => {
@@ -32,7 +33,7 @@ export default function FavoritesPage() {
   const { favorites } = useFavorites();
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { currency } = useCurrency();
 
   const focusMap = useMemo(() => {
@@ -95,8 +96,8 @@ export default function FavoritesPage() {
 
       <main id="main-content" tabIndex={-1} className="shop-page__content ng-mobile-shell">
         <SectionTitle
-          title="Saved favourites"
-        subtitle="Bookmark routines and products that feel right now."
+          title={t("favorites.title")}
+        subtitle={t("favorites.subtitle")}
           align="center"
         />
 
@@ -104,67 +105,70 @@ export default function FavoritesPage() {
           {favoriteProducts.length > 0 && (
             <div className="shop-results__group" data-animate="fade-up">
               <div className="shop-results__header">
-                <h3>Products</h3>
-                <p>Individual essentials you saved for the next routine.</p>
+                <h3>{t("sections.products")}</h3>
+                <p>{t("favorites.sections.products.subtitle")}</p>
               </div>
               <div className="shop-product-grid ng-grid-mobile-2">
-                {favoriteProducts.map((detail) => (
-                  <Card
-                    key={detail.productId}
-                    className="shop-product-card hover-lift"
-                    data-animate="fade-up"
-                  >
-                    <CompareToggle
-                      id={detail.productId}
-                      type="product"
-                      itemLabel={detail.productName}
-                    />
-                    <FavoriteToggle
-                      id={detail.productId}
-                      type="product"
-                      itemLabel={detail.productName}
-                    />
-                    {detail.heroImage && (
-                      <div className="shop-product-card__media">
-                        <img src={detail.heroImage} alt={detail.productName} />
-                      </div>
-                    )}
-                    <div className="shop-product-card__body">
-                      <div className="shop-product-card__heading">
-                        <h3>{detail.productName}</h3>
-                        <p className="shop-product-card__price">
-                          {formatCurrency(detail.priceNumber, currency)}
-                        </p>
-                      </div>
-                      <p className="shop-product-card__tagline">{detail.shortTagline}</p>
-                      <div className="shop-product-card__chips">
-                        {focusLabels(focusMap[detail.productId] ?? []).map((label) => (
-                          <span
-                            key={`focus-${detail.productId}-${label}`}
-                            className="shop-product-card__chip shop-product-card__chip--focus"
+                {favoriteProducts.map((detail) => {
+                  const localizedDetail = localizeProductDetail(detail, locale);
+                  return (
+                    <Card
+                      key={detail.productId}
+                      className="shop-product-card hover-lift"
+                      data-animate="fade-up"
+                    >
+                      <CompareToggle
+                        id={detail.productId}
+                        type="product"
+                        itemLabel={localizedDetail.productName}
+                      />
+                      <FavoriteToggle
+                        id={detail.productId}
+                        type="product"
+                        itemLabel={localizedDetail.productName}
+                      />
+                      {detail.heroImage && (
+                        <div className="shop-product-card__media">
+                          <img src={detail.heroImage} alt={localizedDetail.productName} />
+                        </div>
+                      )}
+                      <div className="shop-product-card__body">
+                        <div className="shop-product-card__heading">
+                          <h3>{localizedDetail.productName}</h3>
+                          <p className="shop-product-card__price">
+                            {formatCurrency(detail.priceNumber, currency)}
+                          </p>
+                        </div>
+                        <p className="shop-product-card__tagline">{localizedDetail.shortTagline}</p>
+                        <div className="shop-product-card__chips">
+                          {focusLabels(focusMap[detail.productId] ?? []).map((label) => (
+                            <span
+                              key={`focus-${detail.productId}-${label}`}
+                              className="shop-product-card__chip shop-product-card__chip--focus"
+                            >
+                              {label}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="shop-product-card__actions">
+                          <Button
+                            variant="primary"
+                            size="md"
+                            onClick={() => handleAddProduct(detail)}
                           >
-                            {label}
-                          </span>
-                        ))}
+                            {t("cta.addToBag")}
+                          </Button>
+                          <a
+                            href={`/products/${detail.slug}`}
+                            className="shop-product-card__link"
+                          >
+                            {t("cta.viewRitual")}
+                          </a>
+                        </div>
                       </div>
-                      <div className="shop-product-card__actions">
-                      <Button
-                        variant="primary"
-                        size="md"
-                        onClick={() => handleAddProduct(detail)}
-                      >
-                        {t("cta.addToBag")}
-                      </Button>
-                      <a
-                        href={`/products/${detail.slug}`}
-                        className="shop-product-card__link"
-                      >
-                        {t("cta.viewRitual")}
-                      </a>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -172,8 +176,8 @@ export default function FavoritesPage() {
           {favoriteBundles.length > 0 && (
             <div className="shop-results__group" data-animate="fade-up">
               <div className="shop-results__header">
-                <h3>Bundles</h3>
-                <p>Saved routines ready to be layered.</p>
+                <h3>{t("favorites.sections.bundles.title")}</h3>
+                <p>{t("favorites.sections.bundles.subtitle")}</p>
               </div>
               <div className="shop-bundle-grid ng-grid-mobile-2">
                 {favoriteBundles.map((bundle) => (
@@ -208,8 +212,8 @@ export default function FavoritesPage() {
 
           {!hasFavorites && (
             <div className="shop-empty-state">
-              <h3>No favourites yet</h3>
-              <p>Tap the heart on any product or routine to save it here for later.</p>
+              <h3>{t("favorites.empty.title")}</h3>
+              <p>{t("favorites.empty.body")}</p>
               <div className="shop-product-card__actions">
                 <Button variant="secondary" size="md" onClick={() => navigateTo("/shop")}>
                   {t("cta.browseShop")}

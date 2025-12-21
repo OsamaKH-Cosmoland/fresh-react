@@ -124,8 +124,8 @@ export default function ComparePage() {
 
       <main id="main-content" tabIndex={-1} className="shop-page__content ng-mobile-shell">
         <SectionTitle
-          title="Compare routines & products"
-          subtitle="Line up focus, textures, and prices to decide the perfect routine."
+          title={t("compare.title")}
+          subtitle={t("compare.subtitle")}
           align="center"
         />
 
@@ -158,12 +158,12 @@ export default function ComparePage() {
                     className="compare-column__remove"
                     onClick={() => toggleCompare({ id: column.id, type: column.type })}
                   >
-                    Remove
+                    {t("compare.actions.remove")}
                   </button>
                 </div>
                 <div className="compare-column__body">
                   <div className="compare-column__row">
-                    <p className="compare-column__row-label">Focus</p>
+                    <p className="compare-column__row-label">{t("compare.labels.focus")}</p>
                     <div className="compare-column__chips">
                       {column.focus.map((value) => (
                         <span key={`${column.id}-focus-${value}`}>{value}</span>
@@ -171,27 +171,27 @@ export default function ComparePage() {
                     </div>
                   </div>
                   <div className="compare-column__row">
-                    <p className="compare-column__row-label">Key benefits</p>
+                    <p className="compare-column__row-label">{t("compare.labels.benefits")}</p>
                     <p className="compare-column__row-value">
                       {Array.isArray(column.benefits) ? column.benefits.join(" • ") : column.benefits}
                     </p>
                   </div>
                   <div className="compare-column__row">
-                    <p className="compare-column__row-label">Texture & scent</p>
+                    <p className="compare-column__row-label">{t("compare.labels.texture")}</p>
                     <p className="compare-column__row-value">{column.texture.join(" • ")}</p>
                   </div>
                   <div className="compare-column__row">
-                    <p className="compare-column__row-label">Usage</p>
+                    <p className="compare-column__row-label">{t("compare.labels.usage")}</p>
                     <p className="compare-column__row-value">
-                      {column.usage.length > 0 ? column.usage.join(" • ") : "Any routine"}
+                      {column.usage.length > 0 ? column.usage.join(" • ") : t("compare.labels.anyRoutine")}
                     </p>
                   </div>
                   <div className="compare-column__row">
-                    <p className="compare-column__row-label">Included</p>
+                    <p className="compare-column__row-label">{t("compare.labels.included")}</p>
                     <p className="compare-column__row-value">{column.included.join(", ")}</p>
                   </div>
                   <div className="compare-column__row">
-                    <p className="compare-column__row-label">Price</p>
+                    <p className="compare-column__row-label">{t("compare.labels.price")}</p>
                     <p className="compare-column__row-value">
                       {formatCurrency(column.priceNumber ?? 0, currency)}
                     </p>
@@ -252,11 +252,11 @@ export default function ComparePage() {
           </section>
         ) : (
           <div className="shop-empty-state">
-            <h3>No items selected</h3>
-            <p>Add products or rituals to compare by tapping the compare toggle.</p>
+            <h3>{t("compare.empty.title")}</h3>
+            <p>{t("compare.empty.body")}</p>
             <div className="shop-product-card__actions">
               <Button variant="secondary" size="md" onClick={() => navigateTo("/shop")}>
-                Browse shop
+                {t("cta.browseShop")}
               </Button>
             </div>
           </div>

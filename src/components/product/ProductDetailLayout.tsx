@@ -158,12 +158,16 @@ export function ProductDetailLayout({
         <section className="product-detail-grid">
           <div className="product-detail-main">
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="What it’s made for" as="h2" />
+            <SectionTitle title={t("productDetail.sections.madeFor.title")} as="h2" />
             <p className="product-detail-section__copy">{whatItsMadeFor}</p>
           </article>
 
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="Routine" subtitle="A slow, sensory sequence" as="h2" />
+            <SectionTitle
+              title={t("productDetail.sections.routine.title")}
+              subtitle={t("productDetail.sections.routine.subtitle")}
+              as="h2"
+            />
             <ol className="product-detail-steps">
               {ritualSteps.map((step) => (
                 <li key={step.title}>
@@ -175,7 +179,7 @@ export function ProductDetailLayout({
           </article>
 
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="Ingredients spotlight" as="h2" />
+            <SectionTitle title={t("productDetail.sections.ingredients.title")} as="h2" />
             <div className="product-detail-ingredients">
               {ingredients.map((ingredient) => (
                 <Card className="product-detail-ingredient" key={ingredient.name}>
@@ -187,7 +191,7 @@ export function ProductDetailLayout({
           </article>
 
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="Sensory experience" as="h2" />
+            <SectionTitle title={t("productDetail.sections.sensory.title")} as="h2" />
             <ul className="product-detail-sensory">
               {sensoryExperience.map((note) => (
                 <li key={note}>{note}</li>
@@ -196,7 +200,11 @@ export function ProductDetailLayout({
           </article>
 
           <article className="product-detail-section" data-animate="fade-up">
-            <SectionTitle title="Pairs well with" subtitle="Complete the routine" as="h2" />
+            <SectionTitle
+              title={t("productDetail.sections.pairs.title")}
+              subtitle={t("productDetail.sections.pairs.subtitle")}
+              as="h2"
+            />
             <div className="product-detail-pairings">
               {pairsWellWith.map((item) => (
                 <a key={item.name} href={item.slug} className="product-detail-pairing">
@@ -209,8 +217,8 @@ export function ProductDetailLayout({
           {faq && faq.length > 0 && (
             <article className="product-detail-section" data-animate="fade-up">
               <SectionTitle
-                title="FAQ"
-                subtitle="Your questions answered"
+                title={t("productDetail.sections.faq.title")}
+                subtitle={t("productDetail.sections.faq.subtitle")}
                 as="h2"
               />
               <div className="product-detail-faq">
@@ -227,13 +235,13 @@ export function ProductDetailLayout({
 
         <aside className="product-detail-aside" data-animate="fade-up">
           <Card className="product-detail-aside__card">
-            <p className="product-detail-aside__label">Order this routine</p>
+            <p className="product-detail-aside__label">{t("productDetail.aside.label")}</p>
             <h3>{productName}</h3>
             {displayPriceLabel && (
               <p className="product-detail-aside__price">{displayPriceLabel}</p>
             )}
             <p className="product-detail-aside__hint">
-              Crafted for nightly calm and a luminous morning finish.
+              {t("productDetail.aside.hint")}
             </p>
             <Button variant="secondary" size="lg" onClick={onAddToBag}>
               {t("cta.addToBag")}

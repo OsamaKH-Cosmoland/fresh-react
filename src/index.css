@@ -2268,6 +2268,11 @@ button:hover {
 .navbar.elevated {
   box-shadow: 0 18px 40px rgba(5, 33, 22, 0.6);
 }
+.navbar.is-menu-open {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
 .nav-inner {
   display: flex;
   justify-content: center;
@@ -2358,6 +2363,9 @@ button:hover {
   flex-direction: column;
   gap: 0.4rem;
   z-index: 200;
+}
+.nav-search--inline input::placeholder {
+  text-align: inherit;
 }
 .nav-explore__link {
   color: #fbe7ad;
@@ -2638,6 +2646,89 @@ button:hover {
   .nav-bar {
     justify-content: space-between;
   }
+}
+
+:root[dir="rtl"] .nav-bar__actions {
+  justify-content: flex-start;
+}
+:root[dir="rtl"] .nav-utility-links {
+  flex-direction: row-reverse;
+}
+:root[dir="rtl"] .nav-search--inline {
+  flex-direction: row-reverse;
+}
+:root[dir="rtl"] .nav-search--inline input {
+  direction: rtl;
+  text-align: right;
+}
+:root[dir="rtl"] .nav-search__dropdown {
+  right: auto;
+  left: 0;
+  text-align: right;
+}
+:root[dir="rtl"] .nav-search__result,
+:root[dir="rtl"] .nav-search__view-all {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+:root[dir="rtl"] .nav-search__result-type {
+  text-align: left;
+}
+:root[dir="rtl"] .nav-explore__menu {
+  right: auto;
+  left: 0;
+}
+:root[dir="rtl"] .nav-explore__link {
+  text-align: right;
+}
+:root[dir="rtl"] .nav-currency__menu {
+  right: auto;
+  left: 0;
+}
+:root[dir="rtl"] .nav-currency__option {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+:root[dir="rtl"] .nav-mobile-actions {
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+:root[dir="rtl"] .drawer {
+  transform: translateX(103%);
+}
+:root[dir="rtl"] .drawer.open {
+  transform: translateX(0);
+}
+:root[dir="rtl"] .drawer-panel {
+  margin-left: auto;
+  border-right: 0;
+  border-left: 1px solid rgba(245, 220, 168, 0.25);
+}
+:root[dir="rtl"] .drawer-header {
+  justify-content: flex-start;
+}
+:root[dir="rtl"] .drawer-search input {
+  direction: rtl;
+  text-align: right;
+}
+:root[dir="rtl"] .drawer-search__result,
+:root[dir="rtl"] .drawer-search__view-all,
+:root[dir="rtl"] .drawer-currency__option {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+:root[dir="rtl"] .drawer-group__title,
+:root[dir="rtl"] .drawer-link {
+  text-align: right;
+}
+:root[dir="rtl"] .drawer-utility {
+  flex-direction: row-reverse;
+}
+:root[dir="rtl"] .drawer-currency__menu {
+  right: auto;
+  left: 0;
 }
 .brand {
   position: relative;

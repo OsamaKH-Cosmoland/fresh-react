@@ -105,8 +105,8 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
         />
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <main id="main-content" tabIndex={-1} className="ritual-guide-detail-page__content ng-mobile-shell">
-          <SectionTitle title="Guide not found" align="center" />
-          <p>The routine you are seeking has not yet been written.</p>
+          <SectionTitle title={t("guides.detail.notFoundTitle")} align="center" />
+          <p>{t("guides.detail.notFoundBody")}</p>
         </main>
       </div>
     );
@@ -169,8 +169,8 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
           <section className="ritual-guide-related" data-animate="fade-up">
             <div className="ritual-guide-related__header">
               <SectionTitle
-                title="Layer these routines"
-                subtitle="Pair the guide with products and bundles that bring it to life."
+                title={t("guides.detail.related.title")}
+                subtitle={t("guides.detail.related.subtitle")}
                 align="left"
               />
             </div>

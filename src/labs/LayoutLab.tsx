@@ -12,7 +12,7 @@ import iconMiddle from "../assets/NaturaGloss_shiny_gold_icon_middle.webp";
 import iconRight from "../assets/NaturaGloss_shiny_gold_icon_right.webp";
 import { PRODUCT_INDEX } from "../data/products";
 import { addCartItem, readCart, subscribeToCart, writeCart, type CartItem } from "../utils/cartStorage";
-import type { Product } from "../types/product";
+import type { CatalogProduct } from "@/data/products";
 import type { ProductDetailContent } from "@/content/productDetails";
 import { BundleCard } from "../components/bundles/BundleCard";
 import { ritualBundles } from "../content/bundles";
@@ -28,9 +28,9 @@ import { normalizeHref } from "@/utils/navigation";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useCurrency } from "@/currency/CurrencyProvider";
 
-function formatSavedDate(value: string) {
+function formatSavedDate(value: string, t: (key: AppTranslationKey) => string) {
   const parsed = Date.parse(value);
-  if (!Number.isFinite(parsed)) return "Recent";
+  if (!Number.isFinite(parsed)) return t("common.recent");
   return new Date(parsed).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
@@ -69,7 +69,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
     return subscribeToCart(setCartItems);
   }, []);
 
-  const addItemToCart = useCallback((item: Product) => {
+  const addItemToCart = useCallback((item: CatalogProduct) => {
     setCartItems((previous) => addCartItem(previous, item));
   }, []);
 
@@ -130,7 +130,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
   const teaserGuides = featuredGuides.length > 0 ? featuredGuides.slice(0, 2) : ritualGuides.slice(0, 2);
 
   const handleAddToCart = useCallback(
-    (item: Product) => {
+    (item: CatalogProduct) => {
       addItemToCart(item);
     },
     [addItemToCart]
@@ -200,8 +200,8 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
       <main id="main-content" tabIndex={-1} className="landing-hero ng-mobile-shell" data-animate="fade-up">
         <div className="landing-hero__copy">
           <SectionTitle
-            title="Luxury Inspired by Nature’s Essence"
-            subtitle="Indulge in a world of serenity and sophistication, natural care designed for those who value beauty with soul."
+            title={t("landing.hero.title")}
+            subtitle={t("landing.hero.subtitle")}
             align="center"
             className="landing-hero__title"
             as="h1"
@@ -242,7 +242,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
         <figure className="landing-hero__media" data-animate="fade-in" data-parallax="hero">
           <img
             src={collectionImage}
-            alt="NaturaGloss collection of botanical care"
+            alt={t("landing.hero.imageAlt")}
             width="720"
             height="480"
             loading="eager"
@@ -255,8 +255,8 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           <div className="landing-guides-teaser__header">
             <p className="landing-guides-teaser__eyebrow">{t("sections.ritualGuides")}</p>
             <SectionTitle
-              title="Editorial routines & notes"
-              subtitle="Gentle essays and deep dives for every layer of care."
+              title={t("landing.guides.title")}
+              subtitle={t("landing.guides.subtitle")}
               align="center"
               className="landing-guides-teaser__title"
             />
@@ -311,7 +311,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             <p className="landing-personalization__eyebrow">{t("sections.yourRituals")}</p>
             <SectionTitle
               title={t("sections.yourRituals")}
-              subtitle="Saved, loved, or simply recently admired—this space remembers each pause."
+              subtitle={t("landing.personalization.subtitle")}
               align="center"
               className="landing-personalization__title"
             />
@@ -399,16 +399,24 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             <article className="landing-personalization__group" data-animate="fade-up">
               <div className="landing-personalization__group-title">
                 <h3>{t("sections.yourSavedRituals")}</h3>
-                <p>Pick up the bundles you kept for a rainy night or a luminous morning.</p>
+                <p>{t("landing.savedRituals.subtitle")}</p>
               </div>
               <div className="landing-personalization__saved-grid">
                 {savedRituals.map((ritual) => (
                   <Card key={ritual.id} className="landing-personalization__saved-card">
                     <div>
+                      {(() => {
+                        const itemLabel =
+                          ritual.itemCount === 1 ? t("common.item") : t("common.items");
+                        const moreCount = ritual.items.length - 3;
+                        const moreLabel =
+                          moreCount === 1 ? t("common.moreItem") : t("common.moreItems");
+                        return (
+                          <>
                       <p className="landing-personalization__saved-name">{ritual.name}</p>
                       <p className="landing-personalization__saved-meta">
-                        {ritual.itemCount} item{ritual.itemCount === 1 ? "" : "s"} · Last updated{" "}
-                        {formatSavedDate(ritual.updatedAt)}
+                              {ritual.itemCount} {itemLabel} · {t("common.lastUpdated")}{" "}
+                              {formatSavedDate(ritual.updatedAt, t)}
                       </p>
                       <ul className="landing-personalization__saved-items">
                         {ritual.items.slice(0, 3).map((item) => (
@@ -419,10 +427,12 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
                       </ul>
                       {ritual.items.length > 3 && (
                         <p className="landing-personalization__saved-more">
-                          +{ritual.items.length - 3} more item
-                          {ritual.items.length - 3 === 1 ? "" : "s"}
+                                +{moreCount} {moreLabel}
                         </p>
                       )}
+                          </>
+                        );
+                      })()}
                     </div>
                     <div className="landing-personalization__saved-actions">
                       <Button variant="secondary" size="md" onClick={() => handleLoadSavedRitual(ritual.id)}>
@@ -439,7 +449,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             <article className="landing-personalization__group" data-animate="fade-up">
               <div className="landing-personalization__group-title">
                 <h3>{t("sections.yourFavourites")}</h3>
-                <p>Products and rituals you marked to revisit.</p>
+                <p>{t("landing.favorites.subtitle")}</p>
               </div>
               {favoriteProducts.length > 0 && (
                 <div className="landing-personalization__product-grid">
@@ -503,7 +513,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             <article className="landing-personalization__group" data-animate="fade-up">
               <div className="landing-personalization__group-title">
                 <h3>{t("sections.recentlyViewed")}</h3>
-                <p>Gentle reminders of what caught your eye recently.</p>
+                <p>{t("landing.recent.subtitle")}</p>
               </div>
               {recentProducts.length > 0 && (
                 <div className="landing-personalization__product-grid">
@@ -567,11 +577,8 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
               <p className="landing-personalization__guidance-eyebrow">
                 {t("sections.newHere")}
               </p>
-              <h3>Begin your routine story</h3>
-              <p>
-                Explore the Routine Finder for a curated path, or browse the shop for every ingredient that
-                sparks calm.
-              </p>
+              <h3>{t("landing.guidance.title")}</h3>
+              <p>{t("landing.guidance.body")}</p>
               <div className="landing-personalization__guidance-actions">
                 <Button variant="secondary" size="lg" onClick={() => navigateToPath("/ritual-finder")}>
                   {t("cta.helpChooseRitual")}
@@ -592,8 +599,8 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
           <div className="landing-stories__content">
           <p className="landing-stories__eyebrow">{t("sections.theRitualJournal")}</p>
           <SectionTitle
-            title="Our Journal"
-            subtitle="Slow, sensory routines captured in words—read how botanicals, breath, and intention guide each evening, morning, and pause."
+            title={t("nav.journal")}
+            subtitle={t("landing.journal.subtitle")}
             align="center"
             className="landing-stories__title"
           />
@@ -610,28 +617,22 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
       </section>
 
       <section className="landing-values ng-mobile-shell">
-        <h2 data-animate="fade-up">Why Choose NaturaGloss</h2>
+        <h2 data-animate="fade-up">{t("landing.values.title")}</h2>
         <div className="landing-values__grid">
           <article data-animate="fade-in">
             <img src={iconLeft} alt="" aria-hidden="true" />
-            <h3>Small-Batch Quality</h3>
-            <p>
-              Handcrafted in limited runs to ensure every bar and balm is fresh and carefully made.
-            </p>
+            <h3>{t("landing.values.cards.smallBatch.title")}</h3>
+            <p>{t("landing.values.cards.smallBatch.body")}</p>
           </article>
           <article data-animate="fade-in">
             <img src={iconMiddle} alt="" aria-hidden="true" />
-            <h3>Ingredient Transparency</h3>
-            <p>
-              Every ingredient fully listed — no hidden chemicals, just pure botanicals.
-            </p>
+            <h3>{t("landing.values.cards.transparency.title")}</h3>
+            <p>{t("landing.values.cards.transparency.body")}</p>
           </article>
           <article data-animate="fade-in">
             <img src={iconRight} alt="" aria-hidden="true" />
-            <h3>EU-Inspired Standards</h3>
-            <p>
-              Formulated with guidance from European cosmetic safety and quality practices.
-            </p>
+            <h3>{t("landing.values.cards.standards.title")}</h3>
+            <p>{t("landing.values.cards.standards.body")}</p>
           </article>
         </div>
       </section>
@@ -640,10 +641,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
         <div className="container legacy-content ng-mobile-shell">
           <section className="hero legacy-hero-intro" id="about">
             <h1 data-animate="fade-up">NaturaGloss</h1>
-            <p data-animate="fade-up">
-              Elevate your daily ritual with nutrient-rich botanicals and luminous finishes, crafted
-              in small batches for those who seek intentional, radiant self-care.
-            </p>
+            <p data-animate="fade-up">{t("landing.legacy.body")}</p>
           </section>
 
           <CardGrid
@@ -653,7 +651,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             <section className="landing-bundles" data-animate="fade-up">
               <SectionTitle
                 title={t("sections.ritualBundles")}
-                subtitle="Curated sets that weave products together for one elevated moment."
+                subtitle={t("landing.bundles.subtitle")}
                 align="center"
                 className="landing-bundles__title"
               />

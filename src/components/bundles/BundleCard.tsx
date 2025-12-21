@@ -4,9 +4,10 @@ import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
 import { RitualBundle } from "@/content/bundles";
 import {
-  PRODUCT_DETAIL_MAP,
   getDefaultVariant,
   getProductVariants,
+  getLocalizedProductName,
+  getLocalizedProductVariants,
 } from "@/content/productDetails";
 import { getBundlePricing } from "@/content/bundlePricing";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -29,7 +30,7 @@ function BundleCardBase({
   heroImage,
   viewSource,
 }: BundleCardProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { currency } = useCurrency();
   const pricing = getBundlePricing(bundle);
   const bundlePriceDisplay = formatCurrency(pricing.bundlePrice, currency);
@@ -59,6 +60,13 @@ function BundleCardBase({
     [bundle.products]
   );
 
+  const bundleName = locale === "ar" ? bundle.nameAr ?? bundle.name : bundle.name;
+  const bundleTagline = locale === "ar" ? bundle.taglineAr ?? bundle.tagline : bundle.tagline;
+  const bundleDescription =
+    locale === "ar" ? bundle.descriptionAr ?? bundle.description : bundle.description;
+  const bundleHighlight =
+    locale === "ar" ? bundle.highlightAr ?? bundle.highlight : bundle.highlight;
+
   useEffect(() => {
     trackEvent({
       type: "view_bundle",
@@ -68,13 +76,13 @@ function BundleCardBase({
   }, [bundle.id, viewSource]);
   return (
     <Card className="bundle-card hover-lift" data-animate="fade-up">
-      <CompareToggle id={bundle.id} type="bundle" itemLabel={bundle.name} />
-      <FavoriteToggle id={bundle.id} type="bundle" itemLabel={bundle.name} />
+      <CompareToggle id={bundle.id} type="bundle" itemLabel={bundleName} />
+      <FavoriteToggle id={bundle.id} type="bundle" itemLabel={bundleName} />
       {heroImage && (
         <div className="bundle-card__hero">
           <img
             src={heroImage}
-            alt={bundle.name}
+            alt={bundleName}
             width="480"
             height="360"
             loading="lazy"
@@ -83,28 +91,28 @@ function BundleCardBase({
         </div>
       )}
       <header className="bundle-card__header">
-        <p className="bundle-card__tagline">{bundle.tagline}</p>
-        <h3>{bundle.name}</h3>
-        {bundle.highlight && <p className="bundle-card__highlight">{bundle.highlight}</p>}
+        <p className="bundle-card__tagline">{bundleTagline}</p>
+        <h3>{bundleName}</h3>
+        {bundleHighlight && <p className="bundle-card__highlight">{bundleHighlight}</p>}
       </header>
 
-      <p className="bundle-card__description">{bundle.description}</p>
+      <p className="bundle-card__description">{bundleDescription}</p>
       <ul className="bundle-card__products">
         {bundle.products.map((entry) => {
-          const name = PRODUCT_DETAIL_MAP[entry.productId]?.productName ?? entry.productId;
+          const name = getLocalizedProductName(entry.productId, locale);
           return <li key={entry.productId}>{name}</li>;
         })}
       </ul>
       {hasVariantProducts.length > 0 && (
         <div className="bundle-card__variant-grid">
           {hasVariantProducts.map((entry) => {
-            const variantOptions = getProductVariants(entry.productId);
+            const variantOptions = getLocalizedProductVariants(entry.productId, locale);
             if (!variantOptions.length) {
               return null;
             }
             const selectedValue =
               variantSelection[entry.productId] ?? variantOptions[0]?.variantId ?? "";
-            const label = PRODUCT_DETAIL_MAP[entry.productId]?.productName ?? entry.productId;
+            const label = getLocalizedProductName(entry.productId, locale);
             return (
               <label key={entry.productId} className="bundle-card__variant-control">
                 <span>{label}</span>
@@ -131,11 +139,13 @@ function BundleCardBase({
       <div className="bundle-card__pricing">
         <span className="bundle-card__price">{bundlePriceDisplay}</span>
         {pricing.compareAt > pricing.bundlePrice && (
-          <span className="bundle-card__compare">Regular {compareAtDisplay}</span>
+          <span className="bundle-card__compare">
+            {t("bundleCard.compareAtLabel")} {compareAtDisplay}
+          </span>
         )}
         {pricing.savingsAmount > 0 && (
           <span className="bundle-card__savings">
-            You save {savingsDisplay}
+            {t("bundleCard.savingsLabel")} {savingsDisplay}
             {pricing.savingsPercent > 0 && ` (${pricing.savingsPercent}%)`}
           </span>
         )}

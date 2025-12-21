@@ -13,7 +13,7 @@ import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
 import { shopFocusLookup } from "@/content/shopCatalog";
 import { ritualGuides } from "@/content/ritualGuides";
-import { getVariantSummary } from "@/content/productDetails";
+import { getVariantSummaryForLocale, localizeProductDetail } from "@/content/productDetails";
 import { getReviewStats } from "@/utils/reviewStorage";
 import { RatingBadge } from "@/components/reviews/RatingBadge";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
@@ -57,7 +57,7 @@ export default function SearchPage() {
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const query = getQueryFromLocation();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { currency } = useCurrency();
   const { preferences } = useUserPreferences();
   const { favorites } = useFavorites();
@@ -249,11 +249,11 @@ export default function SearchPage() {
 
       <main id="main-content" tabIndex={-1} className="shop-page__content ng-mobile-shell">
         <SectionTitle
-          title="Search routines, products, or experiences"
+          title={t("searchPage.title")}
           subtitle={
             query
-              ? `Showing “${query}”. Refine the words or clear the field to see everything.`
-              : "Browse every routine. Use keywords, focus tags, or the Routine Finder to guide you."
+              ? `${t("searchPage.subtitlePrefix")}${query}${t("searchPage.subtitleSuffix")}`
+              : t("searchPage.subtitleDefault")
           }
           align="center"
         />
@@ -262,13 +262,14 @@ export default function SearchPage() {
           {sortedProducts.length > 0 && (
             <div className="shop-results__group">
               <div className="shop-results__header">
-                <h3>Products</h3>
-                <p>Singles to slot into your daily care routine.</p>
+                <h3>{t("sections.products")}</h3>
+                <p>{t("searchPage.sections.products.subtitle")}</p>
               </div>
               <div className="shop-product-grid">
                 {sortedProducts.map(({ entry, detail }, index) => {
                   const focusChips = focusLabels(entry.focus);
-                  const variantSummary = getVariantSummary(detail.productId);
+                  const localizedDetail = localizeProductDetail(detail, locale);
+                  const variantSummary = getVariantSummaryForLocale(detail.productId, locale);
                   const variantLabels = variantSummary?.labels.slice(0, 3) ?? [];
                   const hasMoreVariants =
                     Boolean(variantSummary) && variantSummary.count > variantLabels.length;
@@ -283,26 +284,26 @@ export default function SearchPage() {
                       <CompareToggle
                         id={detail.productId}
                         type="product"
-                        itemLabel={detail.productName}
+                        itemLabel={localizedDetail.productName}
                       />
                       <FavoriteToggle
                         id={detail.productId}
                         type="product"
-                        itemLabel={detail.productName}
+                        itemLabel={localizedDetail.productName}
                       />
                     {detail.heroImage && (
                         <div className="shop-product-card__media">
-                          <img src={detail.heroImage} alt={detail.productName} />
+                          <img src={detail.heroImage} alt={localizedDetail.productName} />
                         </div>
                       )}
                       <div className="shop-product-card__body">
                         <div className="shop-product-card__heading">
-                          <h3>{detail.productName}</h3>
+                          <h3>{localizedDetail.productName}</h3>
                           <p className="shop-product-card__price">
                             {formatCurrency(detail.priceNumber, currency)}
                           </p>
                         </div>
-                        <p className="shop-product-card__tagline">{detail.shortTagline}</p>
+                        <p className="shop-product-card__tagline">{localizedDetail.shortTagline}</p>
                         {variantSummary && variantSummary.count > 1 && (
                           <>
                             <p className="shop-product-card__variant-summary">
@@ -360,8 +361,8 @@ export default function SearchPage() {
           {guideResults.length > 0 && (
             <div className="shop-results__group">
               <div className="shop-results__header">
-                <h3>Guides</h3>
-                <p>Editorial routines and essays for mindful care.</p>
+                <h3>{t("searchPage.sections.guides.title")}</h3>
+                <p>{t("searchPage.sections.guides.subtitle")}</p>
               </div>
               <div className="shop-product-grid search-guides-grid">
                 {guideResults
@@ -406,8 +407,8 @@ export default function SearchPage() {
           {sortedBundles.length > 0 && (
             <div className="shop-results__group">
               <div className="shop-results__header">
-                <h3>Bundles</h3>
-                <p>Cohesive routines that combine your favorite items.</p>
+                <h3>{t("sections.ritualBundles")}</h3>
+                <p>{t("searchPage.sections.bundles.subtitle")}</p>
               </div>
               <div className="shop-bundle-grid">
                 {sortedBundles.map(({ entry, bundle }, index) => {
@@ -448,8 +449,8 @@ export default function SearchPage() {
           {experienceResults.length > 0 && (
             <div className="shop-results__group">
               <div className="shop-results__header">
-                <h3>Experiences</h3>
-                <p>Guidance and routines to inspire each moment.</p>
+                <h3>{t("searchPage.sections.experiences.title")}</h3>
+                <p>{t("searchPage.sections.experiences.subtitle")}</p>
               </div>
               <div className="shop-bundle-grid">
                 {experienceResults.map((entry) => (
@@ -479,9 +480,9 @@ export default function SearchPage() {
 
           {searchResults.length === 0 && (
             <div className="shop-empty-state">
-              <h3>No matches found</h3>
+              <h3>{t("searchPage.empty.title")}</h3>
               <p>
-                Try a different term or visit the Shop and Ritual Finder for more guidance.
+                {t("searchPage.empty.body")}
               </p>
               <div className="shop-product-card__actions">
                 <Button variant="secondary" size="md" onClick={() => navigateTo("/shop")}>

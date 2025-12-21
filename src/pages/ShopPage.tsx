@@ -20,7 +20,7 @@ import {
   type FocusTagId,
 } from "@/content/shopCatalog";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
-import { getVariantSummary } from "@/content/productDetails";
+import { getVariantSummaryForLocale, localizeProductDetail } from "@/content/productDetails";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { getReviewStats } from "@/utils/reviewStorage";
 import { RatingBadge } from "@/components/reviews/RatingBadge";
@@ -64,7 +64,7 @@ export default function ShopPage() {
   const [sortMode, setSortMode] = useState<"default" | "recommended">("default");
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { currency } = useCurrency();
   const { preferences } = useUserPreferences();
   const { favorites } = useFavorites();
@@ -217,15 +217,15 @@ export default function ShopPage() {
 
       <main id="main-content" tabIndex={-1} className="shop-page__content ng-mobile-shell">
         <SectionTitle
-          title="Shop all routines & products"
-          subtitle="Every product and bundle lives here. Filter by focus or type to find the routine that fits your day."
+          title={t("shop.title")}
+          subtitle={t("shop.subtitle")}
           align="center"
           as="h1"
         />
 
         <div className="shop-filters" data-animate="fade-up">
           <div className="shop-filter__group">
-            <p className="shop-filter__label">Focus</p>
+            <p className="shop-filter__label">{t("shop.filters.focus")}</p>
             <div className="shop-filter__row">
               {SHOP_FOCUS_TAGS.map((tag) => {
                 const isActive = focusFilter.includes(tag.id);
@@ -245,7 +245,7 @@ export default function ShopPage() {
           </div>
 
           <div className="shop-filter__group">
-            <p className="shop-filter__label">Type</p>
+            <p className="shop-filter__label">{t("shop.filters.type")}</p>
               <div className="shop-filter__row">
                 {TYPE_FILTER_OPTIONS.map((option) => {
                   const isActive = typeFilter === option.id;
@@ -268,8 +268,8 @@ export default function ShopPage() {
           <div className="shop-filter__meta">
             <p>
               {hasActiveFilters
-                ? "Filters applied — refine further or clear to see everything."
-                : "Browse everything or use the filters to focus on a concern."}
+                ? t("shop.filters.activeHint")
+                : t("shop.filters.idleHint")}
             </p>
           <Button
             variant="ghost"
@@ -306,15 +306,16 @@ export default function ShopPage() {
           {sortedProductEntries.length > 0 && (
             <div className="shop-results__group" data-animate="fade-up">
               <div className="shop-results__header">
-                <h3>Products</h3>
-                <p>Individual essentials to mix into your daily ritual.</p>
+                <h3>{t("sections.products")}</h3>
+                <p>{t("shop.sections.products.subtitle")}</p>
               </div>
               <div className="shop-product-grid ng-grid-mobile-2">
                 {sortedProductEntries.map((entry) => {
                   const { item, focus, extras } = entry;
                   const focusLabels = focus.map((label) => shopFocusLookup[label]);
                   const extraLabels = extras?.map((label) => shopOptionalLookup[label]) ?? [];
-                  const variantSummary = getVariantSummary(item.productId);
+                  const localizedItem = localizeProductDetail(item, locale);
+                  const variantSummary = getVariantSummaryForLocale(item.productId, locale);
                   const variantLabels = variantSummary?.labels.slice(0, 3) ?? [];
                   const hasMoreVariants =
                     Boolean(variantSummary) && variantSummary.count > variantLabels.length;
@@ -328,26 +329,26 @@ export default function ShopPage() {
                       <CompareToggle
                         id={item.productId}
                         type="product"
-                        itemLabel={item.productName}
+                        itemLabel={localizedItem.productName}
                       />
                       <FavoriteToggle
                         id={item.productId}
                         type="product"
-                        itemLabel={item.productName}
+                        itemLabel={localizedItem.productName}
                       />
                       {item.heroImage && (
                         <div className="shop-product-card__media">
-                          <img src={item.heroImage} alt={item.productName} />
+                          <img src={item.heroImage} alt={localizedItem.productName} />
                         </div>
                       )}
                       <div className="shop-product-card__body">
                         <div className="shop-product-card__heading">
-                          <h3>{item.productName}</h3>
+                          <h3>{localizedItem.productName}</h3>
                           <p className="shop-product-card__price">
                             {formatCurrency(item.priceNumber, currency)}
                           </p>
                         </div>
-                        <p className="shop-product-card__tagline">{item.shortTagline}</p>
+                        <p className="shop-product-card__tagline">{localizedItem.shortTagline}</p>
                         {variantSummary && variantSummary.count > 1 && (
                           <>
                             <p className="shop-product-card__variant-summary">
@@ -417,7 +418,7 @@ export default function ShopPage() {
             <div className="shop-results__group" data-animate="fade-up">
               <div className="shop-results__header">
                 <h3>{t("sections.ritualBundles")}</h3>
-                <p>Cohesive sets that combine products for deeper rituals.</p>
+                <p>{t("shop.sections.bundles.subtitle")}</p>
               </div>
               <div className="shop-bundle-grid">
                 {sortedBundleEntries.map((entry) => {
@@ -467,10 +468,9 @@ export default function ShopPage() {
 
           {filteredCatalog.length === 0 && (
             <div className="shop-empty-state" data-animate="fade-up">
-              <h3>Nothing matches yet</h3>
+              <h3>{t("shop.empty.title")}</h3>
               <p>
-                Adjust your filter choices to discover other rituals. We keep every product
-                and bundle here, so clearing filters brings everything back.
+                {t("shop.empty.body")}
               </p>
           <Button variant="secondary" size="md" onClick={clearFilters}>
             {t("cta.resetFilters")}

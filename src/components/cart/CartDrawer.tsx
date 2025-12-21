@@ -153,15 +153,15 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   const handleSaveCart = () => {
     if (!saveName.trim()) {
-      setSaveMessage("Please provide a name for the routine.");
+      setSaveMessage(t("cart.drawer.save.errors.missingName"));
       return;
     }
     const success = saveCurrentCart(saveName);
     if (success) {
-      setSaveMessage("Saved. Load it anytime.");
+      setSaveMessage(t("cart.drawer.save.success"));
       setSaveName("");
     } else {
-      setSaveMessage("Add products before saving.");
+      setSaveMessage(t("cart.drawer.save.errors.empty"));
     }
   };
 
@@ -179,7 +179,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
           <header className="cart-drawer__header">
             <div>
               <p className="cart-drawer__eyebrow">NaturaGloss</p>
-              <h2 id="cart-title">Your bag</h2>
+              <h2 id="cart-title">{t("cart.drawer.title")}</h2>
             </div>
             <button
               type="button"
@@ -194,7 +194,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
           <div className="cart-drawer__content">
             {cartItems.length === 0 ? (
-              <p className="cart-drawer__empty">Your bag is currently empty.</p>
+              <p className="cart-drawer__empty">{t("cart.drawer.empty")}</p>
             ) : (
               <ul className="cart-drawer__list">
                 {cartItems.map((item) => (
@@ -316,18 +316,18 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
           <section className="cart-drawer__saved" data-animate="fade-in">
             <div className="cart-drawer__saved-header">
-          <h3>Saved routines</h3>
-              <p>Preserve your current bag to revisit later.</p>
+          <h3>{t("cart.drawer.saved.title")}</h3>
+              <p>{t("cart.drawer.saved.subtitle")}</p>
             </div>
             <div className="cart-drawer__saved-input">
               <input
                 type="text"
-                placeholder="Name this routine"
+                placeholder={t("cart.drawer.saved.placeholder")}
                 value={saveName}
                 onChange={(event) => setSaveName(event.target.value)}
               />
               <Button variant="ghost" size="md" onClick={handleSaveCart}>
-                Save
+                {t("cart.drawer.saved.saveAction")}
               </Button>
             </div>
             {saveMessage && (
@@ -346,7 +346,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                     <div>
                       <p className="cart-drawer__saved-title">{saved.name}</p>
                       <p className="cart-drawer__saved-meta">
-                        {saved.itemCount} item{saved.itemCount === 1 ? "" : "s"} ·{" "}
+                        {saved.itemCount}{" "}
+                        {saved.itemCount === 1 ? t("common.item") : t("common.items")} ·{" "}
                         {new Date(saved.updatedAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -357,17 +358,19 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                         onClick={() => loadSavedCart(saved.id)}
                         disabled={saved.id === activeSavedCartId}
                       >
-                        {saved.id === activeSavedCartId ? "Loaded" : "Load"}
+                        {saved.id === activeSavedCartId
+                          ? t("cart.drawer.saved.loaded")
+                          : t("cart.drawer.saved.load")}
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => deleteSavedCart(saved.id)}>
-                        Delete
+                        {t("cart.drawer.saved.delete")}
                       </Button>
                     </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="cart-drawer__saved-empty">You have no saved routines yet.</p>
+              <p className="cart-drawer__saved-empty">{t("cart.drawer.saved.empty")}</p>
             )}
           </section>
 

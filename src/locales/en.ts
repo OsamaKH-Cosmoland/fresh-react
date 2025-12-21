@@ -152,10 +152,273 @@ export const en = {
     yourSavedRituals: "Your saved routines",
     yourFavourites: "Your favourites",
     recentlyViewed: "Recently viewed",
+    products: "Products",
     ritualBundles: "Routine bundles",
     newHere: "New here?",
     theRitualJournal: "The Routine Journal",
     ritualProfile: "Your routine profile",
+  },
+  common: {
+    item: "item",
+    items: "items",
+    moreItem: "more item",
+    moreItems: "more items",
+    lastUpdated: "Last updated",
+    recent: "Recent",
+  },
+  cardGrid: {
+    toast: {
+      title: "Added to your cart",
+      messagePrefix: "",
+      messageSuffix: " is now in your bag. Review your cart anytime.",
+      itemFallback: "New item",
+      pairPrefix: "Pair it with",
+      pairSuffix: "for a complete ritual.",
+      addActionPrefix: "Add",
+      dismiss: "Dismiss notification",
+    },
+    actions: {
+      favorite: "Favorite",
+      unfavorite: "Unfavorite",
+    },
+  },
+  bundleCard: {
+    compareAtLabel: "Regular",
+    savingsLabel: "You save",
+  },
+  landing: {
+    hero: {
+      title: "Luxury Inspired by Nature’s Essence",
+      subtitle:
+        "Indulge in a world of serenity and sophistication, natural care designed for those who value beauty with soul.",
+      imageAlt: "NaturaGloss collection of botanical care",
+    },
+    guides: {
+      title: "Editorial routines & notes",
+      subtitle: "Gentle essays and deep dives for every layer of care.",
+    },
+    personalization: {
+      subtitle: "Saved, loved, or simply recently admired—this space remembers each pause.",
+    },
+    savedRituals: {
+      subtitle: "Pick up the bundles you kept for a rainy night or a luminous morning.",
+    },
+    favorites: {
+      subtitle: "Products and rituals you marked to revisit.",
+    },
+    recent: {
+      subtitle: "Gentle reminders of what caught your eye recently.",
+    },
+    guidance: {
+      title: "Begin your routine story",
+      body:
+        "Explore the Routine Finder for a curated path, or browse the shop for every ingredient that sparks calm.",
+    },
+    journal: {
+      subtitle:
+        "Slow, sensory routines captured in words—read how botanicals, breath, and intention guide each evening, morning, and pause.",
+    },
+    values: {
+      title: "Why Choose NaturaGloss",
+      cards: {
+        smallBatch: {
+          title: "Small-Batch Quality",
+          body: "Handcrafted in limited runs to ensure every bar and balm is fresh and carefully made.",
+        },
+        transparency: {
+          title: "Ingredient Transparency",
+          body: "Every ingredient fully listed — no hidden chemicals, just pure botanicals.",
+        },
+        standards: {
+          title: "EU-Inspired Standards",
+          body: "Formulated with guidance from European cosmetic safety and quality practices.",
+        },
+      },
+    },
+    legacy: {
+      body:
+        "Elevate your daily ritual with nutrient-rich botanicals and luminous finishes, crafted in small batches for those who seek intentional, radiant self-care.",
+    },
+    bundles: {
+      subtitle: "Curated sets that weave products together for one elevated moment.",
+    },
+  },
+  shop: {
+    title: "Shop all routines & products",
+    subtitle:
+      "Every product and bundle lives here. Filter by focus or type to find the routine that fits your day.",
+    filters: {
+      focus: "Focus",
+      type: "Type",
+      activeHint: "Filters applied — refine further or clear to see everything.",
+      idleHint: "Browse everything or use the filters to focus on a concern.",
+    },
+    sections: {
+      products: {
+        subtitle: "Individual essentials to mix into your daily ritual.",
+      },
+      bundles: {
+        subtitle: "Cohesive sets that combine products for deeper rituals.",
+      },
+    },
+    empty: {
+      title: "Nothing matches yet",
+      body:
+        "Adjust your filter choices to discover other rituals. We keep every product and bundle here, so clearing filters brings everything back.",
+    },
+  },
+  searchPage: {
+    title: "Search routines, products, or experiences",
+    subtitlePrefix: "Showing “",
+    subtitleSuffix: "”. Refine the words or clear the field to see everything.",
+    subtitleDefault:
+      "Browse every routine. Use keywords, focus tags, or the Routine Finder to guide you.",
+    sections: {
+      products: {
+        subtitle: "Singles to slot into your daily care routine.",
+      },
+      guides: {
+        title: "Guides",
+        subtitle: "Editorial routines and essays for mindful care.",
+      },
+      bundles: {
+        subtitle: "Cohesive routines that combine your favorite items.",
+      },
+      experiences: {
+        title: "Experiences",
+        subtitle: "Guidance and routines to inspire each moment.",
+      },
+    },
+    empty: {
+      title: "No matches found",
+      body: "Try a different term or visit the Shop and Ritual Finder for more guidance.",
+    },
+  },
+  compare: {
+    title: "Compare routines & products",
+    subtitle: "Line up focus, textures, and prices to decide the perfect routine.",
+    actions: {
+      remove: "Remove",
+    },
+    labels: {
+      focus: "Focus",
+      benefits: "Key benefits",
+      texture: "Texture & scent",
+      usage: "Usage",
+      anyRoutine: "Any routine",
+      included: "Included",
+      price: "Price",
+    },
+    empty: {
+      title: "No items selected",
+      body: "Add products or rituals to compare by tapping the compare toggle.",
+    },
+  },
+  favorites: {
+    title: "Saved favourites",
+    subtitle: "Bookmark routines and products that feel right now.",
+    sections: {
+      products: {
+        subtitle: "Individual essentials you saved for the next routine.",
+      },
+      bundles: {
+        title: "Bundles",
+        subtitle: "Saved routines ready to be layered.",
+      },
+    },
+    empty: {
+      title: "No favourites yet",
+      body: "Tap the heart on any product or routine to save it here for later.",
+    },
+  },
+  guides: {
+    title: "Routine Guides",
+    subtitle: "Calm essays, routines, and gentle know-how to guide every layer.",
+    detail: {
+      notFoundTitle: "Guide not found",
+      notFoundBody: "The routine you are seeking has not yet been written.",
+      related: {
+        title: "Layer these routines",
+        subtitle: "Pair the guide with products and bundles that bring it to life.",
+      },
+    },
+  },
+  stories: {
+    title: "Our Journal",
+    subtitle: "Slow, sensory routines to weave NaturaGloss into your daily life.",
+    intro:
+      "Each routine is captured in a story field filled with warmth, scent, and steady breath so you can step into your care practice with intention.",
+    labels: {
+      date: "Date",
+      readTime: "Read time",
+      minutes: "min",
+      minutesRead: "min read",
+      tags: "Story tags",
+    },
+    actions: {
+      readStory: "Read story",
+      backToStories: "Back to stories",
+    },
+    detail: {
+      notFoundTitle: "Story not found",
+      notFoundSubtitle: "Return to the Routine Stories library.",
+    },
+  },
+  productDetail: {
+    backToCollection: "Back to collection",
+    related: {
+      title: "Complete your routine",
+      subtitle: "These curated bundles pair naturally with this beauty.",
+    },
+    sections: {
+      madeFor: {
+        title: "What it’s made for",
+      },
+      routine: {
+        title: "Routine",
+        subtitle: "A slow, sensory sequence",
+      },
+      ingredients: {
+        title: "Ingredients spotlight",
+      },
+      sensory: {
+        title: "Sensory experience",
+      },
+      pairs: {
+        title: "Pairs well with",
+        subtitle: "Complete the routine",
+      },
+      faq: {
+        title: "FAQ",
+        subtitle: "Your questions answered",
+      },
+    },
+    aside: {
+      label: "Order this routine",
+      hint: "Crafted for nightly calm and a luminous morning finish.",
+    },
+  },
+  ritualFinder: {
+    title: "Routine Finder",
+    subtitle: "Answer a calm handful of questions and we will curate the routine that matches tonight.",
+    intro:
+      "We listen to your focus, time, and scent preferences to recommend the precise balance of cleanse, treat, and finish—packaged as our curated bundles.",
+    progressLabel: "Step",
+    actions: {
+      back: "Back",
+      continue: "Continue",
+      reveal: "Reveal my routine",
+      reset: "Retake the Routine Finder",
+    },
+    results: {
+      title: "We curated this routine for you",
+      subtitle: "Add the bundle that best matches your answers.",
+      alsoConsider: "Also consider",
+      extrasSubtitle: "Single additions to pair beautifully.",
+    },
+    errors: {
+      selectOption: "Select the answer that feels most aligned with tonight.",
+    },
   },
   refillPlans: {
     frequencyLabel: "Cadence",
@@ -242,9 +505,12 @@ export const en = {
     },
   },
   reviews: {
+    eyebrow: "Our community's experiences",
     sectionTitle: "Customer reviews",
     sectionSubtitle: "Shared reflections from the NaturaGloss community.",
+    loading: "Loading reviews…",
     summary: {
+      reviewLabelSingular: "review",
       reviewLabel: "reviews",
       noReviews: "No reviews yet",
       noRating: "No rating yet",
@@ -268,6 +534,9 @@ export const en = {
     form: {
       heading: "Share your routine",
       subtitle: "Tell us how this routine made you feel.",
+      placeholders: {
+        body: "Tell us about your routine...",
+      },
       labels: {
         rating: "Rating",
         title: "Headline (optional)",
@@ -278,11 +547,17 @@ export const en = {
         stars: "Stars",
       },
       submit: "Submit review",
+      submitting: "Sending...",
+      thankYou: "Thank you for sharing your routine!",
       success: "Your review is live — thank you.",
       errors: {
         body: "Share a few words describing this routine.",
         generic: "Something went wrong — please try again.",
       },
+    },
+    errors: {
+      load: "Unable to load reviews.",
+      submit: "Unable to submit review.",
     },
   },
   variants: {
@@ -326,6 +601,27 @@ export const en = {
       discount: "Discount",
       total: "Total",
       giftCredit: "Gift credit",
+    },
+    drawer: {
+      title: "Your bag",
+      empty: "Your bag is currently empty.",
+      saved: {
+        title: "Saved routines",
+        subtitle: "Preserve your current bag to revisit later.",
+        placeholder: "Name this routine",
+        saveAction: "Save",
+        load: "Load",
+        loaded: "Loaded",
+        delete: "Delete",
+        empty: "You have no saved routines yet.",
+      },
+      save: {
+        success: "Saved. Load it anytime.",
+        errors: {
+          missingName: "Please provide a name for the routine.",
+          empty: "Add products before saving.",
+        },
+      },
     },
     promo: {
       label: "Promo code",
@@ -382,6 +678,14 @@ export const en = {
       removeProduct: "Remove {name} from your box",
       addAddOn: "Add {name} to your box",
       removeAddOn: "Remove {name} from your box",
+    },
+    comingSoon: {
+      title: "Build your gift",
+      subtitle: "Coming soon",
+      body:
+        "We are polishing the gift builder experience so your curated care rituals arrive as magic bundles. Check back soon for the first release.",
+      note: "In the meantime, explore the collection and add your favorites to a ritual set.",
+      action: "Browse the collection",
     },
   },
   search: {
