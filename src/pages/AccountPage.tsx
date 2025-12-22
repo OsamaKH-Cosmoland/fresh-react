@@ -13,7 +13,7 @@ import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import {
   shopCatalog,
-  shopFocusLookup,
+  getShopFocusLookup,
   type FocusTagId,
 } from "@/content/shopCatalog";
 import { ritualBundles } from "@/content/bundles";
@@ -245,8 +245,9 @@ export default function AccountPage() {
     []
   );
 
+  const focusLookup = useMemo(() => getShopFocusLookup(locale), [locale]);
   const focusLabels = (ids: FocusTagId[] = []) =>
-    ids.map((id) => shopFocusLookup[id]).filter(Boolean);
+    ids.map((id) => focusLookup[id]).filter(Boolean);
 
   const preferenceFocus =
     preferences?.concerns

@@ -1,6 +1,11 @@
 import type { ProductDetailContent } from "@/content/productDetails";
-import { PRODUCT_DETAIL_CONFIGS } from "@/content/productDetails";
-import { shopCatalog, shopFocusLookup, shopOptionalLookup, type FocusTagId } from "@/content/shopCatalog";
+import {
+  PRODUCT_DETAIL_CONFIGS,
+  PRODUCT_DETAIL_MAP,
+  getLocalizedProductName,
+  localizeProductDetail,
+} from "@/content/productDetails";
+import { shopCatalog, getShopFocusLookup, getShopOptionalLookup, type FocusTagId } from "@/content/shopCatalog";
 import { ritualBundles, type RitualBundle } from "@/content/bundles";
 
 type CompareProductConfig = {
@@ -36,11 +41,26 @@ const productFormatMap: Record<string, string> = {
   "hair-shine-anti-frizz-oil": "60 ml dropper",
 };
 
-const focusLookup = (ids: FocusTagId[]) =>
-  ids.map((focus) => shopFocusLookup[focus]).filter(Boolean);
+const productFormatMapAr: Record<string, string> = {
+  "body-balm": "برطمان 200 مل",
+  "calm-glow-body-soap": "قطعة 95 جم",
+  "silk-blossom-body-soap": "قطعة 95 جم",
+  "hand-balm": "علبة 75 مل",
+  "hair-growth-oil": "قطّارة 60 مل",
+  "hair-shine-anti-frizz-oil": "قطّارة 60 مل",
+};
 
-const usageLookup = (ids: string[]) =>
-  ids.map((tagId) => shopOptionalLookup[tagId as keyof typeof shopOptionalLookup]).filter(Boolean);
+type SupportedLocale = "en" | "ar";
+
+const focusLookup = (ids: FocusTagId[], locale: SupportedLocale) => {
+  const lookup = getShopFocusLookup(locale);
+  return ids.map((focus) => lookup[focus]).filter(Boolean);
+};
+
+const usageLookup = (ids: string[], locale: SupportedLocale) => {
+  const lookup = getShopOptionalLookup(locale);
+  return ids.map((tagId) => lookup[tagId as keyof typeof lookup]).filter(Boolean);
+};
 
 const productDetailById = PRODUCT_DETAIL_CONFIGS.reduce<Record<string, ProductDetailContent>>(
   (acc, config) => {
@@ -78,42 +98,48 @@ const bundleExtrasMap = shopCatalog.reduce<Record<string, string[]>>((acc, entry
   return acc;
 }, {});
 
-export function getCompareProductConfig(productId: string): CompareProductConfig | null {
+export function getCompareProductConfig(productId: string, locale: SupportedLocale): CompareProductConfig | null {
   const detail = productDetailById[productId];
   if (!detail) return null;
+  const localizedDetail = localizeProductDetail(detail, locale);
   return {
-    id: detail.productId,
-    slug: detail.slug,
-    label: detail.productName,
-    focus: focusLookup(productFocusMap[productId] ?? []),
-    benefits: detail.heroSummaryBullets.slice(0, 3),
-    texture: detail.sensoryExperience.slice(0, 3),
-    usage: usageLookup(productExtrasMap[productId] ?? []),
-    format: productFormatMap[productId] ?? "Standard format",
-    priceNumber: detail.priceNumber,
-    detail,
+    id: localizedDetail.productId,
+    slug: localizedDetail.slug,
+    label: localizedDetail.productName,
+    focus: focusLookup(productFocusMap[productId] ?? [], locale),
+    benefits: localizedDetail.heroSummaryBullets.slice(0, 3),
+    texture: localizedDetail.sensoryExperience.slice(0, 3),
+    usage: usageLookup(productExtrasMap[productId] ?? [], locale),
+    format:
+      locale === "ar"
+        ? productFormatMapAr[productId] ?? "الحجم القياسي"
+        : productFormatMap[productId] ?? "Standard format",
+    priceNumber: localizedDetail.priceNumber,
+    detail: localizedDetail,
   };
 }
 
-export function getCompareBundleConfig(bundleId: string): CompareBundleConfig | null {
+export function getCompareBundleConfig(bundleId: string, locale: SupportedLocale): CompareBundleConfig | null {
   const bundle = ritualBundles.find((item) => item.id === bundleId);
   if (!bundle) return null;
   const included = bundle.products
-    .map((entry) => PRODUCT_DETAIL_MAP[entry.productId]?.productName ?? entry.productId)
+    .map((entry) => getLocalizedProductName(entry.productId, locale))
     .filter(Boolean);
   const price = bundle.products.reduce((sum, entry) => {
     const detail = PRODUCT_DETAIL_MAP[entry.productId];
     if (!detail) return sum;
     return sum + (detail.priceNumber ?? 0);
   }, 0);
-  const focus = focusLookup(bundleFocusMap[bundleId] ?? []);
-  const ritualType = usageLookup(bundleExtrasMap[bundleId] ?? []);
+  const focus = focusLookup(bundleFocusMap[bundleId] ?? [], locale);
+  const ritualType = usageLookup(bundleExtrasMap[bundleId] ?? [], locale);
   return {
     id: bundle.id,
-    label: bundle.name,
+    label: locale === "ar" ? bundle.nameAr ?? bundle.name : bundle.name,
     focus,
-    benefits: bundle.tagline,
-    texture: [bundle.description],
+    benefits: locale === "ar" ? bundle.taglineAr ?? bundle.tagline : bundle.tagline,
+    texture: [
+      locale === "ar" ? bundle.descriptionAr ?? bundle.description : bundle.description,
+    ],
     ritualType,
     included,
     priceNumber: price,

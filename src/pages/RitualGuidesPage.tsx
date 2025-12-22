@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { Button, Card, SectionTitle } from "@/components/ui";
 import { ritualGuides } from "@/content/ritualGuides";
-import { shopFocusLookup } from "@/content/shopCatalog";
+import { getShopFocusLookup } from "@/content/shopCatalog";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
@@ -20,9 +20,10 @@ const navigateTo = (path: string) => {
 export default function RitualGuidesPage() {
   usePageAnalytics("guides");
   useSeo({ route: "guides" });
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const guides = useMemo(() => ritualGuides, []);
+  const focusLookup = useMemo(() => getShopFocusLookup(locale), [locale]);
 
   return (
     <div className="ritual-guides-page">
@@ -55,7 +56,7 @@ export default function RitualGuidesPage() {
                 <div className="ritual-guides-card__tags">
                   {[
                     ...(guide.tags ?? []),
-                    ...(guide.focusTags ?? []).map((id) => shopFocusLookup[id]).filter(Boolean),
+                    ...(guide.focusTags ?? []).map((id) => focusLookup[id]).filter(Boolean),
                   ].map((tag) => (
                     <span key={`${guide.id}-${tag}`} className="ritual-guides-card__tag">
                       {tag}

@@ -8,7 +8,7 @@ import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { getRitualGuideBySlug } from "@/content/ritualGuides";
-import { shopFocusLookup } from "@/content/shopCatalog";
+import { getShopFocusLookup } from "@/content/shopCatalog";
 import { useTranslation } from "@/localization/locale";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -36,12 +36,13 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
   const guide = useMemo(() => getRitualGuideBySlug(slug), [slug]);
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { currency } = useCurrency();
+  const focusLookup = useMemo(() => getShopFocusLookup(locale), [locale]);
   const articleJsonLd = useMemo(() => {
     if (!guide) return undefined;
     const focusLabels = (guide.focusTags ?? [])
-      .map((tag) => shopFocusLookup[tag])
+      .map((tag) => focusLookup[tag])
       .filter(Boolean);
     return [
       {
@@ -59,7 +60,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
         },
       },
     ];
-  }, [guide]);
+  }, [guide, focusLookup]);
   useSeo({
     route: "guide_detail",
     title: guide?.title,
@@ -114,7 +115,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
 
   const tagChips = [
     ...(guide.tags ?? []),
-    ...(guide.focusTags ?? []).map((id) => shopFocusLookup[id]).filter(Boolean),
+    ...(guide.focusTags ?? []).map((id) => focusLookup[id]).filter(Boolean),
   ];
 
   return (

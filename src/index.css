@@ -1075,6 +1075,7 @@ button:hover {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--space-8);
+  column-gap: 1.2rem;
 }
 
 .landing-guides-teaser {
@@ -1705,7 +1706,14 @@ button:hover {
 .shop-bundle-grid {
   display: grid;
   gap: var(--space-5);
+  column-gap: 1.2rem;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+@media (min-width: 768px) {
+  .shop-bundle-grid > .shop-bundle-card:first-child {
+    margin-left: -0.35rem;
+  }
 }
 
 .shop-bundle-card {
@@ -2688,6 +2696,32 @@ button:hover {
 :root[dir="rtl"] .nav-currency__option {
   flex-direction: row-reverse;
   text-align: right;
+}
+:root[dir="rtl"] .nav-primary {
+  column-gap: 3rem;
+  row-gap: 1.4rem;
+}
+:root[dir="rtl"] .nav-primary .nav-pill:nth-child(1),
+:root[dir="rtl"] .nav-primary .nav-pill:nth-child(4) {
+  transform: translateX(8px);
+}
+:root[dir="rtl"] .nav-primary .nav-pill:nth-child(3) {
+  transform: translateX(-8px);
+}
+:root[dir="rtl"] .nav-explore {
+  transform: translateX(-16px);
+}
+:root[dir="rtl"] .nav-pill {
+  letter-spacing: 0.08em;
+  text-transform: none;
+  padding: 0.18rem 0.9rem;
+}
+:root[dir="rtl"] .shop-filter__row {
+  justify-content: flex-end;
+}
+:root[dir="rtl"] .shop-filter-pill {
+  letter-spacing: 0.06em;
+  text-align: center;
 }
 :root[dir="rtl"] .nav-mobile-actions {
   flex-direction: row-reverse;

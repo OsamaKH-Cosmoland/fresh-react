@@ -12,7 +12,7 @@ import { ritualBundles, type RitualBundle } from "@/content/bundles";
 import { useTranslation } from "@/localization/locale";
 import { useCompare } from "@/compare/compareStore";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
-import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
+import { PRODUCT_DETAIL_MAP, localizeProductDetail } from "@/content/productDetails";
 import { useSeo } from "@/seo/useSeo";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useCurrency } from "@/currency/CurrencyProvider";
@@ -57,7 +57,7 @@ export default function ComparePage() {
     });
   };
   const entries = listCompared();
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { currency } = useCurrency();
 
   const columns = useMemo<CompareColumn[]>(
@@ -65,7 +65,7 @@ export default function ComparePage() {
       entries
         .map((entry) => {
           if (entry.type === "product") {
-            const config = getCompareProductConfig(entry.id);
+            const config = getCompareProductConfig(entry.id, locale);
             if (!config) return null;
             return {
               id: entry.id,
@@ -87,7 +87,7 @@ export default function ComparePage() {
               },
             };
           }
-          const config = getCompareBundleConfig(entry.id);
+          const config = getCompareBundleConfig(entry.id, locale);
           if (!config) return null;
           const bundleId = entry.id;
           const actualBundle = ritualBundles.find((bundle) => bundle.id === bundleId);
@@ -106,7 +106,7 @@ export default function ComparePage() {
           };
         })
         .filter((value): value is CompareColumn => Boolean(value)),
-    [entries]
+    [entries, locale]
   );
 
   const hasColumns = columns.length > 0;
@@ -205,7 +205,9 @@ export default function ComparePage() {
                       onClick={() => {
                         const detailEntry = PRODUCT_DETAIL_MAP[column.detail.productId];
                         if (detailEntry) {
-                          const payload = buildProductCartPayload(detailEntry);
+                          const payload = buildProductCartPayload(
+                            localizeProductDetail(detailEntry, locale)
+                          );
                           addItem(payload);
                           recordProductAdd(detailEntry.productId, payload.price, payload.variantId);
                           return;

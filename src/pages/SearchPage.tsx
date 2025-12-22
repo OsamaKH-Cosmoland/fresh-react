@@ -11,7 +11,7 @@ import { filterSearchEntries } from "@/hooks/useGlobalSearch";
 import type { ProductDetailContent } from "@/content/productDetails";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
-import { shopFocusLookup } from "@/content/shopCatalog";
+import { getShopFocusLookup } from "@/content/shopCatalog";
 import { ritualGuides } from "@/content/ritualGuides";
 import { getVariantSummaryForLocale, localizeProductDetail } from "@/content/productDetails";
 import { getReviewStats } from "@/utils/reviewStorage";
@@ -64,6 +64,7 @@ export default function SearchPage() {
   const recentEntries = useRecentlyViewed();
   const orders = useMemo(() => readOrders(), []);
   const reviews = useMemo(() => listReviews(), []);
+  const focusLookup = useMemo(() => getShopFocusLookup(locale), [locale]);
   const handleAddProduct = (detail: ProductDetailContent) => {
     const payload = buildProductCartPayload(detail);
     addItem(payload);
@@ -79,8 +80,8 @@ export default function SearchPage() {
   };
 
   const searchResults = useMemo(
-    () => filterSearchEntries(query, { allowEmpty: true }),
-    [query]
+    () => filterSearchEntries(query, { allowEmpty: true }, focusLookup),
+    [focusLookup, query]
   );
 
   const productResults = useMemo(
@@ -235,7 +236,7 @@ export default function SearchPage() {
   };
 
   const focusLabels = (focusIds: string[]) =>
-    focusIds.map((id) => shopFocusLookup[id]).filter(Boolean);
+    focusIds.map((id) => focusLookup[id]).filter(Boolean);
 
   return (
     <div className="shop-page search-page">

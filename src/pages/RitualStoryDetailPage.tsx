@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Button, Card, SectionTitle } from "@/components/ui";
 import { FadeIn, RevealOnScroll, SlideUp } from "@/components/animate";
-import { ritualStories } from "../content/stories";
+import { localizeStory, ritualStories } from "../content/stories";
 import { useTranslation } from "@/localization/locale";
 
 interface RitualStoryDetailPageProps {
@@ -9,9 +9,10 @@ interface RitualStoryDetailPageProps {
 }
 
 export default function RitualStoryDetailPage({ slug }: RitualStoryDetailPageProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const story = useMemo(() => ritualStories.find((item) => item.slug === slug), [slug]);
-  if (!story) {
+  const localizedStory = story ? localizeStory(story, locale) : null;
+  if (!localizedStory) {
     return (
       <main id="main-content" tabIndex={-1} className="ritual-story-detail">
         <SlideUp>
@@ -28,14 +29,16 @@ export default function RitualStoryDetailPage({ slug }: RitualStoryDetailPagePro
     );
   }
 
-  const bodyParagraphs = story.body.split("\n\n").filter(Boolean);
+  const bodyParagraphs = localizedStory.body.split("\n\n").filter(Boolean);
 
   return (
     <main id="main-content" tabIndex={-1} className="ritual-story-detail">
       <SlideUp>
         <SectionTitle
-          title={story.title}
-          subtitle={`${new Date(story.date).toLocaleDateString()} · ${story.readTimeMinutes ?? 4} ${t("stories.labels.minutesRead")}`}
+          title={localizedStory.title}
+          subtitle={`${new Date(localizedStory.date).toLocaleDateString(locale)} · ${
+            localizedStory.readTimeMinutes ?? 4
+          } ${t("stories.labels.minutesRead")}`}
         />
       </SlideUp>
       <Card className="ritual-story-detail__card">

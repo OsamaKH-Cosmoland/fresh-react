@@ -21,7 +21,7 @@ import { getBundleHeroImage } from "../content/bundleHeroImages";
 import { useCart } from "@/cart/cartStore";
 import { usePersonalizationData } from "@/content/personalization";
 import { ritualGuides } from "@/content/ritualGuides";
-import { shopFocusLookup } from "@/content/shopCatalog";
+import { getShopFocusLookup } from "@/content/shopCatalog";
 import { AppTranslationKey, useTranslation } from "@/localization/locale";
 import { primaryNav } from "@/config/navigation";
 import { normalizeHref } from "@/utils/navigation";
@@ -41,8 +41,9 @@ interface LayoutLabProps {
 export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>(() => readCart());
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { currency } = useCurrency();
+  const focusLookup = useMemo(() => getShopFocusLookup(locale), [locale]);
   const quickHeroActions = [
     { navId: "collection", labelKey: "cta.shopCollection", variant: "primary" as const },
     { navId: "finder", labelKey: "cta.findMyProduct", variant: "ghost" as const },
@@ -270,7 +271,7 @@ export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
             {teaserGuides.map((guide) => {
               const tags = [
                 ...(guide.tags ?? []),
-                ...(guide.focusTags ?? []).map((id) => shopFocusLookup[id]).filter(Boolean),
+                ...(guide.focusTags ?? []).map((id) => focusLookup[id]).filter(Boolean),
               ];
               return (
                 <Card key={guide.id} className="landing-guides-card hover-lift" data-animate="fade-up">

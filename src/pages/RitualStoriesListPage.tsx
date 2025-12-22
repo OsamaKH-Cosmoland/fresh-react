@@ -1,11 +1,12 @@
-import { ritualStories } from "../content/stories";
+import { localizeStory, ritualStories } from "../content/stories";
 import { buildAppUrl } from "@/utils/navigation";
 import type { CSSProperties } from "react";
 import { Button, Card, SectionTitle } from "@/components/ui";
 import { useTranslation } from "@/localization/locale";
 
 export default function RitualStoriesListPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const localizedStories = ritualStories.map((story) => localizeStory(story, locale));
   return (
     <main id="main-content" tabIndex={-1} className="ritual-stories-page stories-page">
       <div className="stories-page__title-bar">
@@ -23,7 +24,7 @@ export default function RitualStoriesListPage() {
         {t("stories.intro")}
       </p>
       <div className="stories-grid">
-        {ritualStories.map((story, index) => (
+        {localizedStories.map((story, index) => (
           <Card
             key={story.slug}
             className="story-card hover-lift"
@@ -37,7 +38,7 @@ export default function RitualStoriesListPage() {
               <div className="story-card__field-row">
                 <span className="story-card__field-label">{t("stories.labels.date")}</span>
                 <span className="story-card__field-value">
-                  {new Date(story.date).toLocaleDateString()}
+                  {new Date(story.date).toLocaleDateString(locale)}
                 </span>
               </div>
               <div className="story-card__field-row">

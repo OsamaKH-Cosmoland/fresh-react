@@ -5,17 +5,17 @@ import {
 } from "@/content/productDetails";
 
 export const SHOP_FOCUS_TAGS = [
-  { id: "body", label: "Body hydration & glow" },
-  { id: "hair", label: "Hair growth & strength" },
-  { id: "hands", label: "Hands & lips care" },
+  { id: "body", label: "Body hydration & glow", labelAr: "ترطيب وإشراقة للجسم" },
+  { id: "hair", label: "Hair growth & strength", labelAr: "نمو الشعر وقوّته" },
+  { id: "hands", label: "Hands & lips care", labelAr: "عناية باليدين والشفاه" },
 ] as const;
 
 export type FocusTagId = (typeof SHOP_FOCUS_TAGS)[number]["id"];
 
 export const SHOP_OPTIONAL_TAGS = [
-  { id: "morning", label: "Morning routine" },
-  { id: "evening", label: "Evening routine" },
-  { id: "express", label: "Express routine" },
+  { id: "morning", label: "Morning routine", labelAr: "روتين صباحي" },
+  { id: "evening", label: "Evening routine", labelAr: "روتين مسائي" },
+  { id: "express", label: "Express routine", labelAr: "روتين سريع" },
 ] as const;
 
 export type OptionalTagId = (typeof SHOP_OPTIONAL_TAGS)[number]["id"];
@@ -77,16 +77,30 @@ export const shopCatalog: ShopCatalogEntry[] = [
   })),
 ];
 
-export const shopFocusLookup: Record<FocusTagId, string> = SHOP_FOCUS_TAGS.reduce(
-  (acc, entry) => {
-    acc[entry.id] = entry.label;
-    return acc;
-  },
-  {} as Record<FocusTagId, string>
-);
+type SupportedLocale = "en" | "ar";
 
-export const shopOptionalLookup: Record<OptionalTagId, string> =
-  SHOP_OPTIONAL_TAGS.reduce((acc, entry) => {
-    acc[entry.id] = entry.label;
-    return acc;
-  }, {} as Record<OptionalTagId, string>);
+const resolveTagLabel = (
+  entry: (typeof SHOP_FOCUS_TAGS)[number] | (typeof SHOP_OPTIONAL_TAGS)[number],
+  locale: SupportedLocale
+) => (locale === "ar" ? entry.labelAr ?? entry.label : entry.label);
+
+export const getShopFocusLookup = (locale: SupportedLocale) =>
+  SHOP_FOCUS_TAGS.reduce(
+    (acc, entry) => {
+      acc[entry.id] = resolveTagLabel(entry, locale);
+      return acc;
+    },
+    {} as Record<FocusTagId, string>
+  );
+
+export const getShopOptionalLookup = (locale: SupportedLocale) =>
+  SHOP_OPTIONAL_TAGS.reduce(
+    (acc, entry) => {
+      acc[entry.id] = resolveTagLabel(entry, locale);
+      return acc;
+    },
+    {} as Record<OptionalTagId, string>
+  );
+
+export const shopFocusLookup: Record<FocusTagId, string> = getShopFocusLookup("en");
+export const shopOptionalLookup: Record<OptionalTagId, string> = getShopOptionalLookup("en");

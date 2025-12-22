@@ -10,7 +10,12 @@ import {
   getLocalizedProductVariants,
   localizeProductDetail,
 } from "@/content/productDetails";
-import { RITUAL_QUESTIONS, matchRituals, type RitualFinderAnswers } from "@/content/ritualFinderQuiz";
+import {
+  RITUAL_QUESTIONS,
+  getLocalizedRitualQuestions,
+  matchRituals,
+  type RitualFinderAnswers,
+} from "@/content/ritualFinderQuiz";
 import { recordView } from "@/hooks/useRecentlyViewed";
 import { useTranslation } from "@/localization/locale";
 import {
@@ -40,11 +45,12 @@ export default function RitualFinder() {
   const { preferences } = useUserPreferences();
   const prefAppliedRef = useRef(false);
 
-  const currentQuestion = RITUAL_QUESTIONS[step];
-  const isLastStep = step === RITUAL_QUESTIONS.length - 1;
+  const localizedQuestions = useMemo(() => getLocalizedRitualQuestions(locale), [locale]);
+  const currentQuestion = localizedQuestions[step];
+  const isLastStep = step === localizedQuestions.length - 1;
 
   const progressPercent = Math.round(
-    ((complete ? RITUAL_QUESTIONS.length : step + 1) / RITUAL_QUESTIONS.length) * 100
+    ((complete ? localizedQuestions.length : step + 1) / localizedQuestions.length) * 100
   );
 
   const recommendations = useMemo(() => matchRituals(answers), [answers]);
@@ -132,7 +138,7 @@ export default function RitualFinder() {
       setComplete(true);
       return;
     }
-    setStep((prev) => Math.min(prev + 1, RITUAL_QUESTIONS.length - 1));
+    setStep((prev) => Math.min(prev + 1, localizedQuestions.length - 1));
   };
 
   const handleBack = () => {
@@ -212,8 +218,8 @@ export default function RitualFinder() {
         <section className="ritual-finder-quiz" data-animate="fade-up">
           <div className="ritual-finder-progress">
             <span>
-              {t("ritualFinder.progressLabel")} {complete ? RITUAL_QUESTIONS.length : step + 1} /{" "}
-              {RITUAL_QUESTIONS.length}
+              {t("ritualFinder.progressLabel")} {complete ? localizedQuestions.length : step + 1} /{" "}
+              {localizedQuestions.length}
             </span>
             <div className="ritual-finder-progress-bar">
               <div style={{ width: `${progressPercent}%` }} />

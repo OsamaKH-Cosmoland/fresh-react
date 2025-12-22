@@ -12,7 +12,7 @@ import { useBundleActions } from "@/cart/cartBundles";
 import { useFavorites } from "@/favorites/favoritesStore";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
 import { ritualBundles } from "@/content/bundles";
-import { shopCatalog, shopFocusLookup, type FocusTagId } from "@/content/shopCatalog";
+import { getShopFocusLookup, shopCatalog, type FocusTagId } from "@/content/shopCatalog";
 import { getBundleHeroImage } from "@/content/bundleHeroImages";
 import { buildProductCartPayload } from "@/utils/productVariantUtils";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -35,6 +35,7 @@ export default function FavoritesPage() {
   const { addBundleToCart } = useBundleActions();
   const { t, locale } = useTranslation();
   const { currency } = useCurrency();
+  const focusLookup = useMemo(() => getShopFocusLookup(locale), [locale]);
 
   const focusMap = useMemo(() => {
     return shopCatalog.reduce<Record<string, FocusTagId[]>>((acc, entry) => {
@@ -67,7 +68,7 @@ export default function FavoritesPage() {
 
   const hasFavorites = favoriteProducts.length > 0 || favoriteBundles.length > 0;
 
-  const focusLabels = (ids: FocusTagId[]) => ids.map((id) => shopFocusLookup[id]).filter(Boolean);
+  const focusLabels = (ids: FocusTagId[]) => ids.map((id) => focusLookup[id]).filter(Boolean);
 
   const handleAddProduct = (detail: typeof favoriteProducts[number]) => {
     const payload = buildProductCartPayload(detail);

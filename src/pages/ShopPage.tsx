@@ -12,8 +12,8 @@ import { useBundleActions } from "@/cart/cartBundles";
 import {
   shopCatalog,
   SHOP_FOCUS_TAGS,
-  shopFocusLookup,
-  shopOptionalLookup,
+  getShopFocusLookup,
+  getShopOptionalLookup,
   type ShopCatalogBundleEntry,
   type ShopCatalogEntry,
   type ShopCatalogProductEntry,
@@ -71,6 +71,16 @@ export default function ShopPage() {
   const recentEntries = useRecentlyViewed();
   const orders = useMemo(() => readOrders(), []);
   const reviews = useMemo(() => listReviews(), []);
+  const focusLookup = useMemo(() => getShopFocusLookup(locale), [locale]);
+  const optionalLookup = useMemo(() => getShopOptionalLookup(locale), [locale]);
+  const focusTags = useMemo(
+    () =>
+      SHOP_FOCUS_TAGS.map((tag) => ({
+        ...tag,
+        label: focusLookup[tag.id] ?? tag.label,
+      })),
+    [focusLookup]
+  );
 
   const filteredCatalog = useMemo(() => {
     return shopCatalog.filter((entry) => {
@@ -227,7 +237,7 @@ export default function ShopPage() {
           <div className="shop-filter__group">
             <p className="shop-filter__label">{t("shop.filters.focus")}</p>
             <div className="shop-filter__row">
-              {SHOP_FOCUS_TAGS.map((tag) => {
+              {focusTags.map((tag) => {
                 const isActive = focusFilter.includes(tag.id);
                 return (
                   <button
@@ -312,8 +322,8 @@ export default function ShopPage() {
               <div className="shop-product-grid ng-grid-mobile-2">
                 {sortedProductEntries.map((entry) => {
                   const { item, focus, extras } = entry;
-                  const focusLabels = focus.map((label) => shopFocusLookup[label]);
-                  const extraLabels = extras?.map((label) => shopOptionalLookup[label]) ?? [];
+                  const focusLabels = focus.map((label) => focusLookup[label]);
+                  const extraLabels = extras?.map((label) => optionalLookup[label]) ?? [];
                   const localizedItem = localizeProductDetail(item, locale);
                   const variantSummary = getVariantSummaryForLocale(item.productId, locale);
                   const variantLabels = variantSummary?.labels.slice(0, 3) ?? [];
@@ -422,9 +432,9 @@ export default function ShopPage() {
               </div>
               <div className="shop-bundle-grid">
                 {sortedBundleEntries.map((entry) => {
-                  const focusLabels = entry.focus.map((label) => shopFocusLookup[label]);
+                  const focusLabels = entry.focus.map((label) => focusLookup[label]);
                   const extraLabels =
-                    entry.extras?.map((label) => shopOptionalLookup[label]) ?? [];
+                    entry.extras?.map((label) => optionalLookup[label]) ?? [];
                   const heroImage = getBundleHeroImage(entry.item.id);
 
                   return (
