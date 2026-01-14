@@ -4,6 +4,7 @@ import bodySoapTwo from "@/assets/BodySoap2.png";
 import handBalmImage from "@/assets/HandBalmEnhanced.jpg";
 import hairGrowthImage from "@/assets/HairGrowthEnhanced.jpg";
 import hairShineImage from "@/assets/HairShineEnhanced.jpg";
+import lipBalmImage from "@/assets/LipBalm.jpg";
 import type {
   FAQItem,
   IngredientHighlight,
@@ -693,6 +694,125 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       {
         question: "هل يفيد للبشرة المتشققة؟",
         answer: "السيراميدات والتامانو يمنحانه دفعة ترميمية.",
+      },
+    ],
+  },
+  {
+    slug: "lip-balm",
+    productId: "lip-balm",
+    productName: "Lip Balm",
+    productNameAr: "بلسم الشفاه",
+    shortTagline: "A pocket-size balm that keeps lips soft, smooth, and protected.",
+    shortTaglineAr: "بلسم بحجم الجيب يحافظ على نعومة الشفاه وسلاستها وحمايتها.",
+    priceLabel: "99 EGP",
+    priceNumber: 99,
+    heroSummaryBullets: [
+      "10 ml size for quick, on-the-go nourishment.",
+      "Seals in moisture with a soft, cushiony finish.",
+      "Comforts dry or wind-chapped lips without stickiness.",
+    ],
+    heroSummaryBulletsAr: [
+      "حجم 10 مل لتغذية سريعة أثناء التنقل.",
+      "يحبس الترطيب بلمسة ناعمة ومريحة.",
+      "يهدئ الشفاه الجافة أو المتشققة دون لزوجة.",
+    ],
+    heroImage: lipBalmImage,
+    whatItsMadeFor:
+      "Dry, delicate lips need a lightweight seal—this balm cushions, restores, and locks in moisture wherever you are.",
+    whatItsMadeForAr:
+      "الشفاه الجافة والحساسة تحتاج إلى ختم خفيف—هذا البلسم يهدئ ويعيد الترطيب ويحفظه أينما كنتِ.",
+    ritualSteps: [
+      {
+        title: "Warm",
+        description: "Warm a small amount between fingertips to melt the balm.",
+      },
+      {
+        title: "Glide",
+        description: "Sweep across lips, starting at the center and working outward.",
+      },
+      {
+        title: "Press",
+        description: "Press lips together to smooth and boost absorption.",
+      },
+      {
+        title: "Refresh",
+        description: "Reapply anytime lips feel dry, especially after sun or wind.",
+      },
+    ],
+    ritualStepsAr: [
+      {
+        title: "دفّئي",
+        description: "دفّئي كمية صغيرة بين أطراف الأصابع حتى يذوب البلسم.",
+      },
+      {
+        title: "مرّري",
+        description: "مرّريه على الشفاه بدءاً من المنتصف باتجاه الأطراف.",
+      },
+      {
+        title: "اضغطي",
+        description: "اضغطي الشفتين معاً لتنعيم السطح وتعزيز الامتصاص.",
+      },
+      {
+        title: "جدّدي",
+        description: "أعيدي الاستخدام كلما شعرتِ بالجفاف خاصة بعد الشمس أو الرياح.",
+      },
+    ],
+    ingredients: [
+      { name: "Shea Butter", description: "Deeply nourishing lipids that soften and smooth." },
+      { name: "Jojoba Oil", description: "Lightweight oil that mimics natural sebum to soothe." },
+      { name: "Candelilla Wax", description: "Plant-based wax that seals in moisture without heaviness." },
+      { name: "Vitamin E", description: "Antioxidant support for delicate lip skin." },
+    ],
+    ingredientsAr: [
+      { name: "زبدة الشيا", description: "دهون مغذية بعمق تمنح نعومة." },
+      { name: "زيت الجوجوبا", description: "زيت خفيف يشابه الزيوت الطبيعية لتهدئة الشفاه." },
+      { name: "شمع الكنديلا", description: "شمع نباتي يحبس الترطيب دون ثقل." },
+      { name: "فيتامين هـ", description: "دعم مضاد للأكسدة لبشرة الشفاه الرقيقة." },
+    ],
+    sensoryExperience: [
+      "Silky balm with a soft, protective veil.",
+      "Barely-there sheen, no sticky feel.",
+      "Subtle, clean comfort.",
+    ],
+    sensoryExperienceAr: [
+      "بلسم حريري مع طبقة حماية ناعمة.",
+      "لمعان خفيف دون لزوجة.",
+      "راحة لطيفة بلمسة نظيفة.",
+    ],
+    pairsWellWith: createPairings([
+      { name: "Hand Balm", slug: "/products/hand-balm" },
+      { name: "Body Balm", slug: "/products/body-balm" },
+    ]),
+    pairsWellWithAr: createPairings([
+      { name: "بلسم اليدين", slug: "/products/hand-balm" },
+      { name: "بلسم الجسم", slug: "/products/body-balm" },
+    ]),
+    faq: [
+      {
+        question: "Is it safe for sensitive lips?",
+        answer: "Yes—formulated to comfort daily, even in dry climates.",
+      },
+      {
+        question: "Can I layer it under lipstick?",
+        answer: "Absolutely. Apply a thin layer, let it absorb, then add color.",
+      },
+      {
+        question: "How often should I reapply?",
+        answer: "Anytime lips feel dry; reapply after eating or drinking.",
+      },
+    ],
+    faqAr: [
+      {
+        question: "هل يناسب الشفاه الحساسة؟",
+        answer: "نعم—مصمم للراحة اليومية حتى في المناخات الجافة.",
+      },
+      {
+        question: "هل يمكن استخدامه تحت أحمر الشفاه؟",
+        answer: "بالتأكيد. ضعي طبقة رقيقة واتركيها تمتص ثم أضيفي اللون.",
+      },
+      {
+        question: "كم مرة أعيد التطبيق؟",
+        answer: "كلما شعرتِ بجفاف؛ جدّديه بعد الأكل أو الشرب.",
       },
     ],
   },

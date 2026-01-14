@@ -37,6 +37,7 @@ const productFormatMap: Record<string, string> = {
   "calm-glow-body-soap": "95 g bar",
   "silk-blossom-body-soap": "95 g bar",
   "hand-balm": "75 ml pot",
+  "lip-balm": "10 ml tube",
   "hair-growth-oil": "60 ml dropper",
   "hair-shine-anti-frizz-oil": "60 ml dropper",
 };
@@ -46,6 +47,7 @@ const productFormatMapAr: Record<string, string> = {
   "calm-glow-body-soap": "قطعة 95 جم",
   "silk-blossom-body-soap": "قطعة 95 جم",
   "hand-balm": "علبة 75 مل",
+  "lip-balm": "أنبوب 10 مل",
   "hair-growth-oil": "قطّارة 60 مل",
   "hair-shine-anti-frizz-oil": "قطّارة 60 مل",
 };

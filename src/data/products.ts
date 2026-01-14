@@ -4,6 +4,7 @@ import bodyBalmImage from "../assets/BodyBalmEnhanced1.jpg";
 import handBalmImage from "../assets/HandBalmEnhanced.jpg";
 import hairGrowthImage from "../assets/HairGrowthEnhanced.jpg";
 import hairShineImage from "../assets/HairShineEnhanced.jpg";
+import lipBalmImage from "../assets/LipBalm.jpg";
 export interface CatalogProduct {
   id: number;
   title: string;
@@ -75,6 +76,16 @@ export const PRODUCTS: CatalogProduct[] = [
     price: "196.99 EGP",
     image: hairShineImage,
     category: "finisher",
+  },
+  {
+    id: 7,
+    title: "Lip Balm",
+    titleAr: "بلسم الشفاه",
+    desc: "A 10 ml daily balm that cushions lips with lasting moisture.",
+    descAr: "بلسم يومي بحجم 10 مل يغلّف الشفاه بترطيب يدوم.",
+    price: "99.00 EGP",
+    image: lipBalmImage,
+    category: "treatment",
   },
 ];
 

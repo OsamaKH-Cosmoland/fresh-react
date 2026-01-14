@@ -33,6 +33,7 @@ const PRODUCT_TAGS: Record<
   "calm-glow-body-soap": { focus: ["body"], extras: ["morning"] },
   "silk-blossom-body-soap": { focus: ["body"], extras: ["evening"] },
   "hand-balm": { focus: ["hands"], extras: ["express"] },
+  "lip-balm": { focus: ["hands"], extras: ["express"] },
   "hair-growth-oil": { focus: ["hair"], extras: ["express"] },
   "hair-shine-anti-frizz-oil": { focus: ["hair"], extras: ["express"] },
 };
