@@ -44,11 +44,29 @@
   scroll-padding-top: var(--navbar-height);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-body);
   margin: 0;
   background: linear-gradient(180deg, #042216 0%, #04110b 100%);
   color: #f7ecd4;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 #main-content {
@@ -7646,6 +7664,120 @@ button:hover {
   }
   .nav-search {
     width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --navbar-height: 150px;
+  }
+
+  .navbar {
+    height: var(--navbar-height);
+    padding: 0.45rem 0 0.55rem;
+    background: color-mix(in srgb, #052116 82%, transparent);
+    backdrop-filter: saturate(145%) blur(12px);
+  }
+
+  .nav-inner {
+    width: 100%;
+    padding-inline: clamp(0.75rem, 4vw, 1.15rem);
+    box-sizing: border-box;
+  }
+
+  .nav-bar {
+    gap: 0.32rem;
+    min-width: 0;
+  }
+
+  .brand {
+    font-size: 0.96rem;
+    letter-spacing: 0.26em;
+    margin-bottom: 0.2rem;
+  }
+
+  .brand::after {
+    bottom: -4px;
+  }
+
+  .nav-bar__actions {
+    gap: 0.4rem;
+    min-width: 0;
+  }
+
+  .nav-search.nav-search--inline,
+  .nav-search--inline {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+    padding: 0.32rem 0.65rem;
+  }
+
+  .nav-search--inline input {
+    min-width: 0;
+    font-size: 0.88rem;
+    letter-spacing: 0.02em;
+    padding-block: 0.16rem;
+  }
+
+  .nav-utility-links {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+
+  .nav-currency {
+    margin-inline-end: 0.45rem;
+  }
+
+  .nav-currency__trigger,
+  .nav-utility-links .nav-language {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.68rem;
+  }
+
+  .nav-mobile-actions {
+    gap: 0.28rem;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .nav-cart.nav-cart--mobile {
+    width: auto;
+    min-height: 36px;
+    padding: 0.36rem 0.62rem;
+    gap: 0.32rem;
+  }
+
+  .nav-cart.nav-cart--mobile .nav-cart__icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .nav-cart.nav-cart--mobile .nav-cart__count {
+    min-width: 24px;
+    height: 21px;
+    padding-inline: 0.48rem;
+    font-size: 0.72rem;
+  }
+
+  .nav-mobile-actions__menu {
+    min-height: 36px;
+    padding: 0.34rem 0.42rem;
+    border-radius: 10px;
+  }
+
+  .nav-mobile-actions__menu span {
+    width: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --navbar-height: 138px;
+  }
+
+  .navbar {
+    padding-block: 0.4rem 0.5rem;
   }
 }
 
