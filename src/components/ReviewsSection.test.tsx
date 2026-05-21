@@ -1,6 +1,7 @@
 /// <reference types="@testing-library/jest-dom" />
 import { render, screen, waitFor } from "@testing-library/react";
 import ReviewsSection from "./ReviewsSection";
+import { LocaleProvider } from "@/localization/locale";
 
 const mockFetch = (data: unknown, ok = true) =>
   jest.fn().mockResolvedValue({
@@ -22,10 +23,14 @@ describe("ReviewsSection", () => {
     jest.restoreAllMocks();
   });
 
-  it("renders empty state when no reviews", async () => {
-    render(<ReviewsSection />);
+  it("renders seeded reviews when the API has no reviews yet", async () => {
+    render(
+      <LocaleProvider>
+        <ReviewsSection />
+      </LocaleProvider>
+    );
     await waitFor(() => {
-      expect(screen.getByText(/No stories yet/i)).toBeInTheDocument();
+      expect(screen.getByText(/Maya, Cairo/i)).toBeInTheDocument();
     });
   });
 });

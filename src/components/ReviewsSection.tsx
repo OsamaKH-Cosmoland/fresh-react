@@ -5,6 +5,7 @@ import type { Review } from "../types/review";
 import { Button, Card, SectionTitle, InputField, TextareaField } from "./ui";
 import { getLogger } from "@/logging/globalLogger";
 import { useTranslation } from "@/localization/locale";
+import { customerReviews } from "@/content/reviews";
 
 const buildStars = (count: number) => {
   const full = Math.min(5, Math.max(0, Math.round(count)));
@@ -12,6 +13,47 @@ const buildStars = (count: number) => {
 };
 
 const RATING_OPTIONS = [5, 4, 3, 2, 1];
+const LOCAL_REVIEWS_KEY = "naturagloss_community_reviews";
+
+const seededReviews: Review[] = customerReviews.map((review, index) => ({
+  mongoId: review.id,
+  name: review.author,
+  message: review.detail ? `${review.quote} ${review.detail}` : review.quote,
+  rating: review.rating,
+  createdAt: new Date(Date.UTC(2026, 0, 15 - index)).toISOString(),
+}));
+
+const canUseLocalReviews = () =>
+  typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+
+const sortReviews = (reviews: Review[]) =>
+  [...reviews].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+const readLocalReviews = (): Review[] => {
+  if (!canUseLocalReviews()) return [];
+  try {
+    const raw = window.localStorage.getItem(LOCAL_REVIEWS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as Review[]) : [];
+  } catch (error) {
+    getLogger().warn("Unable to read local community reviews", { error });
+    return [];
+  }
+};
+
+const writeLocalReviews = (reviews: Review[]) => {
+  if (!canUseLocalReviews()) return;
+  try {
+    window.localStorage.setItem(LOCAL_REVIEWS_KEY, JSON.stringify(reviews));
+  } catch (error) {
+    getLogger().warn("Unable to save local community reviews", { error });
+  }
+};
+
+const fallbackReviews = () => sortReviews([...readLocalReviews(), ...seededReviews]);
 
 export default function ReviewsSection() {
   const { t } = useTranslation();
@@ -33,10 +75,14 @@ export default function ReviewsSection() {
           throw new Error(body?.error ?? `Failed to load reviews (${response.status}).`);
         }
         const data = (await response.json()) as Review[];
-        if (mounted) setReviews(Array.isArray(data) ? data : []);
+        const apiReviews = Array.isArray(data) ? data : [];
+        if (mounted) setReviews(sortReviews([...apiReviews, ...readLocalReviews(), ...seededReviews]));
       } catch (err) {
         getLogger().error("Failed to fetch reviews", { error: err });
-        if (mounted) setError((err as Error)?.message ?? t("reviews.errors.load"));
+        if (mounted) {
+          setReviews(fallbackReviews());
+          setError(null);
+        }
       } finally {
         if (mounted) setLoading(false);
       }
@@ -78,12 +124,25 @@ export default function ReviewsSection() {
         rating: Number(form.rating),
         message: form.message.trim(),
       };
-      const response = await apiPost("/reviews", payload);
-      if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        throw new Error(body?.error ?? t("reviews.errors.submit"));
+      let saved: Review | null = null;
+      try {
+        const response = await apiPost("/reviews", payload);
+        if (!response.ok) {
+          const body = await response.json().catch(() => ({}));
+          throw new Error(body?.error ?? t("reviews.errors.submit"));
+        }
+        saved = await response.json();
+      } catch (apiError) {
+        getLogger().warn("Review API unavailable; saving review locally", { error: apiError });
+        saved = {
+          mongoId: `local-${Date.now()}`,
+          name: payload.name || t("reviews.list.anonymous"),
+          rating: payload.rating,
+          message: payload.message,
+          createdAt: new Date().toISOString(),
+        };
+        writeLocalReviews([saved, ...readLocalReviews()]);
       }
-      const saved = await response.json();
       setReviews((prev) => [saved, ...prev]);
       setForm({ name: "", rating: 5, message: "" });
       setStatus({ type: "success", message: t("reviews.form.thankYou") });
