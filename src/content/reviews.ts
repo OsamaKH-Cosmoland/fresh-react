@@ -50,7 +50,7 @@ export const customerReviews: CustomerReview[] = [
     productId: "hand-balm",
     rating: 4,
     quote: "بيتشرب بسرعة جدًا، مناسب بعد غسيل الإيدين ومش بيسيبه ملمس لزج.",
-    author: "Noura",
+    author: "noura",
     createdAt: "2026-01-18T09:41:00.000Z",
   },
   {
@@ -90,7 +90,7 @@ export const customerReviews: CustomerReview[] = [
     productId: "body-balm",
     rating: 5,
     quote: "كنت خايفة يكون تقيل، بس بيتفرد بسهولة وبيخلي الجلد ملمسه أهدى.",
-    author: "Hana",
+    author: "hana",
     createdAt: "2026-02-09T08:55:00.000Z",
   },
   {
@@ -138,7 +138,7 @@ export const customerReviews: CustomerReview[] = [
     productId: "body-balm",
     rating: 5,
     quote: "الملمس فاخر بس مش مبالغ فيه، وبيدي لمعة صحية حلوة من غير ما يبقى مزيت.",
-    author: "Farida",
+    author: "farida",
     createdAt: "2026-03-06T18:20:00.000Z",
   },
   {
@@ -186,7 +186,7 @@ export const customerReviews: CustomerReview[] = [
     productId: "hair-shine-oil",
     rating: 5,
     quote: "الشعر بيبان ألمع من غير ما يهبط، وده أهم حاجة بالنسبة لي.",
-    author: "Mariam",
+    author: "mariam",
     createdAt: "2026-04-02T11:09:00.000Z",
   },
   {
@@ -242,7 +242,7 @@ export const customerReviews: CustomerReview[] = [
     productId: "body-balm",
     rating: 5,
     quote: "أكتر حاجة عجبتني إنه بيرطب من غير ما يوسخ الهدوم أو يسيب أثر.",
-    author: "Noha",
+    author: "noha",
     createdAt: "2026-04-28T10:26:00.000Z",
   },
   {
