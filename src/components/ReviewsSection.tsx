@@ -20,7 +20,7 @@ const seededReviews: Review[] = customerReviews.map((review, index) => ({
   name: review.author,
   message: review.detail ? `${review.quote} ${review.detail}` : review.quote,
   rating: review.rating,
-  createdAt: new Date(Date.UTC(2026, 0, 15 - index)).toISOString(),
+  createdAt: review.createdAt ?? new Date(Date.UTC(2026, 0, 15 - index)).toISOString(),
 }));
 
 const canUseLocalReviews = () =>

@@ -30,7 +30,8 @@ describe("ReviewsSection", () => {
       </LocaleProvider>
     );
     await waitFor(() => {
-      expect(screen.getByText("Maya")).toBeInTheDocument();
+      expect(screen.getByText(/30/)).toBeInTheDocument();
+      expect(screen.getByText("هاجر")).toBeInTheDocument();
     });
   });
 });
