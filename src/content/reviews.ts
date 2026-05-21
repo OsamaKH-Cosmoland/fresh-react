@@ -30,7 +30,7 @@ export const customerReviews: CustomerReview[] = [
   {
     id: "review-body-balm-2",
     productId: "body-balm",
-    rating: 4,
+    rating: 5,
     quote: "الريحة لطيفة وهادية، والقوام غني بس مش تقيل على البشرة.",
     author: "yara gaber",
   },
