@@ -29,8 +29,12 @@ export interface FAQItem {
 export interface ProductVariant {
   variantId: string;
   label: string;
+  size: string;
   priceLabel: string;
   priceNumber: number;
+  price?: number;
+  compareAtPrice?: number;
+  discountPercentage?: number;
   attributes: Record<string, string>;
 }
 
@@ -41,6 +45,10 @@ export interface ProductDetailLayoutProps {
   heroImage?: string;
   priceLabel?: string;
   priceNumber: number;
+  size: string;
+  price?: number;
+  compareAtPrice?: number;
+  discountPercentage?: number;
   whatItsMadeFor: string;
   ritualSteps: RitualStep[];
   ingredients: IngredientHighlight[];
@@ -59,7 +67,11 @@ export function ProductDetailLayout({
   shortTagline,
   heroSummaryBullets,
   heroImage,
-  priceLabel,
+  priceNumber,
+  size,
+  price,
+  compareAtPrice,
+  discountPercentage,
   whatItsMadeFor,
   ritualSteps,
   ingredients,
@@ -75,12 +87,21 @@ export function ProductDetailLayout({
   const { t } = useTranslation();
   const selectedVariant = variants?.find((variant) => variant.variantId === selectedVariantId);
   const { currency } = useCurrency();
-  const displayPriceLabel = formatCurrency(
-    selectedVariant?.priceNumber ?? priceNumber,
-    currency
-  );
+  const activePrice = selectedVariant?.price ?? selectedVariant?.priceNumber ?? price ?? priceNumber;
+  const activeCompareAtPrice = selectedVariant?.compareAtPrice ?? compareAtPrice;
+  const activeDiscountPercentage = selectedVariant?.discountPercentage ?? discountPercentage;
+  const activeSize = selectedVariant?.size ?? size;
+  const displayPriceLabel = formatCurrency(activePrice, currency);
+  const compareAtDisplay =
+    activeCompareAtPrice && activeCompareAtPrice > activePrice
+      ? formatCurrency(activeCompareAtPrice, currency)
+      : "";
   const variantDescriptor = selectedVariant
-    ? Object.values(selectedVariant.attributes).filter(Boolean).join(" · ")
+    ? Object.entries(selectedVariant.attributes)
+        .filter(([key]) => key !== "size")
+        .map(([, value]) => value)
+        .filter(Boolean)
+        .join(" · ")
     : "";
   const hasVariants = Boolean(variants && variants.length);
   return (
@@ -89,13 +110,28 @@ export function ProductDetailLayout({
         <section className="product-detail-hero" data-animate="fade-up">
           <div className="product-detail-hero__copy">
           <p className="product-detail-hero__tagline">{shortTagline}</p>
-          <h1 className="product-detail-hero__title">{productName}</h1>
-          {displayPriceLabel && (
-            <p className="product-detail-hero__price">{displayPriceLabel}</p>
-          )}
+          <h1 className="product-detail-hero__title">
+            {productName}
+            {activeSize ? (
+              <span className="product-detail-hero__size"> - {activeSize}</span>
+            ) : null}
+          </h1>
+          <div className="product-detail-price-block product-detail-price-block--hero">
+            {activeDiscountPercentage ? (
+              <span className="price-discount-badge">{activeDiscountPercentage}% OFF</span>
+            ) : null}
+            <div className="product-detail-price-block__prices">
+              {compareAtDisplay && (
+                <span className="product-detail-price-block__compare">
+                  {compareAtDisplay}
+                </span>
+              )}
+              <span className="product-detail-hero__price">{displayPriceLabel}</span>
+            </div>
+          </div>
           {selectedVariant && (
             <p className="product-detail-hero__variant">
-              {selectedVariant.label}
+              {selectedVariant.size}
               {variantDescriptor ? ` · ${variantDescriptor}` : ""}
             </p>
           )}
@@ -106,7 +142,9 @@ export function ProductDetailLayout({
               aria-label={t("accessibility.variantSelector")}
             >
               {variants?.map((variant) => {
-                const attributesLabel = Object.values(variant.attributes)
+                const attributesLabel = Object.entries(variant.attributes)
+                  .filter(([key]) => key !== "size")
+                  .map(([, value]) => value)
                   .filter(Boolean)
                   .join(" · ");
                 const isActive = variant.variantId === selectedVariant?.variantId;
@@ -126,7 +164,7 @@ export function ProductDetailLayout({
                       }
                     }}
                   >
-                    <span>{variant.label}</span>
+                    <span>{variant.size}</span>
                     {attributesLabel && <small>{attributesLabel}</small>}
                   </button>
                 );
@@ -150,6 +188,11 @@ export function ProductDetailLayout({
         </div>
         {heroImage && (
           <figure className="product-detail-hero__visual" data-animate="fade-in">
+            {activeDiscountPercentage ? (
+              <span className="price-discount-badge product-detail-hero__badge">
+                {activeDiscountPercentage}% OFF
+              </span>
+            ) : null}
             <img src={heroImage} alt={productName} />
           </figure>
         )}
@@ -236,10 +279,25 @@ export function ProductDetailLayout({
         <aside className="product-detail-aside" data-animate="fade-up">
           <Card className="product-detail-aside__card">
             <p className="product-detail-aside__label">{t("productDetail.aside.label")}</p>
-            <h3>{productName}</h3>
-            {displayPriceLabel && (
-              <p className="product-detail-aside__price">{displayPriceLabel}</p>
-            )}
+            <h3>
+              {productName}
+              {activeSize ? (
+                <span className="product-detail-aside__size"> - {activeSize}</span>
+              ) : null}
+            </h3>
+            <div className="product-detail-price-block">
+              {activeDiscountPercentage ? (
+                <span className="price-discount-badge">{activeDiscountPercentage}% OFF</span>
+              ) : null}
+              <div className="product-detail-price-block__prices">
+                {compareAtDisplay && (
+                  <span className="product-detail-price-block__compare">
+                    {compareAtDisplay}
+                  </span>
+                )}
+                <span className="product-detail-aside__price">{displayPriceLabel}</span>
+              </div>
+            </div>
             <p className="product-detail-aside__hint">
               {t("productDetail.aside.hint")}
             </p>

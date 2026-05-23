@@ -62,6 +62,7 @@ export default function ShopPage() {
   const [focusFilter, setFocusFilter] = useState<FocusTagId[]>([]);
   const [typeFilter, setTypeFilter] = useState<ShopTypeFilter>("all");
   const [sortMode, setSortMode] = useState<"default" | "recommended">("default");
+  const [selectedVariantByProduct, setSelectedVariantByProduct] = useState<Record<string, string>>({});
   const { addItem } = useCart();
   const { addBundleToCart } = useBundleActions();
   const { t, locale } = useTranslation();
@@ -200,8 +201,8 @@ export default function ShopPage() {
     setTypeFilter("all");
   };
 
-  const handleAddProduct = (product: ShopCatalogProductEntry["item"]) => {
-    const payload = buildProductCartPayload(product);
+  const handleAddProduct = (product: ShopCatalogProductEntry["item"], variantId?: string) => {
+    const payload = buildProductCartPayload(product, variantId);
     addItem(payload);
     trackEvent({
       type: "add_to_cart",
@@ -325,6 +326,19 @@ export default function ShopPage() {
                   const focusLabels = focus.map((label) => focusLookup[label]);
                   const extraLabels = extras?.map((label) => optionalLookup[label]) ?? [];
                   const localizedItem = localizeProductDetail(item, locale);
+                  const selectedVariantId =
+                    selectedVariantByProduct[item.productId] ??
+                    item.defaultVariantId ??
+                    item.variants?.[0]?.variantId;
+                  const selectedVariant = localizedItem.variants?.find(
+                    (variant) => variant.variantId === selectedVariantId
+                  );
+                  const displaySize = selectedVariant?.size ?? localizedItem.size;
+                  const displayPrice = selectedVariant?.price ?? selectedVariant?.priceNumber ?? item.price;
+                  const displayCompareAtPrice =
+                    selectedVariant?.compareAtPrice ?? item.compareAtPrice;
+                  const displayDiscountPercentage =
+                    selectedVariant?.discountPercentage ?? item.discountPercentage;
                   const variantSummary = getVariantSummaryForLocale(item.productId, locale);
                   const variantLabels = variantSummary?.labels.slice(0, 3) ?? [];
                   const hasMoreVariants =
@@ -349,18 +363,61 @@ export default function ShopPage() {
                       {item.heroImage && (
                         <div className="shop-product-card__media">
                           <img src={item.heroImage} alt={localizedItem.productName} />
+                          <span className="price-discount-badge shop-product-card__badge">
+                            {displayDiscountPercentage}% OFF
+                          </span>
                         </div>
                       )}
                       <div className="shop-product-card__body">
                         <div className="shop-product-card__heading">
-                          <h3>{localizedItem.productName}</h3>
-                          <p className="shop-product-card__price">
-                            {formatCurrency(item.priceNumber, currency)}
-                          </p>
+                          <h3>
+                            {localizedItem.productName}
+                            {displaySize ? (
+                              <span className="shop-product-card__size"> - {displaySize}</span>
+                            ) : null}
+                          </h3>
+                          <div className="shop-product-card__pricing">
+                            <span className="shop-product-card__compare-price">
+                              {formatCurrency(displayCompareAtPrice, currency)}
+                            </span>
+                            <span className="shop-product-card__price">
+                              {formatCurrency(displayPrice, currency)}
+                            </span>
+                          </div>
                         </div>
                         <p className="shop-product-card__tagline">{localizedItem.shortTagline}</p>
-                        {variantSummary && variantSummary.count > 1 && (
-                          <>
+                        {localizedItem.variants && localizedItem.variants.length > 1 ? (
+                          <div
+                            className="shop-product-card__size-selector"
+                            role="radiogroup"
+                            aria-label={t("accessibility.variantSelector")}
+                          >
+                            {localizedItem.variants.map((variant) => {
+                              const isSelected = variant.variantId === selectedVariantId;
+                              return (
+                                <button
+                                  key={variant.variantId}
+                                  type="button"
+                                  className={`shop-product-card__size-option${
+                                    isSelected ? " is-active" : ""
+                                  }`}
+                                  onClick={() =>
+                                    setSelectedVariantByProduct((prev) => ({
+                                      ...prev,
+                                      [item.productId]: variant.variantId,
+                                    }))
+                                  }
+                                  role="radio"
+                                  aria-checked={isSelected}
+                                >
+                                  {variant.size}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          variantSummary && variantSummary.count > 1 && (
+                            <>
                             <p className="shop-product-card__variant-summary">
                               {t("variants.summary.available", {
                                 count: variantSummary.count,
@@ -370,7 +427,8 @@ export default function ShopPage() {
                               {variantLabels.join(" · ")}
                               {hasMoreVariants ? " …" : ""}
                             </p>
-                          </>
+                            </>
+                          )
                         )}
                         {ratingStats.count > 0 && (
                           <div className="shop-product-card__rating">
@@ -402,7 +460,7 @@ export default function ShopPage() {
                           <Button
                             variant="primary"
                             size="md"
-                            onClick={() => handleAddProduct(item)}
+                            onClick={() => handleAddProduct(item, selectedVariant?.variantId)}
                           >
                             {t("cta.addToBag")}
                           </Button>

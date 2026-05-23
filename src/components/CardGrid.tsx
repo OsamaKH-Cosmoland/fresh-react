@@ -13,6 +13,8 @@ import { CompareToggle } from "@/components/CompareToggle";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { trackEvent } from "@/analytics/events";
 import { useTranslation } from "@/localization/locale";
+import { useCurrency } from "@/currency/CurrencyProvider";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 interface CardGridProps {
   onAddToCart?: (product: CatalogProduct) => void;
@@ -36,6 +38,7 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
   const initial = PRODUCTS;
   const { addItem } = useCart();
   const { t, locale } = useTranslation();
+  const { currency } = useCurrency();
 
   const recommendationMap: Record<number, number> = {
     2: 3,
@@ -76,10 +79,9 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
   };
 
   const handleAdd = (item: CatalogProduct) => {
-    const priceValue = Number(
-      String(item.price).replace(/[^\d.]/g, "") || "0"
-    );
-    const displayName = locale === "ar" ? item.titleAr ?? item.title : item.title;
+    const priceValue = item.price;
+    const displayNameBase = locale === "ar" ? item.titleAr ?? item.title : item.title;
+    const displayName = `${displayNameBase} - ${item.size}`;
     addItem({
       id: String(item.id ?? item._id ?? item.title),
       name: displayName ?? t("cardGrid.toast.itemFallback"),
@@ -196,7 +198,8 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
           const detailSlug = PRODUCT_DETAIL_SLUGS_BY_TITLE[c.title];
           const detail = detailSlug ? PRODUCT_DETAIL_MAP[detailSlug] : undefined;
           const compareId = detail?.productId ?? detailSlug ?? String(c.id);
-          const displayTitle = locale === "ar" ? c.titleAr ?? c.title : c.title;
+          const displayTitleBase = locale === "ar" ? c.titleAr ?? c.title : c.title;
+          const displayTitle = `${displayTitleBase} - ${c.size}`;
           const displayDesc = locale === "ar" ? c.descAr ?? c.desc : c.desc;
           return (
               <Card
@@ -219,14 +222,19 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                   itemLabel={displayTitle}
                 />
                 {c.image && (
-                <img
-                  src={c.image}
-                  alt={displayTitle}
-                  className="card-img"
-                  loading="lazy"
-                  decoding="async"
-                />
-              )}
+                  <div className="card-media">
+                    <img
+                      src={c.image}
+                      alt={displayTitle}
+                      className="card-img"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span className="price-discount-badge card-discount-badge">
+                      {c.discountPercentage}% OFF
+                    </span>
+                  </div>
+                )}
               <header className="card-head">
                 <h3>{displayTitle}</h3>
                 <button
@@ -242,7 +250,12 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                 </button>
               </header>
               <p className="card-desc">{displayDesc}</p>
-              <p className="card-price">{c.price}</p>
+              <div className="card-price-block">
+                <span className="card-compare-price">
+                  {formatCurrency(c.compareAtPrice, currency)}
+                </span>
+                <span className="card-price">{formatCurrency(c.price, currency)}</span>
+              </div>
               <div className="card-actions">
                 <Button
                   className="card-add"

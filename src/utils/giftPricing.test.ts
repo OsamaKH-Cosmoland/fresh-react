@@ -15,9 +15,9 @@ describe("gift pricing helpers", () => {
     if (!bodyBalm || !calmGlow) {
       throw new Error("Required product details missing");
     }
-    const selectedVariants = { "body-balm": "body-balm-silk" };
+    const selectedVariants = { "body-balm": "body-balm-50ml" };
     const total = calculateProductTotal([bodyBalm, calmGlow], selectedVariants);
-    const expectedVariant = getVariantById("body-balm", "body-balm-silk");
+    const expectedVariant = getVariantById("body-balm", "body-balm-50ml");
     const expectedBodyPrice = expectedVariant?.priceNumber ?? bodyBalm.priceNumber;
     const expectedTotal = expectedBodyPrice + calmGlow.priceNumber;
     expect(total).toBeCloseTo(expectedTotal, 2);

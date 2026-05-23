@@ -80,6 +80,9 @@ function BundleCardBase({
       <FavoriteToggle id={bundle.id} type="bundle" itemLabel={bundleName} />
       {heroImage && (
         <div className="bundle-card__hero">
+          <span className="price-discount-badge bundle-card__badge">
+            {bundle.discountPercentage}% OFF
+          </span>
           <img
             src={heroImage}
             alt={bundleName}
@@ -137,12 +140,15 @@ function BundleCardBase({
         </div>
       )}
       <div className="bundle-card__pricing">
-        <span className="bundle-card__price">{bundlePriceDisplay}</span>
-        {pricing.compareAt > pricing.bundlePrice && (
-          <span className="bundle-card__compare">
-            {t("bundleCard.compareAtLabel")} {compareAtDisplay}
+        {bundle.discountPercentage ? (
+          <span className="price-discount-badge bundle-card__inline-badge">
+            {bundle.discountPercentage}% OFF
           </span>
+        ) : null}
+        {pricing.compareAt > pricing.bundlePrice && (
+          <span className="bundle-card__compare">{compareAtDisplay}</span>
         )}
+        <span className="bundle-card__price">{bundlePriceDisplay}</span>
         {pricing.savingsAmount > 0 && (
           <span className="bundle-card__savings">
             {t("bundleCard.savingsLabel")} {savingsDisplay}
