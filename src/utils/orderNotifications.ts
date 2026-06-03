@@ -1,6 +1,7 @@
 import type { CartItem } from "@/cart/cartStore";
 import { formatVariantMeta } from "@/utils/variantDisplay";
 import { getLogger } from "@/logging/globalLogger";
+import { apiPost } from "@/lib/api";
 
 export interface OrderNotificationPayload {
   orderId: string;
@@ -22,11 +23,7 @@ export interface OrderNotificationPayload {
 
 export async function notifyOrderCreated(payload: OrderNotificationPayload) {
   try {
-    const response = await fetch("/api/order-created", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const response = await apiPost("/order-created", payload);
     if (!response.ok) {
       const body = await response.text().catch(() => "");
       getLogger().warn("Order notification failed", {

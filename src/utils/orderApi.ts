@@ -1,5 +1,6 @@
 import type { LocalOrder } from "@/types/localOrder";
 import { getLogger } from "@/logging/globalLogger";
+import { apiPost } from "@/lib/api";
 
 const formatItems = (items: LocalOrder["items"]) =>
   items.map((item) => ({
@@ -19,6 +20,8 @@ export async function submitOrderToApi(order: LocalOrder) {
         name: order.customer.name,
         email: order.customer.email,
         phone: order.customer.phone,
+        city: order.shippingAddress.city,
+        address: order.shippingAddress.street,
       },
       items: formatItems(order.items),
       totals: {
@@ -38,11 +41,7 @@ export async function submitOrderToApi(order: LocalOrder) {
       },
     };
 
-    const response = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const response = await apiPost("/orders", payload);
 
     if (!response.ok) {
       const text = await response.text().catch(() => "");
