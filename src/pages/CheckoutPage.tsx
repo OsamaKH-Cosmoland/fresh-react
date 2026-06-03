@@ -38,12 +38,13 @@ import {
   saveGiftCredits,
 } from "@/utils/giftCreditStorage";
 import { isGiftCardProduct } from "@/giftcards/giftCardCatalog";
-
-const SHIPPING_OPTIONS = [
-  { id: "standard", cost: 45 },
-  { id: "express", cost: 90 },
-  { id: "local", cost: 35 },
-] as const;
+import {
+  FREE_STANDARD_SHIPPING_THRESHOLD,
+  calculateShippingMethods,
+  type CalculatedShippingMethod,
+  type ShippingMethodId,
+} from "@/checkout/shippingCalculator";
+import { EGYPT_CITY_OPTIONS } from "@/checkout/egyptCities";
 
 const STEPS: AppTranslationKey[] = [
   "checkout.steps.contact",
@@ -73,6 +74,56 @@ const EMPTY_CONTACT = {
   postalCode: "",
 };
 
+interface FreeShippingUpsellProps {
+  cartTotal: number;
+  currency: string;
+  onContinueShopping: () => void;
+}
+
+function FreeShippingUpsell({
+  cartTotal,
+  currency,
+  onContinueShopping,
+}: FreeShippingUpsellProps) {
+  const amountNeeded = Math.max(FREE_STANDARD_SHIPPING_THRESHOLD - cartTotal, 0);
+  const progress = Math.min((cartTotal / FREE_STANDARD_SHIPPING_THRESHOLD) * 100, 100);
+
+  if (amountNeeded <= 0) {
+    return (
+      <div className="checkout-free-shipping checkout-free-shipping--success" role="status">
+        <strong>Congratulations! You've unlocked FREE Standard Delivery!</strong>
+      </div>
+    );
+  }
+
+  return (
+    <div className="checkout-free-shipping" role="status">
+      <div className="checkout-free-shipping__copy">
+        <strong>
+          You're only {formatCurrency(amountNeeded, currency)} away from FREE Standard Delivery!
+        </strong>
+        <span>Add more products to your cart.</span>
+      </div>
+      <div
+        className="checkout-free-shipping__track"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={FREE_STANDARD_SHIPPING_THRESHOLD}
+        aria-valuenow={Math.min(cartTotal, FREE_STANDARD_SHIPPING_THRESHOLD)}
+      >
+        <span style={{ width: `${progress}%` }} />
+      </div>
+      <button
+        type="button"
+        className="checkout-free-shipping__link"
+        onClick={onContinueShopping}
+      >
+        Continue Shopping
+      </button>
+    </div>
+  );
+}
+
 export default function CheckoutPage() {
   usePageAnalytics("checkout");
   useSeo({ route: "checkout" });
@@ -92,7 +143,7 @@ export default function CheckoutPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [contactInfo, setContactInfo] = useState(EMPTY_CONTACT);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [selectedShippingId, setSelectedShippingId] = useState(SHIPPING_OPTIONS[0].id);
+  const [selectedShippingId, setSelectedShippingId] = useState<ShippingMethodId>("standard");
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "instapay" | "vodafone">("cod");
   const [orderPlaced, setOrderPlaced] = useState<LocalOrder | null>(null);
   const [createdGiftCredits, setCreatedGiftCredits] = useState<
@@ -115,23 +166,36 @@ export default function CheckoutPage() {
     }
   }, [orderPlaced, registerOrder, trackEvent, calculateEarnedPoints]);
   const hasCartItems = cartItems.length > 0;
+  const discountedSubtotal = Math.max(subtotal - discountTotal, 0);
+  const shippingOptions = useMemo(
+    () => calculateShippingMethods(subtotal, contactInfo.city),
+    [subtotal, contactInfo.city]
+  );
+  const selectedShippingOption =
+    shippingOptions.find((entry) => entry.id === selectedShippingId) ?? shippingOptions[0];
   const shippingMethod = useMemo<ShippingMethod>(() => {
-    const base = SHIPPING_OPTIONS.find((entry) => entry.id === selectedShippingId) ?? SHIPPING_OPTIONS[0];
+    const base = selectedShippingOption;
     return {
       id: base.id,
       cost: base.cost,
-      label: t(`checkout.shippingOptions.${base.id}.label` as AppTranslationKey),
-      description: t(
-        `checkout.shippingOptions.${base.id}.description` as AppTranslationKey
-      ),
-      eta: t(`checkout.shippingOptions.${base.id}.eta` as AppTranslationKey),
+      label: base.label,
+      description: base.description,
+      eta: base.eta,
     };
-  }, [selectedShippingId, t]);
+  }, [selectedShippingOption]);
   const shippingCost = shippingMethod?.cost ?? 0;
   const finalShippingCost = appliedPromo?.freeShipping ? 0 : shippingCost;
-  const discountedSubtotal = Math.max(subtotal - discountTotal, 0);
   const total = discountedSubtotal + finalShippingCost;
   const totalAfterCredit = Math.max(total - creditAppliedBase, 0);
+
+  useEffect(() => {
+    const selectedStillAvailable = shippingOptions.some(
+      (option) => option.id === selectedShippingId
+    );
+    if (!selectedStillAvailable) {
+      setSelectedShippingId("standard");
+    }
+  }, [selectedShippingId, shippingOptions]);
 
   const handleContactChange = (field: keyof typeof contactInfo, value: string) => {
     setContactInfo((prev) => ({ ...prev, [field]: value }));
@@ -144,7 +208,13 @@ export default function CheckoutPage() {
   };
 
   const validateContact = () => {
-    const requiredFields: (keyof typeof contactInfo)[] = ["fullName", "email", "city", "street"];
+    const requiredFields: (keyof typeof contactInfo)[] = [
+      "fullName",
+      "email",
+      "phone",
+      "city",
+      "street",
+    ];
     const nextErrors: Record<string, string> = {};
     requiredFields.forEach((field) => {
       if (!contactInfo[field].trim()) {
@@ -176,18 +246,31 @@ export default function CheckoutPage() {
   };
 
   const handleShippingKeyDown = (event: KeyboardEvent<HTMLButtonElement>, optionId: string) => {
-    const currentIndex = SHIPPING_OPTIONS.findIndex((option) => option.id === optionId);
+    const currentIndex = shippingOptions.findIndex((option) => option.id === optionId);
     if (currentIndex === -1) return;
     if (event.key === "ArrowDown" || event.key === "ArrowRight") {
       event.preventDefault();
-      const nextIndex = (currentIndex + 1) % SHIPPING_OPTIONS.length;
-      setSelectedShippingId(SHIPPING_OPTIONS[nextIndex].id);
+      const nextIndex = (currentIndex + 1) % shippingOptions.length;
+      setSelectedShippingId(shippingOptions[nextIndex].id);
     }
     if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
       event.preventDefault();
-      const prevIndex = (currentIndex - 1 + SHIPPING_OPTIONS.length) % SHIPPING_OPTIONS.length;
-      setSelectedShippingId(SHIPPING_OPTIONS[prevIndex].id);
+      const prevIndex = (currentIndex - 1 + shippingOptions.length) % shippingOptions.length;
+      setSelectedShippingId(shippingOptions[prevIndex].id);
     }
+  };
+
+  const renderShippingPrice = (option: CalculatedShippingMethod) => {
+    if (option.id === "standard" && option.isFree) {
+      return (
+        <span className="checkout-shipping-option__price">
+          <s>{formatCurrency(option.originalCost, currency)}</s>
+          <strong>FREE</strong>
+        </span>
+      );
+    }
+
+    return <span>{formatCurrency(option.cost, currency)}</span>;
   };
 
   const generateGiftCardCode = () =>
@@ -365,21 +448,42 @@ export default function CheckoutPage() {
 
 const renderContactField = (name: keyof typeof contactInfo, labelKey: AppTranslationKey, required = false) => {
   const errorId = `${name}-error`;
+  const isCityField = name === "city";
+
   return (
     <div className="checkout-field">
       <label htmlFor={name}>
         {t(labelKey)}
         {required && <span className="checkout-required"> *</span>}
       </label>
-      <input
-        id={name}
-        name={name}
-        value={contactInfo[name]}
-        onChange={(event) => handleContactChange(name, event.target.value)}
-        className="checkout-input"
-        aria-invalid={errors[name] ? "true" : undefined}
-        aria-describedby={errors[name] ? errorId : undefined}
-      />
+      {isCityField ? (
+        <select
+          id={name}
+          name={name}
+          value={contactInfo[name]}
+          onChange={(event) => handleContactChange(name, event.target.value)}
+          className="checkout-input"
+          aria-invalid={errors[name] ? "true" : undefined}
+          aria-describedby={errors[name] ? errorId : undefined}
+        >
+          <option value="">Select your city</option>
+          {EGYPT_CITY_OPTIONS.map((city) => (
+            <option key={city.id} value={city.nameEn}>
+              {city.nameEn} / {city.nameAr}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          id={name}
+          name={name}
+          value={contactInfo[name]}
+          onChange={(event) => handleContactChange(name, event.target.value)}
+          className="checkout-input"
+          aria-invalid={errors[name] ? "true" : undefined}
+          aria-describedby={errors[name] ? errorId : undefined}
+        />
+      )}
       {errors[name] && (
         <p id={errorId} className="checkout-error">
           {errors[name]}
@@ -518,11 +622,9 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                 <div className="checkout-form-grid">
                   {renderContactField("fullName", "checkout.fields.fullName", true)}
                   {renderContactField("email", "checkout.fields.email", true)}
-                  {renderContactField("phone", "checkout.fields.phone")}
-                  {renderContactField("country", "checkout.fields.country")}
+                  {renderContactField("phone", "checkout.fields.phone", true)}
                 {renderContactField("city", "checkout.fields.city", true)}
                 {renderContactField("street", "checkout.fields.street", true)}
-                {renderContactField("postalCode", "checkout.fields.postalCode")}
               </div>
               <div className="checkout-field checkout-field--full">
                 <label className="checkout-consent">
@@ -541,6 +643,11 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
               <section className="checkout-card">
                 <h3>{t("checkout.sections.shipping")}</h3>
                 <p>{t("checkout.sections.shippingHelp")}</p>
+                <FreeShippingUpsell
+                  cartTotal={subtotal}
+                  currency={currency}
+                  onContinueShopping={() => navigateToAppPath("/")}
+                />
                 <div className="checkout-shipping-grid">
                   <div className="checkout-address-summary">
                     <h4>{t("checkout.shipping.addressTitle")}</h4>
@@ -555,7 +662,7 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                     role="radiogroup"
                     aria-label={t("checkout.sections.shipping")}
                   >
-                    {SHIPPING_OPTIONS.map((option) => (
+                    {shippingOptions.map((option) => (
                       <button
                         key={option.id}
                         type="button"
@@ -570,19 +677,17 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                       >
                         <div>
                           <p className="checkout-shipping-option__label">
-                            {t(`checkout.shippingOptions.${option.id}.label` as AppTranslationKey)}
+                            {option.label}
                           </p>
                           <p className="checkout-shipping-option__desc">
-                            {t(
-                              `checkout.shippingOptions.${option.id}.description` as AppTranslationKey
-                            )}
+                            {option.description}
                           </p>
+                          <small className="checkout-shipping-option__timing">
+                            {option.eta}
+                          </small>
                         </div>
                         <div className="checkout-shipping-option__meta">
-                          <span>{formatCurrency(option.cost, currency)}</span>
-                          <small>
-                            {t(`checkout.shippingOptions.${option.id}.eta` as AppTranslationKey)}
-                          </small>
+                          {renderShippingPrice(option)}
                         </div>
                       </button>
                     ))}
@@ -732,7 +837,7 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                     )}
                     <div className="checkout-review__method">
                       <span>{t("checkout.review.labels.shippingMethod")}</span>
-                      <p>{t(`checkout.shippingOptions.${shippingMethod.id}.label` as AppTranslationKey)}</p>
+                      <p>{shippingMethod.label}</p>
                     </div>
                     <div className="checkout-review__method">
                       <span>{t("checkout.review.labels.payment")}</span>

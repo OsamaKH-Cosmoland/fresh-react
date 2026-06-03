@@ -872,7 +872,7 @@ export const en = {
     fields: {
       fullName: "Full name",
       email: "Email",
-      phone: "Phone (optional)",
+      phone: "Phone",
       country: "Country",
       city: "City",
       street: "Street & apartment",
@@ -908,7 +908,7 @@ export const en = {
         vodafone: "Vodafone Cash",
       },
       transferNote:
-        "Take a screenshot with the payment proof and the order name and send it to that number 01015429159.",
+        "Send the order amount to 01273922868 under the name اسامه, then take a screenshot with the payment proof and the order name and send it to 01015429159 or through our Instagram page.",
     },
     validation: {
       required: "This field is required.",
