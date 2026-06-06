@@ -40,7 +40,7 @@ export const ritualBundles: RitualBundle[] = [
     ],
     price: 569.99,
     compareAtPrice: 939,
-    discountPercentage: 39,
+    discountPercentage: 40,
     bundlePriceNumber: 569.99,
     bundlePriceLabel: "569.99 EGP",
   },

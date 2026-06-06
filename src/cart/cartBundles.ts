@@ -20,6 +20,10 @@ export function useBundleActions() {
     (bundle: RitualBundle, variantSelection?: Record<string, string>) => {
       const pricing = getBundlePricing(bundle);
       const bundleName = locale === "ar" ? bundle.nameAr ?? bundle.name : bundle.name;
+      const selectionKey = Object.entries(variantSelection ?? {})
+        .sort(([productIdA], [productIdB]) => productIdA.localeCompare(productIdB))
+        .map(([productId, variantId]) => `${productId}:${variantId}`)
+        .join("|");
       const bundleItems = bundle.products.map((entry) => {
         const detail = PRODUCT_DETAIL_MAP[entry.productId];
         const defaultVariantId =
@@ -45,7 +49,7 @@ export function useBundleActions() {
       });
 
       addItem({
-        id: `bundle-${bundle.id}`,
+        id: selectionKey ? `bundle-${bundle.id}-${selectionKey}` : `bundle-${bundle.id}`,
         name: bundleName,
         price: pricing.bundlePrice,
         quantity: 1,

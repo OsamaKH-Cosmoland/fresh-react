@@ -7304,6 +7304,11 @@ button:hover {
   text-align: left;
 }
 
+.bundle-card__variant-control select:disabled {
+  cursor: default;
+  opacity: 0.78;
+}
+
 :root[dir="rtl"] .bundle-card__variant-control {
   text-align: right;
   direction: rtl;

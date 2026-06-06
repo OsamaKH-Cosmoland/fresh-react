@@ -4,6 +4,7 @@ import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
 import { RitualBundle } from "@/content/bundles";
 import {
+  PRODUCT_DETAIL_MAP,
   getDefaultVariant,
   getProductVariants,
   getLocalizedProductName,
@@ -55,8 +56,13 @@ function BundleCardBase({
     setVariantSelection(initialVariantSelection());
   }, [bundle.id]);
 
-  const hasVariantProducts = useMemo(
-    () => bundle.products.filter((entry) => getProductVariants(entry.productId).length > 0),
+  const sizeOptionProducts = useMemo(
+    () =>
+      bundle.products.filter((entry) => {
+        const variants = getProductVariants(entry.productId);
+        const detail = PRODUCT_DETAIL_MAP[entry.productId];
+        return variants.length > 0 || Boolean(detail?.size);
+      }),
     [bundle.products]
   );
 
@@ -106,21 +112,25 @@ function BundleCardBase({
           return <li key={entry.productId}>{name}</li>;
         })}
       </ul>
-      {hasVariantProducts.length > 0 && (
+      {sizeOptionProducts.length > 0 && (
         <div className="bundle-card__variant-grid">
-          {hasVariantProducts.map((entry) => {
+          {sizeOptionProducts.map((entry) => {
             const variantOptions = getLocalizedProductVariants(entry.productId, locale);
-            if (!variantOptions.length) {
+            const detail = PRODUCT_DETAIL_MAP[entry.productId];
+            const fallbackSize = detail?.size;
+            if (!variantOptions.length && !fallbackSize) {
               return null;
             }
             const selectedValue =
-              variantSelection[entry.productId] ?? variantOptions[0]?.variantId ?? "";
+              variantSelection[entry.productId] ?? variantOptions[0]?.variantId ?? fallbackSize ?? "";
             const label = getLocalizedProductName(entry.productId, locale);
+            const isSingleSize = variantOptions.length <= 1;
             return (
               <label key={entry.productId} className="bundle-card__variant-control">
                 <span>{label}</span>
                 <select
                   value={selectedValue}
+                  disabled={isSingleSize}
                   onChange={(event) =>
                     setVariantSelection((prev) => ({
                       ...prev,
@@ -128,11 +138,13 @@ function BundleCardBase({
                     }))
                   }
                 >
-                  {variantOptions.map((variant) => (
-                    <option key={variant.variantId} value={variant.variantId}>
-                      {variant.label}
-                    </option>
-                  ))}
+                  {variantOptions.length > 0
+                    ? variantOptions.map((variant) => (
+                        <option key={variant.variantId} value={variant.variantId}>
+                          {variant.label}
+                        </option>
+                      ))
+                    : fallbackSize && <option value={fallbackSize}>{fallbackSize}</option>}
                 </select>
               </label>
             );
