@@ -33,10 +33,6 @@ function BundleCardBase({
 }: BundleCardProps) {
   const { t, locale } = useTranslation();
   const { currency } = useCurrency();
-  const pricing = getBundlePricing(bundle);
-  const bundlePriceDisplay = formatCurrency(pricing.bundlePrice, currency);
-  const compareAtDisplay = formatCurrency(pricing.compareAt, currency);
-  const savingsDisplay = formatCurrency(pricing.savingsAmount, currency);
   const initialVariantSelection = () => {
     const fallback: Record<string, string> = {};
     bundle.products.forEach((entry) => {
@@ -51,6 +47,10 @@ function BundleCardBase({
   const [variantSelection, setVariantSelection] = useState<Record<string, string>>(
     initialVariantSelection
   );
+  const pricing = getBundlePricing(bundle, variantSelection);
+  const bundlePriceDisplay = formatCurrency(pricing.bundlePrice, currency);
+  const compareAtDisplay = formatCurrency(pricing.compareAt, currency);
+  const savingsDisplay = formatCurrency(pricing.savingsAmount, currency);
 
   useEffect(() => {
     setVariantSelection(initialVariantSelection());

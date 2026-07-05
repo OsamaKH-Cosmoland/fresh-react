@@ -18,7 +18,7 @@ export function useBundleActions() {
 
   const addBundleToCart = useCallback(
     (bundle: RitualBundle, variantSelection?: Record<string, string>) => {
-      const pricing = getBundlePricing(bundle);
+      const pricing = getBundlePricing(bundle, variantSelection);
       const bundleName = locale === "ar" ? bundle.nameAr ?? bundle.name : bundle.name;
       const selectionKey = Object.entries(variantSelection ?? {})
         .sort(([productIdA], [productIdB]) => productIdA.localeCompare(productIdB))
