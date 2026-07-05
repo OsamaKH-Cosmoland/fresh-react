@@ -2363,7 +2363,7 @@ button:hover {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -10px;
+  bottom: -24px;
   height: 1px;
   background: var(--navbar-divider-color);
   pointer-events: none;
