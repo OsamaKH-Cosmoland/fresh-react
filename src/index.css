@@ -2346,8 +2346,8 @@ button:hover {
 }
 
 .navbar {
+  --navbar-divider-color: rgba(245, 220, 168, 0.2);
   background: linear-gradient(140deg, #052116, #0a3826);
-  border-bottom: 1px solid rgba(245, 220, 168, 0.2);
   color: #f5dca8;
   padding: 0.65rem 0;
   position: sticky;
@@ -2358,11 +2358,21 @@ button:hover {
   z-index: 90;
   height: var(--navbar-height);
 }
+.navbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 1px;
+  background: var(--navbar-divider-color);
+  pointer-events: none;
+}
 .navbar-scrolled {
+  --navbar-divider-color: rgba(245, 220, 168, 0.25);
   background: rgba(3, 15, 10, 0.8);
   backdrop-filter: blur(14px);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
-  border-color: rgba(245, 220, 168, 0.25);
   transition: background 220ms ease, backdrop-filter 220ms ease, box-shadow 220ms ease;
 }
 .navbar.sticky {
