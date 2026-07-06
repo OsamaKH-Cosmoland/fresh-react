@@ -918,11 +918,14 @@ export const ar = {
       cardNumber: "رقم البطاقة يجب أن يكون ١٦ رقماً.",
       cardExpiry: "استخدم الصيغة MM/YY.",
       cardCvc: "أدخل ٣ أو ٤ أرقام.",
+      orderSubmit:
+        "تعذر إرسال الطلب إلى الخادم. تأكد أن واجهة API تعمل ثم حاول مرة أخرى.",
     },
     actions: {
       next: "الخطوة التالية",
       back: "رجوع",
       placeOrder: "قدم الطلب",
+      submittingOrder: "جارٍ إرسال الطلب...",
     },
     stepperLabel: "خطوات الدفع",
     review: {

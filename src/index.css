@@ -8255,6 +8255,11 @@ button:hover {
   font-size: 0.75rem;
   color: #ffbfbf;
 }
+.checkout-error--submit {
+  width: 100%;
+  flex-basis: 100%;
+  text-align: right;
+}
 .checkout-shipping-grid {
   display: grid;
   gap: 1.25rem;

@@ -916,11 +916,14 @@ export const en = {
       cardNumber: "Card must be 16 digits.",
       cardExpiry: "Use MM/YY format.",
       cardCvc: "Enter a 3–4 digit CVC.",
+      orderSubmit:
+        "We could not send this order to the server. Make sure the API is running, then try again.",
     },
     actions: {
       next: "Next step",
       back: "Back",
       placeOrder: "Place order",
+      submittingOrder: "Placing order...",
     },
     stepperLabel: "Checkout steps",
     review: {

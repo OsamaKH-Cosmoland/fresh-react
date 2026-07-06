@@ -2,6 +2,10 @@ import type { LocalOrder } from "@/types/localOrder";
 import { getLogger } from "@/logging/globalLogger";
 import { apiPost } from "@/lib/api";
 
+export type OrderApiResult =
+  | { ok: true; orderId?: string; orderCode?: string }
+  | { ok: false; status?: number; error: string };
+
 const formatItems = (items: LocalOrder["items"]) =>
   items.map((item) => ({
     id: item.productId || item.bundleId || item.id,
@@ -11,7 +15,7 @@ const formatItems = (items: LocalOrder["items"]) =>
     variant: item.variantLabel,
   }));
 
-export async function submitOrderToApi(order: LocalOrder) {
+export async function submitOrderToApi(order: LocalOrder): Promise<OrderApiResult> {
   try {
     const payload = {
       id: order.id,
@@ -49,8 +53,24 @@ export async function submitOrderToApi(order: LocalOrder) {
         status: response.status,
         text,
       });
+      return {
+        ok: false,
+        status: response.status,
+        error: text || `Order submission failed with status ${response.status}`,
+      };
     }
+
+    const data = await response.json().catch(() => null);
+    return {
+      ok: true,
+      orderId: typeof data?.orderId === "string" ? data.orderId : undefined,
+      orderCode: typeof data?.orderCode === "string" ? data.orderCode : undefined,
+    };
   } catch (error) {
     getLogger().warn("Unable to send order to server", { error });
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Unable to send order to server",
+    };
   }
 }

@@ -149,6 +149,8 @@ export default function CheckoutPage() {
   const [createdGiftCredits, setCreatedGiftCredits] = useState<
     { code: string; amountBase: number }[]
   >([]);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [orderSubmitError, setOrderSubmitError] = useState("");
   const { isOnline } = useNetworkStatus();
   const [keepUpdated, setKeepUpdated] = useState(false);
   const { currency } = useCurrency();
@@ -298,49 +300,19 @@ export default function CheckoutPage() {
     return records;
   };
 
-  const placeOrder = () => {
-    if (!isOnline) return;
+  const placeOrder = async () => {
+    if (!isOnline || isPlacingOrder) return;
     if (!hasCartItems || !shippingMethod) return;
     setCreatedGiftCredits([]);
+    setOrderSubmitError("");
     const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     const orderId = generateOrderId();
     const createdAt = new Date().toISOString();
     const subtotalBase = Number(subtotal.toFixed(2));
-    const referralCode = loadLastAttributionCode();
-    const referralProfileInstance = ensureReferralProfile();
-    let referralCreditAwardedBase = 0;
-    if (referralCode) {
-      const now = new Date().toISOString();
-      if (referralCode === referralProfileInstance.code) {
-        const awardBase = Math.floor(subtotalBase * 0.1);
-        if (awardBase > 0) {
-          const referralCreditCode = `REF-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
-          createManualGiftCredit({
-            code: referralCreditCode,
-            amountBase: awardBase,
-            source: "referral_bonus",
-            orderId,
-            note: `Referral bonus for order ${orderId}`,
-          });
-          referralCreditAwardedBase = awardBase;
-          saveReferralProfile({
-            ...referralProfileInstance,
-            totalReferredOrders: referralProfileInstance.totalReferredOrders + 1,
-            totalReferralCreditBase: referralProfileInstance.totalReferralCreditBase + awardBase,
-          });
-        }
-      }
-      addReferralAttribution({
-        code: referralCode,
-        attributedAt: now,
-        orderId,
-        orderTotalBase: subtotalBase,
-        creditAwardedBase: referralCreditAwardedBase,
-      });
-    }
     const orderTotalBeforeCredit = total;
     let finalGiftCreditAmount = 0;
     let finalGiftCreditCode: string | undefined;
+    let updatedGiftCredits: ReturnType<typeof listGiftCredits> | null = null;
     if (giftCreditCode && creditAppliedBase > 0) {
       const storedCredit = findCreditByCode(giftCreditCode);
       if (storedCredit) {
@@ -351,10 +323,9 @@ export default function CheckoutPage() {
         if (appliedAmountBase > 0) {
           finalGiftCreditAmount = appliedAmountBase;
           finalGiftCreditCode = storedCredit.code;
-          const updatedList = listGiftCredits().map((entry) =>
+          updatedGiftCredits = listGiftCredits().map((entry) =>
             entry.code === updatedCredit.code ? updatedCredit : entry
           );
-          saveGiftCredits(updatedList);
         }
       }
     }
@@ -392,6 +363,50 @@ export default function CheckoutPage() {
       giftCreditAppliedAmountBase:
         finalGiftCreditAmountBase > 0 ? finalGiftCreditAmountBase : undefined,
     };
+
+    setIsPlacingOrder(true);
+    const submission = await submitOrderToApi(order);
+    setIsPlacingOrder(false);
+    if (!submission.ok) {
+      setOrderSubmitError(t("checkout.validation.orderSubmit"));
+      return;
+    }
+
+    const referralCode = loadLastAttributionCode();
+    const referralProfileInstance = ensureReferralProfile();
+    let referralCreditAwardedBase = 0;
+    if (referralCode) {
+      const now = new Date().toISOString();
+      if (referralCode === referralProfileInstance.code) {
+        const awardBase = Math.floor(subtotalBase * 0.1);
+        if (awardBase > 0) {
+          const referralCreditCode = `REF-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+          createManualGiftCredit({
+            code: referralCreditCode,
+            amountBase: awardBase,
+            source: "referral_bonus",
+            orderId,
+            note: `Referral bonus for order ${orderId}`,
+          });
+          referralCreditAwardedBase = awardBase;
+          saveReferralProfile({
+            ...referralProfileInstance,
+            totalReferredOrders: referralProfileInstance.totalReferredOrders + 1,
+            totalReferralCreditBase: referralProfileInstance.totalReferralCreditBase + awardBase,
+          });
+        }
+      }
+      addReferralAttribution({
+        code: referralCode,
+        attributedAt: now,
+        orderId,
+        orderTotalBase: subtotalBase,
+        creditAwardedBase: referralCreditAwardedBase,
+      });
+    }
+    if (updatedGiftCredits) {
+      saveGiftCredits(updatedGiftCredits);
+    }
     addOrder(order);
     trackEvent({
       type: "complete_checkout",
@@ -405,7 +420,6 @@ export default function CheckoutPage() {
     setCreatedGiftCredits(newGiftCredits);
     setOrderPlaced(order);
     setCurrentStep(STEPS.length - 1);
-    void submitOrderToApi(order);
     if (order.customer.email) {
       void notifyOrderCreated({
         orderId: order.id,
@@ -856,8 +870,13 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
             )}
 
             <div className="checkout-controls">
+              {orderSubmitError && (
+                <p className="checkout-error checkout-error--submit" role="alert">
+                  {orderSubmitError}
+                </p>
+              )}
               {currentStep > 0 && (
-                <Button variant="ghost" size="md" onClick={handleBack}>
+                <Button variant="ghost" size="md" onClick={handleBack} disabled={isPlacingOrder}>
                   {t("checkout.actions.back")}
                 </Button>
               )}
@@ -867,8 +886,8 @@ const renderItemLabel = (item: typeof cartItems[number]) => {
                 </Button>
               )}
               {currentStep === STEPS.length - 1 && (
-                <Button variant="primary" size="md" onClick={placeOrder} disabled={!isOnline}>
-                  {t("checkout.actions.placeOrder")}
+                <Button variant="primary" size="md" onClick={placeOrder} disabled={!isOnline || isPlacingOrder}>
+                  {isPlacingOrder ? t("checkout.actions.submittingOrder") : t("checkout.actions.placeOrder")}
                 </Button>
               )}
             </div>
