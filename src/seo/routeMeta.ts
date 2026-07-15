@@ -1,6 +1,6 @@
 import type { AppTranslationKey } from "@/localization/locale";
 
-const COLLECTION_OG_IMAGE = new URL("../assets/collection.png", import.meta.url).toString();
+const COLLECTION_OG_IMAGE = new URL("../assets/collection.jpg", import.meta.url).toString();
 const GUIDE_OG_IMAGE = new URL("../assets/BodyHandBalmCalmGlow.jpg", import.meta.url).toString();
 const LANDING_OG_IMAGE = new URL("../assets/NaturaGloss_shiny_gold_icon_right.webp", import.meta.url).toString();
 

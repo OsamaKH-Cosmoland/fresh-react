@@ -6,7 +6,7 @@ import Sidebar from "../components/Sidebar";
 import CardGrid from "../components/CardGrid";
 import ReviewsSection from "../components/ReviewsSection";
 import { prefetchRoute } from "@/utils/prefetchRoutes";
-import collectionImage from "../assets/collection.png";
+import collectionImage from "../assets/collection.jpg";
 import iconLeft from "../assets/NaturaGloss_shiny_gold_icon_left.webp";
 import iconMiddle from "../assets/NaturaGloss_shiny_gold_icon_middle.webp";
 import iconRight from "../assets/NaturaGloss_shiny_gold_icon_right.webp";
@@ -34,11 +34,11 @@ function formatSavedDate(value: string, t: (key: AppTranslationKey) => string) {
   return new Date(parsed).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-interface LayoutLabProps {
+interface HomePageProps {
   onCartOpen?: () => void;
 }
 
-export default function LayoutLab({ onCartOpen }: LayoutLabProps) {
+export default function HomePage({ onCartOpen }: HomePageProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>(() => readCart());
   const { t, locale } = useTranslation();

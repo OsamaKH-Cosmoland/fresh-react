@@ -1,5 +1,5 @@
 import bodyHandBalmCalmGlow from "@/assets/BodyHandBalmCalmGlow.jpg";
-import collectionImage from "@/assets/collection.png";
+import collectionImage from "@/assets/collection.jpg";
 import glowDuoImage from "@/assets/SilkBlossomBodyBalm.jpg";
 import hairGrowthShine from "@/assets/HairGrowthShine.jpg";
 import handLipBalmImage from "@/assets/HandLipBalm.jpg";

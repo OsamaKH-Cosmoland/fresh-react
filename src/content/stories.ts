@@ -3,7 +3,7 @@ import handBalmImage from "../assets/HandBalmEnhanced.jpg";
 import hairGrowthImage from "../assets/HairGrowthEnhanced.jpg";
 import hairShineImage from "../assets/HairShineEnhanced.jpg";
 import bodySoapOne from "../assets/BodySoap1.jpg";
-import bodySoapTwo from "../assets/BodySoap2.png";
+import bodySoapTwo from "../assets/BodySoap2.jpg";
 import lipBalmImage from "../assets/LipBalm.jpg";
 
 export type RitualStory = {

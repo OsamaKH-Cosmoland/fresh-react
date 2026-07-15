@@ -1,5 +1,5 @@
 import bodySoapOne from "../assets/BodySoap1.jpg";
-import bodySoapTwo from "../assets/BodySoap2.png";
+import bodySoapTwo from "../assets/BodySoap2.jpg";
 import bodyBalmImage from "../assets/BodyBalmEnhanced1.jpg";
 import handBalmImage from "../assets/HandBalmEnhanced.jpg";
 import hairGrowthImage from "../assets/HairGrowthEnhanced.jpg";

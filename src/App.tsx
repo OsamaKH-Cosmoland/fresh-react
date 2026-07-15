@@ -37,7 +37,7 @@ import {
 } from "@/referrals/referralAttribution";
 import { LifecycleActionSlot } from "@/components/lifecycle/LifecycleActionSlot";
 
-const LazyLayoutLab = lazy(() => import("./labs/LayoutLab"));
+const LazyHomePage = lazy(() => import("./pages/HomePage"));
 
 const routeFallback = (
   title: string,
@@ -463,7 +463,7 @@ export default function App() {
   } else {
     routeContent = SHOW_LAB ? (
       <Suspense fallback={homeFallback}>
-        <LazyLayoutLab />
+        <LazyHomePage />
       </Suspense>
     ) : (
       <Suspense fallback={homeFallback}>
