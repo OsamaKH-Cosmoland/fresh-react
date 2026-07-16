@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import type { ConfigProvider } from "@/domain/config/ConfigProvider";
 import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
-import { EmailProvider } from "../../domain/shared/EmailProvider";
+import { EmailProvider } from "../../domain/shared/EmailProvider.js";
 
 const stripHtml = (value: string): string => {
   const plain = value.replace(/<\/?[^>]+(>|$)/g, " ");

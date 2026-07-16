@@ -4,10 +4,10 @@ import {
   deleteProduct,
   listProducts,
   updateProduct,
-} from "../../../application/usecases/products";
+} from "../../../application/usecases/products.js";
 import { getLogger } from "@/logging/globalLogger";
-import { TOKENS, appContainer } from "../../../application/services/AppContainer";
-import { Request, Response } from "./typeHandler";
+import { TOKENS, appContainer } from "../../../application/services/AppContainer.js";
+import { Request, Response } from "./typeHandler.js";
 
 export default async function productsHandler(req: Request, res: Response) {
   const requestScope = appContainer.createScope();

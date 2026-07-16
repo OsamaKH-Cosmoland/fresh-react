@@ -1,4 +1,4 @@
-import type { User, UserRepository } from '../../domain/users/UserRepository';
+import type { User, UserRepository } from '../../domain/users/UserRepository.js';
 
 /**
  * In-memory implementation of `UserRepository` used for tests and simple services.

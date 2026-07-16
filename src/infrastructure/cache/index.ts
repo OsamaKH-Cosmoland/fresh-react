@@ -1,3 +1,3 @@
-export * from "./InMemoryCache";
-export * from "./NoopCache";
-export * from "./TestCache";
+export * from "./InMemoryCache.js";
+export * from "./NoopCache.js";
+export * from "./TestCache.js";

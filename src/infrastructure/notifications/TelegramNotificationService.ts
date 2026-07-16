@@ -1,7 +1,7 @@
 import https from "https";
 import type { ConfigProvider } from "@/domain/config/ConfigProvider";
 import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
-import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService";
+import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService.js";
 
 type TelegramConfig = { token: string; chatId: string };
 

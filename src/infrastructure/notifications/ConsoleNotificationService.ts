@@ -1,4 +1,4 @@
-import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService";
+import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService.js";
 import type { Logger } from "@/domain/logging/Logger";
 import { getLogger } from "@/logging/globalLogger";
 

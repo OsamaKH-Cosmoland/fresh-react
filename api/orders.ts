@@ -1,9 +1,9 @@
 import "dotenv/config";
 import type { IncomingMessage, ServerResponse } from "http";
 import { URL } from "url";
-import type { EmailProvider } from "../src/domain/shared/EmailProvider";
-import { FakeEmailProvider } from "../src/infrastructure/email/fakeEmailProvider";
-import { GmailEmailProvider } from "../src/infrastructure/email/gmailEmailProvider";
+import type { EmailProvider } from "../src/domain/shared/EmailProvider.js";
+import { FakeEmailProvider } from "../src/infrastructure/email/fakeEmailProvider.js";
+import { GmailEmailProvider } from "../src/infrastructure/email/gmailEmailProvider.js";
 import {
   buildOrdersHandler,
   notifyTestHandler,

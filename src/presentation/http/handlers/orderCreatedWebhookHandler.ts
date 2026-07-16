@@ -1,7 +1,7 @@
 // HTTP adapter for the n8n order-created webhook.
 import type { ConfigProvider } from "@/domain/config/ConfigProvider";
 import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
-import { Request, Response } from "./typeHandler";
+import { Request, Response } from "./typeHandler.js";
 
 const DEFAULT_WEBHOOK_KEYS = ["N8N_ORDERS_WEBHOOK"];
 const API_KEY_KEYS = ["N8N_API_KEY"];

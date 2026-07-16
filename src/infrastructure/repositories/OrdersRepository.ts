@@ -1,4 +1,4 @@
-import type { Order } from "../../domain/shared/Order";
+import type { Order } from "../../domain/shared/Order.js";
 
 export interface OrdersRepository {
   list(limit?: number): Promise<Order[]>;

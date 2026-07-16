@@ -1,5 +1,5 @@
-import type { NotificationService } from '../../domain/shared/NotificationService';
-import type { UserRepository } from '../../domain/users/UserRepository';
+import type { NotificationService } from '../../domain/shared/NotificationService.js';
+import type { UserRepository } from '../../domain/users/UserRepository.js';
 
 /**
  * Coordinates user authentication flows and side effects (email notifications).

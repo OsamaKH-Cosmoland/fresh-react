@@ -1,3 +1,3 @@
-export * from "./ConsoleAnalyticsClient";
-export * from "./HttpAnalyticsClient";
-export * from "./InMemoryAnalyticsClient";
+export * from "./ConsoleAnalyticsClient.js";
+export * from "./HttpAnalyticsClient.js";
+export * from "./InMemoryAnalyticsClient.js";

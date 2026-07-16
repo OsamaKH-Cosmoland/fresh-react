@@ -1,4 +1,4 @@
-import type { EmailService } from "../../domain/shared/EmailService";
+import type { EmailService } from "../../domain/shared/EmailService.js";
 import { getLogger } from "@/logging/globalLogger";
 
 /** Console-backed email service used by the demo login handler. */

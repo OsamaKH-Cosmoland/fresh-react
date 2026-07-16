@@ -1,6 +1,6 @@
 import { getLogger } from "@/logging/globalLogger";
-import { TOKENS, appContainer } from "../../../application/services/AppContainer";
-import { Request, Response } from "./typeHandler";
+import { TOKENS, appContainer } from "../../../application/services/AppContainer.js";
+import { Request, Response } from "./typeHandler.js";
 
 
 /**

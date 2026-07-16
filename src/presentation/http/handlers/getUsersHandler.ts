@@ -1,6 +1,6 @@
 import { getLogger } from "@/logging/globalLogger";
-import { TOKENS, appContainer } from "../../../application/services/AppContainer";
-import type { Request, Response } from "./typeHandler";
+import { TOKENS, appContainer } from "../../../application/services/AppContainer.js";
+import type { Request, Response } from "./typeHandler.js";
 
 export async function getUsersHandler(req: Request, res: Response) {
   try {

@@ -1,4 +1,4 @@
-import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService";
+import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService.js";
 
 export type NotificationCall = {
   recipient: string;

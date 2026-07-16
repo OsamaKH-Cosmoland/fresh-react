@@ -1,10 +1,10 @@
-import { ConsoleEmailService } from "../email/ConsoleEmailService";
+import { ConsoleEmailService } from "../email/ConsoleEmailService.js";
 import type { ConfigProvider } from "@/domain/config/ConfigProvider";
 import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
-import type { NotificationService } from "../../domain/shared/NotificationService";
-import { EmailNotificationService } from "./EmailNotificationService";
-import { TelegramNotificationService } from "./TelegramNotificationService";
-import { CompositeNotificationService } from "./CompositeNotificationService";
+import type { NotificationService } from "../../domain/shared/NotificationService.js";
+import { EmailNotificationService } from "./EmailNotificationService.js";
+import { TelegramNotificationService } from "./TelegramNotificationService.js";
+import { CompositeNotificationService } from "./CompositeNotificationService.js";
 
 const defaultConfigProvider = new EnvConfigProvider();
 

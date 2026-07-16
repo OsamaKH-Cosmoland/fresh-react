@@ -6,20 +6,20 @@ import {
   buildOrdersHandler,
   notifyTestHandler,
   streamOrdersHandler,
-} from "./handlers/ordersHandler";
-import reviewsHandler from "./handlers/reviewsHandler";
-import productsHandler from "./handlers/productsHandler";
-import { createOrderCreatedWebhookHandler } from "./handlers/orderCreatedWebhookHandler";
-import healthHandler from "./handlers/healthHandler";
-import { loginHandler } from "./handlers/loginHandler";
-import { getUsersHandler } from "./handlers/getUsersHandler";
-import { GmailEmailProvider } from "../../infrastructure/email/gmailEmailProvider";
-import { FakeEmailProvider } from "../../infrastructure/email/fakeEmailProvider";
-import type { EmailProvider } from "../../domain/shared/EmailProvider";
+} from "./handlers/ordersHandler.js";
+import reviewsHandler from "./handlers/reviewsHandler.js";
+import productsHandler from "./handlers/productsHandler.js";
+import { createOrderCreatedWebhookHandler } from "./handlers/orderCreatedWebhookHandler.js";
+import healthHandler from "./handlers/healthHandler.js";
+import { loginHandler } from "./handlers/loginHandler.js";
+import { getUsersHandler } from "./handlers/getUsersHandler.js";
+import { GmailEmailProvider } from "../../infrastructure/email/gmailEmailProvider.js";
+import { FakeEmailProvider } from "../../infrastructure/email/fakeEmailProvider.js";
+import type { EmailProvider } from "../../domain/shared/EmailProvider.js";
 import { getLogger } from "@/logging/globalLogger";
 import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
 import { SimpleFeatureFlagProvider } from "@/infrastructure/config/SimpleFeatureFlagProvider";
-import type { Request, Response } from "./handlers/typeHandler";
+import type { Request, Response } from "./handlers/typeHandler.js";
 
 const configProvider = new EnvConfigProvider();
 const featureFlagProvider = new SimpleFeatureFlagProvider(configProvider, {

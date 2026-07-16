@@ -1,8 +1,8 @@
-import { connectToDb } from "./_db";
-import type { OrdersRepository } from "./OrdersRepository";
-import { FileOrdersRepository, ReadonlyGuardRepository } from "./FileOrdersRepository";
-import { InMemoryOrdersRepository } from "./InMemoryOrdersRepository";
-import { MongoOrdersRepository } from "./MongoOrdersRepository";
+import { connectToDb } from "./_db.js";
+import type { OrdersRepository } from "./OrdersRepository.js";
+import { FileOrdersRepository, ReadonlyGuardRepository } from "./FileOrdersRepository.js";
+import { InMemoryOrdersRepository } from "./InMemoryOrdersRepository.js";
+import { MongoOrdersRepository } from "./MongoOrdersRepository.js";
 import type { ConfigProvider } from "@/domain/config/ConfigProvider";
 import { EnvConfigProvider, DEFAULT_ORDERS_FALLBACK_PATH } from "@/infrastructure/config/EnvConfigProvider";
 import { getLogger } from "@/logging/globalLogger";

@@ -1,4 +1,4 @@
-import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService";
+import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService.js";
 
 type Logger = Pick<Console, "error" | "warn">;
 

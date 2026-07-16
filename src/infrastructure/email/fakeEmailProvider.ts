@@ -1,4 +1,4 @@
-import { EmailProvider } from "../../domain/shared/EmailProvider";
+import { EmailProvider } from "../../domain/shared/EmailProvider.js";
 
 export class FakeEmailProvider implements EmailProvider {
   sentEmails: { to: string; subject: string; body: string }[] = [];

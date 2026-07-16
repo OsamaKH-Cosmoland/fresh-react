@@ -1,7 +1,7 @@
 // HTTP adapter for reviews endpoints.
-import { createReview, listReviews } from "../../../application/usecases/reviews";
+import { createReview, listReviews } from "../../../application/usecases/reviews.js";
 import { getLogger } from "@/logging/globalLogger";
-import { Request, Response } from "./typeHandler";
+import { Request, Response } from "./typeHandler.js";
 
 export default async function reviewsHandler(req: Request, res: Response) {
   try {

@@ -1,8 +1,8 @@
 import nodemailer from "nodemailer";
 import type { ConfigProvider } from "@/domain/config/ConfigProvider";
 import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
-import type { EmailService } from "../../domain/shared/EmailService";
-import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService";
+import type { EmailService } from "../../domain/shared/EmailService.js";
+import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService.js";
 
 type Logger = Pick<Console, "warn">;
 

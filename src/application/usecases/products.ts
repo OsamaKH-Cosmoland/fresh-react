@@ -1,6 +1,6 @@
 import { ObjectId, type Collection } from "mongodb";
-import type { Product } from "../../domain/shared/Product";
-import { connectToDb } from "../../infrastructure/repositories/_db";
+import type { Product } from "../../domain/shared/Product.js";
+import { connectToDb } from "../../infrastructure/repositories/_db.js";
 import type { Cache } from "@/domain/cache/Cache";
 
 const PRODUCTS_CACHE_KEY = "products:list";

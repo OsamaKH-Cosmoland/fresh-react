@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import type { IdGenerator } from "../../domain/shared/IdGenerator";
+import type { IdGenerator } from "../../domain/shared/IdGenerator.js";
 
 const randomString = () => {
   if (typeof crypto.randomUUID === "function") {

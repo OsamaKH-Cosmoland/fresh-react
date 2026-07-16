@@ -1,13 +1,13 @@
 // File-based orders repository used as a local fallback cache.
 import fs from "fs/promises";
 import path from "path";
-import type { Order } from "../../domain/shared/Order";
-import type { OrdersRepository } from "./OrdersRepository";
-import type { Clock } from "../../domain/shared/Clock";
-import type { IdGenerator } from "../../domain/shared/IdGenerator";
-import { InMemoryOrdersRepository } from "./InMemoryOrdersRepository";
-import { DefaultIdGenerator } from "../ids/DefaultIdGenerator";
-import { SystemClock } from "../time/SystemClock";
+import type { Order } from "../../domain/shared/Order.js";
+import type { OrdersRepository } from "./OrdersRepository.js";
+import type { Clock } from "../../domain/shared/Clock.js";
+import type { IdGenerator } from "../../domain/shared/IdGenerator.js";
+import { InMemoryOrdersRepository } from "./InMemoryOrdersRepository.js";
+import { DefaultIdGenerator } from "../ids/DefaultIdGenerator.js";
+import { SystemClock } from "../time/SystemClock.js";
 import { getLogger } from "@/logging/globalLogger";
 
 const FALLBACK_LIMIT = 500;

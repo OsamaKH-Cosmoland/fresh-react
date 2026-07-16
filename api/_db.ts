@@ -1,1 +1,1 @@
-export { connectToDb } from "../src/infrastructure/repositories/_db";
+export { connectToDb } from "../src/infrastructure/repositories/_db.js";

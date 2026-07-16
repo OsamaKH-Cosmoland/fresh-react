@@ -18,6 +18,7 @@ const config: Config = {
     "\\.(css|scss|sass)$": "<rootDir>/__mocks__/styleMock.ts",
     "^mongodb$": "<rootDir>/__mocks__/mongodbMock.ts",
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "cjs", "json", "node"],

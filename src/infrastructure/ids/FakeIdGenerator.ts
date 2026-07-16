@@ -1,5 +1,5 @@
-import type { IdGenerator } from "../../domain/shared/IdGenerator";
-import { createFakeIdGenerator } from "../../domain/shared/fakeId";
+import type { IdGenerator } from "../../domain/shared/IdGenerator.js";
+import { createFakeIdGenerator } from "../../domain/shared/fakeId.js";
 
 export class FakeIdGenerator implements IdGenerator {
   private readonly next: () => string;
