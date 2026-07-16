@@ -8,7 +8,7 @@ import type { IdGenerator } from "../../domain/shared/IdGenerator.js";
 import { InMemoryOrdersRepository } from "./InMemoryOrdersRepository.js";
 import { DefaultIdGenerator } from "../ids/DefaultIdGenerator.js";
 import { SystemClock } from "../time/SystemClock.js";
-import { getLogger } from "@/logging/globalLogger";
+import { getLogger } from "../../logging/globalLogger.js";
 
 const FALLBACK_LIMIT = 500;
 const READONLY_FS_ERROR_CODES = new Set(["EACCES", "EPERM", "EROFS", "ENOSPC"]);

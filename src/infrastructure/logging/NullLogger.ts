@@ -1,4 +1,4 @@
-import type { Logger } from "@/domain/logging/Logger";
+import type { Logger } from "../../domain/logging/Logger.js";
 
 export class NullLogger implements Logger {
   debug(): void {}

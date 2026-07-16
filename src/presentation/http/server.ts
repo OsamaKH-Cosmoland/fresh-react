@@ -16,9 +16,9 @@ import { getUsersHandler } from "./handlers/getUsersHandler.js";
 import { GmailEmailProvider } from "../../infrastructure/email/gmailEmailProvider.js";
 import { FakeEmailProvider } from "../../infrastructure/email/fakeEmailProvider.js";
 import type { EmailProvider } from "../../domain/shared/EmailProvider.js";
-import { getLogger } from "@/logging/globalLogger";
-import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
-import { SimpleFeatureFlagProvider } from "@/infrastructure/config/SimpleFeatureFlagProvider";
+import { getLogger } from "../../logging/globalLogger.js";
+import { EnvConfigProvider } from "../../infrastructure/config/EnvConfigProvider.js";
+import { SimpleFeatureFlagProvider } from "../../infrastructure/config/SimpleFeatureFlagProvider.js";
 import type { Request, Response } from "./handlers/typeHandler.js";
 
 const configProvider = new EnvConfigProvider();

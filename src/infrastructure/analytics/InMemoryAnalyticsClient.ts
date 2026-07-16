@@ -3,7 +3,7 @@ import type {
   AnalyticsContext,
   AnalyticsEventPayload,
   AnalyticsEventRecord,
-} from "@/domain/analytics/AnalyticsClient";
+} from "../../domain/analytics/AnalyticsClient.js";
 
 export class InMemoryAnalyticsClient implements AnalyticsClient {
   private readonly events: AnalyticsEventRecord[] = [];

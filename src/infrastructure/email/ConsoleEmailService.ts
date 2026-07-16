@@ -1,5 +1,5 @@
 import type { EmailService } from "../../domain/shared/EmailService.js";
-import { getLogger } from "@/logging/globalLogger";
+import { getLogger } from "../../logging/globalLogger.js";
 
 /** Console-backed email service used by the demo login handler. */
 export class ConsoleEmailService implements EmailService {

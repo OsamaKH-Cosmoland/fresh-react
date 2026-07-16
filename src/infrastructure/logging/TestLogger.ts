@@ -1,4 +1,4 @@
-import type { Logger, LogMetadata } from "@/domain/logging/Logger";
+import type { Logger, LogMetadata } from "../../domain/logging/Logger.js";
 
 export type LogLevel = "debug" | "info" | "warn" | "error";
 

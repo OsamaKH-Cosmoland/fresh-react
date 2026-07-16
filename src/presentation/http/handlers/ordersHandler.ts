@@ -1,10 +1,10 @@
 // HTTP adapter for order endpoints.
 import type { EmailProvider } from "../../../domain/shared/EmailProvider.js";
 import type { NotificationService } from "../../../domain/shared/NotificationService.js";
-import type { ConfigProvider } from "@/domain/config/ConfigProvider";
-import type { FeatureFlagProvider } from "@/domain/config/FeatureFlagProvider";
-import { createOrder, listOrders, notifyTelegramTest, ordersStream, updateOrderStatus } from "@/application/usecases/orders";
-import { getLogger } from "@/logging/globalLogger";
+import type { ConfigProvider } from "../../../domain/config/ConfigProvider.js";
+import type { FeatureFlagProvider } from "../../../domain/config/FeatureFlagProvider.js";
+import { createOrder, listOrders, notifyTelegramTest, ordersStream, updateOrderStatus } from "../../../application/usecases/orders.js";
+import { getLogger } from "../../../logging/globalLogger.js";
 import { Request, Response } from "./typeHandler.js";
 
 export function streamOrdersHandler(_req: Request, res: Response) {

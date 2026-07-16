@@ -1,4 +1,4 @@
-import { getLogger } from "@/logging/globalLogger";
+import { getLogger } from "../../../logging/globalLogger.js";
 import { TOKENS, appContainer } from "../../../application/services/AppContainer.js";
 import type { Request, Response } from "./typeHandler.js";
 

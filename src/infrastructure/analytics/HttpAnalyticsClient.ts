@@ -3,8 +3,8 @@ import type {
   AnalyticsContext,
   AnalyticsEventPayload,
   AnalyticsEventRecord,
-} from "@/domain/analytics/AnalyticsClient";
-import { getLogger } from "@/logging/globalLogger";
+} from "../../domain/analytics/AnalyticsClient.js";
+import { getLogger } from "../../logging/globalLogger.js";
 
 export type HttpAnalyticsClientOptions = {
   fetcher?: typeof fetch;

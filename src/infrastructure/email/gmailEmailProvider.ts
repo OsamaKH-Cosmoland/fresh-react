@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
-import type { ConfigProvider } from "@/domain/config/ConfigProvider";
-import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
+import type { ConfigProvider } from "../../domain/config/ConfigProvider.js";
+import { EnvConfigProvider } from "../config/EnvConfigProvider.js";
 import { EmailProvider } from "../../domain/shared/EmailProvider.js";
 
 const stripHtml = (value: string): string => {

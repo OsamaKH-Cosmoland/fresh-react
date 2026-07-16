@@ -1,7 +1,7 @@
 import fs from "fs";
 import { fileURLToPath } from "url";
-import type { ConfigProvider } from "@/domain/config/ConfigProvider";
-import { getLogger } from "@/logging/globalLogger";
+import type { ConfigProvider } from "../../domain/config/ConfigProvider.js";
+import { getLogger } from "../../logging/globalLogger.js";
 
 const sanitizeString = (value: string | undefined): string | undefined => {
   if (!value) return undefined;

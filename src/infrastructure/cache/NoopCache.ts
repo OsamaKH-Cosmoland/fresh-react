@@ -1,4 +1,4 @@
-import type { Cache } from "@/domain/cache/Cache";
+import type { Cache } from "../../domain/cache/Cache.js";
 
 export class NoopCache implements Cache {
   get<T>(_key: string): T | undefined {

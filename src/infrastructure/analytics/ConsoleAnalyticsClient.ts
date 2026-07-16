@@ -2,8 +2,8 @@ import type {
   AnalyticsClient,
   AnalyticsContext,
   AnalyticsEventPayload,
-} from "@/domain/analytics/AnalyticsClient";
-import { getLogger } from "@/logging/globalLogger";
+} from "../../domain/analytics/AnalyticsClient.js";
+import { getLogger } from "../../logging/globalLogger.js";
 
 export class ConsoleAnalyticsClient implements AnalyticsClient {
   async track(eventName: string, payload?: AnalyticsEventPayload, context?: AnalyticsContext): Promise<void> {

@@ -5,7 +5,7 @@ import {
   listProducts,
   updateProduct,
 } from "../../../application/usecases/products.js";
-import { getLogger } from "@/logging/globalLogger";
+import { getLogger } from "../../../logging/globalLogger.js";
 import { TOKENS, appContainer } from "../../../application/services/AppContainer.js";
 import { Request, Response } from "./typeHandler.js";
 

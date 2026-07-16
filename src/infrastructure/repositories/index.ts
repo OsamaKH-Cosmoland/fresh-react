@@ -3,9 +3,9 @@ import type { OrdersRepository } from "./OrdersRepository.js";
 import { FileOrdersRepository, ReadonlyGuardRepository } from "./FileOrdersRepository.js";
 import { InMemoryOrdersRepository } from "./InMemoryOrdersRepository.js";
 import { MongoOrdersRepository } from "./MongoOrdersRepository.js";
-import type { ConfigProvider } from "@/domain/config/ConfigProvider";
-import { EnvConfigProvider, DEFAULT_ORDERS_FALLBACK_PATH } from "@/infrastructure/config/EnvConfigProvider";
-import { getLogger } from "@/logging/globalLogger";
+import type { ConfigProvider } from "../../domain/config/ConfigProvider.js";
+import { EnvConfigProvider, DEFAULT_ORDERS_FALLBACK_PATH } from "../config/EnvConfigProvider.js";
+import { getLogger } from "../../logging/globalLogger.js";
 
 let cachedMongoRepo: OrdersRepository | null = null;
 let fallbackRepo: OrdersRepository | null = null;

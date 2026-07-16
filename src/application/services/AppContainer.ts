@@ -3,11 +3,11 @@ import type { NotificationService } from '../../domain/shared/NotificationServic
 import type { Clock } from '../../domain/shared/Clock.js';
 import type { IdGenerator } from '../../domain/shared/IdGenerator.js';
 import type { UserRepository } from '../../domain/users/UserRepository.js';
-import type { AnalyticsClient } from '@/domain/analytics/AnalyticsClient';
-import type { Cache } from '@/domain/cache/Cache';
-import type { ConfigProvider } from '@/domain/config/ConfigProvider';
-import type { FeatureFlagProvider } from '@/domain/config/FeatureFlagProvider';
-import type { Logger } from '@/domain/logging/Logger';
+import type { AnalyticsClient } from '../../domain/analytics/AnalyticsClient.js';
+import type { Cache } from '../../domain/cache/Cache.js';
+import type { ConfigProvider } from '../../domain/config/ConfigProvider.js';
+import type { FeatureFlagProvider } from '../../domain/config/FeatureFlagProvider.js';
+import type { Logger } from '../../domain/logging/Logger.js';
 import { AuthService } from './AuthService.js';
 import { ConsoleEmailService } from '../../infrastructure/email/ConsoleEmailService.js';
 import { createDefaultNotificationService } from '../../infrastructure/notifications/createDefaultNotificationService.js';
@@ -15,14 +15,14 @@ import { FakeNotificationService } from '../../infrastructure/notifications/Fake
 import { InMemoryUserRepository, defaultSeededUsers } from '../../infrastructure/repositories/InMemoryUserRepository.js';
 import { SystemClock } from '../../infrastructure/time/SystemClock.js';
 import { DefaultIdGenerator } from '../../infrastructure/ids/DefaultIdGenerator.js';
-import { ConsoleAnalyticsClient } from '@/infrastructure/analytics/ConsoleAnalyticsClient';
-import { HttpAnalyticsClient } from '@/infrastructure/analytics/HttpAnalyticsClient';
-import { InMemoryAnalyticsClient } from '@/infrastructure/analytics/InMemoryAnalyticsClient';
-import { EnvConfigProvider } from '@/infrastructure/config/EnvConfigProvider';
-import { SimpleFeatureFlagProvider } from '@/infrastructure/config/SimpleFeatureFlagProvider';
-import { InMemoryCache, NoopCache } from '@/infrastructure/cache';
-import { ConsoleLogger, NullLogger } from '@/infrastructure/logging';
-import { configureLogger as configureGlobalLogger } from '@/logging/globalLogger';
+import { ConsoleAnalyticsClient } from '../../infrastructure/analytics/ConsoleAnalyticsClient.js';
+import { HttpAnalyticsClient } from '../../infrastructure/analytics/HttpAnalyticsClient.js';
+import { InMemoryAnalyticsClient } from '../../infrastructure/analytics/InMemoryAnalyticsClient.js';
+import { EnvConfigProvider } from '../../infrastructure/config/EnvConfigProvider.js';
+import { SimpleFeatureFlagProvider } from '../../infrastructure/config/SimpleFeatureFlagProvider.js';
+import { InMemoryCache, NoopCache } from '../../infrastructure/cache/index.js';
+import { ConsoleLogger, NullLogger } from '../../infrastructure/logging/index.js';
+import { configureLogger as configureGlobalLogger } from '../../logging/globalLogger.js';
 
 export type Scope = 'singleton' | 'scoped' | 'transient';
 

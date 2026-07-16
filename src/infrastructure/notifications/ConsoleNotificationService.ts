@@ -1,6 +1,6 @@
 import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService.js";
-import type { Logger } from "@/domain/logging/Logger";
-import { getLogger } from "@/logging/globalLogger";
+import type { Logger } from "../../domain/logging/Logger.js";
+import { getLogger } from "../../logging/globalLogger.js";
 
 const defaultLogger = getLogger();
 

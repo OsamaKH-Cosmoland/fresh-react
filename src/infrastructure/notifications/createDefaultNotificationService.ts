@@ -1,6 +1,6 @@
 import { ConsoleEmailService } from "../email/ConsoleEmailService.js";
-import type { ConfigProvider } from "@/domain/config/ConfigProvider";
-import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
+import type { ConfigProvider } from "../../domain/config/ConfigProvider.js";
+import { EnvConfigProvider } from "../config/EnvConfigProvider.js";
 import type { NotificationService } from "../../domain/shared/NotificationService.js";
 import { EmailNotificationService } from "./EmailNotificationService.js";
 import { TelegramNotificationService } from "./TelegramNotificationService.js";

@@ -1,5 +1,5 @@
-import type { Logger } from "@/domain/logging/Logger";
-import { ConsoleLogger } from "@/infrastructure/logging/ConsoleLogger";
+import type { Logger } from "../domain/logging/Logger.js";
+import { ConsoleLogger } from "../infrastructure/logging/ConsoleLogger.js";
 
 let activeLogger: Logger = new ConsoleLogger();
 let isConfigured = false;

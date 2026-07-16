@@ -13,11 +13,11 @@ import { SystemClock } from "../../infrastructure/time/SystemClock.js";
 import { DefaultIdGenerator } from "../../infrastructure/ids/DefaultIdGenerator.js";
 import { getDefaultNotificationService } from "../../infrastructure/notifications/createDefaultNotificationService.js";
 import { TelegramNotificationService } from "../../infrastructure/notifications/TelegramNotificationService.js";
-import type { ConfigProvider } from "@/domain/config/ConfigProvider";
-import type { FeatureFlagProvider } from "@/domain/config/FeatureFlagProvider";
-import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
-import { SimpleFeatureFlagProvider } from "@/infrastructure/config/SimpleFeatureFlagProvider";
-import { getLogger } from "@/logging/globalLogger";
+import type { ConfigProvider } from "../../domain/config/ConfigProvider.js";
+import type { FeatureFlagProvider } from "../../domain/config/FeatureFlagProvider.js";
+import { EnvConfigProvider } from "../../infrastructure/config/EnvConfigProvider.js";
+import { SimpleFeatureFlagProvider } from "../../infrastructure/config/SimpleFeatureFlagProvider.js";
+import { getLogger } from "../../logging/globalLogger.js";
 
 const bus = new EventEmitter();
 bus.setMaxListeners(0);

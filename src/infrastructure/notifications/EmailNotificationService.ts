@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
-import type { ConfigProvider } from "@/domain/config/ConfigProvider";
-import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
+import type { ConfigProvider } from "../../domain/config/ConfigProvider.js";
+import { EnvConfigProvider } from "../config/EnvConfigProvider.js";
 import type { EmailService } from "../../domain/shared/EmailService.js";
 import type { NotificationContext, NotificationService } from "../../domain/shared/NotificationService.js";
 

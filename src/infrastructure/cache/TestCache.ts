@@ -1,4 +1,4 @@
-import type { Cache } from "@/domain/cache/Cache";
+import type { Cache } from "../../domain/cache/Cache.js";
 
 export class TestCache implements Cache {
   private readonly entries = new Map<string, unknown>();

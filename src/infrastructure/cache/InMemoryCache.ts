@@ -1,4 +1,4 @@
-import type { Cache } from "@/domain/cache/Cache";
+import type { Cache } from "../../domain/cache/Cache.js";
 
 type CacheEntry = {
   value: unknown;

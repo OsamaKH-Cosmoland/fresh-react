@@ -1,4 +1,4 @@
-import type { Logger, LogMetadata } from "@/domain/logging/Logger";
+import type { Logger, LogMetadata } from "../../domain/logging/Logger.js";
 
 const formatMessage = (level: string, message: string) => {
   const timestamp = new Date().toISOString();

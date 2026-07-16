@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { MongoClient, type Db } from "mongodb";
-import type { ConfigProvider } from "@/domain/config/ConfigProvider";
-import { EnvConfigProvider } from "@/infrastructure/config/EnvConfigProvider";
+import type { ConfigProvider } from "../../domain/config/ConfigProvider.js";
+import { EnvConfigProvider } from "../config/EnvConfigProvider.js";
 
 let cachedClient: MongoClient | null = null;
 let cachedDb: Db | null = null;

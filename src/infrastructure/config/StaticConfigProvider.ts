@@ -1,4 +1,4 @@
-import type { ConfigProvider } from "@/domain/config/ConfigProvider";
+import type { ConfigProvider } from "../../domain/config/ConfigProvider.js";
 
 export type StaticConfigOptions = {
   values?: Record<string, string | undefined>;

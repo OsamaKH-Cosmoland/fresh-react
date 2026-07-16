@@ -1,5 +1,5 @@
-import type { ConfigProvider } from "@/domain/config/ConfigProvider";
-import type { FeatureFlagProvider } from "@/domain/config/FeatureFlagProvider";
+import type { ConfigProvider } from "../../domain/config/ConfigProvider.js";
+import type { FeatureFlagProvider } from "../../domain/config/FeatureFlagProvider.js";
 
 const DEFAULT_TRUE = new Set(["true", "1", "yes", "on"]);
 const DEFAULT_FALSE = new Set(["false", "0", "no", "off"]);
