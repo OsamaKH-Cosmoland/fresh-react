@@ -88,6 +88,12 @@ body {
   margin: 0;
   background: linear-gradient(180deg, #042216 0%, #04110b 100%);
   color: #f7ecd4;
+  overflow-wrap: break-word;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  overflow-wrap: break-word;
+  min-width: 0;
 }
 
 #root {
