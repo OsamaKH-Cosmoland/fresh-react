@@ -2368,6 +2368,16 @@ button:hover {
   z-index: 90;
   height: var(--navbar-height);
 }
+.navbar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -24px;
+  height: 24px;
+  background: inherit;
+  pointer-events: none;
+}
 .navbar::after {
   content: "";
   position: absolute;
