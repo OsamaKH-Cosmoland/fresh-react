@@ -2956,7 +2956,6 @@ input[type="range"] {
 :root[dir="rtl"] .nav-mobile-actions {
   flex-direction: row-reverse;
   justify-content: flex-start;
-  width: 100%;
 }
 
 :root[dir="rtl"] .drawer {
@@ -8020,7 +8019,7 @@ input[type="range"] {
   }
 
   .nav-bar__actions {
-    gap: 0.4rem;
+    gap: 0.25rem;
     min-width: 0;
   }
 
@@ -8029,7 +8028,7 @@ input[type="range"] {
     flex: 1 1 auto;
     min-width: 0;
     max-width: none;
-    padding: 0.32rem 0.65rem;
+    padding: 0.28rem 0.4rem;
   }
 
   .nav-search--inline input {
@@ -8042,13 +8041,13 @@ input[type="range"] {
   .nav-utility-links {
     flex: 0 0 auto;
     min-width: 0;
-    gap: 0.5rem;
+    gap: 0.3rem;
   }
 
   .nav-currency__trigger,
   .nav-utility-links .nav-language {
-    padding: 0.3rem 0.75rem;
-    font-size: 0.7rem;
+    padding: 0.24rem 0.45rem;
+    font-size: 0.68rem;
   }
 
   .nav-mobile-actions {
