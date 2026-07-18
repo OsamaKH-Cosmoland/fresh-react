@@ -9,8 +9,8 @@
   --motion-duration: 0.8s;
   --motion-lift-shadow: rgba(5, 20, 12, 0.45);
   --glow-gold: rgba(249, 228, 168, 0.5);
-  --font-size-hero: clamp(2.6rem, 4vw, 3.4rem);
-  --font-size-h1: clamp(2.1rem, 3vw, 2.55rem);
+  --font-size-hero: clamp(2rem, 9vw, 3.4rem);
+  --font-size-h1: clamp(1.6rem, 8vw, 2.55rem);
   --font-size-h2: 1.7rem;
   --font-size-h3: 1.35rem;
   --font-size-body: 1rem;
@@ -4699,14 +4699,14 @@ input[type="range"] {
 .cart-header-block h1 {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: clamp(2.2rem, 5vw, 2.8rem);
+  font-size: clamp(1.5rem, 9vw, 2.8rem);
   letter-spacing: .05em;
   color: #ffecc5;
 }
 .cart-header-block p {
   margin: 0 auto;
   max-width: 58ch;
-  font-size: 1.05rem;
+  font-size: clamp(0.9rem, 3vw, 1.05rem);
   line-height: 1.7;
   color: rgba(255, 236, 197, .78);
 }
@@ -8029,7 +8029,7 @@ input[type="range"] {
   }
 
   .nav-bar__actions {
-    gap: 0.25rem;
+    gap: clamp(0.15rem, 1vw, 0.3rem);
     min-width: 0;
   }
 
@@ -8038,12 +8038,12 @@ input[type="range"] {
     flex: 1 1 auto;
     min-width: 0;
     max-width: none;
-    padding: 0.28rem 0.4rem;
+    padding: clamp(0.2rem, 1vw, 0.28rem) clamp(0.25rem, 2vw, 0.4rem);
   }
 
   .nav-search--inline input {
     min-width: 0;
-    font-size: 0.9rem;
+    font-size: clamp(0.72rem, 3.2vw, 0.9rem);
     letter-spacing: 0.02em;
     padding-block: 0.16rem;
   }
@@ -8051,13 +8051,13 @@ input[type="range"] {
   .nav-utility-links {
     flex: 0 0 auto;
     min-width: 0;
-    gap: 0.3rem;
+    gap: clamp(0.15rem, 1.2vw, 0.3rem);
   }
 
   .nav-currency__trigger,
   .nav-utility-links .nav-language {
-    padding: 0.24rem 0.45rem;
-    font-size: 0.68rem;
+    padding: clamp(0.16rem, 1vw, 0.24rem) clamp(0.28rem, 2vw, 0.45rem);
+    font-size: clamp(0.56rem, 2.6vw, 0.68rem);
   }
 
   .nav-mobile-actions {
