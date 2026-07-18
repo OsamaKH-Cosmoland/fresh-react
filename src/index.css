@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Libre+Baskerville:wght@400;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Libre+Baskerville:wght@400;600&family=Playfair+Display:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600;700&display=swap");
 
 :root {
   --font-heading: "Playfair Display", "Times New Roman", serif;
@@ -2811,7 +2811,7 @@ button:hover {
   .nav-mobile-actions {
     display: flex;
   }
-  .nav-cart--desktop {
+  .nav-cart.nav-cart--desktop {
     display: none;
   }
   .nav-bar {
@@ -3378,6 +3378,10 @@ button:hover {
   padding: .55rem 1rem;
   border-radius: 999px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
   transition: transform .06s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, color .2s ease;
 }
 .ghost-btn:hover { background: rgba(245, 220, 168, .16); color: #fff6dd; }
@@ -3388,6 +3392,25 @@ button:hover {
 .icon-btn { padding: .4rem .5rem; display: inline-grid; place-items: center; background: rgba(5, 33, 22, .65); }
 .icon-btn:hover { background: rgba(19, 92, 58, .35); }
 .icon-btn[aria-pressed="true"] { background: rgba(230, 185, 104, .18); border-color: rgba(230, 185, 104, .55); color: #f4d087; }
+
+.ghost-btn:active, .cta-btn:active, .primary-btn:active, .icon-btn:active {
+  transform: scale(0.97);
+}
+.ghost-btn:focus-visible, .cta-btn:focus-visible, .primary-btn:focus-visible, .icon-btn:focus-visible {
+  outline: 2px solid rgba(249, 228, 168, 0.6);
+  outline-offset: 2px;
+}
+.ghost-btn:disabled, .cta-btn:disabled, .primary-btn:disabled, .icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+}
+
+.btn-size-sm { padding: .4rem .8rem; font-size: .8rem; }
+.btn-size-md { padding: .6rem 1.15rem; font-size: .92rem; }
+.btn-size-lg { padding: .8rem 1.6rem; font-size: 1.05rem; }
+.btn-full-width { width: 100%; justify-content: center; }
 
 .drawer {
   position: fixed;
@@ -3609,11 +3632,11 @@ button:hover {
 .card {
   background: linear-gradient(155deg, rgba(8, 46, 32, .95), rgba(6, 27, 19, .95));
   border: 1px solid rgba(245, 220, 168, .18);
-  border-radius: 18px;
+  border-radius: 22px;
   padding: var(--space-4);
   display: grid;
   gap: var(--space-4);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+  box-shadow: 0 12px 28px rgba(4, 26, 18, .35);
   transform: translateY(0) scale(1);
   transition: transform .12s ease, box-shadow .25s ease, border-color .18s ease, background .18s ease;
   outline: none;
@@ -3626,9 +3649,9 @@ button:hover {
 .card-img {
   width: 100%;
   height: auto;
-  border-radius: 12px;
+  border-radius: 14px;
   object-fit: cover;
-  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  box-shadow: 0 8px 20px rgba(4, 26, 18, .3);
 }
 
 .card-discount-badge {

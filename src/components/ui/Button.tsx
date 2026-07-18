@@ -7,15 +7,15 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variants: Record<NonNullable<ButtonProps["variant"]>, string> = {
-  primary: "bg-emerald-600 hover:bg-emerald-500 text-white border-0",
-  secondary: "bg-white text-emerald-700 border border-emerald-200 hover:border-emerald-400",
-  ghost: "bg-transparent text-gray-800 hover:bg-gray-100 border border-transparent",
+  primary: "primary-btn",
+  secondary: "cta-btn",
+  ghost: "ghost-btn",
 };
 
 const sizes: Record<NonNullable<ButtonProps["size"]>, string> = {
-  sm: "px-3 py-1.5 text-sm",
-  md: "px-4 py-2 text-base",
-  lg: "px-5 py-3 text-lg",
+  sm: "btn-size-sm",
+  md: "btn-size-md",
+  lg: "btn-size-lg",
 };
 
 export function Button({
@@ -34,12 +34,10 @@ export function Button({
   return (
     <button
       className={[
-        "rounded-full font-semibold transition focus:outline-none focus:ring-2 focus:ring-emerald-400",
         variantClass,
         sizeClass,
         glowClass,
-        fullWidth ? "w-full" : "inline-flex",
-        disabled ? "opacity-60 cursor-not-allowed" : "shadow-sm",
+        fullWidth ? "btn-full-width" : "",
         className,
       ]
         .filter(Boolean)
