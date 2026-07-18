@@ -54,7 +54,6 @@ html,
 body {
   max-width: 100%;
   overflow-x: hidden;
-  overscroll-behavior-y: none;
 }
 
 html {
@@ -110,7 +109,7 @@ summary:focus-visible {
   top: 1rem;
 }
 
-@media (hover: none) and (pointer: coarse) {
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
   .skip-link {
     display: none;
   }
