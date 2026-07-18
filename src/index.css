@@ -110,6 +110,12 @@ summary:focus-visible {
   top: 1rem;
 }
 
+@media (hover: none) and (pointer: coarse) {
+  .skip-link {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   body {
     margin: 0;
