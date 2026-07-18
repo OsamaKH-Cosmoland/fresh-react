@@ -16,7 +16,6 @@ export const primaryNav: NavItem[] = [
   { id: "shop", labelKey: "nav.shop", href: "/shop" },
   { id: "finder", labelKey: "nav.finder", href: "?view=ritualfinder" },
   { id: "gift-builder", labelKey: "nav.giftBuilder", href: "/gift-builder" },
-  { id: "guides", labelKey: "nav.guides", href: "/ritual-guides" },
 ];
 
 export const exploreNav: NavItem[] = [
@@ -26,7 +25,6 @@ export const exploreNav: NavItem[] = [
   { id: "favorites", labelKey: "nav.favourites", href: "/favorites" },
   { id: "compare", labelKey: "nav.compare", href: "/compare" },
   { id: "orders", labelKey: "nav.orders", href: "/orders-history" },
-  { id: "account", labelKey: "nav.account", href: "/account" },
 ];
 
 export const mobileMenuGroups: NavGroup[] = [

@@ -11,7 +11,7 @@
   --glow-gold: rgba(249, 228, 168, 0.5);
   --font-size-hero: clamp(2rem, 9vw, 3.4rem);
   --font-size-h1: clamp(1.6rem, 8vw, 2.55rem);
-  --font-size-h2: 1.7rem;
+  --font-size-h2: clamp(1.3rem, 6vw, 1.7rem);
   --font-size-h3: 1.35rem;
   --font-size-body: 1rem;
   --font-size-small: 0.9rem;
@@ -332,7 +332,6 @@ summary:focus-visible {
 
 @media (max-width: 480px) {
   .section-title__heading {
-    font-size: clamp(1.7rem, 4vw, 2.1rem);
     line-height: 1.3;
   }
   .section-title__subtitle {
@@ -534,6 +533,8 @@ input[type="range"] {
   margin-bottom: var(--space-6);
   text-align: left;
   font-family: var(--font-heading);
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .section-title--center {
@@ -2644,6 +2645,8 @@ input[type="range"] {
   font-size: 0.9rem;
   letter-spacing: 0.15em;
   padding: 0.2rem 0;
+  min-width: 0;
+  text-overflow: ellipsis;
 }
 .nav-search--inline input:focus {
   outline: none;
@@ -3064,6 +3067,8 @@ input[type="range"] {
   padding: 0.4rem 1.1rem;
   font-size: 0.95rem;
   letter-spacing: 0.2px;
+  min-width: 0;
+  text-overflow: ellipsis;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 .nav-search input:focus {
@@ -3515,7 +3520,17 @@ input[type="range"] {
 }
 .drawer-header {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.drawer-header__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: clamp(1.15rem, 6vw, 1.5rem);
+  line-height: 1.25;
+  flex: 1;
+  min-width: 0;
 }
 .drawer-close {
   border: 1px solid rgba(245, 220, 168, 0.35);
@@ -3524,6 +3539,7 @@ input[type="range"] {
   padding: 0.35rem 0.6rem;
   border-radius: 999px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 .drawer-search {
   position: relative;
@@ -3537,6 +3553,8 @@ input[type="range"] {
   padding: 0.45rem 1rem;
   font-size: 0.95rem;
   letter-spacing: 0.24px;
+  min-width: 0;
+  text-overflow: ellipsis;
 }
 .drawer-search__dropdown {
   position: absolute;
@@ -7267,7 +7285,28 @@ input[type="range"] {
 
   .landing-personalization__saved-grid,
   .landing-personalization__product-grid,
-  .landing-personalization__bundle-grid {
+  .landing-personalization__bundle-grid,
+  .analytics-grid--metrics,
+  .analytics-grid--reviews,
+  .analytics-grid--favorites,
+  .bundle-grid,
+  .ritual-guide-hero,
+  .ritual-guide-bundles,
+  .search-guides-grid,
+  .shop-product-grid,
+  .shop-bundle-grid,
+  .compare-grid,
+  .stories-grid,
+  .gift-builder-addons,
+  .product-detail-hero,
+  .product-detail-ingredients,
+  .admin-metrics-grid,
+  .onboarding-options,
+  .admin-summary,
+  .ritual-finder-extras__grid,
+  .review-grid,
+  .ritual-coach-treats__grid,
+  .account-profile-grid {
     grid-template-columns: 1fr;
   }
 

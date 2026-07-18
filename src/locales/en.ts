@@ -689,7 +689,7 @@ export const en = {
     },
   },
   search: {
-    placeholder: "Quick find routines, products, Finder...",
+    placeholder: "Search routines, products...",
     noResults: "No results yet. Try another term or press enter to browse everything.",
     seeAll: "See all results",
   },
