@@ -1514,7 +1514,7 @@ button:hover {
   border-radius: 999px;
   background: #ffcf33;
   color: #17351f;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -1639,7 +1639,7 @@ button:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   z-index: 5;
   transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, transform 0.15s ease;
 }
@@ -1737,7 +1737,7 @@ button:hover {
 }
 
 .shop-product-card__compare-price {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.18em;
 }
 
@@ -1820,7 +1820,7 @@ button:hover {
 .search-product-card__reason,
 .search-bundle-card__reason {
   margin: 0.35rem 0 0;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.4em;
   text-transform: uppercase;
   color: rgba(249, 228, 168, 0.9);
@@ -1999,7 +1999,7 @@ button:hover {
 }
 
 .compare-column__chips span {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.3em;
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
@@ -2175,7 +2175,7 @@ button:hover {
 }
 
 .story-card__field-label {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.2em;
 }
 
@@ -2321,8 +2321,8 @@ button:hover {
   margin: 0;
   letter-spacing: .35px;
 }
-.cart-count { display: block; font-size: .85rem; color: rgba(247, 236, 212, .7); font-family: var(--font-body); letter-spacing: .2px; }
-.cart-empty { margin: 0; font-size: .9rem; color: rgba(247, 236, 212, .65); font-family: var(--font-body); letter-spacing: .2px; }
+.cart-count { display: block; font-size: 0.85rem; color: rgba(247, 236, 212, .7); font-family: var(--font-body); letter-spacing: .2px; }
+.cart-empty { margin: 0; font-size: 0.9rem; color: rgba(247, 236, 212, .65); font-family: var(--font-body); letter-spacing: .2px; }
 .cart-list {
   list-style: none;
   padding: 0;
@@ -2335,7 +2335,7 @@ button:hover {
   align-items: flex-start;
   justify-content: space-between;
   gap: .75rem;
-  font-size: .95rem;
+  font-size: 0.95rem;
   font-weight: 600;
   flex-wrap: wrap;
   font-family: var(--font-body);
@@ -2362,7 +2362,7 @@ button:hover {
   border: none;
   padding: .35rem .9rem;
   border-radius: 999px;
-  font-size: .8rem;
+  font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: .2px;
   box-shadow: 0 10px 20px rgba(220,38,38,.3);
@@ -2501,7 +2501,7 @@ button:hover {
   text-align: center;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: rgba(249, 228, 168, 0.85);
 }
 .nav-explore {
@@ -2533,7 +2533,7 @@ button:hover {
   padding: 0.5rem 1.35rem;
   text-decoration: none;
   font-family: var(--font-heading);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   transition: color 0.2s ease, background 0.2s ease;
@@ -2600,7 +2600,7 @@ button:hover {
   background: rgba(249, 228, 168, 0.08);
 }
 .nav-offline-indicator {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   letter-spacing: 0.35em;
   text-transform: uppercase;
   color: rgba(249, 228, 168, 0.75);
@@ -2702,7 +2702,7 @@ button:hover {
 }
 .nav-cart__label {
   text-transform: uppercase;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.36em;
   color: rgba(249, 228, 168, 0.92);
 }
@@ -2713,7 +2713,7 @@ button:hover {
   border-radius: 999px;
   background: linear-gradient(120deg, rgba(244, 208, 135, 0.9), rgba(215, 173, 98, 0.9));
   color: #1f2f20;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
@@ -2780,7 +2780,7 @@ button:hover {
   border-radius: 999px;
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 0.66rem;
+  font-size: 0.7rem;
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: rgba(249, 228, 168, 0.88);
@@ -3078,7 +3078,7 @@ button:hover {
   border-radius: 999px;
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: .88rem;
+  font-size: 0.9rem;
   letter-spacing: .22em;
   text-transform: uppercase;
   color: rgba(249, 228, 168, .9);
@@ -3407,8 +3407,8 @@ button:hover {
   transform: none;
 }
 
-.btn-size-sm { padding: .4rem .8rem; font-size: .8rem; }
-.btn-size-md { padding: .6rem 1.15rem; font-size: .92rem; }
+.btn-size-sm { padding: .4rem .8rem; font-size: 0.8rem; }
+.btn-size-md { padding: .6rem 1.15rem; font-size: 0.9rem; }
 .btn-size-lg { padding: .8rem 1.6rem; font-size: 1.05rem; }
 .btn-full-width { width: 100%; justify-content: center; }
 
@@ -3605,7 +3605,7 @@ button:hover {
 }
 .drawer-currency__option small {
   opacity: 0.6;
-  font-size: 0.65rem;
+  font-size: 0.7rem;
 }
 .drawer-backdrop {
   position: fixed;
@@ -4123,7 +4123,7 @@ button:hover {
 }
 .toast-copy {
   margin: .2rem 0 0;
-  font-size: .9rem;
+  font-size: 0.9rem;
   line-height: 1.35;
   color: rgba(247, 236, 212, .85);
 }
@@ -4134,7 +4134,7 @@ button:hover {
 }
 .toast-suggestion {
   margin: 0;
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: rgba(247, 236, 212, .78);
 }
 .toast-suggestion strong {
@@ -4148,7 +4148,7 @@ button:hover {
   background: rgba(244, 208, 135, .18);
   color: #fdf2ce;
   border: 1px solid rgba(244, 208, 135, .38);
-  font-size: .85rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
   transition: transform .16s ease, box-shadow .2s ease, background .18s ease;
@@ -4224,7 +4224,7 @@ button:hover {
 .form-grid label {
   display: grid;
   gap: .35rem;
-  font-size: .95rem;
+  font-size: 0.95rem;
   color: rgba(247, 236, 212, .85);
   font-family: var(--font-body);
   letter-spacing: .25px;
@@ -4340,7 +4340,7 @@ button:hover {
 }
 
 .ritual-step-label {
-  font-size: .78rem;
+  font-size: 0.8rem;
   letter-spacing: .36em;
   text-transform: uppercase;
   color: rgba(251, 231, 173, .78);
@@ -4379,7 +4379,7 @@ button:hover {
   font-size: 1.02rem;
 }
 .ritual-focus-sub {
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: rgba(251, 231, 173, .72);
 }
 
@@ -4391,7 +4391,7 @@ button:hover {
 }
 .ritual-services h2 {
   margin: 0;
-  font-size: .9rem;
+  font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: .22em;
   color: rgba(251, 231, 173, .82);
@@ -4402,7 +4402,7 @@ button:hover {
   display: grid;
   gap: .45rem;
   color: rgba(251, 231, 173, .78);
-  font-size: .92rem;
+  font-size: 0.9rem;
   line-height: 1.6;
 }
 
@@ -4473,7 +4473,7 @@ button:hover {
   text-transform: uppercase;
 }
 .ritual-kit-count {
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: rgba(251, 231, 173, .78);
 }
 
@@ -4504,18 +4504,18 @@ button:hover {
   color: #fbe7ad;
 }
 .ritual-product-price {
-  font-size: .9rem;
+  font-size: 0.9rem;
   color: rgba(251, 231, 173, .78);
 }
 .ghost-btn--compact {
   padding: .45rem .75rem;
-  font-size: .85rem;
+  font-size: 0.85rem;
   border-radius: 999px;
 }
 
 .ritual-tip {
   color: rgba(251, 231, 173, .82);
-  font-size: .92rem;
+  font-size: 0.9rem;
   line-height: 1.6;
 }
 .ritual-tip strong {
@@ -4546,7 +4546,7 @@ button:hover {
   justify-self: start;
   padding: .75rem 1.1rem;
   border-radius: 14px;
-  font-size: .9rem;
+  font-size: 0.9rem;
   box-shadow: 0 14px 32px rgba(0, 0, 0, .35);
 }
 .ritual-status--success {
@@ -4690,7 +4690,7 @@ button:hover {
 .cart-page-info p {
   margin: 0;
   color: rgba(255, 236, 197, .75);
-  font-size: .95rem;
+  font-size: 0.95rem;
   line-height: 1.6;
 }
 .cart-page-price {
@@ -4701,7 +4701,7 @@ button:hover {
 }
 .cart-page-bundle-note {
   margin: 0;
-  font-size: .8rem;
+  font-size: 0.8rem;
   letter-spacing: .2em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, .65);
@@ -4713,14 +4713,14 @@ button:hover {
   display: grid;
   gap: .2rem;
   color: rgba(255, 255, 255, .7);
-  font-size: .85rem;
+  font-size: 0.85rem;
 }
 
 .cart-page-gift .cart-page-info {
   gap: .15rem;
 }
 .cart-page-gift .cart-page-bundle-note {
-  font-size: .8rem;
+  font-size: 0.8rem;
   letter-spacing: .2em;
   color: rgba(255, 255, 255, .65);
 }
@@ -4810,7 +4810,7 @@ button:hover {
 }
 .cart-summary-note {
   margin: 0;
-  font-size: .9rem;
+  font-size: 0.9rem;
   line-height: 1.6;
   color: rgba(255, 236, 197, .7);
   padding-inline: var(--cart-summary-content-inset);
@@ -5299,7 +5299,7 @@ button:hover {
   margin: 0;
   text-transform: uppercase;
   letter-spacing: .3em;
-  font-size: .75rem;
+  font-size: 0.75rem;
   color: rgba(255, 236, 197, .7);
 }
 .cart-drawer__content {
@@ -5325,14 +5325,14 @@ button:hover {
 }
 .cart-drawer__meta {
   margin: .2rem 0 0;
-  font-size: .85rem;
+  font-size: 0.85rem;
   color: rgba(255, 255, 255, .7);
 }
 .cart-drawer__bundle-meta {
   margin-top: .4rem;
   display: grid;
   gap: .2rem;
-  font-size: .8rem;
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, .75);
 }
 
@@ -5340,7 +5340,7 @@ button:hover {
   letter-spacing: .2em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, .6);
-  font-size: .75rem;
+  font-size: 0.75rem;
 }
 
 .cart-drawer__bundle-savings {
@@ -5356,14 +5356,14 @@ button:hover {
   flex-direction: column;
   gap: .15rem;
   color: rgba(255, 255, 255, .7);
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 
 .cart-drawer__gift-meta {
   margin-top: .5rem;
   display: grid;
   gap: .3rem;
-  font-size: .8rem;
+  font-size: 0.8rem;
   color: rgba(255, 255, 255, .75);
 }
 
@@ -5371,7 +5371,7 @@ button:hover {
   letter-spacing: .3em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, .65);
-  font-size: .75rem;
+  font-size: 0.75rem;
 }
 
 .cart-drawer__gift-addons,
@@ -5392,7 +5392,7 @@ button:hover {
   flex-direction: column;
   gap: .2rem;
   color: rgba(255, 255, 255, .7);
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 .cart-drawer__controls {
   margin-top: .6rem;
@@ -5440,7 +5440,7 @@ button:hover {
 }
 .cart-drawer__empty {
   margin: 0;
-  font-size: .95rem;
+  font-size: 0.95rem;
   color: rgba(255, 255, 255, .75);
 }
 .cart-drawer__close {
@@ -5551,7 +5551,7 @@ button:hover {
 }
 .promo-panel__status {
   margin: 0;
-  font-size: .85rem;
+  font-size: 0.85rem;
   line-height: 1.4;
 }
 .promo-panel__status--success {
@@ -5579,12 +5579,12 @@ button:hover {
 .promo-panel__details-savings {
   margin: 0;
   color: #b4f6c9;
-  font-size: .9rem;
+  font-size: 0.9rem;
 }
 .promo-panel__free-shipping {
   margin: .2rem 0 0;
   color: #a8e1ff;
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 .promo-panel__details-actions {
   display: flex;
@@ -6059,7 +6059,7 @@ button:hover {
 .finder-eyebrow {
   margin: 0;
   letter-spacing: .4em;
-  font-size: .8rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   color: rgba(255, 236, 197, .6);
 }
@@ -6108,7 +6108,7 @@ button:hover {
   margin: 0;
   text-transform: uppercase;
   letter-spacing: .25em;
-  font-size: .75rem;
+  font-size: 0.75rem;
   color: rgba(255, 236, 197, .65);
 }
 .finder-progress-bar {
@@ -6134,7 +6134,7 @@ button:hover {
 .finder-question-desc {
   margin: .2rem 0 0;
   color: rgba(255, 236, 197, .75);
-  font-size: .95rem;
+  font-size: 0.95rem;
 }
 .finder-options {
   display: grid;
@@ -6157,7 +6157,7 @@ button:hover {
   color: #ffecc5;
 }
 .finder-option-helper {
-  font-size: .9rem;
+  font-size: 0.9rem;
   color: rgba(255, 236, 197, .72);
 }
 .finder-option.is-selected {
@@ -6173,7 +6173,7 @@ button:hover {
   margin: 0;
   text-transform: uppercase;
   letter-spacing: .35em;
-  font-size: .8rem;
+  font-size: 0.8rem;
   color: rgba(255, 236, 197, .75);
 }
 .finder-result-card h2 {
@@ -6199,7 +6199,7 @@ button:hover {
   grid-template-columns: auto 1fr;
   gap: .65rem;
   align-items: start;
-  font-size: .94rem;
+  font-size: 0.95rem;
   color: rgba(255, 236, 197, .78);
 }
 .finder-products {
@@ -6214,7 +6214,7 @@ button:hover {
   align-items: center;
   text-transform: uppercase;
   letter-spacing: .3em;
-  font-size: .75rem;
+  font-size: 0.75rem;
   color: rgba(255, 236, 197, .6);
 }
 .finder-products ul {
@@ -6242,7 +6242,7 @@ button:hover {
 }
 .finder-product-desc {
   margin: .1rem 0 0;
-  font-size: .88rem;
+  font-size: 0.9rem;
   color: rgba(255, 236, 197, .7);
 }
 .finder-result-actions {
@@ -6252,7 +6252,7 @@ button:hover {
 }
 .finder-mantra {
   margin: 0;
-  font-size: .9rem;
+  font-size: 0.9rem;
   color: rgba(255, 236, 197, .7);
 }
 .finder-aside {
@@ -6265,7 +6265,7 @@ button:hover {
   margin: .5rem 0 0;
   display: grid;
   gap: .4rem;
-  font-size: .9rem;
+  font-size: 0.9rem;
   color: rgba(255, 236, 197, .75);
 }
 .finder-aside-card h3 {
@@ -6279,7 +6279,7 @@ button:hover {
   padding: 1rem 1.2rem;
   border: 1px solid rgba(244, 208, 135, .25);
   background: rgba(7, 27, 18, .9);
-  font-size: .95rem;
+  font-size: 0.95rem;
 }
 .finder-status--success {
   border-color: rgba(113, 226, 176, .5);
@@ -6345,7 +6345,7 @@ button:hover {
 }
 .orders-status {
   text-align: center;
-  font-size: .95rem;
+  font-size: 0.95rem;
   color: rgba(255, 236, 197, .78);
 }
 .orders-status--error {
@@ -6382,7 +6382,7 @@ button:hover {
   border-radius: 999px;
   border: 1px solid rgba(244, 208, 135, .22);
   padding: .3rem .8rem;
-  font-size: .8rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: .2em;
   color: rgba(255, 236, 197, .78);
@@ -6397,14 +6397,14 @@ button:hover {
   gap: .25rem;
 }
 .orders-card dt {
-  font-size: .8rem;
+  font-size: 0.8rem;
   letter-spacing: .2em;
   text-transform: uppercase;
   color: rgba(255, 236, 197, .6);
 }
 .orders-card dd {
   margin: 0;
-  font-size: .95rem;
+  font-size: 0.95rem;
   color: rgba(255, 236, 197, .9);
 }
 .orders-card dd strong {
@@ -6427,7 +6427,7 @@ button:hover {
   display: flex;
   justify-content: space-between;
   gap: .75rem;
-  font-size: .9rem;
+  font-size: 0.9rem;
   color: rgba(255, 236, 197, .85);
   border-bottom: 1px solid rgba(244, 208, 135, .12);
   padding-bottom: .3rem;
@@ -6953,7 +6953,7 @@ button:hover {
 }
 
 .admin-summary__label {
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: rgba(226, 232, 240, 0.6);
@@ -6989,7 +6989,7 @@ button:hover {
   padding: 0.85rem 1rem;
   border-bottom: 1px solid rgba(148, 163, 184, 0.18);
   text-align: left;
-  font-size: 0.92rem;
+  font-size: 0.9rem;
 }
 
 .admin-table th {
@@ -7145,7 +7145,7 @@ button:hover {
   }
 
   .announcement-message {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     padding: 0 0.9rem;
   }
 
@@ -7177,6 +7177,13 @@ button:hover {
   .landing-values__grid article {
     text-align: center;
     align-items: center;
+    justify-items: center;
+  }
+
+  .landing-personalization__saved-grid,
+  .landing-personalization__product-grid,
+  .landing-personalization__bundle-grid {
+    grid-template-columns: 1fr;
   }
 
   .legacy-section {
@@ -7341,7 +7348,7 @@ button:hover {
 
 .bundle-card__savings {
   color: #f9e4a8;
-  font-size: .85rem;
+  font-size: 0.85rem;
   font-weight: 600;
 }
 
@@ -7371,7 +7378,7 @@ button:hover {
 .bundle-card__variant-control {
   display: grid;
   gap: 0.35rem;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.65);
@@ -7926,7 +7933,7 @@ button:hover {
   }
 
   .brand {
-    font-size: 0.96rem;
+    font-size: 0.95rem;
     letter-spacing: 0.26em;
     margin-bottom: 0.2rem;
   }
@@ -7950,7 +7957,7 @@ button:hover {
 
   .nav-search--inline input {
     min-width: 0;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     letter-spacing: 0.02em;
     padding-block: 0.16rem;
   }
@@ -7964,7 +7971,7 @@ button:hover {
   .nav-currency__trigger,
   .nav-utility-links .nav-language {
     padding: 0.3rem 0.75rem;
-    font-size: 0.68rem;
+    font-size: 0.7rem;
   }
 
   .nav-mobile-actions {
@@ -7989,7 +7996,7 @@ button:hover {
     min-width: 24px;
     height: 21px;
     padding-inline: 0.48rem;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
   }
 
   .nav-mobile-actions__menu {
@@ -8753,7 +8760,7 @@ button:hover {
 .orders-history-card__variant {
   margin: 0.15rem 0 0;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
 }
 .orders-history-card__sub-items {
   list-style: none;
@@ -8870,7 +8877,7 @@ button:hover {
   border-color: rgba(255, 255, 255, 0.5);
 }
 .account-region__option small {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   letter-spacing: 0.15em;
   opacity: 0.7;
 }
@@ -9257,7 +9264,7 @@ button:hover {
   text-align: left;
   padding: 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: #fff;
 }
 .audience-page__table th {
@@ -9281,7 +9288,7 @@ button:hover {
   gap: 0.35rem;
 }
 .audience-page__consent-source {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   opacity: 0.65;
 }
 .audience-page__empty {
