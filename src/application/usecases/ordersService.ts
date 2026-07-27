@@ -251,6 +251,20 @@ const toValidDate = (value: any, fallback: Date) => {
   return Number.isNaN(date.getTime()) ? fallback : date;
 };
 
+const resolveItemWeight = (item: any) => {
+  const raw = sanitizeString(item?.variant?.size ?? item?.variant?.label ?? item?.variant?.name ?? "");
+  if (!raw || raw === "[object Object]" || /^standard$/i.test(raw)) return "";
+  return raw;
+};
+
+const formatOrderItemLine = (item: any) => {
+  const title = sanitizeString(item?.title) || "Item";
+  const quantity = Number(item?.quantity ?? item?.qty ?? 1) || 1;
+  const weight = resolveItemWeight(item);
+  const weightPart = weight ? ` (${weight})` : "";
+  return `• ${title}${weightPart} × ${quantity}`;
+};
+
 const formatOrderNotificationMessage = (order: Partial<Order>, clock: Clock) => {
   const fmt = (value: unknown) => (value === null || value === undefined || value === "" ? "-" : String(value));
   const createdAtCandidate = order?.createdAt ? new Date(order.createdAt) : clock.now();
@@ -268,6 +282,12 @@ const formatOrderNotificationMessage = (order: Partial<Order>, clock: Clock) => 
     `💰 Total: ${fmt((order as any).total ?? order?.totals?.subtotal)}`,
     `🕒 Time: ${createdAt.toLocaleString()}`,
   ];
+
+  const items = Array.isArray(order.items) ? order.items : [];
+  if (items.length > 0) {
+    textLines.push("", "📦 Items:", ...items.map(formatOrderItemLine));
+  }
+
   return textLines.join("\n");
 };
 
