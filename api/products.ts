@@ -1,6 +1,7 @@
 import { productsHandler, enhanceApiResponse, normalizeServerlessRequest } from "./http-barrel.js";
+import { withSentry } from "../src/infrastructure/monitoring/sentry.js";
 
-export default async function handler(
+async function productsRoute(
   req: Parameters<typeof productsHandler>[0],
   res: Parameters<typeof productsHandler>[1]
 ) {
@@ -8,3 +9,5 @@ export default async function handler(
   enhanceApiResponse(res);
   return productsHandler(req, res);
 }
+
+export default withSentry(productsRoute, "/api/products");

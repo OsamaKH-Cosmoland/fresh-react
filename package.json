@@ -16,6 +16,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@sentry/node": "^10.69.0",
     "aws": "^0.0.3-2",
     "dotenv": "^16.4.5",
     "express": "^5.2.1",
