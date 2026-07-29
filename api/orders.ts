@@ -10,6 +10,8 @@ import {
   streamOrdersHandler,
 } from "./http-barrel.js";
 import { enhanceApiResponse, normalizeServerlessRequest } from "./http-barrel.js";
+import { withSentry } from "../src/infrastructure/monitoring/sentry.js";
+import { getLogger } from "../src/logging/globalLogger.js";
 
 type ServerlessRequest = IncomingMessage & {
   body?: any;
@@ -35,7 +37,7 @@ const createEmailProvider = (): EmailProvider => {
 const emailProvider = createEmailProvider();
 const ordersHandler = buildOrdersHandler({ emailProvider });
 
-export default async function handler(rawReq: ServerlessRequest, rawRes: ServerlessResponse) {
+async function ordersRoute(rawReq: ServerlessRequest, rawRes: ServerlessResponse) {
   const req = (await normalizeServerlessRequest(rawReq as any)) as ServerlessRequest;
   const res = rawRes as any;
   enhanceApiResponse(res);
@@ -53,7 +55,7 @@ export default async function handler(rawReq: ServerlessRequest, rawRes: Serverl
 
     return ordersHandler(req as any, res as any);
   } catch (error: any) {
-    console.error("orders handler error", error);
+    getLogger().error("orders handler error", { error });
     if (res.headersSent) {
       return res.end();
     }
@@ -63,3 +65,5 @@ export default async function handler(rawReq: ServerlessRequest, rawRes: Serverl
     });
   }
 }
+
+export default withSentry(ordersRoute, "/api/orders");

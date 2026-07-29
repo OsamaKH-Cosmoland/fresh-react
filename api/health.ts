@@ -1,6 +1,9 @@
 import { healthHandler, enhanceApiResponse } from "./http-barrel.js";
+import { withSentry } from "../src/infrastructure/monitoring/sentry.js";
 
-export default function handler(req: Parameters<typeof healthHandler>[0], res: Parameters<typeof healthHandler>[1]) {
+function healthRoute(req: Parameters<typeof healthHandler>[0], res: Parameters<typeof healthHandler>[1]) {
   enhanceApiResponse(res);
   return healthHandler(req, res);
 }
+
+export default withSentry(healthRoute, "/api/health");

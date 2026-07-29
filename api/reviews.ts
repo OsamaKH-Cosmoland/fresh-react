@@ -1,6 +1,7 @@
 import { enhanceApiResponse, normalizeServerlessRequest, reviewsHandler } from "./http-barrel.js";
+import { withSentry } from "../src/infrastructure/monitoring/sentry.js";
 
-export default async function handler(
+async function reviewsRoute(
   req: Parameters<typeof reviewsHandler>[0],
   res: Parameters<typeof reviewsHandler>[1]
 ) {
@@ -8,3 +9,5 @@ export default async function handler(
   enhanceApiResponse(res as any);
   return reviewsHandler(req as any, res as any);
 }
+
+export default withSentry(reviewsRoute, "/api/reviews");

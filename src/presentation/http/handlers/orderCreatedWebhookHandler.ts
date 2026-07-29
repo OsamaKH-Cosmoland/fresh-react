@@ -1,6 +1,7 @@
 // HTTP adapter for the n8n order-created webhook.
 import type { ConfigProvider } from "../../../domain/config/ConfigProvider.js";
 import { EnvConfigProvider } from "../../../infrastructure/config/EnvConfigProvider.js";
+import { getLogger } from "../../../logging/globalLogger.js";
 import { Request, Response } from "./typeHandler.js";
 
 const DEFAULT_WEBHOOK_KEYS = ["N8N_ORDERS_WEBHOOK"];
@@ -72,6 +73,7 @@ export function createOrderCreatedWebhookHandler(configProvider: ConfigProvider 
 
       return res.status(200).json({ ok: true });
     } catch (err: any) {
+      getLogger().error("order-created webhook error", { error: err });
       return res.status(500).json({ ok: false, error: err?.message || "Server error" });
     }
   };
