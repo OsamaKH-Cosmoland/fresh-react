@@ -764,7 +764,7 @@ export const ar = {
       scent: {
         softFloral: {
           label: "زهري ناعم",
-          helper: "نيرولي، ياسمين، وبتلات بودرية.",
+          helper: "ورد دمشقي، فانيليا، وبتلات بودرية.",
         },
         fresh: {
           label: "انتعاش نقي",

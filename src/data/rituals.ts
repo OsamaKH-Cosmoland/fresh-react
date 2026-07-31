@@ -11,10 +11,10 @@ export const RITUALS: RitualMap = {
     steps: [
       {
         title: "Bloom Infused Cleanse",
-        body: "Massage Silk Blossom Body Soap over damp skin using upward strokes to boost circulation and deliver jasmine-derived antioxidants.",
+        body: "Massage Silk Blossom Body Soap over damp skin using upward strokes to boost circulation and deliver damask rose softness.",
       },
       {
-        title: "Ceramide Veil Finish",
+        title: "Butter Veil Finish",
         body: "Warm a pearl of Hand Balm between palms, then press across décolletage and hands for a serum-like gleam without residue.",
       },
     ],
@@ -25,12 +25,12 @@ export const RITUALS: RitualMap = {
     title: "Moonlit Reset Ritual",
     focus: "Recalibrate sensitized skin and ease the nervous system before restorative sleep.",
     description:
-      "Bathe in blue chamomile steam, then cocoon skin with nutrient-dense lipids to balance moisture and melt away daily stress.",
+      "Bathe in soft lavender steam, then cocoon skin with nutrient-dense lipids to balance moisture and melt away daily stress.",
     products: [2, 3],
     steps: [
       {
-        title: "Chamomile Steam Bathe",
-        body: "Glide Calm & Glow Body Soap across skin and pause; inhale neroli vapors three deep breaths before rinsing to signal calm.",
+        title: "Lavender Steam Bathe",
+        body: "Glide Calm & Glow Body Soap across skin and pause; inhale lavender vapors three deep breaths before rinsing to signal calm.",
       },
       {
         title: "Melted Butter Wrap",
@@ -49,7 +49,7 @@ export const RITUALS: RitualMap = {
     steps: [
       {
         title: "Micro-Circulation Activation",
-        body: "Section hair and massage Hair Growth Oil into scalp with small circular motions to feed follicles with rosemary stem cells.",
+        body: "Section hair and massage Hair Growth Oil into scalp with small circular motions to feed follicles with rosemary essential oil.",
       },
       {
         title: "Cuticle Glassing Finish",

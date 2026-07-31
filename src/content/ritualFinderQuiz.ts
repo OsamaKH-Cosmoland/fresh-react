@@ -116,8 +116,8 @@ export const RITUAL_QUESTIONS: QuizQuestion[] = [
         value: "floral",
         label: "Soft floral veil",
         labelAr: "حجاب زهري ناعم",
-        helper: "Neroli, orange blossom, and luminous petals.",
-        helperAr: "نيرولي وزهر البرتقال وبتلات مضيئة.",
+        helper: "Damask rose, vanilla, and luminous petals.",
+        helperAr: "ورد دمشقي وفانيليا وبتلات مضيئة.",
         bundleScores: { "evening-calm-ritual": 2, "glow-hydrate-duo": 1 },
       },
       {

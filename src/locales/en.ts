@@ -762,7 +762,7 @@ export const en = {
       scent: {
         softFloral: {
           label: "Soft & floral",
-          helper: "Neroli, jasmine, and powdery petals.",
+          helper: "Damask rose, vanilla, and powdery petals.",
         },
         fresh: {
           label: "Fresh clarity",

@@ -211,27 +211,39 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       },
     ],
     ingredients: [
-      { name: "Cocoa Butter", description: "Protective and occlusive, it locks in moisture and softens rough areas." },
-      { name: "Shea Butter", description: "Deeply nourishing and comforting for dry, sensitive skin." },
-      { name: "Sweet Almond Oil", description: "Replenishing and silky, it keeps skin smooth and supple." },
-      { name: "Vitamin E", description: "Supports the skin barrier while providing gentle antioxidant care." },
+      {
+        name: "Shea Butter",
+        description: "Deeply nourishing and comforting for dry, sensitive skin.",
+      },
+      {
+        name: "Virgin Coconut Oil",
+        description: "Cold-pressed and unrefined, it softens while sealing in moisture.",
+      },
+      {
+        name: "Sweet Almond Oil",
+        description: "Replenishing and silky, it keeps skin smooth and supple.",
+      },
+      {
+        name: "Jojoba Oil",
+        description: "Closest to skin's own oils, it absorbs cleanly without heaviness.",
+      },
     ],
     ingredientsAr: [
       {
-        name: "زبدة الكاكاو",
-        description: "واقية ومغلِّفة، تحبس الرطوبة وتنعّم المناطق الخشنة.",
-      },
-      {
         name: "زبدة الشيا",
         description: "مغذّية ومريحة للبشرة الجافة والحساسة.",
+      },
+      {
+        name: "زيت جوز الهند البكر",
+        description: "معصور على البارد وغير مكرر، ينعّم البشرة ويحبس الترطيب.",
       },
       {
         name: "زيت اللوز الحلو",
         description: "مُرمّم وناعم، يحافظ على نعومة البشرة وليونتها.",
       },
       {
-        name: "فيتامين E",
-        description: "يدعم حاجز البشرة ويمنحها عناية مضادة للأكسدة بلطف.",
+        name: "زيت الجوجوبا",
+        description: "الأقرب لزيوت البشرة الطبيعية، يمتص بنقاء دون ثقل.",
       },
     ],
     sensoryExperience: [
@@ -296,8 +308,8 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     productId: "calm-glow-body-soap",
     productName: "Calm & Glow Body Soap",
     productNameAr: "صابون الجسم سكينة وتوهج",
-    shortTagline: "Chamomile serenity for luminous skin.",
-    shortTaglineAr: "سكينة البابونج لبشرة مضيئة.",
+    shortTagline: "Lavender serenity for luminous skin.",
+    shortTaglineAr: "سكينة اللافندر لبشرة مضيئة.",
     price: 75,
     priceLabel: "75 EGP",
     priceNumber: 75,
@@ -305,12 +317,12 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     compareAtPrice: 109,
     discountPercentage: 30,
     heroSummaryBullets: [
-      "Creamy chamomile lather comforts skin while polishing the surface.",
+      "Creamy lavender lather comforts skin while polishing the surface.",
       "Removes impurities without stripping natural oils.",
       "Builds a gentle glow so skin feels settled before routine steps.",
     ],
     heroSummaryBulletsAr: [
-      "رغوة بابونج كريمية تهدئ البشرة وتنعّم السطح.",
+      "رغوة لافندر كريمية تهدئ البشرة وتنعّم السطح.",
       "يزيل الشوائب دون تجريد الزيوت الطبيعية.",
       "يبني توهجاً لطيفاً لتشعر البشرة بالهدوء قبل الخطوات التالية.",
     ],
@@ -349,38 +361,38 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     ],
     ingredients: [
       {
-        name: "Chamomile",
-        description: "Soothes redness while easing the senses with floral warmth.",
+        name: "Glycerin Base",
+        description: "A gentle glycerin cleanse that lathers without stripping the skin.",
       },
       {
-        name: "Neroli",
-        description: "Brightens the skin and infuses a gentle, uplifting aroma.",
+        name: "Lavender Essential Oil",
+        description: "Calms the senses and settles skin with a soft herbal note.",
       },
       {
-        name: "Aloe Vera",
-        description: "Adds cooling hydration to keep the skin softly softened.",
+        name: "Sweet Almond Oil",
+        description: "Keeps the bar conditioning so skin never feels tight.",
       },
       {
-        name: "Mica Pearls",
-        description: "Deliver a barely-there glow that reflects candlelight.",
+        name: "Mica Powder",
+        description: "Delivers a barely-there glow that reflects candlelight.",
       },
     ],
     ingredientsAr: [
       {
-        name: "البابونج",
-        description: "يهدئ الاحمرار ويمنح إحساساً دافئاً.",
+        name: "قاعدة الجليسرين",
+        description: "تنظيف لطيف بالجليسرين يرغي دون تجريد البشرة.",
       },
       {
-        name: "نيرولي",
-        description: "يفتح البشرة ويمنح عطراً لطيفاً ومبهجاً.",
+        name: "زيت اللافندر العطري",
+        description: "يهدئ الحواس ويريح البشرة بلمسة عشبية ناعمة.",
       },
       {
-        name: "الألوفيرا",
-        description: "ترطيب مُبرِّد يحافظ على نعومة البشرة.",
+        name: "زيت اللوز الحلو",
+        description: "يمنح الصابون قواماً مرطباً فلا تشعر البشرة بالشدّ.",
       },
       {
-        name: "لآلئ الميكا",
-        description: "تمنح توهجاً خفيفاً يعكس ضوء الشموع.",
+        name: "مسحوق الميكا",
+        description: "يمنح توهجاً خفيفاً يعكس ضوء الشموع.",
       },
     ],
     sensoryExperience: [
@@ -406,11 +418,11 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     faq: [
       {
         question: "Will this brighten my skin immediately?",
-        answer: "Yes—the mica pearls deliver instant warmth without glittery residue.",
+        answer: "Yes—the mica powder delivers instant warmth without glittery residue.",
       },
       {
         question: "Is it safe for sensitive skin?",
-        answer: "Chamomile and aloe make it soothing even for reactive complexions.",
+        answer: "Lavender and sweet almond oil make it soothing even for reactive complexions.",
       },
       {
         question: "How often can I use it?",
@@ -420,11 +432,11 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     faqAr: [
       {
         question: "هل يمنح توهجاً فورياً؟",
-        answer: "نعم—لآلئ الميكا تمنح دفئاً فورياً دون لمعان مبالغ.",
+        answer: "نعم—مسحوق الميكا يمنح دفئاً فورياً دون لمعان مبالغ.",
       },
       {
         question: "هل هو مناسب للبشرة الحساسة؟",
-        answer: "البابونج والألوفيرا يجعلان التركيبة لطيفة حتى للبشرة المتفاعلة.",
+        answer: "اللافندر وزيت اللوز الحلو يجعلان التركيبة لطيفة حتى للبشرة المتفاعلة.",
       },
       {
         question: "كم مرة يمكن استخدامه؟",
@@ -437,8 +449,8 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     productId: "silk-blossom-body-soap",
     productName: "Silk Blossom Body Soap",
     productNameAr: "صابون الجسم زهر الحرير",
-    shortTagline: "Velvety jasmine for moments that bloom.",
-    shortTaglineAr: "ياسمين مخملي للحظات تتفتح.",
+    shortTagline: "Velvety damask rose for moments that bloom.",
+    shortTaglineAr: "ورد دمشقي مخملي للحظات تتفتح.",
     price: 75,
     priceLabel: "75 EGP",
     priceNumber: 75,
@@ -446,12 +458,12 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     compareAtPrice: 109,
     discountPercentage: 30,
     heroSummaryBullets: [
-      "Jasmine petals and silk proteins soften as you cleanse.",
+      "Damask rose and sweet almond oil soften as you cleanse.",
       "Creates an elegant foam that rinses away effortlessly.",
       "Designed to lift the senses with a floral finish.",
     ],
     heroSummaryBulletsAr: [
-      "بتلات الياسمين وبروتينات الحرير تنعّم أثناء التنظيف.",
+      "الورد الدمشقي وزيت اللوز الحلو ينعّمان أثناء التنظيف.",
       "تُكوّن رغوة أنيقة تُشطف بسهولة.",
       "مصمم لرفع الحواس بلمسة زهرية.",
     ],
@@ -490,47 +502,47 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     ],
     ingredients: [
       {
-        name: "Jasmine",
-        description: "Orders a floral softness while calming the senses.",
+        name: "Glycerin Base",
+        description: "A gentle glycerin cleanse that lathers without stripping the skin.",
       },
       {
-        name: "Silk Proteins",
-        description: "Deliver a luxurious glide and protective film.",
+        name: "Damask Rose Essential Oil",
+        description: "A true floral heart that lingers softly on the skin.",
       },
       {
-        name: "Rice Bran Oil",
-        description: "Nourishes without heaviness.",
+        name: "Sweet Almond Oil",
+        description: "Adds a conditioning glide for a velvety cleanse.",
       },
       {
-        name: "Vitamin B5",
-        description: "Helps maintain suppleness and resilience.",
+        name: "Mica Powder",
+        description: "Leaves a satin sheen once skin is rinsed and dry.",
       },
     ],
     ingredientsAr: [
       {
-        name: "الياسمين",
-        description: "يمنح نعومة زهرية ويهدئ الحواس.",
+        name: "قاعدة الجليسرين",
+        description: "تنظيف لطيف بالجليسرين يرغي دون تجريد البشرة.",
       },
       {
-        name: "بروتينات الحرير",
-        description: "تمنح انسيابية فاخرة وطبقة واقية.",
+        name: "زيت الورد الدمشقي العطري",
+        description: "قلب زهري أصيل يبقى بلطف على البشرة.",
       },
       {
-        name: "زيت نخالة الأرز",
-        description: "يغذي دون ثقل.",
+        name: "زيت اللوز الحلو",
+        description: "يمنح انسيابية مرطبة لتنظيف مخملي.",
       },
       {
-        name: "فيتامين B5",
-        description: "يساعد على الحفاظ على المرونة والحيوية.",
+        name: "مسحوق الميكا",
+        description: "يترك لمعة ساتانية بعد الشطف والتجفيف.",
       },
     ],
     sensoryExperience: [
-      "The petals release a soft floral mist as you lather.",
+      "The damask rose releases a soft floral mist as you lather.",
       "Rinses with a polished, satin finish.",
       "Scent lingers but never feels overpowering.",
     ],
     sensoryExperienceAr: [
-      "تطلق البتلات ضباباً زهرياً ناعماً أثناء الرغوة.",
+      "يطلق الورد الدمشقي ضباباً زهرياً ناعماً أثناء الرغوة.",
       "يشطف مع لمسة ساتانية مصقولة.",
       "يبقى العطر دون أن يكون طاغياً.",
     ],
@@ -549,7 +561,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       },
       {
         question: "Will it dry my skin?",
-        answer: "The silk proteins and rice bran oil keep moisture in for a soft finish.",
+        answer: "The glycerin base and sweet almond oil keep moisture in for a soft finish.",
       },
       {
         question: "Is it safe for daily use?",
@@ -563,7 +575,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       },
       {
         question: "هل يجفف البشرة؟",
-        answer: "بروتينات الحرير وزيت نخالة الأرز يحافظان على الترطيب لملمس ناعم.",
+        answer: "قاعدة الجليسرين وزيت اللوز الحلو يحافظان على الترطيب لملمس ناعم.",
       },
       {
         question: "هل هو مناسب للاستخدام اليومي؟",
@@ -633,9 +645,9 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     ],
     heroImage: handBalmImage,
     whatItsMadeFor:
-      "Work-worn palms, garden hands, or those who need a quick, restorative finish—this balm brings concentrated ceramides without tackiness.",
+      "Work-worn palms, garden hands, or those who need a quick, restorative finish—this balm brings concentrated shea and plant butters without tackiness.",
     whatItsMadeForAr:
-      "لليدين المتعبة أو لمن يحتاج لمسة سريعة—هذا البلسم يوفر سيراميدات مركزة دون لزوجة.",
+      "لليدين المتعبة أو لمن يحتاج لمسة سريعة—هذا البلسم يوفر زبدة الشيا والزبدات النباتية المركزة دون لزوجة.",
     ritualSteps: [
       { title: "Squeeze", description: "Place a pearl-sized amount onto fingertips." },
       {
@@ -663,49 +675,49 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     ],
     ingredients: [
       {
-        name: "Ceramides",
-        description: "Rebuild the barrier and defend against daily stressors.",
+        name: "Shea Butter",
+        description: "Rebuilds comfort in dry, hardworking hands.",
       },
       {
-        name: "Meadowfoam Seed Oil",
-        description: "Delivers velvet softness without weighing down.",
+        name: "Virgin Coconut Oil",
+        description: "Cold-pressed nourishment that softens on contact.",
       },
       {
-        name: "Sunflower Seed Oil",
-        description: "Rich in linoleic acid to soothe and nourish.",
+        name: "Sweet Almond Oil",
+        description: "Light, replenishing care that absorbs quickly.",
       },
       {
-        name: "Tamanu Oil",
-        description: "Calms and supports the skin’s natural renewal cycle.",
+        name: "Carnauba Wax",
+        description: "A plant wax that shields hands without a greasy finish.",
       },
     ],
     ingredientsAr: [
       {
-        name: "السيراميدات",
-        description: "تعيد بناء الحاجز وتحمي من الضغوط اليومية.",
+        name: "زبدة الشيا",
+        description: "تعيد الراحة لليدين الجافة والمجهدة.",
       },
       {
-        name: "زيت بذور الميدوفوم",
-        description: "يمنح نعومة مخملية دون ثقل.",
+        name: "زيت جوز الهند البكر",
+        description: "تغذية معصورة على البارد تنعّم عند اللمس.",
       },
       {
-        name: "زيت بذور دوار الشمس",
-        description: "غني بحمض اللينوليك لتهدئة وتغذية البشرة.",
+        name: "زيت اللوز الحلو",
+        description: "عناية خفيفة مُرمّمة تمتص بسرعة.",
       },
       {
-        name: "زيت التامانو",
-        description: "يهدئ ويدعم دورة تجدد البشرة الطبيعية.",
+        name: "شمع الكرنوبا",
+        description: "شمع نباتي يحمي اليدين دون ملمس دهني.",
       },
     ],
     sensoryExperience: [
       "A delicate balm that dries to an invisible, non-greasy sheen.",
       "Tactile enough to feel like self-care, but quick to absorb.",
-      "Fragrance is herbaceous and clean.",
+      "Fragrance is soft lavender with a warm vanilla finish.",
     ],
     sensoryExperienceAr: [
       "بلسم لطيف يجف إلى لمعة غير دهنية.",
       "إحساس عناية ذاتية مع امتصاص سريع.",
-      "العطر عشبي ونظيف.",
+      "العطر لافندر ناعم مع لمسة فانيليا دافئة.",
     ],
     pairsWellWith: createPairings([
       { name: "Body Balm", slug: "/products/body-balm" },
@@ -726,7 +738,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       },
       {
         question: "Does it work on cracked skin?",
-        answer: "The ceramides and tamanu give it a restorative boost.",
+        answer: "The shea butter and sweet almond oil give it a restorative boost.",
       },
     ],
     faqAr: [
@@ -740,7 +752,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       },
       {
         question: "هل يفيد للبشرة المتشققة؟",
-        answer: "السيراميدات والتامانو يمنحانه دفعة ترميمية.",
+        answer: "زبدة الشيا وزيت اللوز الحلو يمنحانه دفعة ترميمية.",
       },
     ],
   },
@@ -809,16 +821,40 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       },
     ],
     ingredients: [
-      { name: "Shea Butter", description: "Deeply nourishing lipids that soften and smooth." },
-      { name: "Jojoba Oil", description: "Lightweight oil that mimics natural sebum to soothe." },
-      { name: "Candelilla Wax", description: "Plant-based wax that seals in moisture without heaviness." },
-      { name: "Vitamin E", description: "Antioxidant support for delicate lip skin." },
+      {
+        name: "Cocoa Butter",
+        description: "Rich, protective lipids that cushion delicate lips.",
+      },
+      {
+        name: "Shea Butter",
+        description: "Deeply nourishing butter that softens and smooths.",
+      },
+      {
+        name: "Jojoba Oil",
+        description: "Lightweight oil that mimics natural sebum to soothe.",
+      },
+      {
+        name: "Carnauba Wax",
+        description: "Plant-based wax that seals in moisture without heaviness.",
+      },
     ],
     ingredientsAr: [
-      { name: "زبدة الشيا", description: "دهون مغذية بعمق تمنح نعومة." },
-      { name: "زيت الجوجوبا", description: "زيت خفيف يشابه الزيوت الطبيعية لتهدئة الشفاه." },
-      { name: "شمع الكنديلا", description: "شمع نباتي يحبس الترطيب دون ثقل." },
-      { name: "فيتامين هـ", description: "دعم مضاد للأكسدة لبشرة الشفاه الرقيقة." },
+      {
+        name: "زبدة الكاكاو",
+        description: "دهون غنية وواقية تغلّف الشفاه الرقيقة.",
+      },
+      {
+        name: "زبدة الشيا",
+        description: "زبدة مغذية بعمق تمنح نعومة وسلاسة.",
+      },
+      {
+        name: "زيت الجوجوبا",
+        description: "زيت خفيف يشابه الزيوت الطبيعية لتهدئة الشفاه.",
+      },
+      {
+        name: "شمع الكرنوبا",
+        description: "شمع نباتي يحبس الترطيب دون ثقل.",
+      },
     ],
     sensoryExperience: [
       "Silky balm with a soft, protective veil.",
@@ -922,12 +958,12 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     ],
     defaultVariantId: "hair-growth-50ml",
     heroSummaryBullets: [
-      "Rosemary stem cells and biotin fortify roots.",
+      "Rosemary essential oil and castor oil fortify roots.",
       "Lightweight oil that never feels heavy.",
       "Supports length retention and daily shine.",
     ],
     heroSummaryBulletsAr: [
-      "خلايا جذعية من إكليل الجبل والبيوتين تقوي الجذور.",
+      "زيت إكليل الجبل العطري وزيت الخروع يقويان الجذور.",
       "زيت خفيف لا يشعر بالثقل.",
       "يدعم الحفاظ على الطول ولمعاناً يومياً.",
     ],
@@ -963,49 +999,49 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     ],
     ingredients: [
       {
-        name: "Rosemary Stem Cells",
-        description: "Encourage stronger follicles and a balanced scalp.",
+        name: "Jojoba Oil",
+        description: "Balances the scalp and absorbs without weighing roots down.",
       },
       {
-        name: "Biotin",
-        description: "Supports shine while helping hair feel thicker.",
+        name: "Castor Oil",
+        description: "A traditional scalp conditioner that supports length retention.",
       },
       {
         name: "Argan Oil",
-        description: "Lightweight hydration that smooths frizz.",
+        description: "Lightweight hydration that smooths frizz along the strand.",
       },
       {
-        name: "Camellia Seed Oil",
-        description: "Soothes sensitivity and nourishes the mane.",
+        name: "Rosemary Essential Oil",
+        description: "A classic scalp botanical that invigorates at the root.",
       },
     ],
     ingredientsAr: [
       {
-        name: "خلايا جذعية من إكليل الجبل",
-        description: "تعزز بصيلات أقوى وتوازن فروة الرأس.",
+        name: "زيت الجوجوبا",
+        description: "يوازن فروة الرأس ويمتص دون إثقال الجذور.",
       },
       {
-        name: "البيوتين",
-        description: "يدعم اللمعان ويساعد الشعر على الإحساس بالكثافة.",
+        name: "زيت الخروع",
+        description: "مرطب تقليدي للفروة يدعم الحفاظ على طول الشعر.",
       },
       {
         name: "زيت الأرجان",
-        description: "ترطيب خفيف ينعّم الهيشان.",
+        description: "ترطيب خفيف ينعّم الهيشان على طول الخصلة.",
       },
       {
-        name: "زيت بذور الكاميليا",
-        description: "يهدئ الحساسية ويغذي الشعر.",
+        name: "زيت إكليل الجبل العطري",
+        description: "نبتة كلاسيكية للفروة تنشّط الجذور.",
       },
     ],
     sensoryExperience: [
       "A fine oil that spreads with a silky glide.",
       "Leaves hair soft but never weighed down.",
-      "The scent is herbal with a hint of citrus.",
+      "The scent is herbal rosemary softened by lavender and vanilla.",
     ],
     sensoryExperienceAr: [
       "زيت ناعم ينتشر بانزلاق حريري.",
       "يترك الشعر ناعماً دون ثقل.",
-      "العطر عشبي مع لمسة حمضية.",
+      "العطر عشبي بإكليل الجبل مع نعومة اللافندر والفانيليا.",
     ],
     pairsWellWith: createPairings([
       { name: "Hair Shine & Anti-Frizz Oil", slug: "/products/hair-shine-anti-frizz-oil" },
@@ -1099,12 +1135,12 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     ],
     defaultVariantId: "hair-shine-50ml",
     heroSummaryBullets: [
-      "Silica-rich finish smooths cuticles for mirror-like gloss.",
+      "Argan and jojoba smooth cuticles for mirror-like gloss.",
       "Tames frizz while keeping movement natural.",
       "Pairs beautifully with a warm blow-dry or sleek finish.",
     ],
     heroSummaryBulletsAr: [
-      "لمسة غنية بالسيليكا تنعّم القشرة لتوهج يشبه المرآة.",
+      "الأرجان والجوجوبا ينعّمان القشرة لتوهج يشبه المرآة.",
       "يهدئ الهيشان مع الحفاظ على حركة طبيعية.",
       "يتناغم مع تسريح حراري أو لمسة ناعمة.",
     ],
@@ -1143,49 +1179,49 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
     ],
     ingredients: [
       {
-        name: "Silica",
-        description: "Smooths cuticles for reflectivity.",
-      },
-      {
-        name: "Buriti Oil",
-        description: "High in beta-carotene to intensify shine.",
-      },
-      {
-        name: "Evening Primrose Oil",
-        description: "Calms flyaways without stiffness.",
-      },
-      {
         name: "Jojoba Oil",
-        description: "Balances shine and mimics the scalp’s natural oils.",
+        description: "Balances shine and mimics the scalp's natural oils.",
+      },
+      {
+        name: "Argan Oil",
+        description: "Smooths the cuticle for a soft, reflective finish.",
+      },
+      {
+        name: "Sweet Almond Oil",
+        description: "Adds slip and softness without heaviness.",
+      },
+      {
+        name: "Damask Rose Essential Oil",
+        description: "A delicate floral note that lingers in the hair.",
       },
     ],
     ingredientsAr: [
       {
-        name: "السيليكا",
-        description: "تنعّم القشرة لتعكس الضوء.",
-      },
-      {
-        name: "زيت البوريتي",
-        description: "غني بالبيتا كاروتين لتعزيز اللمعان.",
-      },
-      {
-        name: "زيت زهرة الربيع المسائية",
-        description: "يهدئ الشعيرات المتطايرة دون تيبّس.",
-      },
-      {
         name: "زيت الجوجوبا",
         description: "يوازن اللمعان ويحاكي زيوت الفروة الطبيعية.",
+      },
+      {
+        name: "زيت الأرجان",
+        description: "ينعّم القشرة للحصول على لمسة عاكسة ناعمة.",
+      },
+      {
+        name: "زيت اللوز الحلو",
+        description: "يمنح انسيابية ونعومة دون ثقل.",
+      },
+      {
+        name: "زيت الورد الدمشقي العطري",
+        description: "لمسة زهرية رقيقة تبقى في الشعر.",
       },
     ],
     sensoryExperience: [
       "Spreads like silk and leaves no residue.",
       "Reflective shine feels luminous but natural.",
-      "Fragrance is warm amber with herbal clarity.",
+      "Fragrance is soft lavender and rose with a warm vanilla finish.",
     ],
     sensoryExperienceAr: [
       "ينتشر كأنه حرير ولا يترك بقايا.",
       "لمعان انعكاسي يبدو طبيعياً.",
-      "العطر عنبر دافئ مع وضوح عشبي.",
+      "العطر لافندر وورد ناعم مع لمسة فانيليا دافئة.",
     ],
     pairsWellWith: createPairings([
       { name: "Hair Growth Oil", slug: "/products/hair-growth-oil" },
