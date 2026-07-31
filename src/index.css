@@ -4699,6 +4699,9 @@ input[type="range"] {
   background: linear-gradient(180deg, #02130c 0%, #040c07 100%);
   color: #fbe7ad;
   display: grid;
+  /* minmax(0, 1fr) stops an unshrinkable child from sizing the track wider
+     than the viewport, which body{overflow-x:hidden} would then clip. */
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(2rem, 6vw, 3rem);
 }
 
@@ -5645,6 +5648,11 @@ input[type="range"] {
 }
 .promo-panel__input {
   flex: 1;
+  /* An input's intrinsic ~20ch width would otherwise set the flex row's
+     min-content and force the page grid wider than a phone viewport.
+     width:0 lets flex-grow size it from the space actually available. */
+  width: 0;
+  min-width: 0;
   border-radius: 999px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: .45rem 1rem;
@@ -9462,6 +9470,8 @@ input[type="range"] {
 }
 .gift-credit-panel__controls input {
   flex: 1;
+  width: 0;
+  min-width: 0;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.02);
