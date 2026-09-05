@@ -1,10 +1,4 @@
-import bodyBalmImage from "@/assets/BodyBalmEnhanced1.jpg";
-import bodySoapOne from "@/assets/BodySoap1.jpg";
-import bodySoapTwo from "@/assets/BodySoap2.jpg";
-import handBalmImage from "@/assets/HandBalmEnhanced.jpg";
-import hairGrowthImage from "@/assets/HairGrowthEnhanced.jpg";
-import hairShineImage from "@/assets/HairShineEnhanced.jpg";
-import lipBalmImage from "@/assets/LipBalm.jpg";
+import { imageUrl } from "@/assets/images";
 import type {
   FAQItem,
   HeroSummaryBullet,
@@ -172,7 +166,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "يلطف المناطق الخشنة مثل المرفقين والركبتين واليدين.",
       "يغلّف الجسم بروتين هادئ ومريح في نهاية اليوم.",
     ],
-    heroImage: bodyBalmImage,
+    heroImage: imageUrl("BodyBalmEnhanced1"),
     whatItsMadeFor:
       "Dry, tired skin needs a peaceful interlude—our butter blend cushions, seals, and shields without the weight of heavy oils.",
     whatItsMadeForAr:
@@ -326,7 +320,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "يزيل الشوائب دون تجريد الزيوت الطبيعية.",
       "يبني توهجاً لطيفاً لتشعر البشرة بالهدوء قبل الخطوات التالية.",
     ],
-    heroImage: bodySoapOne,
+    heroImage: imageUrl("BodySoap1"),
     whatItsMadeFor:
       "Crafted for unsettled, reactive skin, the blend calms and restores balance while the micro-pearl glow leaves a whisper of radiance.",
     whatItsMadeForAr:
@@ -467,7 +461,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "تُكوّن رغوة أنيقة تُشطف بسهولة.",
       "مصمم لرفع الحواس بلمسة زهرية.",
     ],
-    heroImage: bodySoapTwo,
+    heroImage: imageUrl("BodySoap2"),
     whatItsMadeFor:
       "For those who linger by candlelight—this soap cleanses with soft silkiness and a floral veil that keeps skin feeling poised.",
     whatItsMadeForAr:
@@ -643,7 +637,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "يمتص بسرعة مع لمسة حريرية خفيفة.",
       "أنبوب صغير يسافر بسهولة وينعش فوراً.",
     ],
-    heroImage: handBalmImage,
+    heroImage: imageUrl("HandBalmEnhanced"),
     whatItsMadeFor:
       "Work-worn palms, garden hands, or those who need a quick, restorative finish—this balm brings concentrated shea and plant butters without tackiness.",
     whatItsMadeForAr:
@@ -779,7 +773,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "يحبس الترطيب بلمسة ناعمة ومريحة.",
       "يهدئ الشفاه الجافة أو المتشققة دون لزوجة.",
     ],
-    heroImage: lipBalmImage,
+    heroImage: imageUrl("LipBalm"),
     whatItsMadeFor:
       "Dry, delicate lips need a lightweight seal—this balm cushions, restores, and locks in moisture wherever you are.",
     whatItsMadeForAr:
@@ -967,7 +961,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "زيت خفيف لا يشعر بالثقل.",
       "يدعم الحفاظ على الطول ولمعاناً يومياً.",
     ],
-    heroImage: hairGrowthImage,
+    heroImage: imageUrl("HairGrowthEnhanced"),
     whatItsMadeFor:
       "For those growing their routine—this elixir nourishes the scalp, encourages resilience, and leaves hair whisper-soft.",
     whatItsMadeForAr:
@@ -1144,7 +1138,7 @@ export const PRODUCT_DETAIL_CONFIGS: ProductDetailContent[] = [
       "يهدئ الهيشان مع الحفاظ على حركة طبيعية.",
       "يتناغم مع تسريح حراري أو لمسة ناعمة.",
     ],
-    heroImage: hairShineImage,
+    heroImage: imageUrl("HairShineEnhanced"),
     whatItsMadeFor:
       "Designed for the finish line—seal in moisture, smooth stray hairs, and add a luminous halo without heaviness.",
     whatItsMadeForAr:

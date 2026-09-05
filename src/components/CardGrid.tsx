@@ -3,7 +3,7 @@ import type React from "react";
 import type { CSSProperties } from "react";
 import { PRODUCTS } from "../data/products";
 import type { CatalogProduct } from "@/data/products";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, Picture } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
 import {
   PRODUCT_DETAIL_MAP,
@@ -15,6 +15,7 @@ import { trackEvent } from "@/analytics/events";
 import { useTranslation } from "@/localization/locale";
 import { useCurrency } from "@/currency/CurrencyProvider";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { SIZES } from "@/assets/images";
 
 interface CardGridProps {
   onAddToCart?: (product: CatalogProduct) => void;
@@ -223,12 +224,11 @@ export default function CardGrid({ onAddToCart = () => {} }: CardGridProps) {
                 />
                 {c.image && (
                   <div className="card-media">
-                    <img
+                    <Picture
                       src={c.image}
                       alt={displayTitle}
                       className="card-img"
-                      loading="lazy"
-                      decoding="async"
+                      sizes={SIZES.card}
                     />
                     <span className="price-discount-badge card-discount-badge">
                       {c.discountPercentage}% OFF

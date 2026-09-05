@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/icons/o.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/o-32.png" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/icons/o-64.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#04110b" />
@@ -10,6 +11,19 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="NaturaGloss" />
     <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+
+    <!-- LCP typography: the hero h1 + subtitle and the nav both render in Playfair
+         Display. Self-hosted, so this is same-origin and needs no preconnect.
+         crossorigin is required on font preloads even same-origin, or the preload
+         is discarded and the file is fetched twice. The other three families load
+         normally via @font-face with font-display: swap. -->
+    <link
+      rel="preload"
+      href="/fonts/playfair-display-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <title>NaturaGloss Rituals — Calm, Luxurious Body &amp; Hair Care</title>
     <meta
       name="description"

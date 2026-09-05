@@ -1,13 +1,14 @@
 import { useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
-import { Button, Card, SectionTitle } from "@/components/ui";
+import { Button, Card, Picture, SectionTitle } from "@/components/ui";
 import { ritualGuides } from "@/content/ritualGuides";
 import { getShopFocusLookup } from "@/content/shopCatalog";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
 import { useTranslation } from "@/localization/locale";
+import { SIZES } from "@/assets/images";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -47,7 +48,7 @@ export default function RitualGuidesPage() {
             <Card key={guide.id} className="ritual-guides-card hover-lift" data-animate="fade-up">
               {guide.heroImage && (
                 <div className="ritual-guides-card__media">
-                  <img src={guide.heroImage} alt={guide.title} />
+                  <Picture src={guide.heroImage} alt={guide.title} sizes={SIZES.card} />
                 </div>
               )}
               <div className="ritual-guides-card__body">

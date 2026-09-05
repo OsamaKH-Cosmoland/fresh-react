@@ -4,7 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
-import { Button, Card, SectionTitle } from "@/components/ui";
+import { Button, Card, Picture, SectionTitle } from "@/components/ui";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useCart } from "@/cart/cartStore";
@@ -20,6 +20,7 @@ import { useSeo } from "@/seo/useSeo";
 import { useTranslation } from "@/localization/locale";
 import { localizeProductDetail } from "@/content/productDetails";
 import { useCurrency } from "@/currency/CurrencyProvider";
+import { SIZES } from "@/assets/images";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -130,7 +131,7 @@ export default function FavoritesPage() {
                       />
                       {detail.heroImage && (
                         <div className="shop-product-card__media">
-                          <img src={detail.heroImage} alt={localizedDetail.productName} />
+                          <Picture src={detail.heroImage} alt={localizedDetail.productName} sizes={SIZES.card} />
                         </div>
                       )}
                       <div className="shop-product-card__body">

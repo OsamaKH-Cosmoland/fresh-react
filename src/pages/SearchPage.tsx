@@ -4,7 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
-import { Button, Card, SectionTitle } from "@/components/ui";
+import { Button, Card, Picture, SectionTitle } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
 import { useBundleActions } from "@/cart/cartBundles";
 import { filterSearchEntries } from "@/hooks/useGlobalSearch";
@@ -34,6 +34,7 @@ import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useCurrency } from "@/currency/CurrencyProvider";
+import { SIZES } from "@/assets/images";
 
 const getQueryFromLocation = () => {
   if (typeof window === "undefined") {
@@ -294,7 +295,7 @@ export default function SearchPage() {
                       />
                     {detail.heroImage && (
                         <div className="shop-product-card__media">
-                          <img src={detail.heroImage} alt={localizedDetail.productName} />
+                          <Picture src={detail.heroImage} alt={localizedDetail.productName} sizes={SIZES.card} />
                         </div>
                       )}
                       <div className="shop-product-card__body">
@@ -381,7 +382,7 @@ export default function SearchPage() {
                     >
                       {guide.heroImage && (
                         <div className="shop-product-card__media">
-                          <img src={guide.heroImage} alt={guide.title} />
+                          <Picture src={guide.heroImage} alt={guide.title} sizes={SIZES.card} />
                         </div>
                       )}
                       <div className="shop-product-card__body">

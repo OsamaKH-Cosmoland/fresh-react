@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
-import { Button, Card, SectionTitle } from "@/components/ui";
+import { Button, Card, Picture, SectionTitle } from "@/components/ui";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useCart } from "@/cart/cartStore";
@@ -16,6 +16,7 @@ import { PRODUCT_DETAIL_MAP, localizeProductDetail } from "@/content/productDeta
 import { useSeo } from "@/seo/useSeo";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { useCurrency } from "@/currency/CurrencyProvider";
+import { SIZES } from "@/assets/images";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -148,7 +149,7 @@ export default function ComparePage() {
               <Card key={`${column.type}-${column.id}`} className="compare-column">
                 {column.heroImage && (
                   <div className="compare-column__hero">
-                    <img src={column.heroImage} alt={column.label} />
+                    <Picture src={column.heroImage} alt={column.label} sizes={SIZES.tile} />
                   </div>
                 )}
                 <div className="compare-column__header">

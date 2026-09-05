@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { buildAppUrl } from "@/utils/navigation";
-import brandLogo from "@/assets/Logo.webp";
 import { useSeo } from "@/seo/useSeo";
 import { RITUALS } from "../data/rituals";
 import { PRODUCT_INDEX } from "../data/products";
 import type { Ritual } from "../types/ritual";
 import type { Product } from "../types/product";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
+import { Picture } from "@/components/ui";
+import { SIZES, imageUrl } from "@/assets/images";
 
 const DEFAULT_RITUAL = "radiance";
 
@@ -22,7 +23,7 @@ export default function RitualPlanner() {
           "@type": "Organization",
           name: "NaturaGloss",
           url: baseUrl,
-          logo: brandLogo,
+          logo: imageUrl("Logo"),
         },
       },
       {
@@ -183,7 +184,7 @@ export default function RitualPlanner() {
             <div className="ritual-product-grid">
               {ritualProducts.map((product) => (
                 <article key={product.id} className="ritual-product-card">
-                  {product.image && <img src={product.image} alt={product.title} />}
+                  {product.image && <Picture src={product.image} alt={product.title} sizes={SIZES.tile} />}
                   <p className="ritual-product-name">{product.title}</p>
                   <p className="ritual-product-price">{product.price}</p>
                   <button

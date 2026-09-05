@@ -1,10 +1,4 @@
-import bodySoapOne from "../assets/BodySoap1.jpg";
-import bodySoapTwo from "../assets/BodySoap2.jpg";
-import bodyBalmImage from "../assets/BodyBalmEnhanced1.jpg";
-import handBalmImage from "../assets/HandBalmEnhanced.jpg";
-import hairGrowthImage from "../assets/HairGrowthEnhanced.jpg";
-import hairShineImage from "../assets/HairShineEnhanced.jpg";
-import lipBalmImage from "../assets/LipBalm.jpg";
+import { imageUrl } from "@/assets/images";
 export interface CatalogProduct {
   id: number;
   title: string;
@@ -30,7 +24,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 75,
     compareAtPrice: 109,
     discountPercentage: 30,
-    image: bodySoapOne,
+    image: imageUrl("BodySoap1"),
     category: "cleansing",
   },
   {
@@ -43,7 +37,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 75,
     compareAtPrice: 109,
     discountPercentage: 30,
-    image: bodySoapTwo,
+    image: imageUrl("BodySoap2"),
     category: "cleansing",
   },
   {
@@ -56,7 +50,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 65,
     compareAtPrice: 95,
     discountPercentage: 30,
-    image: lipBalmImage,
+    image: imageUrl("LipBalm"),
     category: "treatment",
   },
   {
@@ -69,7 +63,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 139,
     compareAtPrice: 199,
     discountPercentage: 30,
-    image: hairShineImage,
+    image: imageUrl("HairShineEnhanced"),
     category: "finisher",
   },
   {
@@ -82,7 +76,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 229,
     compareAtPrice: 329,
     discountPercentage: 30,
-    image: hairShineImage,
+    image: imageUrl("HairShineEnhanced"),
     category: "finisher",
   },
   {
@@ -95,7 +89,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 149,
     compareAtPrice: 215,
     discountPercentage: 30,
-    image: hairGrowthImage,
+    image: imageUrl("HairGrowthEnhanced"),
     category: "treatment",
   },
   {
@@ -108,7 +102,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 249,
     compareAtPrice: 359,
     discountPercentage: 30,
-    image: hairGrowthImage,
+    image: imageUrl("HairGrowthEnhanced"),
     category: "treatment",
   },
   {
@@ -121,7 +115,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 179,
     compareAtPrice: 259,
     discountPercentage: 30,
-    image: handBalmImage,
+    image: imageUrl("HandBalmEnhanced"),
     category: "treatment",
   },
   {
@@ -134,7 +128,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 289,
     compareAtPrice: 415,
     discountPercentage: 30,
-    image: handBalmImage,
+    image: imageUrl("HandBalmEnhanced"),
     category: "treatment",
   },
   {
@@ -147,7 +141,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 179,
     compareAtPrice: 259,
     discountPercentage: 30,
-    image: bodyBalmImage,
+    image: imageUrl("BodyBalmEnhanced1"),
     category: "moisturizer",
   },
   {
@@ -160,7 +154,7 @@ export const PRODUCTS: CatalogProduct[] = [
     price: 289,
     compareAtPrice: 415,
     discountPercentage: 30,
-    image: bodyBalmImage,
+    image: imageUrl("BodyBalmEnhanced1"),
     category: "moisturizer",
   },
 ];

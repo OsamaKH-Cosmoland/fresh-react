@@ -166,7 +166,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   };
 
   return (
-    <div className={`cart-drawer ${open ? "is-open" : ""}`} aria-hidden={!open}>
+    <div className={`cart-drawer ${open ? "is-open" : ""}`} inert={!open}>
       <div className="cart-drawer__backdrop" onClick={onClose} aria-hidden="true" />
       <FadeIn>
         <aside

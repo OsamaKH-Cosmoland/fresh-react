@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Card } from "@/components/ui";
+import { Card, Picture } from "@/components/ui";
 import { useLocale, useTranslation, type AppTranslationKey } from "@/localization/locale";
 import type { LocalReview } from "@/types/localReview";
 
@@ -99,7 +99,7 @@ export function ReviewList({ reviews, isVerified }: ReviewListProps) {
               </header>
               <p>{review.body}</p>
               {review.photoUrl && (
-                <img
+                <Picture
                   src={review.photoUrl}
                   alt={review.title || t("reviews.list.photoAlt")}
                   className="review-card__photo"

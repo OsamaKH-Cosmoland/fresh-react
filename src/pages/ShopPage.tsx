@@ -4,7 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
-import { Button, Card, SectionTitle } from "@/components/ui";
+import { Button, Card, Picture, SectionTitle } from "@/components/ui";
 import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useCart } from "@/cart/cartStore";
@@ -35,6 +35,7 @@ import { useUserPreferences } from "@/hooks/useUserPreferences";
 import { readOrders } from "@/utils/orderStorage";
 import { listReviews } from "@/utils/reviewStorage";
 import { scoreItemsForUser } from "@/personalization/personalizationEngine";
+import { SIZES } from "@/assets/images";
 
 const TYPE_FILTER_OPTIONS = [
   { id: "all", labelKey: "filters.allRitualsProducts" },
@@ -362,7 +363,7 @@ export default function ShopPage() {
                       />
                       {item.heroImage && (
                         <div className="shop-product-card__media">
-                          <img src={item.heroImage} alt={localizedItem.productName} />
+                          <Picture src={item.heroImage} alt={localizedItem.productName} sizes={SIZES.card} />
                           <span className="price-discount-badge shop-product-card__badge">
                             {displayDiscountPercentage}% OFF
                           </span>

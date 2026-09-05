@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { Button, Card } from "@/components/ui";
+import { Button, Card, Picture } from "@/components/ui";
 import { FavoriteToggle } from "@/components/FavoriteToggle";
 import { CompareToggle } from "@/components/CompareToggle";
 import { RitualBundle } from "@/content/bundles";
@@ -15,6 +15,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { useTranslation } from "@/localization/locale";
 import { trackEvent, type BundleViewSource } from "@/analytics/events";
 import { useCurrency } from "@/currency/CurrencyProvider";
+import { SIZES } from "@/assets/images";
 
 export interface BundleCardProps {
   bundle: RitualBundle;
@@ -89,14 +90,7 @@ function BundleCardBase({
           <span className="price-discount-badge bundle-card__badge">
             {bundle.discountPercentage}% OFF
           </span>
-          <img
-            src={heroImage}
-            alt={bundleName}
-            width="480"
-            height="360"
-            loading="lazy"
-            decoding="async"
-          />
+          <Picture src={heroImage} alt={bundleName} sizes={SIZES.bundle} />
         </div>
       )}
       <header className="bundle-card__header">

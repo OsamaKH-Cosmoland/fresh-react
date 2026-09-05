@@ -51,13 +51,6 @@ const routeFallback = (
 
 const SHOW_LAB = true;
 
-const PRESET_PRODUCTS = [
-  { name: "Hydra Serum", price: 45 },
-  { name: "Glow Cream", price: 32 },
-  { name: "Velvet Cleanser", price: 28 },
-  { name: "Silk Toner", price: 22 },
-  { name: "Botanical Mist", price: 18 },
-];
 
 type RouteTitleMatcher = {
   key: AppTranslationKey;
