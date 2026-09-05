@@ -14,7 +14,12 @@ const config: Config = {
     ],
   },
   moduleNameMapper: {
-    "\\.(jpg|jpeg|png|gif|webp|avif|svg)$": "<rootDir>/__mocks__/fileMock.ts",
+    // Jest's ESM resolver strips the query before applying these patterns, so
+    // imagetools imports ("./x.jpg?...&as=picture") arrive here as plain "./x.jpg".
+    // Every bundled image now goes through assets/images.ts, so they all need the
+    // picture-shaped stub; svg is unused today but keeps its string stub.
+    "\\.(jpg|jpeg|png|gif|webp|avif)$": "<rootDir>/__mocks__/imageMock.ts",
+    "\\.svg$": "<rootDir>/__mocks__/fileMock.ts",
     "\\.(css|scss|sass)$": "<rootDir>/__mocks__/styleMock.ts",
     "^mongodb$": "<rootDir>/__mocks__/mongodbMock.ts",
     "^@/(.*)$": "<rootDir>/src/$1",

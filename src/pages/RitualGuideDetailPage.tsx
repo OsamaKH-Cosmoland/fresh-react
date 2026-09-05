@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
-import { Button, Card, SectionTitle } from "@/components/ui";
+import { Button, Card, Picture, SectionTitle } from "@/components/ui";
 import { useCart } from "@/cart/cartStore";
 import { useBundleActions } from "@/cart/cartBundles";
 import { PRODUCT_DETAIL_MAP } from "@/content/productDetails";
@@ -17,6 +17,7 @@ import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
 import { buildAppUrl } from "@/utils/navigation";
 import { useCurrency } from "@/currency/CurrencyProvider";
+import { SIZES } from "@/assets/images";
 
 const navigateTo = (path: string) => {
   if (typeof window === "undefined") return;
@@ -141,7 +142,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
           </div>
           {guide.heroImage && (
             <figure className="ritual-guide-hero__media">
-              <img src={guide.heroImage} alt={guide.title} />
+              <Picture src={guide.heroImage} alt={guide.title} sizes={SIZES.banner} priority />
               {guide.heroCaption && <figcaption>{guide.heroCaption}</figcaption>}
             </figure>
           )}
@@ -185,7 +186,7 @@ export default function RitualGuideDetailPage({ slug }: RitualGuideDetailPagePro
                   >
                     {detail.heroImage && (
                       <div className="shop-product-card__media">
-                        <img src={detail.heroImage} alt={detail.productName} />
+                        <Picture src={detail.heroImage} alt={detail.productName} sizes={SIZES.tile} />
                       </div>
                     )}
                     <div className="shop-product-card__body">

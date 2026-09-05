@@ -1,10 +1,4 @@
-import bodyBalmImage from "../assets/BodyBalmEnhanced1.jpg";
-import handBalmImage from "../assets/HandBalmEnhanced.jpg";
-import hairGrowthImage from "../assets/HairGrowthEnhanced.jpg";
-import hairShineImage from "../assets/HairShineEnhanced.jpg";
-import bodySoapOne from "../assets/BodySoap1.jpg";
-import bodySoapTwo from "../assets/BodySoap2.jpg";
-import lipBalmImage from "../assets/LipBalm.jpg";
+import { imageUrl } from "@/assets/images";
 
 export type RitualStory = {
   slug: string;
@@ -69,7 +63,7 @@ and she carries it with her into the day.
 أناقة هادئة تستقر في مزاجها،  
 وترافقها طوال اليوم.
     `,
-    image: bodySoapTwo,
+    image: imageUrl("BodySoap2"),
     readTimeMinutes: 2,
     tags: ["body-care", "luxury", "softness"],
     tagsAr: ["عناية-الجسم", "ترف", "نعومة"]
@@ -110,7 +104,7 @@ A fresh beginning carried through the rest of the day.
 ماء دافئ، نفس عميق، ذهن صافٍ.  
 بداية جديدة تمتد لبقية اليوم.
     `,
-    image: bodySoapOne,
+    image: imageUrl("BodySoap1"),
     readTimeMinutes: 2,
     tags: ["body-care", "morning", "clarity"],
     tagsAr: ["عناية-الجسم", "صباح", "صفاء"]
@@ -153,7 +147,7 @@ For a moment, everything feels warm, nourished, and beautifully still.
 تظهر لمعة خفيفة، لكن ما يبقى أطول هو السكينة.  
 وللحظة، يصبح كل شيء دافئًا، مُغذّى، وساكنًا على نحو جميل.
     `,
-    image: bodyBalmImage,
+    image: imageUrl("BodyBalmEnhanced1"),
     readTimeMinutes: 2,
     tags: ["body-care", "routine", "relaxation"],
     tagsAr: ["عناية-الجسم", "روتين", "استرخاء"]
@@ -206,7 +200,7 @@ feeling restored, present, and gently renewed.
 تُنهي الروتين بنَفَس عميق،  
 وتشعر بالترميم والحضور والتجدد الهادئ.
     `,
-    image: handBalmImage,
+    image: imageUrl("HandBalmEnhanced"),
     readTimeMinutes: 2,
     tags: ["hand-care", "restoration", "routine"],
     tagsAr: ["عناية-اليدين", "ترميم", "روتين"]
@@ -255,7 +249,7 @@ Her routine doesn’t need to.
 العالم يسرع،  
 وروتينها ليس مضطرًا لذلك.
     `,
-    image: lipBalmImage,
+    image: imageUrl("LipBalm"),
     readTimeMinutes: 1,
     tags: ["lip-care", "mindfulness", "hydration"],
     tagsAr: ["عناية-الشفاه", "ذهن-صافٍ", "ترطيب"]
@@ -300,7 +294,7 @@ stronger strands… healthier roots… a softness that feels earned.
 تمرّ الأسابيع، تعود الثقة، ويبدأ المرآة بسرد القصة:  
 خصلات أقوى… جذور أكثر صحة… ونعومة مكتسَبة.  
     `,
-    image: hairGrowthImage,
+    image: imageUrl("HairGrowthEnhanced"),
     readTimeMinutes: 3,
     tags: ["hair-care", "growth", "routine"],
     tagsAr: ["عناية-الشعر", "نمو", "روتين"]
@@ -349,7 +343,7 @@ Her hair becomes a reflection of the calm she carries.
 
 يصبح شعرها انعكاسًا للسكينة التي تحملها.
     `,
-    image: hairShineImage,
+    image: imageUrl("HairShineEnhanced"),
     readTimeMinutes: 2,
     tags: ["hair-care", "shine", "confidence"],
     tagsAr: ["عناية-الشعر", "لمعان", "ثقة"]

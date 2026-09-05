@@ -355,6 +355,7 @@ export default function AdminDashboard() {
                           <span className={`status-chip status-${order.status}`}>{order.status}</span>
                           <select
                             value={order.status}
+                            aria-label={`Status for order ${order.orderCode ?? order.id}`}
                             onChange={(event) => handleStatusUpdate(order.id, event.target.value)}
                             disabled={updatingOrderId === order.id}
                           >

@@ -314,6 +314,8 @@ export default function Navbar({
         onFocus={() => setSearchActive(true)}
         onKeyDown={handleSearchKeyDown}
         aria-label={t("search.placeholder")}
+        role="combobox"
+        aria-autocomplete="list"
         aria-controls="nav-search-results"
         aria-expanded={showDropdown}
         aria-activedescendant={
@@ -410,7 +412,6 @@ export default function Navbar({
                   <div
                     className={`nav-explore ${exploreOpen ? "is-open" : ""}`}
                     ref={exploreRef}
-                    aria-hidden={!exploreOpen}
                   >
                     <button
                       type="button"
@@ -435,7 +436,6 @@ export default function Navbar({
                         role="menu"
                         id="explore-menu"
                         aria-label={t("nav.explore")}
-                        aria-hidden={!exploreOpen}
                       >
                         {exploreNav.map((item, index) => (
                           <a
@@ -444,7 +444,6 @@ export default function Navbar({
                             href={normalizeHref(item.href)}
                             role="menuitem"
                           tabIndex={-1}
-                          aria-selected={highlightedExploreIndex === index}
                           onClick={() => {
                             setExploreOpen(false);
                             setHighlightedExploreIndex(-1);

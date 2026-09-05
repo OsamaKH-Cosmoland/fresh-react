@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import { RefillPlanCreationPanel } from "@/components/refill/RefillPlanCreationPanel";
 import { AccountTabs } from "@/components/account/AccountTabs";
-import { Button, SectionTitle } from "@/components/ui";
+import { Button, Picture, SectionTitle } from "@/components/ui";
 import { useBundleActions } from "@/cart/cartBundles";
 import { useCart } from "@/cart/cartStore";
 import { useFavorites } from "@/favorites/favoritesStore";
@@ -45,6 +45,7 @@ import {
   updatePlan,
   useRefillPlans,
 } from "@/subscriptions";
+import { SIZES } from "@/assets/images";
 
 const formatOrderLabel = (order: LocalOrder) =>
   `${order.id} · ${new Date(order.createdAt).toLocaleDateString(undefined, {
@@ -697,10 +698,11 @@ export default function AccountPage() {
             return (
               <div className="account-favorite-card" key={detail.productId}>
                 {detail.heroImage && (
-                  <img
+                  <Picture
                     src={detail.heroImage}
                     alt={detail.productName}
                     className="account-favorite-card__photo"
+                    sizes={SIZES.tile}
                   />
                 )}
                 <div>
@@ -847,7 +849,7 @@ export default function AccountPage() {
               {review.title && <p className="account-review-card__title">{review.title}</p>}
               <p>{review.body}</p>
               {review.photoUrl && (
-                <img
+                <Picture
                   src={review.photoUrl}
                   alt={t("reviews.list.photoAlt")}
                   className="account-review-card__photo"
@@ -1155,6 +1157,7 @@ function RefillPlanCard({ plan, locale, onRefresh, onRefillNow }: RefillPlanCard
         </p>
         <select
           className="account-refill-card__frequency-select"
+          aria-label={t("account.refillPlans.frequencyLabel")}
           value={plan.frequency}
           onChange={handleFrequencyChange}
         >

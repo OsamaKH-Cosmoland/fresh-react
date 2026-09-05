@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
-import { Button, Card, SectionTitle } from "@/components/ui";
+import { Button, Card, Picture, SectionTitle } from "@/components/ui";
 import { BundleCard } from "@/components/bundles/BundleCard";
 import { useBundleActions } from "@/cart/cartBundles";
 import { CartItem, useCart } from "@/cart/cartStore";
@@ -36,6 +36,7 @@ import { trackEvent } from "@/analytics/events";
 import { usePageAnalytics } from "@/analytics/usePageAnalytics";
 import { useSeo } from "@/seo/useSeo";
 import { useCurrency } from "@/currency/CurrencyProvider";
+import { SIZES } from "@/assets/images";
 
 const CONCERN_TO_FOCUS: Record<ConcernOption, FocusTagId> = {
   bodyHydration: "body",
@@ -437,9 +438,10 @@ export default function RitualCoachPage() {
                     <Card className="ritual-coach-product-card">
                       {mainMatch.entry.item.heroImage && (
                         <div className="ritual-coach-product-card__media">
-                          <img
+                          <Picture
                             src={mainMatch.entry.item.heroImage}
                             alt={(mainDetail ?? mainMatch.entry.item).productName}
+                            sizes={SIZES.card}
                           />
                         </div>
                       )}
@@ -488,9 +490,10 @@ export default function RitualCoachPage() {
                 <Card className="ritual-coach-product-card ritual-coach-product-card--lighter">
                   {lighterMatch.entry.item.heroImage && (
                     <div className="ritual-coach-product-card__media">
-                      <img
+                      <Picture
                         src={lighterMatch.entry.item.heroImage}
                         alt={(lighterDetail ?? lighterMatch.entry.item).productName}
+                        sizes={SIZES.card}
                       />
                     </div>
                   )}
@@ -552,7 +555,7 @@ export default function RitualCoachPage() {
                     <Card key={cardKey} className="ritual-coach-treat-card">
                       {detail.heroImage && (
                         <div className="ritual-coach-product-card__media">
-                          <img src={detail.heroImage} alt={localizedDetail.productName} />
+                          <Picture src={detail.heroImage} alt={localizedDetail.productName} sizes={SIZES.tile} />
                         </div>
                       )}
                       <div className="ritual-coach-product-card__body">

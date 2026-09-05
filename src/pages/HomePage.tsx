@@ -1,4 +1,5 @@
-import { Button, Card, SectionTitle } from "../components/ui";
+import { Button, Card, Picture, SectionTitle } from "../components/ui";
+import { SIZES, imageUrl } from "@/assets/images";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Navbar from "../components/Navbar";
 import OfflineNotice from "@/components/OfflineNotice";
@@ -6,10 +7,6 @@ import Sidebar from "../components/Sidebar";
 import CardGrid from "../components/CardGrid";
 import ReviewsSection from "../components/ReviewsSection";
 import { prefetchRoute } from "@/utils/prefetchRoutes";
-import collectionImage from "../assets/collection.jpg";
-import iconLeft from "../assets/NaturaGloss_shiny_gold_icon_left.webp";
-import iconMiddle from "../assets/NaturaGloss_shiny_gold_icon_middle.webp";
-import iconRight from "../assets/NaturaGloss_shiny_gold_icon_right.webp";
 import { PRODUCT_INDEX } from "../data/products";
 import { addCartItem, readCart, subscribeToCart, writeCart, type CartItem } from "../utils/cartStorage";
 import type { CatalogProduct } from "@/data/products";
@@ -241,13 +238,11 @@ export default function HomePage({ onCartOpen }: HomePageProps) {
           </div>
         </div>
         <figure className="landing-hero__media" data-animate="fade-in" data-parallax="hero">
-          <img
-            src={collectionImage}
+          <Picture
+            src={imageUrl("collection")}
             alt={t("landing.hero.imageAlt")}
-            width="720"
-            height="480"
-            loading="eager"
-            decoding="async"
+            sizes={SIZES.hero}
+            priority
           />
         </figure>
       </main>
@@ -277,7 +272,7 @@ export default function HomePage({ onCartOpen }: HomePageProps) {
                 <Card key={guide.id} className="landing-guides-card hover-lift" data-animate="fade-up">
                   {guide.heroImage && (
                     <div className="landing-guides-card__media">
-                      <img src={guide.heroImage} alt={guide.title} />
+                      <Picture src={guide.heroImage} alt={guide.title} sizes={SIZES.card} />
                     </div>
                   )}
                   <div className="landing-guides-card__body">
@@ -353,7 +348,7 @@ export default function HomePage({ onCartOpen }: HomePageProps) {
                     >
                       {detail.heroImage && (
                         <div className="shop-product-card__media">
-                          <img src={detail.heroImage} alt={detail.productName} />
+                          <Picture src={detail.heroImage} alt={detail.productName} sizes={SIZES.tile} />
                         </div>
                       )}
                       <div className="shop-product-card__body">
@@ -461,7 +456,7 @@ export default function HomePage({ onCartOpen }: HomePageProps) {
                     >
                       {detail.heroImage && (
                         <div className="shop-product-card__media">
-                          <img src={detail.heroImage} alt={detail.productName} />
+                          <Picture src={detail.heroImage} alt={detail.productName} sizes={SIZES.tile} />
                         </div>
                       )}
                       <div className="shop-product-card__body">
@@ -525,7 +520,7 @@ export default function HomePage({ onCartOpen }: HomePageProps) {
                     >
                       {detail.heroImage && (
                         <div className="shop-product-card__media">
-                          <img src={detail.heroImage} alt={detail.productName} />
+                          <Picture src={detail.heroImage} alt={detail.productName} sizes={SIZES.tile} />
                         </div>
                       )}
                       <div className="shop-product-card__body">
@@ -621,17 +616,17 @@ export default function HomePage({ onCartOpen }: HomePageProps) {
         <h2 data-animate="fade-up">{t("landing.values.title")}</h2>
         <div className="landing-values__grid">
           <article data-animate="fade-in">
-            <img src={iconLeft} alt="" aria-hidden="true" />
+            <Picture src={imageUrl("iconLeft")} alt="" aria-hidden="true" sizes={SIZES.icon} />
             <h3>{t("landing.values.cards.smallBatch.title")}</h3>
             <p>{t("landing.values.cards.smallBatch.body")}</p>
           </article>
           <article data-animate="fade-in">
-            <img src={iconMiddle} alt="" aria-hidden="true" />
+            <Picture src={imageUrl("iconMiddle")} alt="" aria-hidden="true" sizes={SIZES.icon} />
             <h3>{t("landing.values.cards.transparency.title")}</h3>
             <p>{t("landing.values.cards.transparency.body")}</p>
           </article>
           <article data-animate="fade-in">
-            <img src={iconRight} alt="" aria-hidden="true" />
+            <Picture src={imageUrl("iconRight")} alt="" aria-hidden="true" sizes={SIZES.icon} />
             <h3>{t("landing.values.cards.standards.title")}</h3>
             <p>{t("landing.values.cards.standards.body")}</p>
           </article>
@@ -640,8 +635,10 @@ export default function HomePage({ onCartOpen }: HomePageProps) {
 
       <div className="legacy-section">
         <div className="container legacy-content ng-mobile-shell">
+          {/* h2, not h1: the landing hero above already carries the page h1, and
+              jumping h1 -> h3 at the product grid below failed heading-order. */}
           <section className="hero legacy-hero-intro" id="about">
-            <h1 data-animate="fade-up">NaturaGloss</h1>
+            <h2 data-animate="fade-up">NaturaGloss</h2>
             <p data-animate="fade-up">{t("landing.legacy.body")}</p>
           </section>
 

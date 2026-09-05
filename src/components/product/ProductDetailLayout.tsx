@@ -1,8 +1,9 @@
 import React from "react";
-import { Button, Card, SectionTitle } from "@/components/ui";
+import { Button, Card, Picture, SectionTitle } from "@/components/ui";
 import { useCurrency } from "@/currency/CurrencyProvider";
 import { useTranslation } from "@/localization/locale";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { SIZES } from "@/assets/images";
 
 export type HeroSummaryBullet = string;
 
@@ -193,7 +194,7 @@ export function ProductDetailLayout({
                 {activeDiscountPercentage}% OFF
               </span>
             ) : null}
-            <img src={heroImage} alt={productName} />
+            <Picture src={heroImage} alt={productName} sizes={SIZES.banner} priority />
           </figure>
         )}
         </section>

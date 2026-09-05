@@ -117,7 +117,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
 
   return (
     <>
-      <div className={`drawer ${open ? "open" : ""}`} aria-hidden={!open}>
+      <div className={`drawer ${open ? "open" : ""}`} inert={!open}>
         <aside
           id={MOBILE_DRAWER_ID}
           className="drawer-panel"
@@ -126,7 +126,6 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           aria-modal={open ? "true" : undefined}
           aria-labelledby="drawer-title"
           ref={panelRef}
-          aria-hidden={!open}
         >
           <div className="drawer-header">
             <h2 id="drawer-title" className="drawer-header__title">
@@ -161,6 +160,8 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 }
               }}
               aria-label={t("search.placeholder")}
+              role="combobox"
+              aria-autocomplete="list"
               aria-controls="drawer-search-results"
               aria-expanded={showDropdown}
             />

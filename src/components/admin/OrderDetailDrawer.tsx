@@ -43,7 +43,7 @@ export default function OrderDetailDrawer({
   };
 
   return (
-    <div className={`order-detail-drawer ${open ? "is-open" : ""}`} aria-hidden={!open}>
+    <div className={`order-detail-drawer ${open ? "is-open" : ""}`} inert={!open}>
       <div className="order-detail-drawer__backdrop" onClick={onClose} />
       <FadeIn>
         <aside className="order-detail-drawer__panel">
@@ -115,9 +115,10 @@ export default function OrderDetailDrawer({
           </div>
 
           <div className="order-detail-status">
-            <p>Status update</p>
+            <p id="order-detail-status-label">Status update</p>
             <select
               value={order.status}
+              aria-labelledby="order-detail-status-label"
               onChange={(event) => onStatusChange(order.id, event.target.value as OrderStatus)}
             >
               {statusOptions.map((status) => (

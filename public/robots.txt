@@ -1,0 +1,32 @@
+# robots.txt for NaturaGloss Rituals
+# Spec: https://www.rfc-editor.org/rfc/rfc9309.html
+
+User-agent: *
+
+# Per-user and transactional routes. Nothing here is useful in an index, and
+# some of it renders differently for every visitor.
+Disallow: /account
+Disallow: /cart
+Disallow: /checkout
+Disallow: /orders
+Disallow: /orders-history
+Disallow: /favorites
+Disallow: /compare
+Disallow: /onboarding
+
+# Internal dashboards.
+Disallow: /admin
+Disallow: /analytics
+Disallow: /audience
+
+# Search results: unbounded URL space and thin, duplicated content.
+Disallow: /search
+
+# Serverless API.
+Disallow: /api/
+
+# Every path above is also reachable as ?view=<name> on any URL, so those are
+# duplicates of the canonical paths. ?ref=<code> referral links duplicate the
+# whole site the same way.
+Disallow: /*?view=
+Disallow: /*?ref=

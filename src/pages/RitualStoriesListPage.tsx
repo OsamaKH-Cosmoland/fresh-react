@@ -1,8 +1,9 @@
 import { localizeStory, ritualStories } from "../content/stories";
 import { buildAppUrl } from "@/utils/navigation";
 import type { CSSProperties } from "react";
-import { Button, Card, SectionTitle } from "@/components/ui";
+import { Button, Card, Picture, SectionTitle } from "@/components/ui";
 import { useTranslation } from "@/localization/locale";
+import { SIZES } from "@/assets/images";
 
 export default function RitualStoriesListPage() {
   const { t, locale } = useTranslation();
@@ -32,7 +33,7 @@ export default function RitualStoriesListPage() {
             style={{ "--motion-delay": `${0.1 + index * 0.09}s` } as CSSProperties}
           >
             <div className="story-card__media">
-              <img src={story.image} alt={story.title} loading="lazy" />
+              <Picture src={story.image} alt={story.title} sizes={SIZES.card} />
             </div>
             <div className="story-card__content">
               <div className="story-card__field-row">

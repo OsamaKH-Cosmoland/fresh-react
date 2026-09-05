@@ -210,8 +210,13 @@ export default function ReviewsSection() {
                 containerClassName="reviews-form__field"
               />
               <div className="reviews-form__field">
-                <span>{t("reviews.form.labels.rating")}</span>
-                <select name="rating" value={form.rating} onChange={handleChange}>
+                <span id="reviews-form-rating-label">{t("reviews.form.labels.rating")}</span>
+                <select
+                  name="rating"
+                  aria-labelledby="reviews-form-rating-label"
+                  value={form.rating}
+                  onChange={handleChange}
+                >
                   {RATING_OPTIONS.map((rating) => (
                     <option key={rating} value={rating}>
                       {rating} {rating === 1 ? t("reviews.form.labels.star") : t("reviews.form.labels.stars")}
